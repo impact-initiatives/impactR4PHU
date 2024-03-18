@@ -9,7 +9,7 @@ Description: The impactR4PHU package includes a set of quality checks, cleaning,
     Public Health Unit in Impact (Nutrition/WASH/Health/FSL[Food Securtity and
     Livelihoods])
 License: MIT + file LICENSE
-URL: https://github.com/impact-initiatives/impactR4PHU
+URL: https://impact-initiatives.github.io/impactR4PHU/
 Imports: 
     dplyr,
     magrittr,
