@@ -54,6 +54,8 @@ df_with_fcs %>%
     fcs_weight_fruit6, fcs_weight_oil7, fcs_weight_sugar8
   ) %>%
   head(20)
+
+
 ```
 
 ### Example:: Add Household Hunger Scale (HHS)
