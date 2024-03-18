@@ -10,8 +10,10 @@ Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg)](c
 
 ## Overview
 
-`impactR4PHU` is designed for creating and checking (occasionally)
-composite indicators such as Food Consumption Indicators and others.
+`impactR4PHU` is designed for creating quality check reports, cleaning,
+analysing and outputing results of core outcome indicators of Public
+Health Unit. This package will target mainly Food Security and
+Livelihoods, WASH, Nutrition and Health Sectors.
 
 ## Installation
 
