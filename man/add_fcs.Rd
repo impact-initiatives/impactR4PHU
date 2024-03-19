@@ -34,9 +34,9 @@ add_fcs(
 
 \item{fsl_fcs_dairy}{the name of the variable that indicates the number of days dairy were consumed}
 
-\item{fsl_fcs_sugar}{the name of the variable that indicates the number of days cereals was consumed}
+\item{fsl_fcs_sugar}{the name of the variable that indicates the number of days sugar was consumed}
 
-\item{fsl_fcs_oil}{the name of the variable that indicates the number of days oild were consumed}
+\item{fsl_fcs_oil}{the name of the variable that indicates the number of days oil were consumed}
 }
 \value{
 the dataset with fsl_fcs_score and fsl_fcs_cat computed, as well as the 8 weighted food groups

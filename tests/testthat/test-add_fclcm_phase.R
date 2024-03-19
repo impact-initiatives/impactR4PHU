@@ -4,7 +4,7 @@ library(dplyr)
 ###### Sad Path #######
 
 testthat::test_that("Check input type -- dataset", {
-  load(testthat::test_path("testdata", "test_df_hhs.rda"))
+  load(testthat::test_path("testdata", "test_df_with_calculation.rda"))
   testthat::expect_error(add_fclcm_phase(.dataset = 0))
   testthat::expect_error(add_fclcm_phase(.dataset = "x"))
   testthat::expect_error(add_fclcm_phase(.dataset = 1.0))
@@ -21,12 +21,12 @@ testthat::test_that("Check dataframe empty", {
 testthat::test_that("Check for missing columns", {
   load(testthat::test_path("testdata", "test_df_with_calculation.rda"))
 
-  testthat::expect_error(add_fadd_flcm_phasecs(
-    .dataset = test_df_calculated_values %>% dplyr::select(-fc_phase),
+  testthat::expect_error(add_fclcm_phase(
+    .dataset = test_df_with_calculation %>% dplyr::select(-fc_phase),
     fc_phase_var = "fc_phase"
   ))
   testthat::expect_error(add_fclcm_phase(
-    .dataset = test_df_calculated_values %>% dplyr::select(-fsl_lcsi_cat),
+    .dataset = test_df_with_calculation %>% dplyr::select(-fsl_lcsi_cat),
     lcs_cat_var = "fsl_lcsi_cat"
   ))
 
@@ -38,14 +38,14 @@ testthat::test_that("Checking column values fc_phase - [Phase 1 FC/Phase 2 FC/Ph
   load(testthat::test_path("testdata", "test_df_with_calculation.rda"))
 
   set.seed(30)
-  test_df_calculated_values[sample.int(nrow(test_df_calculated_values), 3), c("fc_phase")] <- "Phase 6 FC"
+  test_df_with_calculation[sample.int(nrow(test_df_with_calculation), 3), c("fc_phase")] <- "Phase 6 FC"
   set.seed(29)
-  test_df_calculated_values[sample.int(nrow(test_df_calculated_values), 3), c("fc_phase")] <- "little"
+  test_df_with_calculation[sample.int(nrow(test_df_with_calculation), 3), c("fc_phase")] <- "little"
 
   set.seed(12)
-  test_df_calculated_values[sample.int(nrow(test_df_calculated_values), 3), c("fc_phase")] <- "random_value"
+  test_df_with_calculation[sample.int(nrow(test_df_with_calculation), 3), c("fc_phase")] <- "random_value"
   testthat::expect_error(add_fclcm_phase(
-    .dataset = test_df_calculated_values
+    .dataset = test_df_with_calculation
   ))
 })
 
@@ -55,14 +55,14 @@ testthat::test_that("Checking column values fc_phase - [None/Stress/Crisis/Emerg
   load(testthat::test_path("testdata", "test_df_with_calculation.rda"))
 
   set.seed(30)
-  test_df_calculated_values[sample.int(nrow(test_df_calculated_values), 3), c("fsl_lcsi_cat")] <- "none"
+  test_df_with_calculation[sample.int(nrow(test_df_with_calculation), 3), c("fsl_lcsi_cat")] <- "none"
   set.seed(29)
-  test_df_calculated_values[sample.int(nrow(test_df_calculated_values), 3), c("fsl_lcsi_cat")] <- "cris"
+  test_df_with_calculation[sample.int(nrow(test_df_with_calculation), 3), c("fsl_lcsi_cat")] <- "cris"
 
   set.seed(12)
-  test_df_calculated_values[sample.int(nrow(test_df_calculated_values), 3), c("fsl_lcsi_cat")] <- "random_value"
+  test_df_with_calculation[sample.int(nrow(test_df_with_calculation), 3), c("fsl_lcsi_cat")] <- "random_value"
   testthat::expect_error(add_fclcm_phase(
-    .dataset = test_df_calculated_values
+    .dataset = test_df_with_calculation
   ))
 })
 

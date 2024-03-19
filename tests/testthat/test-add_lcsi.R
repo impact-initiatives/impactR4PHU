@@ -3,7 +3,7 @@ library(dplyr)
 ###### Sad Path #######
 
 testthat::test_that("Check input type -- dataset", {
-  load(testthat::test_path("testdata", "test_df_hhs.rda"))
+  load(testthat::test_path("testdata", "test_df.rda"))
   testthat::expect_error(add_lcsi(.dataset = 0))
   testthat::expect_error(add_lcsi(.dataset = "x"))
   testthat::expect_error(add_lcsi(.dataset = 1.0))
@@ -18,17 +18,53 @@ testthat::test_that("Check dataframe empty", {
 })
 
 testthat::test_that("Check for missing columns", {
-  load(testthat::test_path("testdata", "test_df_hhs.rda"))
+  load(testthat::test_path("testdata", "test_df.rda"))
 
   testthat::expect_error(add_lcsi(
     .dataset = test_df %>% dplyr::select(-fsl_lcsi_stress1),
     fsl_lcsi_stress1 = "fsl_lcsi_stress1"
   ))
 
+  testthat::expect_error(add_lcsi(
+    .dataset = test_df %>% dplyr::select(-fsl_lcsi_stress2),
+    fsl_lcsi_stress1 = "fsl_lcsi_stress2"
+  ))
+  testthat::expect_error(add_lcsi(
+    .dataset = test_df %>% dplyr::select(-fsl_lcsi_stress3),
+    fsl_lcsi_stress1 = "fsl_lcsi_stress3"
+  ))
+  testthat::expect_error(add_lcsi(
+    .dataset = test_df %>% dplyr::select(-fsl_lcsi_stress4),
+    fsl_lcsi_stress1 = "fsl_lcsi_stress4"
+  ))
+  testthat::expect_error(add_lcsi(
+    .dataset = test_df %>% dplyr::select(-fsl_lcsi_crisis1),
+    fsl_lcsi_stress1 = "fsl_lcsi_crisis1"
+  ))
+  testthat::expect_error(add_lcsi(
+    .dataset = test_df %>% dplyr::select(-fsl_lcsi_crisis2),
+    fsl_lcsi_stress1 = "fsl_lcsi_crisis2"
+  ))
+  testthat::expect_error(add_lcsi(
+    .dataset = test_df %>% dplyr::select(-fsl_lcsi_crisis3),
+    fsl_lcsi_stress1 = "fsl_lcsi_crisis3"
+  ))
+  testthat::expect_error(add_lcsi(
+    .dataset = test_df %>% dplyr::select(-fsl_lcsi_emergency1),
+    fsl_lcsi_stress1 = "fsl_lcsi_emergency1"
+  ))
+  testthat::expect_error(add_lcsi(
+    .dataset = test_df %>% dplyr::select(-fsl_lcsi_emergency2),
+    fsl_lcsi_stress1 = "fsl_lcsi_emergency2"
+  ))
+  testthat::expect_error(add_lcsi(
+    .dataset = test_df %>% dplyr::select(-fsl_lcsi_emergency3),
+    fsl_lcsi_stress1 = "fsl_lcsi_emergency3"
+  ))
 })
 
 testthat::test_that("Checking column values - [yes/no_had_no_need/no_exhausted/not_applicable]", {
-  load(testthat::test_path("testdata", "test_df_hhs.rda"))
+  load(testthat::test_path("testdata", "test_df.rda"))
 
   set.seed(30)
   test_df[sample.int(nrow(test_df), 3), c("fsl_lcsi_stress1")] <- "random"
@@ -39,7 +75,7 @@ testthat::test_that("Checking column values - [yes/no_had_no_need/no_exhausted/n
   ))
 })
 testthat::test_that("Checking column values - [yes/no_had_no_need/no_exhausted/not_applicable]", {
-  load(testthat::test_path("testdata", "test_df_hhs.rda"))
+  load(testthat::test_path("testdata", "test_df.rda"))
 
   set.seed(29)
   test_df[sample.int(nrow(test_df), 3), c("fsl_lcsi_stress2")] <- "random"
@@ -50,7 +86,7 @@ testthat::test_that("Checking column values - [yes/no_had_no_need/no_exhausted/n
   ))
 })
 testthat::test_that("Checking column values - [yes/no_had_no_need/no_exhausted/not_applicable]", {
-  load(testthat::test_path("testdata", "test_df_hhs.rda"))
+  load(testthat::test_path("testdata", "test_df.rda"))
 
   set.seed(28)
   test_df[sample.int(nrow(test_df), 3), c("fsl_lcsi_stress3")] <- "random"
@@ -61,7 +97,7 @@ testthat::test_that("Checking column values - [yes/no_had_no_need/no_exhausted/n
   ))
 })
 testthat::test_that("Checking column values - [yes/no_had_no_need/no_exhausted/not_applicable]", {
-  load(testthat::test_path("testdata", "test_df_hhs.rda"))
+  load(testthat::test_path("testdata", "test_df.rda"))
 
   set.seed(27)
   test_df[sample.int(nrow(test_df), 3), c("fsl_lcsi_stress4")] <- "random"
@@ -72,7 +108,7 @@ testthat::test_that("Checking column values - [yes/no_had_no_need/no_exhausted/n
   ))
 })
 testthat::test_that("Checking column values - [yes/no_had_no_need/no_exhausted/not_applicable]", {
-  load(testthat::test_path("testdata", "test_df_hhs.rda"))
+  load(testthat::test_path("testdata", "test_df.rda"))
 
   set.seed(26)
   test_df[sample.int(nrow(test_df), 3), c("fsl_lcsi_crisis1")] <- "random"
@@ -83,7 +119,7 @@ testthat::test_that("Checking column values - [yes/no_had_no_need/no_exhausted/n
   ))
 })
 testthat::test_that("Checking column values - [yes/no_had_no_need/no_exhausted/not_applicable]", {
-  load(testthat::test_path("testdata", "test_df_hhs.rda"))
+  load(testthat::test_path("testdata", "test_df.rda"))
 
   set.seed(25)
   test_df[sample.int(nrow(test_df), 3), c("fsl_lcsi_crisis2")] <- "random"
@@ -94,7 +130,7 @@ testthat::test_that("Checking column values - [yes/no_had_no_need/no_exhausted/n
   ))
 })
 testthat::test_that("Checking column values - [yes/no_had_no_need/no_exhausted/not_applicable]", {
-  load(testthat::test_path("testdata", "test_df_hhs.rda"))
+  load(testthat::test_path("testdata", "test_df.rda"))
 
   set.seed(24)
   test_df[sample.int(nrow(test_df), 3), c("fsl_lcsi_crisis3")] <- "random"
@@ -105,7 +141,7 @@ testthat::test_that("Checking column values - [yes/no_had_no_need/no_exhausted/n
   ))
 })
 testthat::test_that("Checking column values - [yes/no_had_no_need/no_exhausted/not_applicable]", {
-  load(testthat::test_path("testdata", "test_df_hhs.rda"))
+  load(testthat::test_path("testdata", "test_df.rda"))
 
   set.seed(23)
   test_df[sample.int(nrow(test_df), 3), c("fsl_lcsi_emergency1")] <- "random"
@@ -116,7 +152,7 @@ testthat::test_that("Checking column values - [yes/no_had_no_need/no_exhausted/n
   ))
 })
 testthat::test_that("Checking column values - [yes/no_had_no_need/no_exhausted/not_applicable]", {
-  load(testthat::test_path("testdata", "test_df_hhs.rda"))
+  load(testthat::test_path("testdata", "test_df.rda"))
 
   set.seed(22)
   test_df[sample.int(nrow(test_df), 3), c("fsl_lcsi_emergency2")] <- "random"
@@ -127,7 +163,7 @@ testthat::test_that("Checking column values - [yes/no_had_no_need/no_exhausted/n
   ))
 })
 testthat::test_that("Checking column values - [yes/no_had_no_need/no_exhausted/not_applicable]", {
-  load(testthat::test_path("testdata", "test_df_hhs.rda"))
+  load(testthat::test_path("testdata", "test_df.rda"))
 
   set.seed(21)
   test_df[sample.int(nrow(test_df), 3), c("fsl_lcsi_emergency3")] <- "random"

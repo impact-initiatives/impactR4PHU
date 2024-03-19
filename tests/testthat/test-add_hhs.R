@@ -3,7 +3,7 @@ library(dplyr)
 ##### Sad Path #####
 
 testthat::test_that("Check input type -- dataset", {
-  load(testthat::test_path("testdata", "test_df_hhs.rda"))
+  load(testthat::test_path("testdata", "test_df.rda"))
   testthat::expect_error(add_hhs(.dataset = 0))
   testthat::expect_error(add_hhs(.dataset = "x"))
   testthat::expect_error(add_hhs(.dataset = 1.0))
@@ -18,7 +18,7 @@ testthat::test_that("Check dataframe empty", {
 })
 
 testthat::test_that("Check missing columns", {
-  load(testthat::test_path("testdata", "test_df_hhs.rda"))
+  load(testthat::test_path("testdata", "test_df.rda"))
 
   testthat::expect_error(add_hhs(
     .dataset = test_df %>% dplyr::select(-fsl_hhs_nofoodhh),
@@ -54,7 +54,7 @@ testthat::test_that("Check missing columns", {
 
 
 testthat::test_that("Check columns values - Yes/No", {
-  load(testthat::test_path("testdata", "test_df_hhs.rda"))
+  load(testthat::test_path("testdata", "test_df.rda"))
 
   set.seed(30)
   test_df[sample.int(nrow(test_df), 3), c("fsl_hhs_nofoodhh")] <- "YES"
@@ -66,7 +66,7 @@ testthat::test_that("Check columns values - Yes/No", {
   ))
 })
 testthat::test_that("Check columns values - Yes/No", {
-  load(testthat::test_path("testdata", "test_df_hhs.rda"))
+  load(testthat::test_path("testdata", "test_df.rda"))
 
   set.seed(29)
   test_df[sample.int(nrow(test_df), 3), c("fsl_hhs_alldaynight")] <- "YES"
@@ -79,7 +79,7 @@ testthat::test_that("Check columns values - Yes/No", {
   ))
 })
 testthat::test_that("Check columns values - Yes/No", {
-  load(testthat::test_path("testdata", "test_df_hhs.rda"))
+  load(testthat::test_path("testdata", "test_df.rda"))
 
   set.seed(12)
   test_df[sample.int(nrow(test_df), 3), c("fsl_hhs_sleephungry")] <- "YES"
@@ -92,7 +92,7 @@ testthat::test_that("Check columns values - Yes/No", {
 })
 
 testthat::test_that("Check columns values - Frequencies", {
-  load(testthat::test_path("testdata", "test_df_hhs.rda"))
+  load(testthat::test_path("testdata", "test_df.rda"))
 
   set.seed(30)
   test_df[sample.int(nrow(test_df), 3), c("fsl_hhs_nofoodhh_freq")] <- "rarely_1_2"
@@ -106,7 +106,7 @@ testthat::test_that("Check columns values - Frequencies", {
 })
 
 testthat::test_that("Check columns values - Frequencies", {
-  load(testthat::test_path("testdata", "test_df_hhs.rda"))
+  load(testthat::test_path("testdata", "test_df.rda"))
 
   set.seed(29)
   test_df[sample.int(nrow(test_df), 3), c("fsl_hhs_sleephungry_freq")] <- "rarely_1_2"
@@ -120,7 +120,7 @@ testthat::test_that("Check columns values - Frequencies", {
 })
 
 testthat::test_that("Check columns values - Frequencies", {
-  load(testthat::test_path("testdata", "test_df_hhs.rda"))
+  load(testthat::test_path("testdata", "test_df.rda"))
 
   set.seed(16)
   test_df[sample.int(nrow(test_df), 3), c("fsl_hhs_alldaynight_freq")] <- "rarely_1_2"
@@ -135,46 +135,24 @@ testthat::test_that("Check columns values - Frequencies", {
 
 ##### Happy Path #####
 
-testthat::test_that("Check calculation", {
-  load(testthat::test_path("testdata", "test_df_hhs.rda"))
-  load(testthat::test_path("testdata", "test_df_with_calculation_hhs.rda"))
-
-
+testthat::test_that("Check calculation fsl_hhs_cat_ipc", {
+  load(testthat::test_path("testdata", "test_df.rda"))
+  load(testthat::test_path("testdata", "test_df_with_calculation.rda"))
   testthat::expect_equal(
     object = add_hhs(
-      .dataset = test_df,
-      fsl_hhs_nofoodhh = "fsl_hhs_nofoodhh",
-      fsl_hhs_nofoodhh_freq = "fsl_hhs_nofoodhh_freq",
-      fsl_hhs_sleephungry = "fsl_hhs_sleephungry",
-      fsl_hhs_sleephungry_freq = "fsl_hhs_sleephungry_freq",
-      fsl_hhs_alldaynight = "fsl_hhs_alldaynight",
-      fsl_hhs_alldaynight_freq = "fsl_hhs_alldaynight_freq",
-      yes_answer = "yes",
-      no_answer = "no",
-      rarely_answer = "rarely",
-      sometimes_answer = "sometimes",
-      often_answer = "often"
+      .dataset = test_df
     ) %>% dplyr::pull("fsl_hhs_cat_ipc"),
     expected = test_df_with_calculation %>% dplyr::pull("fsl_hhs_cat_ipc")
   )
+})
 
-
+testthat::test_that("Check calculation fsl_hhs_cat", {
+  load(testthat::test_path("testdata", "test_df.rda"))
+  load(testthat::test_path("testdata", "test_df_with_calculation.rda"))
   testthat::expect_equal(
     object = add_hhs(
-      .dataset = test_df,
-      fsl_hhs_nofoodhh = "fsl_hhs_nofoodhh",
-      fsl_hhs_nofoodhh_freq = "fsl_hhs_nofoodhh_freq",
-      fsl_hhs_sleephungry = "fsl_hhs_sleephungry",
-      fsl_hhs_sleephungry_freq = "fsl_hhs_sleephungry_freq",
-      fsl_hhs_alldaynight = "fsl_hhs_alldaynight",
-      fsl_hhs_alldaynight_freq = "fsl_hhs_alldaynight_freq",
-      yes_answer = "yes",
-      no_answer = "no",
-      rarely_answer = "rarely",
-      sometimes_answer = "sometimes",
-      often_answer = "often"
+      .dataset = test_df
     ) %>% dplyr::pull("fsl_hhs_cat"),
     expected = test_df_with_calculation %>% dplyr::pull("fsl_hhs_cat")
   )
 })
-

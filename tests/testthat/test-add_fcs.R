@@ -3,7 +3,7 @@ library(dplyr)
 ###### Sad Path #######
 
 testthat::test_that("Check input type -- dataset", {
-  load(testthat::test_path("testdata", "test_df_hhs.rda"))
+  load(testthat::test_path("testdata", "test_df.rda"))
   testthat::expect_error(add_fcs(.dataset = 0))
   testthat::expect_error(add_fcs(.dataset = "x"))
   testthat::expect_error(add_fcs(.dataset = 1.0))
@@ -17,7 +17,7 @@ testthat::test_that("Check dataframe empty", {
 })
 
 testthat::test_that("Check for missing columns", {
-  load(testthat::test_path("testdata", "test_df_hhs.rda"))
+  load(testthat::test_path("testdata", "test_df.rda"))
 
   testthat::expect_error(add_fcs(
     .dataset = test_df %>% dplyr::select(-fsl_fcs_cereal),
@@ -61,7 +61,7 @@ testthat::test_that("Check for missing columns", {
 })
 
 testthat::test_that("Checking column values - [1:7]", {
-  load(testthat::test_path("testdata", "test_df_hhs.rda"))
+  load(testthat::test_path("testdata", "test_df.rda"))
 
   set.seed(30)
   test_df[sample.int(nrow(test_df), 3), c("fsl_fcs_cereal")] <- 8
@@ -75,7 +75,7 @@ testthat::test_that("Checking column values - [1:7]", {
 })
 
 testthat::test_that("Checking column values - [1:7]", {
-  load(testthat::test_path("testdata", "test_df_hhs.rda"))
+  load(testthat::test_path("testdata", "test_df.rda"))
 
   set.seed(29)
   test_df[sample.int(nrow(test_df), 3), c("fsl_fcs_legumes")] <- 8
@@ -89,7 +89,7 @@ testthat::test_that("Checking column values - [1:7]", {
 })
 
 testthat::test_that("Checking column values - [1:7]", {
-  load(testthat::test_path("testdata", "test_df_hhs.rda"))
+  load(testthat::test_path("testdata", "test_df.rda"))
 
   set.seed(28)
   test_df[sample.int(nrow(test_df), 3), c("fsl_fcs_veg")] <- 8
@@ -103,7 +103,7 @@ testthat::test_that("Checking column values - [1:7]", {
 })
 
 testthat::test_that("Checking column values - [1:7]", {
-  load(testthat::test_path("testdata", "test_df_hhs.rda"))
+  load(testthat::test_path("testdata", "test_df.rda"))
 
   set.seed(27)
   test_df[sample.int(nrow(test_df), 3), c("fsl_fcs_fruit")] <- 8
@@ -117,7 +117,7 @@ testthat::test_that("Checking column values - [1:7]", {
 })
 
 testthat::test_that("Checking column values - [1:7]", {
-  load(testthat::test_path("testdata", "test_df_hhs.rda"))
+  load(testthat::test_path("testdata", "test_df.rda"))
 
   set.seed(26)
   test_df[sample.int(nrow(test_df), 3), c("fsl_fcs_meat")] <- 8
@@ -131,7 +131,7 @@ testthat::test_that("Checking column values - [1:7]", {
 })
 
 testthat::test_that("Checking column values - [1:7]", {
-  load(testthat::test_path("testdata", "test_df_hhs.rda"))
+  load(testthat::test_path("testdata", "test_df.rda"))
 
   set.seed(25)
   test_df[sample.int(nrow(test_df), 3), c("fsl_fcs_dairy")] <- 8
@@ -145,7 +145,7 @@ testthat::test_that("Checking column values - [1:7]", {
 })
 
 testthat::test_that("Checking column values - [1:7]", {
-  load(testthat::test_path("testdata", "test_df_hhs.rda"))
+  load(testthat::test_path("testdata", "test_df.rda"))
 
   set.seed(24)
   test_df[sample.int(nrow(test_df), 3), c("fsl_fcs_sugar")] <- 8
@@ -159,7 +159,7 @@ testthat::test_that("Checking column values - [1:7]", {
 })
 
 testthat::test_that("Checking column values - [1:7]", {
-  load(testthat::test_path("testdata", "test_df_hhs.rda"))
+  load(testthat::test_path("testdata", "test_df.rda"))
 
   set.seed(23)
   test_df[sample.int(nrow(test_df), 3), c("fsl_fcs_oil")] <- 8

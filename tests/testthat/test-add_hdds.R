@@ -3,7 +3,7 @@ library(dplyr)
 ###### Sad Path #######
 
 testthat::test_that("Check input type -- dataset", {
-  load(testthat::test_path("testdata", "test_df_hhs.rda"))
+  load(testthat::test_path("testdata", "test_df.rda"))
   testthat::expect_error(add_hdds(.dataset = 0))
   testthat::expect_error(add_hdds(.dataset = "x"))
   testthat::expect_error(add_hdds(.dataset = 1.0))
@@ -18,7 +18,7 @@ testthat::test_that("Check dataframe empty", {
 })
 
 testthat::test_that("Check for missing columns", {
-  load(testthat::test_path("testdata", "test_df_hhs.rda"))
+  load(testthat::test_path("testdata", "test_df.rda"))
 
   testthat::expect_error(add_hdds(
     .dataset = test_df %>% dplyr::select(-fsl_hdds_cereals),
@@ -82,7 +82,7 @@ testthat::test_that("Check for missing columns", {
 })
 
 testthat::test_that("Checking column values - [yes/no]", {
-  load(testthat::test_path("testdata", "test_df_hhs.rda"))
+  load(testthat::test_path("testdata", "test_df.rda"))
   set.seed(30)
   test_df[sample.int(nrow(test_df), 3),"fsl_hdds_cereals"] <- "YES"
   test_df[sample.int(nrow(test_df), 3),"fsl_hdds_cereals"] <- "NO"
@@ -92,7 +92,7 @@ testthat::test_that("Checking column values - [yes/no]", {
   ))
 })
 testthat::test_that("Checking column values - [yes/no]", {
-  load(testthat::test_path("testdata", "test_df_hhs.rda"))
+  load(testthat::test_path("testdata", "test_df.rda"))
   set.seed(29)
   test_df[sample.int(nrow(test_df), 3),"fsl_hdds_tubers"] <- "YES"
   test_df[sample.int(nrow(test_df), 3),"fsl_hdds_tubers"] <- "NO"
@@ -102,7 +102,7 @@ testthat::test_that("Checking column values - [yes/no]", {
   ))
 })
 testthat::test_that("Checking column values - [yes/no]", {
-  load(testthat::test_path("testdata", "test_df_hhs.rda"))
+  load(testthat::test_path("testdata", "test_df.rda"))
   set.seed(28)
   test_df[sample.int(nrow(test_df), 3),"fsl_hdds_veg"] <- "YES"
   test_df[sample.int(nrow(test_df), 3),"fsl_hdds_veg"] <- "NO"
@@ -112,7 +112,7 @@ testthat::test_that("Checking column values - [yes/no]", {
   ))
 })
 testthat::test_that("Checking column values - [yes/no]", {
-  load(testthat::test_path("testdata", "test_df_hhs.rda"))
+  load(testthat::test_path("testdata", "test_df.rda"))
   set.seed(27)
   test_df[sample.int(nrow(test_df), 3),"fsl_hdds_fruit"] <- "YES"
   test_df[sample.int(nrow(test_df), 3),"fsl_hdds_fruit"] <- "NO"
@@ -122,7 +122,7 @@ testthat::test_that("Checking column values - [yes/no]", {
   ))
 })
 testthat::test_that("Checking column values - [yes/no]", {
-  load(testthat::test_path("testdata", "test_df_hhs.rda"))
+  load(testthat::test_path("testdata", "test_df.rda"))
   set.seed(26)
   test_df[sample.int(nrow(test_df), 3),"fsl_hdds_meat"] <- "YES"
   test_df[sample.int(nrow(test_df), 3),"fsl_hdds_meat"] <- "NO"
@@ -132,7 +132,7 @@ testthat::test_that("Checking column values - [yes/no]", {
   ))
 })
 testthat::test_that("Checking column values - [yes/no]", {
-  load(testthat::test_path("testdata", "test_df_hhs.rda"))
+  load(testthat::test_path("testdata", "test_df.rda"))
   set.seed(25)
   test_df[sample.int(nrow(test_df), 3),"fsl_hdds_eggs"] <- "YES"
   test_df[sample.int(nrow(test_df), 3),"fsl_hdds_eggs"] <- "NO"
@@ -142,7 +142,7 @@ testthat::test_that("Checking column values - [yes/no]", {
   ))
 })
 testthat::test_that("Checking column values - [yes/no]", {
-  load(testthat::test_path("testdata", "test_df_hhs.rda"))
+  load(testthat::test_path("testdata", "test_df.rda"))
   set.seed(24)
   test_df[sample.int(nrow(test_df), 3),"fsl_hdds_fish"] <- "YES"
   test_df[sample.int(nrow(test_df), 3),"fsl_hdds_fish"] <- "NO"
@@ -152,7 +152,7 @@ testthat::test_that("Checking column values - [yes/no]", {
   ))
 })
 testthat::test_that("Checking column values - [yes/no]", {
-  load(testthat::test_path("testdata", "test_df_hhs.rda"))
+  load(testthat::test_path("testdata", "test_df.rda"))
   set.seed(23)
   test_df[sample.int(nrow(test_df), 3),"fsl_hdds_legumes"] <- "YES"
   test_df[sample.int(nrow(test_df), 3),"fsl_hdds_legumes"] <- "NO"
@@ -162,7 +162,7 @@ testthat::test_that("Checking column values - [yes/no]", {
   ))
 })
 testthat::test_that("Checking column values - [yes/no]", {
-  load(testthat::test_path("testdata", "test_df_hhs.rda"))
+  load(testthat::test_path("testdata", "test_df.rda"))
   set.seed(22)
   test_df[sample.int(nrow(test_df), 3),"fsl_hdds_dairy"] <- "YES"
   test_df[sample.int(nrow(test_df), 3),"fsl_hdds_dairy"] <- "NO"
@@ -172,7 +172,7 @@ testthat::test_that("Checking column values - [yes/no]", {
   ))
 })
 testthat::test_that("Checking column values - [yes/no]", {
-  load(testthat::test_path("testdata", "test_df_hhs.rda"))
+  load(testthat::test_path("testdata", "test_df.rda"))
   set.seed(21)
   test_df[sample.int(nrow(test_df), 3),"fsl_hdds_oil"] <- "YES"
   test_df[sample.int(nrow(test_df), 3),"fsl_hdds_oil"] <- "NO"
@@ -182,7 +182,7 @@ testthat::test_that("Checking column values - [yes/no]", {
   ))
 })
 testthat::test_that("Checking column values - [yes/no]", {
-  load(testthat::test_path("testdata", "test_df_hhs.rda"))
+  load(testthat::test_path("testdata", "test_df.rda"))
   set.seed(20)
   test_df[sample.int(nrow(test_df), 3),"fsl_hdds_sugar"] <- "YES"
   test_df[sample.int(nrow(test_df), 3),"fsl_hdds_sugar"] <- "NO"
@@ -192,7 +192,7 @@ testthat::test_that("Checking column values - [yes/no]", {
   ))
 })
 testthat::test_that("Checking column values - [yes/no]", {
-  load(testthat::test_path("testdata", "test_df_hhs.rda"))
+  load(testthat::test_path("testdata", "test_df.rda"))
   set.seed(19)
   test_df[sample.int(nrow(test_df), 3),"fsl_hdds_condiments"] <- "YES"
   test_df[sample.int(nrow(test_df), 3),"fsl_hdds_condiments"] <- "NO"
