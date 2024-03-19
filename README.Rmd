@@ -77,7 +77,7 @@ df_with_hhs <- df_with_fcs %>% add_hhs(
 df_with_hhs %>%
   dplyr::select(
     uuid, fsl_hhs_comp1, fsl_hhs_comp2, fsl_hhs_comp3,
-    fsl_hhs_score, fsl_hhs_cat_ipc, fsl_hhs_cat, hh_size
+    fsl_hhs_score, fsl_hhs_cat_ipc, fsl_hhs_cat, num_hh
   ) %>%
   head(20)
 ```
