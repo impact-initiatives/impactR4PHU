@@ -13,11 +13,11 @@ URL: https://impact-initiatives.github.io/impactR4PHU/
 Imports: 
     dplyr,
     magrittr,
-    purrr,
+    methods,
     rlang,
+    stats,
     stringr,
-    testthat,
-    tidyr
+    testthat
 Config/testthat/edition: 3
 Encoding: UTF-8
 LazyData: true

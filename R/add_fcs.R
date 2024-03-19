@@ -8,8 +8,8 @@
 #' @param fsl_fcs_fruit the name of the variable that indicates the number of days fruits were consumed
 #' @param fsl_fcs_meat the name of the variable that indicates the number of days meat/fish were consumed
 #' @param fsl_fcs_dairy the name of the variable that indicates the number of days dairy were consumed
-#' @param fsl_fcs_sugar the name of the variable that indicates the number of days cereals was consumed
-#' @param fsl_fcs_oil the name of the variable that indicates the number of days oild were consumed
+#' @param fsl_fcs_sugar the name of the variable that indicates the number of days sugar was consumed
+#' @param fsl_fcs_oil the name of the variable that indicates the number of days oil were consumed
 #'
 #' @return the dataset with fsl_fcs_score and fsl_fcs_cat computed, as well as the 8 weighted food groups
 #' @export

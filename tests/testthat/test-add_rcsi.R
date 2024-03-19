@@ -3,7 +3,7 @@ library(dplyr)
 ### sad path ###
 
 testthat::test_that("Check input type -- dataset", {
-  load(testthat::test_path("testdata", "test_df_hhs.rda"))
+  load(testthat::test_path("testdata", "test_df.rda"))
   testthat::expect_error(add_rcsi(.dataset = 0))
   testthat::expect_error(add_rcsi(.dataset = "x"))
   testthat::expect_error(add_rcsi(.dataset = 1.0))
@@ -18,7 +18,7 @@ testthat::test_that("Check dataframe empty", {
 })
 
 testthat::test_that("Check missing columns", {
-  load(testthat::test_path("testdata", "test_df_hhs.rda"))
+  load(testthat::test_path("testdata", "test_df.rda"))
 
   testthat::expect_error(add_rcsi(
     .dataset = test_df %>% dplyr::select(-fsl_rcsi_lessquality),
@@ -48,7 +48,7 @@ testthat::test_that("Check missing columns", {
 })
 
 testthat::test_that("Checking column values - [1:7]", {
-  load(testthat::test_path("testdata", "test_df_hhs.rda"))
+  load(testthat::test_path("testdata", "test_df.rda"))
 
   set.seed(30)
   test_df[sample.int(nrow(test_df), 3), c("fsl_rcsi_lessquality")] <- 8
@@ -59,7 +59,7 @@ testthat::test_that("Checking column values - [1:7]", {
   ))
 })
 testthat::test_that("Checking column values - [1:7]", {
-  load(testthat::test_path("testdata", "test_df_hhs.rda"))
+  load(testthat::test_path("testdata", "test_df.rda"))
 
   set.seed(26)
   test_df[sample.int(nrow(test_df), 3), c("fsl_rcsi_borrow")] <- 8
@@ -70,7 +70,7 @@ testthat::test_that("Checking column values - [1:7]", {
   ))
 })
 testthat::test_that("Checking column values - [1:7]", {
-  load(testthat::test_path("testdata", "test_df_hhs.rda"))
+  load(testthat::test_path("testdata", "test_df.rda"))
 
   set.seed(25)
   test_df[sample.int(nrow(test_df), 3), c("fsl_rcsi_mealsize")] <- 8
@@ -81,7 +81,7 @@ testthat::test_that("Checking column values - [1:7]", {
   ))
 })
 testthat::test_that("Checking column values - [1:7]", {
-  load(testthat::test_path("testdata", "test_df_hhs.rda"))
+  load(testthat::test_path("testdata", "test_df.rda"))
 
   set.seed(23)
   test_df[sample.int(nrow(test_df), 3), c("fsl_rcsi_mealadult")] <- 8
@@ -92,7 +92,7 @@ testthat::test_that("Checking column values - [1:7]", {
   ))
 })
 testthat::test_that("Checking column values - [1:7]", {
-  load(testthat::test_path("testdata", "test_df_hhs.rda"))
+  load(testthat::test_path("testdata", "test_df.rda"))
 
   set.seed(22)
   test_df[sample.int(nrow(test_df), 3), c("fsl_rcsi_mealnb")] <- 8

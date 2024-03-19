@@ -1,5 +1,5 @@
 
-## addindicators
+## impactR4PHU
 
 <!-- badges: start -->
 
@@ -254,7 +254,7 @@ df_with_rcsi %>%
     ## 19 2516eba7-789c-4c4b41-afa0ad-f0a7365bd81c             34         High
     ## 20 c7896215-b36f-40444c-aaa2af-fa4d37c6502e             25         High
 
-### Example:: Add Household Dietery Diversity Score (HDDS)
+### Example:: Add Household Dietary Diversity Score (HDDS)
 
 ``` r
 df_with_hdds <- df_with_rcsi %>% add_hdds(

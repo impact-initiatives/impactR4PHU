@@ -5,7 +5,7 @@ output: github_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
-## addindicators
+## impactR4PHU
 
 <!-- badges: start -->
 [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg)](code_of_conduct.md)
@@ -119,7 +119,7 @@ df_with_rcsi %>%
   head(20)
 ```
 
-### Example:: Add Household Dietery Diversity Score (HDDS)
+### Example:: Add Household Dietary Diversity Score (HDDS)
 ``` {r, eval=TRUE, warning=F}
 df_with_hdds <- df_with_rcsi %>% add_hdds(
    fsl_hdds_cereals = "fsl_hdds_cereals",
