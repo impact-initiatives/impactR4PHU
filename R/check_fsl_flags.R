@@ -249,8 +249,8 @@ check_fsl_flags <- function(.dataset,
 
   if (!uuid %in% names(.dataset)) stop("uuid argument incorrect, or not available in the dataset")
 
-  if (!methods::hasArg(grouping)) {
-    df <- df %>% dplyr::mutate(group = "All")
+  if (is.null(grouping)) {
+    .dataset <- .dataset %>% dplyr::mutate(group = "All")
     grouping <- "group"
   }
 
@@ -268,7 +268,7 @@ check_fsl_flags <- function(.dataset,
     ## flag issues in data with FCS
     results2 <- .dataset %>%
       dplyr::mutate_at(dplyr::vars(fcs_flag_columns),as.numeric)%>%
-      dplyr::mutate(flag_meat_cereal_ratio = ifelse(is.na(!!rlang::sym(fcs_cereal)), NA, ifelse(!!rlang::sym(fcs_cereal) < fcs_meat, 1, 0)),
+      dplyr::mutate(flag_meat_cereal_ratio = ifelse(is.na(!!rlang::sym(fcs_cereal)), NA, ifelse(!!rlang::sym(fcs_cereal) < !!rlang::sym(fcs_meat), 1, 0)),
                     flag_low_cereal = ifelse(is.na(!!rlang::sym(fcs_cereal)), NA, ifelse(!!rlang::sym(fcs_cereal) < 5, 1, 0)),
                     flag_low_fcs = ifelse(is.na(!!rlang::sym(fcs_score)),NA, ifelse(!!rlang::sym(fcs_score)<=10,1,0)),
                     flag_high_fcs = ifelse(is.na(!!rlang::sym(fcs_score)),NA, ifelse(!!rlang::sym(fcs_score)>=56,1,0)),
