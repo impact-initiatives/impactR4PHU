@@ -26,7 +26,7 @@ You can install the development version from
 devtools::install_github("impact-initiatives/impactR4PHU")
 ```
 
-## Examples
+## Adding indicators (for both Analysis or Quality checks)
 
 ``` r
 library(impactR4PHU)
@@ -519,6 +519,129 @@ df_with_fclcm %>%
     ## 18 3b6948fe-3409-4f4143-b3bab2-86301b529fc7         <NA>
     ## 19 3c1704f5-2473-474e4f-808982-f9830c51d7b2 Phase 3 FCLC
     ## 20 3e02914b-eb25-484243-909498-dcfa793514b2 Phase 2 FCLC
+
+## Checking Flags (For Quality reports and Plausibility checks)
+
+``` r
+tool <- impactR4PHU_survey_template
+```
+
+### Example:: Check Food Security and Livelihoods Flags
+
+``` r
+fsl_flags <- df_with_fclcm %>% 
+  check_fsl_flags(tool.survey = tool,
+                  grouping = "enumerator")
+fsl_flags %>% 
+  dplyr::select(uuid, group,starts_with("flag_")) %>% 
+  head(20)
+```
+
+    ##                                        uuid group flag_meat_cereal_ratio
+    ## 1  0cfd1539-4be3-4c444a-8a8d8e-0d2a6bf74895     1                     NA
+    ## 2  0fc8a427-f30e-4a4341-b3b5b4-08a6392ef4dc     5                     NA
+    ## 3  14c3baf8-d4b0-43484c-8d8e8f-a5fd7134982e     2                      0
+    ## 4  1a8de690-60af-45494a-8b8487-78f45ec16b39     2                      0
+    ## 5  1c92baf4-107e-474c46-a3a8a5-6b2e815ad30c     2                      0
+    ## 6  1d7ca542-5ebf-434e44-949e9a-d3687ef9c145     5                      1
+    ## 7  1ecfd059-c215-4d4746-94999b-87920feb4a6c     2                      0
+    ## 8  205d37b1-5a6f-44484d-b3b1ba-4eafbdc50873     2                      0
+    ## 9  218f7539-061b-404f44-96989f-b345c89a6e21     2                      1
+    ## 10 2d56cf0a-a45c-444148-898e84-ab7f4de18259     3                     NA
+    ## 11 3186cfde-19a7-434748-bbb7b1-e369754821cb     4                      0
+    ## 12 31d0cfb8-21d7-414b4f-94999f-04a15ce39d78     4                      0
+    ## 13 328e7cd6-6517-4f4044-8f8c86-c710a84e5639     3                      0
+    ## 14 36584aec-f271-47484b-999391-417e2a3d6b59     3                      0
+    ## 15 37b5a861-0f21-4e4942-909295-34826ecd950b     4                      1
+    ## 16 38b615cf-0fd3-4f4d4e-bfbab1-a07658b413ce     2                      1
+    ## 17 3aef5849-5ca7-4c4841-8a8584-e64b1a8d0c92     4                      0
+    ## 18 3b6948fe-3409-4f4143-b3bab2-86301b529fc7     5                      0
+    ## 19 3c1704f5-2473-474e4f-808982-f9830c51d7b2     2                      0
+    ## 20 3e02914b-eb25-484243-909498-dcfa793514b2     5                      0
+    ##    flag_low_cereal flag_low_oil flag_low_fcs flag_high_fcs flag_sd_foodgroup
+    ## 1               NA           NA           NA            NA                NA
+    ## 2               NA           NA           NA            NA                NA
+    ## 3                1            1            0             0                 1
+    ## 4                1            1            0             0                 1
+    ## 5                1            1            0             0                 1
+    ## 6                1            0            0             1                NA
+    ## 7                0            0            0             0                NA
+    ## 8                1            1            0             0                NA
+    ## 9                0            1            0             1                NA
+    ## 10              NA           NA           NA            NA                NA
+    ## 11               0            0            0             0                NA
+    ## 12               0            1            0             0                NA
+    ## 13               1            1            0             0                NA
+    ## 14               1            0            0             0                NA
+    ## 15               1            0            0             0                NA
+    ## 16               1            1            0             1                NA
+    ## 17               0            0            0             0                NA
+    ## 18               0            0            0             0                NA
+    ## 19               0            0            0             0                NA
+    ## 20               0            0            0             0                NA
+    ##    flag_protein_rcsi flag_fcs_rcsi flag_high_rcsi flag_rcsi_children
+    ## 1                 NA            NA             NA                 NA
+    ## 2                 NA            NA             NA                 NA
+    ## 3                  0             0              0                 NA
+    ## 4                 NA            NA             NA                 NA
+    ## 5                  0             0              0                 NA
+    ## 6                  0             0              0                 NA
+    ## 7                  0             0              0                 NA
+    ## 8                  0             0              0                 NA
+    ## 9                  0             0              0                 NA
+    ## 10                NA            NA             NA                 NA
+    ## 11                 0             0              0                 NA
+    ## 12                 0             0              0                 NA
+    ## 13                 0             0              0                 NA
+    ## 14                 0             0              0                 NA
+    ## 15                 0             0              0                 NA
+    ## 16                NA            NA             NA                 NA
+    ## 17                 0             0              0                 NA
+    ## 18                NA            NA             NA                 NA
+    ## 19                 0             0              0                 NA
+    ## 20                 0             0              0                 NA
+    ##    flag_fcsrcsi_box flag_sd_rcsicoping flag_severe_hhs flag_lcsi_coherence
+    ## 1                NA                 NA              NA                  NA
+    ## 2                NA                 NA              NA                  NA
+    ## 3                NA                 NA               0                   0
+    ## 4                NA                 NA               0                   0
+    ## 5                NA                 NA               0                   0
+    ## 6                NA                 NA               0                   0
+    ## 7                NA                 NA               0                   0
+    ## 8                NA                 NA               0                   0
+    ## 9                NA                 NA               0                   0
+    ## 10               NA                 NA              NA                  NA
+    ## 11               NA                 NA               0                   1
+    ## 12               NA                 NA               1                   0
+    ## 13               NA                 NA               0                   0
+    ## 14               NA                 NA               0                   0
+    ## 15               NA                 NA               0                   0
+    ## 16               NA                 NA               0                   0
+    ## 17               NA                 NA               0                   0
+    ## 18               NA                 NA               0                   0
+    ## 19               NA                 NA               0                   0
+    ## 20               NA                 NA               0                   0
+    ##    flag_lcsi_severity flag_lcsi_na flag_fc_cell flag_low_sugar_cond_hdds
+    ## 1                  NA           NA           NA                       NA
+    ## 2                  NA           NA           NA                       NA
+    ## 3                  NA           NA            0                        0
+    ## 4                  NA           NA           NA                        0
+    ## 5                  NA           NA            0                        0
+    ## 6                   1           NA            0                        0
+    ## 7                  NA           NA            0                        0
+    ## 8                  NA           NA            0                        0
+    ## 9                  NA           NA            0                        0
+    ## 10                 NA           NA           NA                       NA
+    ## 11                  1           NA            0                        0
+    ## 12                  1           NA            0                        0
+    ## 13                 NA           NA            0                        0
+    ## 14                 NA           NA            0                        0
+    ## 15                 NA           NA            0                        0
+    ## 16                 NA           NA           NA                        0
+    ## 17                 NA           NA            0                        0
+    ## 18                 NA           NA           NA                        0
+    ## 19                 NA           NA            0                        0
+    ## 20                 NA           NA            0                        0
 
 ## Code of Conduct
 

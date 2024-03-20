@@ -28,7 +28,7 @@ devtools::install_github("impact-initiatives/impactR4PHU")
 ```
 
 
-## Examples
+## Adding indicators (for both Analysis or Quality checks)
 
 ```{r include=T,eval=T}
 library(impactR4PHU)
@@ -245,6 +245,23 @@ df_with_fclcm %>%
   head(20)
 ```
 
+
+## Checking Flags (For Quality reports and Plausibility checks)
+
+```{r include=T,eval=T}
+tool <- impactR4PHU_survey_template
+```
+
+### Example:: Check Food Security and Livelihoods Flags 
+
+``` {r, eval=TRUE, warning=F}
+fsl_flags <- df_with_fclcm %>% 
+  check_fsl_flags(tool.survey = tool,
+                  grouping = "enumerator")
+fsl_flags %>% 
+  dplyr::select(uuid, group,starts_with("flag_")) %>% 
+  head(20)
+```
 
 ## Code of Conduct
 

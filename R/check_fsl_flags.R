@@ -252,11 +252,13 @@ check_fsl_flags <- function(.dataset,
   if (is.null(grouping)) {
     .dataset <- .dataset %>% dplyr::mutate(group = "All")
     grouping <- "group"
+  } else {
+    .dataset <- .dataset %>% dplyr::mutate(group = !!rlang::sym(grouping))
   }
 
   ## initiate the return output
   results <- .dataset %>%
-    dplyr::select(uuid, grouping)
+    dplyr::select(uuid, group)
 
   # combine all fcs_columns together
   fcs_flag_columns <- c(fcs_cereal,fcs_legumes,fcs_dairy,fcs_meat,fcs_veg,fcs_fruit,fcs_oil,fcs_sugar,fcs_score)
