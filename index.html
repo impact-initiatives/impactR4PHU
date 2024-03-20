@@ -76,7 +76,7 @@
 <span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"impact-initiatives/impactR4PHU"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="examples">Examples<a class="anchor" aria-label="anchor" href="#examples"></a>
+<h2 id="adding-indicators-for-both-analysis-or-quality-checks">Adding indicators (for both Analysis or Quality checks)<a class="anchor" aria-label="anchor" href="#adding-indicators-for-both-analysis-or-quality-checks"></a>
 </h2>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://impact-initiatives.github.io/impactR4PHU/">impactR4PHU</a></span><span class="op">)</span></span>
@@ -552,6 +552,128 @@
 <span id="cb22-19"><a href="#cb22-19" tabindex="-1"></a><span class="do">## 18 3b6948fe-3409-4f4143-b3bab2-86301b529fc7         &lt;NA&gt;</span></span>
 <span id="cb22-20"><a href="#cb22-20" tabindex="-1"></a><span class="do">## 19 3c1704f5-2473-474e4f-808982-f9830c51d7b2 Phase 3 FCLC</span></span>
 <span id="cb22-21"><a href="#cb22-21" tabindex="-1"></a><span class="do">## 20 3e02914b-eb25-484243-909498-dcfa793514b2 Phase 2 FCLC</span></span></code></pre></div>
+</div>
+</div>
+<div class="section level2">
+<h2 id="checking-flags-for-quality-reports-and-plausibility-checks">Checking Flags (For Quality reports and Plausibility checks)<a class="anchor" aria-label="anchor" href="#checking-flags-for-quality-reports-and-plausibility-checks"></a>
+</h2>
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">tool</span> <span class="op">&lt;-</span> <span class="va">impactR4PHU_survey_template</span></span></code></pre></div>
+<div class="section level3">
+<h3 id="example-check-food-security-and-livelihoods-flags">Example:: Check Food Security and Livelihoods Flags<a class="anchor" aria-label="anchor" href="#example-check-food-security-and-livelihoods-flags"></a>
+</h3>
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">fsl_flags</span> <span class="op">&lt;-</span> <span class="va">df_with_fclcm</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="reference/check_fsl_flags.html">check_fsl_flags</a></span><span class="op">(</span>tool.survey <span class="op">=</span> <span class="va">tool</span>,</span>
+<span>                  grouping <span class="op">=</span> <span class="st">"enumerator"</span><span class="op">)</span></span>
+<span><span class="va">fsl_flags</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">uuid</span>, <span class="va">group</span>,<span class="fu">starts_with</span><span class="op">(</span><span class="st">"flag_"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fl">20</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb25"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" tabindex="-1"></a><span class="do">##                                        uuid group flag_meat_cereal_ratio</span></span>
+<span id="cb25-2"><a href="#cb25-2" tabindex="-1"></a><span class="do">## 1  0cfd1539-4be3-4c444a-8a8d8e-0d2a6bf74895     1                     NA</span></span>
+<span id="cb25-3"><a href="#cb25-3" tabindex="-1"></a><span class="do">## 2  0fc8a427-f30e-4a4341-b3b5b4-08a6392ef4dc     5                     NA</span></span>
+<span id="cb25-4"><a href="#cb25-4" tabindex="-1"></a><span class="do">## 3  14c3baf8-d4b0-43484c-8d8e8f-a5fd7134982e     2                      0</span></span>
+<span id="cb25-5"><a href="#cb25-5" tabindex="-1"></a><span class="do">## 4  1a8de690-60af-45494a-8b8487-78f45ec16b39     2                      0</span></span>
+<span id="cb25-6"><a href="#cb25-6" tabindex="-1"></a><span class="do">## 5  1c92baf4-107e-474c46-a3a8a5-6b2e815ad30c     2                      0</span></span>
+<span id="cb25-7"><a href="#cb25-7" tabindex="-1"></a><span class="do">## 6  1d7ca542-5ebf-434e44-949e9a-d3687ef9c145     5                      1</span></span>
+<span id="cb25-8"><a href="#cb25-8" tabindex="-1"></a><span class="do">## 7  1ecfd059-c215-4d4746-94999b-87920feb4a6c     2                      0</span></span>
+<span id="cb25-9"><a href="#cb25-9" tabindex="-1"></a><span class="do">## 8  205d37b1-5a6f-44484d-b3b1ba-4eafbdc50873     2                      0</span></span>
+<span id="cb25-10"><a href="#cb25-10" tabindex="-1"></a><span class="do">## 9  218f7539-061b-404f44-96989f-b345c89a6e21     2                      1</span></span>
+<span id="cb25-11"><a href="#cb25-11" tabindex="-1"></a><span class="do">## 10 2d56cf0a-a45c-444148-898e84-ab7f4de18259     3                     NA</span></span>
+<span id="cb25-12"><a href="#cb25-12" tabindex="-1"></a><span class="do">## 11 3186cfde-19a7-434748-bbb7b1-e369754821cb     4                      0</span></span>
+<span id="cb25-13"><a href="#cb25-13" tabindex="-1"></a><span class="do">## 12 31d0cfb8-21d7-414b4f-94999f-04a15ce39d78     4                      0</span></span>
+<span id="cb25-14"><a href="#cb25-14" tabindex="-1"></a><span class="do">## 13 328e7cd6-6517-4f4044-8f8c86-c710a84e5639     3                      0</span></span>
+<span id="cb25-15"><a href="#cb25-15" tabindex="-1"></a><span class="do">## 14 36584aec-f271-47484b-999391-417e2a3d6b59     3                      0</span></span>
+<span id="cb25-16"><a href="#cb25-16" tabindex="-1"></a><span class="do">## 15 37b5a861-0f21-4e4942-909295-34826ecd950b     4                      1</span></span>
+<span id="cb25-17"><a href="#cb25-17" tabindex="-1"></a><span class="do">## 16 38b615cf-0fd3-4f4d4e-bfbab1-a07658b413ce     2                      1</span></span>
+<span id="cb25-18"><a href="#cb25-18" tabindex="-1"></a><span class="do">## 17 3aef5849-5ca7-4c4841-8a8584-e64b1a8d0c92     4                      0</span></span>
+<span id="cb25-19"><a href="#cb25-19" tabindex="-1"></a><span class="do">## 18 3b6948fe-3409-4f4143-b3bab2-86301b529fc7     5                      0</span></span>
+<span id="cb25-20"><a href="#cb25-20" tabindex="-1"></a><span class="do">## 19 3c1704f5-2473-474e4f-808982-f9830c51d7b2     2                      0</span></span>
+<span id="cb25-21"><a href="#cb25-21" tabindex="-1"></a><span class="do">## 20 3e02914b-eb25-484243-909498-dcfa793514b2     5                      0</span></span>
+<span id="cb25-22"><a href="#cb25-22" tabindex="-1"></a><span class="do">##    flag_low_cereal flag_low_oil flag_low_fcs flag_high_fcs flag_sd_foodgroup</span></span>
+<span id="cb25-23"><a href="#cb25-23" tabindex="-1"></a><span class="do">## 1               NA           NA           NA            NA                NA</span></span>
+<span id="cb25-24"><a href="#cb25-24" tabindex="-1"></a><span class="do">## 2               NA           NA           NA            NA                NA</span></span>
+<span id="cb25-25"><a href="#cb25-25" tabindex="-1"></a><span class="do">## 3                1            1            0             0                 1</span></span>
+<span id="cb25-26"><a href="#cb25-26" tabindex="-1"></a><span class="do">## 4                1            1            0             0                 1</span></span>
+<span id="cb25-27"><a href="#cb25-27" tabindex="-1"></a><span class="do">## 5                1            1            0             0                 1</span></span>
+<span id="cb25-28"><a href="#cb25-28" tabindex="-1"></a><span class="do">## 6                1            0            0             1                NA</span></span>
+<span id="cb25-29"><a href="#cb25-29" tabindex="-1"></a><span class="do">## 7                0            0            0             0                NA</span></span>
+<span id="cb25-30"><a href="#cb25-30" tabindex="-1"></a><span class="do">## 8                1            1            0             0                NA</span></span>
+<span id="cb25-31"><a href="#cb25-31" tabindex="-1"></a><span class="do">## 9                0            1            0             1                NA</span></span>
+<span id="cb25-32"><a href="#cb25-32" tabindex="-1"></a><span class="do">## 10              NA           NA           NA            NA                NA</span></span>
+<span id="cb25-33"><a href="#cb25-33" tabindex="-1"></a><span class="do">## 11               0            0            0             0                NA</span></span>
+<span id="cb25-34"><a href="#cb25-34" tabindex="-1"></a><span class="do">## 12               0            1            0             0                NA</span></span>
+<span id="cb25-35"><a href="#cb25-35" tabindex="-1"></a><span class="do">## 13               1            1            0             0                NA</span></span>
+<span id="cb25-36"><a href="#cb25-36" tabindex="-1"></a><span class="do">## 14               1            0            0             0                NA</span></span>
+<span id="cb25-37"><a href="#cb25-37" tabindex="-1"></a><span class="do">## 15               1            0            0             0                NA</span></span>
+<span id="cb25-38"><a href="#cb25-38" tabindex="-1"></a><span class="do">## 16               1            1            0             1                NA</span></span>
+<span id="cb25-39"><a href="#cb25-39" tabindex="-1"></a><span class="do">## 17               0            0            0             0                NA</span></span>
+<span id="cb25-40"><a href="#cb25-40" tabindex="-1"></a><span class="do">## 18               0            0            0             0                NA</span></span>
+<span id="cb25-41"><a href="#cb25-41" tabindex="-1"></a><span class="do">## 19               0            0            0             0                NA</span></span>
+<span id="cb25-42"><a href="#cb25-42" tabindex="-1"></a><span class="do">## 20               0            0            0             0                NA</span></span>
+<span id="cb25-43"><a href="#cb25-43" tabindex="-1"></a><span class="do">##    flag_protein_rcsi flag_fcs_rcsi flag_high_rcsi flag_rcsi_children</span></span>
+<span id="cb25-44"><a href="#cb25-44" tabindex="-1"></a><span class="do">## 1                 NA            NA             NA                 NA</span></span>
+<span id="cb25-45"><a href="#cb25-45" tabindex="-1"></a><span class="do">## 2                 NA            NA             NA                 NA</span></span>
+<span id="cb25-46"><a href="#cb25-46" tabindex="-1"></a><span class="do">## 3                  0             0              0                 NA</span></span>
+<span id="cb25-47"><a href="#cb25-47" tabindex="-1"></a><span class="do">## 4                 NA            NA             NA                 NA</span></span>
+<span id="cb25-48"><a href="#cb25-48" tabindex="-1"></a><span class="do">## 5                  0             0              0                 NA</span></span>
+<span id="cb25-49"><a href="#cb25-49" tabindex="-1"></a><span class="do">## 6                  0             0              0                 NA</span></span>
+<span id="cb25-50"><a href="#cb25-50" tabindex="-1"></a><span class="do">## 7                  0             0              0                 NA</span></span>
+<span id="cb25-51"><a href="#cb25-51" tabindex="-1"></a><span class="do">## 8                  0             0              0                 NA</span></span>
+<span id="cb25-52"><a href="#cb25-52" tabindex="-1"></a><span class="do">## 9                  0             0              0                 NA</span></span>
+<span id="cb25-53"><a href="#cb25-53" tabindex="-1"></a><span class="do">## 10                NA            NA             NA                 NA</span></span>
+<span id="cb25-54"><a href="#cb25-54" tabindex="-1"></a><span class="do">## 11                 0             0              0                 NA</span></span>
+<span id="cb25-55"><a href="#cb25-55" tabindex="-1"></a><span class="do">## 12                 0             0              0                 NA</span></span>
+<span id="cb25-56"><a href="#cb25-56" tabindex="-1"></a><span class="do">## 13                 0             0              0                 NA</span></span>
+<span id="cb25-57"><a href="#cb25-57" tabindex="-1"></a><span class="do">## 14                 0             0              0                 NA</span></span>
+<span id="cb25-58"><a href="#cb25-58" tabindex="-1"></a><span class="do">## 15                 0             0              0                 NA</span></span>
+<span id="cb25-59"><a href="#cb25-59" tabindex="-1"></a><span class="do">## 16                NA            NA             NA                 NA</span></span>
+<span id="cb25-60"><a href="#cb25-60" tabindex="-1"></a><span class="do">## 17                 0             0              0                 NA</span></span>
+<span id="cb25-61"><a href="#cb25-61" tabindex="-1"></a><span class="do">## 18                NA            NA             NA                 NA</span></span>
+<span id="cb25-62"><a href="#cb25-62" tabindex="-1"></a><span class="do">## 19                 0             0              0                 NA</span></span>
+<span id="cb25-63"><a href="#cb25-63" tabindex="-1"></a><span class="do">## 20                 0             0              0                 NA</span></span>
+<span id="cb25-64"><a href="#cb25-64" tabindex="-1"></a><span class="do">##    flag_fcsrcsi_box flag_sd_rcsicoping flag_severe_hhs flag_lcsi_coherence</span></span>
+<span id="cb25-65"><a href="#cb25-65" tabindex="-1"></a><span class="do">## 1                NA                 NA              NA                  NA</span></span>
+<span id="cb25-66"><a href="#cb25-66" tabindex="-1"></a><span class="do">## 2                NA                 NA              NA                  NA</span></span>
+<span id="cb25-67"><a href="#cb25-67" tabindex="-1"></a><span class="do">## 3                NA                 NA               0                   0</span></span>
+<span id="cb25-68"><a href="#cb25-68" tabindex="-1"></a><span class="do">## 4                NA                 NA               0                   0</span></span>
+<span id="cb25-69"><a href="#cb25-69" tabindex="-1"></a><span class="do">## 5                NA                 NA               0                   0</span></span>
+<span id="cb25-70"><a href="#cb25-70" tabindex="-1"></a><span class="do">## 6                NA                 NA               0                   0</span></span>
+<span id="cb25-71"><a href="#cb25-71" tabindex="-1"></a><span class="do">## 7                NA                 NA               0                   0</span></span>
+<span id="cb25-72"><a href="#cb25-72" tabindex="-1"></a><span class="do">## 8                NA                 NA               0                   0</span></span>
+<span id="cb25-73"><a href="#cb25-73" tabindex="-1"></a><span class="do">## 9                NA                 NA               0                   0</span></span>
+<span id="cb25-74"><a href="#cb25-74" tabindex="-1"></a><span class="do">## 10               NA                 NA              NA                  NA</span></span>
+<span id="cb25-75"><a href="#cb25-75" tabindex="-1"></a><span class="do">## 11               NA                 NA               0                   1</span></span>
+<span id="cb25-76"><a href="#cb25-76" tabindex="-1"></a><span class="do">## 12               NA                 NA               1                   0</span></span>
+<span id="cb25-77"><a href="#cb25-77" tabindex="-1"></a><span class="do">## 13               NA                 NA               0                   0</span></span>
+<span id="cb25-78"><a href="#cb25-78" tabindex="-1"></a><span class="do">## 14               NA                 NA               0                   0</span></span>
+<span id="cb25-79"><a href="#cb25-79" tabindex="-1"></a><span class="do">## 15               NA                 NA               0                   0</span></span>
+<span id="cb25-80"><a href="#cb25-80" tabindex="-1"></a><span class="do">## 16               NA                 NA               0                   0</span></span>
+<span id="cb25-81"><a href="#cb25-81" tabindex="-1"></a><span class="do">## 17               NA                 NA               0                   0</span></span>
+<span id="cb25-82"><a href="#cb25-82" tabindex="-1"></a><span class="do">## 18               NA                 NA               0                   0</span></span>
+<span id="cb25-83"><a href="#cb25-83" tabindex="-1"></a><span class="do">## 19               NA                 NA               0                   0</span></span>
+<span id="cb25-84"><a href="#cb25-84" tabindex="-1"></a><span class="do">## 20               NA                 NA               0                   0</span></span>
+<span id="cb25-85"><a href="#cb25-85" tabindex="-1"></a><span class="do">##    flag_lcsi_severity flag_lcsi_na flag_fc_cell flag_low_sugar_cond_hdds</span></span>
+<span id="cb25-86"><a href="#cb25-86" tabindex="-1"></a><span class="do">## 1                  NA           NA           NA                       NA</span></span>
+<span id="cb25-87"><a href="#cb25-87" tabindex="-1"></a><span class="do">## 2                  NA           NA           NA                       NA</span></span>
+<span id="cb25-88"><a href="#cb25-88" tabindex="-1"></a><span class="do">## 3                  NA           NA            0                        0</span></span>
+<span id="cb25-89"><a href="#cb25-89" tabindex="-1"></a><span class="do">## 4                  NA           NA           NA                        0</span></span>
+<span id="cb25-90"><a href="#cb25-90" tabindex="-1"></a><span class="do">## 5                  NA           NA            0                        0</span></span>
+<span id="cb25-91"><a href="#cb25-91" tabindex="-1"></a><span class="do">## 6                   1           NA            0                        0</span></span>
+<span id="cb25-92"><a href="#cb25-92" tabindex="-1"></a><span class="do">## 7                  NA           NA            0                        0</span></span>
+<span id="cb25-93"><a href="#cb25-93" tabindex="-1"></a><span class="do">## 8                  NA           NA            0                        0</span></span>
+<span id="cb25-94"><a href="#cb25-94" tabindex="-1"></a><span class="do">## 9                  NA           NA            0                        0</span></span>
+<span id="cb25-95"><a href="#cb25-95" tabindex="-1"></a><span class="do">## 10                 NA           NA           NA                       NA</span></span>
+<span id="cb25-96"><a href="#cb25-96" tabindex="-1"></a><span class="do">## 11                  1           NA            0                        0</span></span>
+<span id="cb25-97"><a href="#cb25-97" tabindex="-1"></a><span class="do">## 12                  1           NA            0                        0</span></span>
+<span id="cb25-98"><a href="#cb25-98" tabindex="-1"></a><span class="do">## 13                 NA           NA            0                        0</span></span>
+<span id="cb25-99"><a href="#cb25-99" tabindex="-1"></a><span class="do">## 14                 NA           NA            0                        0</span></span>
+<span id="cb25-100"><a href="#cb25-100" tabindex="-1"></a><span class="do">## 15                 NA           NA            0                        0</span></span>
+<span id="cb25-101"><a href="#cb25-101" tabindex="-1"></a><span class="do">## 16                 NA           NA           NA                        0</span></span>
+<span id="cb25-102"><a href="#cb25-102" tabindex="-1"></a><span class="do">## 17                 NA           NA            0                        0</span></span>
+<span id="cb25-103"><a href="#cb25-103" tabindex="-1"></a><span class="do">## 18                 NA           NA           NA                        0</span></span>
+<span id="cb25-104"><a href="#cb25-104" tabindex="-1"></a><span class="do">## 19                 NA           NA            0                        0</span></span>
+<span id="cb25-105"><a href="#cb25-105" tabindex="-1"></a><span class="do">## 20                 NA           NA            0                        0</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
