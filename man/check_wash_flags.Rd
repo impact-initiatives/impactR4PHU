@@ -12,7 +12,7 @@ check_wash_flags(
   container_journey_collection = "wash_container_journey_collection",
   num_containers = "wash_num_containers",
   water_source = "wash_water_source",
-  different_water_source = NULL,
+  different_water_sources = NULL,
   water_collect_time = "wash_water_collect_time",
   choice_inside_compound = "inside_compound",
   num_hh = "num_hh",
@@ -36,7 +36,7 @@ the amount per liter (ex: choicex_20l)}
 
 \item{water_source}{the name of the variable that indicates the main water source}
 
-\item{different_water_source}{the name of the variable that indicates the other water source (Select_multiple up to 2)
+\item{different_water_sources}{the name of the variable that indicates the other water source (Select_multiple up to 2)
 by default NULL, but better to call it if you collect this indicator.}
 
 \item{water_collect_time}{the name of the variable that indicates the collection time}

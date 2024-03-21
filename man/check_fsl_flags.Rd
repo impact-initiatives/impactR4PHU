@@ -64,6 +64,10 @@ check_fsl_flags(
   fc_cell = "fc_cell",
   fc_phase = "fc_phase",
   num_children = "num_children",
+  income_types = c("fsl_first_income_types", "fsl_second_income_types",
+    "fsl_third_income_types"),
+  residency_status = "residency_status",
+  value_idp = "idp",
   grouping = NULL,
   tool.survey = NULL,
   uuid = "uuid"
@@ -195,6 +199,14 @@ It has to be a string.}
 
 \item{num_children}{the name of the variable that indicates the number of children available in each household}
 
+\item{income_types}{a vector of the three income_types variables. By default,
+c("fsl_first_income_types","fsl_second_income_types","fsl_third_income_types")}
+
+\item{residency_status}{the name of the variable that indicates the residency status of HH,
+By default, "residency_status"}
+
+\item{value_idp}{the name of the choice value representing the idp residency status. By default, "idp"}
+
 \item{grouping}{the name of the variable that indicates the grouping variable - usually "enumerator"}
 
 \item{tool.survey}{This is the tool.survey dataset. By default NULL}
@@ -290,6 +302,10 @@ df <- data.frame(
   fc_cell= c(22,33),
   fc_phase= c("Phase 2 FC","Phase 3 FC"),
   num_children= c(2,3),
+  fsl_first_income_types = c("sell_agri_prod","trader"),
+  fsl_second_income_types = c("daily_labour_skilled","sell_anim_prod"),
+  fsl_third_income_types = c("hum_assistance","none"),
+  residency_status = c("idp", "host"),
   enumerator = c("team1","team2"),
   uuid= c("31d0cfb8-21d7-414b4f-94999f-04a15ce39d78","205d37b1-5a6f-44484d-b3b1ba-4eafbdc50873")
   )
