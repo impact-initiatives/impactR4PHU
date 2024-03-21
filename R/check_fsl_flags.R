@@ -66,6 +66,11 @@
 #' @param fc_cell the name of the variable that indicates the food consumption matrix score
 #' @param fc_phase the name of the variable that indicates the food consumption matrix phase
 #' @param num_children the name of the variable that indicates the number of children available in each household
+#' @param income_types a vector of the three income_types variables. By default,
+#'  c("fsl_first_income_types","fsl_second_income_types","fsl_third_income_types")
+#' @param residency_status the name of the variable that indicates the residency status of HH,
+#'  By default, "residency_status"
+#' @param value_idp the name of the choice value representing the idp residency status. By default, "idp"
 #' @param grouping the name of the variable that indicates the grouping variable - usually "enumerator"
 #' @param tool.survey This is the tool.survey dataset. By default NULL
 #' @param uuid uuid variable
@@ -156,6 +161,10 @@
 #'   fc_cell= c(22,33),
 #'   fc_phase= c("Phase 2 FC","Phase 3 FC"),
 #'   num_children= c(2,3),
+#'   fsl_first_income_types = c("sell_agri_prod","trader"),
+#'   fsl_second_income_types = c("daily_labour_skilled","sell_anim_prod"),
+#'   fsl_third_income_types = c("hum_assistance","none"),
+#'   residency_status = c("idp", "host"),
 #'   enumerator = c("team1","team2"),
 #'   uuid= c("31d0cfb8-21d7-414b4f-94999f-04a15ce39d78","205d37b1-5a6f-44484d-b3b1ba-4eafbdc50873")
 #'   )
@@ -221,6 +230,9 @@ check_fsl_flags <- function(.dataset,
                            fc_cell = "fc_cell",
                            fc_phase = "fc_phase",
                            num_children = "num_children",
+                           income_types = c("fsl_first_income_types","fsl_second_income_types","fsl_third_income_types"),
+                           residency_status = "residency_status",
+                           value_idp = "idp",
                            grouping = NULL,
                            tool.survey = NULL,
                            uuid = "uuid") {
@@ -376,7 +388,6 @@ check_fsl_flags <- function(.dataset,
     results2 <- results2 %>%
       dplyr::mutate(flag_lcsi_na = dplyr::case_when(lcsi.count.na == 10 ~ 1, .default = 0, TRUE ~ NA))
 
-    income_types <- c("first_income_types","second_income_types","third_income_types")
     suppressWarnings(
       agric <- lcs_variables[which(grepl("agriculture|crop|crops|farm",get.label(lcs_variables, tool.survey = tool.survey)))]
     )
@@ -391,15 +402,15 @@ check_fsl_flags <- function(.dataset,
     )
 
     if(length(agric)>0){
-      results2$flag_lcsi_liv_agriculture <- dplyr::case_when(rowSums(sapply(results2[agric], function(i) grepl("yes",i))) > 0 & any(results2[income_types] == "sell_agri_prod") > 0  ~ 1, .default = 0, TRUE ~ NA) ## Fix second part to take only select_one from three columns
+      results2$flag_lcsi_liv_agriculture <- dplyr::case_when(rowSums(sapply(results2[agric], function(i) grepl("yes",i))) > 0 & any(results2[income_types] == "sell_agri_prod") > 0  ~ 1, .default = 0, TRUE ~ NA)
     }
 
     if(length(livest)>0){
-      results2$flag_lcsi_liv_livestock  <- dplyr::case_when(rowSums(sapply(results2[livest], function(i) grepl("yes",i))) > 0 & any(results2[income_types] == "sell_anim_prod") > 0 ~ 1, .default = 0, TRUE ~ NA) ## Fix second part to take only select_one from three columns
+      results2$flag_lcsi_liv_livestock  <- dplyr::case_when(rowSums(sapply(results2[livest], function(i) grepl("yes",i))) > 0 & any(results2[income_types] == "sell_anim_prod") > 0 ~ 1, .default = 0, TRUE ~ NA)
     }
 
     if(length(displ)>0){
-      results2$flag_lcsi_displ  <- dplyr::case_when(rowSums(sapply(results2[displ], function(i) grepl("yes",i))) > 0 & results2["residency_status"] == "idp" ~ 1, .default = 0, TRUE ~ NA) ## Fix second part to take only select_one from three columns
+      results2$flag_lcsi_displ  <- dplyr::case_when(rowSums(sapply(results2[displ], function(i) grepl("yes",i))) > 0 & results2[residency_status] == value_idp ~ 1, .default = 0, TRUE ~ NA) ## Fix second part to take only select_one from three columns
     }
 
     # Initialize a vector with the base columns that are always selected

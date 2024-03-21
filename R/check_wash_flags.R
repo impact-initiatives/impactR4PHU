@@ -8,7 +8,7 @@
 #' @param container_journey_collection the name of the variable that indicates the amount of journeys done
 #' @param num_containers the name of the variable that indicates the number of containers per HH
 #' @param water_source the name of the variable that indicates the main water source
-#' @param different_water_source the name of the variable that indicates the other water source (Select_multiple up to 2)
+#' @param different_water_sources the name of the variable that indicates the other water source (Select_multiple up to 2)
 #' by default NULL, but better to call it if you collect this indicator.
 #' @param water_collect_time the name of the variable that indicates the collection time
 #' @param choice_inside_compound the name of the choice inside the water_collection_time variable that indicate
@@ -63,7 +63,7 @@ check_wash_flags <- function(.dataset,
                              container_journey_collection = "wash_container_journey_collection",
                              num_containers = "wash_num_containers",
                              water_source = "wash_water_source",
-                             different_water_source = NULL,
+                             different_water_sources = NULL,
                              water_collect_time = "wash_water_collect_time",
                              choice_inside_compound = "inside_compound",
                              num_hh = "num_hh",
@@ -81,6 +81,14 @@ check_wash_flags <- function(.dataset,
   if (nrow(.dataset) == 0) {
     stop("Dataset is empty")
   }
+
+  if(!is.null(data_container_loop)){
+    ## Throw an error if the dataset is empty
+    if (!is.data.frame(data_container_loop)) {
+      stop("data_container_loop should be a dataset")
+    }
+  }
+
   if(!is.null(data_container_loop)){
     ## Throw an error if the dataset is empty
     if (nrow(data_container_loop) == 0) {
@@ -88,6 +96,7 @@ check_wash_flags <- function(.dataset,
     }
   }
 
+  if (!uuid %in% names(.dataset)) stop("uuid argument incorrect, or not available in the dataset")
 
   if (is.null(grouping)) {
     .dataset <- .dataset %>% dplyr::mutate(group = "All")
@@ -122,7 +131,7 @@ check_wash_flags <- function(.dataset,
       dplyr::mutate(litre_z_score = (litre_per_day_per_person - mean_litre_dataset) / sd_litre_dataset)
 
     mean_litre_zscore <- mean(results2$litre_z_score, na.rm = T)
-    if(is.null(different_water_source)){
+    if(is.null(different_water_sources)){
       results2 <- results2 %>%
         dplyr::mutate(on_premise = dplyr::case_when(is.na(!!rlang::sym(water_source)) ~ NA,
                                                     !!rlang::sym(water_source) %in% c("piped_dwelling",
@@ -132,11 +141,11 @@ check_wash_flags <- function(.dataset,
     } else {
       results2 <- results2 %>%
         dplyr::mutate(on_premise = dplyr::case_when(is.na(!!rlang::sym(water_source)) &
-                                                      is.na(!!rlang::sym(different_water_source)) ~ NA,
+                                                      is.na(!!rlang::sym(different_water_sources)) ~ NA,
                                                     !!rlang::sym(water_source) %in% c("piped_dwelling",
                                                                                       "piped_compound",
                                                                                       "rainwater_collection") |
-                                                      stringr::str_detect(!!rlang::sym(different_water_source),
+                                                      stringr::str_detect(!!rlang::sym(different_water_sources),
                                                                           "piped_dwelling|piped_compound|rainwater_collection") ~ 1,
                                                     TRUE ~ 0))
     }
@@ -156,7 +165,7 @@ check_wash_flags <- function(.dataset,
                     flag_not_immediate = dplyr::case_when(is.na(on_premise) & is.na(!!rlang::sym(water_collect_time)) ~ NA,
                                                           on_premise == 1 & !!rlang::sym(water_collect_time) != "inside_compound" ~ 1,
                                                           TRUE ~ 0)) %>%
-      dplyr::select(water_source,different_water_source,
+      dplyr::select(water_source,different_water_sources,
                     num_containers,litre_per_day_per_person,
                     litre_z_score,water_collect_time,flag_sd_litre,flag_low_litre,
                     flag_high_litre,flag_high_container,flag_no_container,flag_not_immediate)
@@ -167,7 +176,25 @@ check_wash_flags <- function(.dataset,
       results <- cbind(results,results2)
     }
   } else {
-    results2 <- .dataset %>%
+    if(is.null(different_water_sources)){
+      results2 <- .dataset %>%
+        dplyr::mutate(on_premise = dplyr::case_when(is.na(!!rlang::sym(water_source)) ~ NA,
+                                                    !!rlang::sym(water_source) %in% c("piped_dwelling",
+                                                                                      "piped_compound",
+                                                                                      "rainwater_collection") ~ 1,
+                                                    TRUE ~ 0))
+    } else {
+      results2 <- .dataset %>%
+        dplyr::mutate(on_premise = dplyr::case_when(is.na(!!rlang::sym(water_source)) &
+                                                      is.na(!!rlang::sym(different_water_sources)) ~ NA,
+                                                    !!rlang::sym(water_source) %in% c("piped_dwelling",
+                                                                                      "piped_compound",
+                                                                                      "rainwater_collection") |
+                                                      stringr::str_detect(!!rlang::sym(different_water_sources),
+                                                                          "piped_dwelling|piped_compound|rainwater_collection") ~ 1,
+                                                    TRUE ~ 0))
+    }
+    results2 <- results2 %>%
       dplyr::mutate(flag_not_immediate = dplyr::case_when(is.na(on_premise) & is.na(!!rlang::sym(water_collect_time)) ~ NA,
                                                           on_premise == 1 & !!rlang::sym(water_collect_time) != "inside_compound" ~ 1,
                                                           TRUE ~ 0)) %>%
