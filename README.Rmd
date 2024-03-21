@@ -263,6 +263,19 @@ fsl_flags %>%
   head(20)
 ```
 
+
+### Example:: Check WASH Flags 
+
+``` {r, eval=TRUE, warning=F}
+container_df <- impactR4PHU_data_wash_template
+wash_flags <- df %>% 
+  check_wash_flags(data_container_loop = container_df,
+                   grouping = "enumerator")
+wash_flags %>% 
+  dplyr::select(uuid, group,starts_with("flag_")) %>% 
+  head(20)
+```
+
 ## Code of Conduct
 
 Please note that the addindicators project is released with a [Contributor Code of Conduct](https://impact-initiatives.github.io/impactR4PHU/CODE_OF_CONDUCT.html). By contributing to this project, you agree to abide by its terms.
