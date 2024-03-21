@@ -7,17 +7,17 @@ Authors@R:
 Description: The impactR4PHU package includes a set of quality checks, cleaning,
     analysis and reporting for the main outcome indicators in the 4 sectors of
     Public Health Unit in Impact (Nutrition/WASH/Health/FSL[Food Securtity and
-    Livelihoods])
+    Livelihoods]).
 License: MIT + file LICENSE
 URL: https://impact-initiatives.github.io/impactR4PHU/
 Imports: 
     dplyr,
     magrittr,
-    methods,
     rlang,
     stats,
-    stringr,
-    testthat
+    stringr
+Suggests: 
+    testthat (>= 3.0.0)
 Config/testthat/edition: 3
 Encoding: UTF-8
 LazyData: true

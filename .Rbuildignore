@@ -6,3 +6,5 @@
 ^pkgdown$
 ^CODE_OF_CONDUCT\.md$
 ^codecov\.yml$
+^README.Rmd
+^LICENSE.md

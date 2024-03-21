@@ -402,31 +402,24 @@ check_fsl_flags <- function(.dataset,
       results2$flag_lcsi_displ  <- dplyr::case_when(rowSums(sapply(results2[displ], function(i) grepl("yes",i))) > 0 & results2["residency_status"] == "idp" ~ 1, .default = 0, TRUE ~ NA) ## Fix second part to take only select_one from three columns
     }
 
-    if(length(livest)>0 & length(agric)>0 & length(displ)>0){
-      results2 <- results2 %>%
-        dplyr::select(lcs_flag_columns,flag_lcsi_coherence,flag_lcsi_severity,flag_lcsi_na,flag_lcsi_liv_agriculture,flag_lcsi_liv_livestock,flag_lcsi_displ)
-    } else if (length(livest)>0 & length(agric)>0 & length(displ) == 0){
-      results2 <- results2 %>%
-        dplyr::select(lcs_flag_columns,flag_lcsi_coherence,flag_lcsi_severity,flag_lcsi_na,flag_lcsi_liv_livestock,flag_lcsi_liv_agriculture)
-    } else if (length(agric)>0 & length(displ)>0 & length(livest) == 0){
-      results2 <- results2 %>%
-        dplyr::select(lcs_flag_columns,flag_lcsi_coherence,flag_lcsi_severity,flag_lcsi_na,flag_lcsi_liv_agriculture,flag_lcsi_displ)
-    } else if (length(displ)>0 & length(livest)>0 & length(agric) == 0){
-      results2 <- results2 %>%
-        dplyr::select(lcs_flag_columns,flag_lcsi_coherence,flag_lcsi_severity,flag_lcsi_na,flag_lcsi_displ,flag_lcsi_liv_livestock)
-    } else if (length(livest)>0 & length(agric) ==0 & length(displ) == 0){
-      results2 <- results2 %>%
-        dplyr::select(lcs_flag_columns,flag_lcsi_coherence,flag_lcsi_severity,flag_lcsi_na,flag_lcsi_liv_livestock)
-    } else if (length(agric)>0 & length(livest) == 0 & length(displ) == 0){
-      results2 <- results2 %>%
-        dplyr::select(lcs_flag_columns,flag_lcsi_coherence,flag_lcsi_severity,flag_lcsi_na,flag_lcsi_liv_agriculture)
-    } else if (length(displ)>0 & length(livest) == 0 & length(agric) == 0){
-      results2 <- results2 %>%
-        dplyr::select(lcs_flag_columns,flag_lcsi_coherence,flag_lcsi_severity,flag_lcsi_na,flag_lcsi_displ)
-    }  else {
-      results2 <- results2 %>%
-        dplyr::select(lcs_flag_columns,flag_lcsi_coherence,flag_lcsi_severity,flag_lcsi_na)
+    # Initialize a vector with the base columns that are always selected
+    columns_to_select <- c(lcs_flag_columns, "flag_lcsi_coherence", "flag_lcsi_severity", "flag_lcsi_na")
+
+    # Dynamically add columns based on the presence of elements in the vectors
+    if (length(livest) > 0) {
+      columns_to_select <- c(columns_to_select, "flag_lcsi_liv_livestock")
     }
+    if (length(agric) > 0) {
+      columns_to_select <- c(columns_to_select, "flag_lcsi_liv_agriculture")
+    }
+    if (length(displ) > 0) {
+      columns_to_select <- c(columns_to_select, "flag_lcsi_displ")
+    }
+
+    # Select the dynamically determined columns
+    results2 <- results2 %>%
+      dplyr::select(all_of(columns_to_select))
+
 
     if(!exists("results")){
       results <- results2
