@@ -102,6 +102,10 @@
 <span>  fc_cell <span class="op">=</span> <span class="st">"fc_cell"</span>,</span>
 <span>  fc_phase <span class="op">=</span> <span class="st">"fc_phase"</span>,</span>
 <span>  num_children <span class="op">=</span> <span class="st">"num_children"</span>,</span>
+<span>  income_types <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"fsl_first_income_types"</span>, <span class="st">"fsl_second_income_types"</span>,</span>
+<span>    <span class="st">"fsl_third_income_types"</span><span class="op">)</span>,</span>
+<span>  residency_status <span class="op">=</span> <span class="st">"residency_status"</span>,</span>
+<span>  value_idp <span class="op">=</span> <span class="st">"idp"</span>,</span>
 <span>  grouping <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  tool.survey <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  uuid <span class="op">=</span> <span class="st">"uuid"</span></span>
@@ -353,6 +357,20 @@ It has to be a string.</p></dd>
 <dd><p>the name of the variable that indicates the number of children available in each household</p></dd>
 
 
+<dt>income_types</dt>
+<dd><p>a vector of the three income_types variables. By default,
+c("fsl_first_income_types","fsl_second_income_types","fsl_third_income_types")</p></dd>
+
+
+<dt>residency_status</dt>
+<dd><p>the name of the variable that indicates the residency status of HH,
+By default, "residency_status"</p></dd>
+
+
+<dt>value_idp</dt>
+<dd><p>the name of the choice value representing the idp residency status. By default, "idp"</p></dd>
+
+
 <dt>grouping</dt>
 <dd><p>the name of the variable that indicates the grouping variable - usually "enumerator"</p></dd>
 
@@ -456,6 +474,10 @@ This includes:
 <span class="r-in"><span>  fc_cell<span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">22</span>,<span class="fl">33</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  fc_phase<span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Phase 2 FC"</span>,<span class="st">"Phase 3 FC"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  num_children<span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>,<span class="fl">3</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  fsl_first_income_types <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sell_agri_prod"</span>,<span class="st">"trader"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  fsl_second_income_types <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"daily_labour_skilled"</span>,<span class="st">"sell_anim_prod"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  fsl_third_income_types <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"hum_assistance"</span>,<span class="st">"none"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  residency_status <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"idp"</span>, <span class="st">"host"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  enumerator <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"team1"</span>,<span class="st">"team2"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  uuid<span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"31d0cfb8-21d7-414b4f-94999f-04a15ce39d78"</span>,<span class="st">"205d37b1-5a6f-44484d-b3b1ba-4eafbdc50873"</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="op">)</span></span></span>
@@ -503,18 +525,21 @@ This includes:
 <span class="r-out co"><span class="r-pr">#&gt;</span>   fsl_lcsi_cat_exhaust fsl_lcsi_cat flag_lcsi_coherence flag_lcsi_severity</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1               Crisis       Crisis                   0                 NA</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2            Emergency    Emergency                   0                  1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   flag_lcsi_na fc_cell   fc_phase flag_fc_cell fsl_hdds_cereals fsl_hdds_tubers</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1           NA      22 Phase 2 FC            0              yes             yes</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2           NA      33 Phase 3 FC            0               no              no</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   fsl_hdds_legumes fsl_hdds_veg fsl_hdds_fruit fsl_hdds_meat fsl_hdds_fish</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1              yes           no            yes           yes           yes</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2               no           no             no            no            no</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   fsl_hdds_dairy fsl_hdds_eggs fsl_hdds_sugar fsl_hdds_oil fsl_hdds_condiments</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1             no           yes            yes          yes                 yes</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2             no            no             no           no                  no</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   fsl_hdds_cat fsl_hdds_score flag_low_sugar_cond_hdds</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1         High             10                        0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2          Low              0                        0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   flag_lcsi_na flag_lcsi_liv_livestock flag_lcsi_liv_agriculture</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1           NA                      NA                        NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2           NA                      NA                         1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   flag_lcsi_displ fc_cell   fc_phase flag_fc_cell fsl_hdds_cereals</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1              NA      22 Phase 2 FC            0              yes</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2              NA      33 Phase 3 FC            0               no</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   fsl_hdds_tubers fsl_hdds_legumes fsl_hdds_veg fsl_hdds_fruit fsl_hdds_meat</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1             yes              yes           no            yes           yes</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2              no               no           no             no            no</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   fsl_hdds_fish fsl_hdds_dairy fsl_hdds_eggs fsl_hdds_sugar fsl_hdds_oil</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1           yes             no           yes            yes          yes</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2            no             no            no             no           no</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   fsl_hdds_condiments fsl_hdds_cat fsl_hdds_score flag_low_sugar_cond_hdds</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1                 yes         High             10                        0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2                  no          Low              0                        0</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
