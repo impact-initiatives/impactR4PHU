@@ -7,6 +7,12 @@
     <loc>https://impact-initiatives.github.io/impactR4PHU/CODE_OF_CONDUCT.html</loc>
   </url>
   <url>
+    <loc>https://impact-initiatives.github.io/impactR4PHU/LICENSE-text.html</loc>
+  </url>
+  <url>
+    <loc>https://impact-initiatives.github.io/impactR4PHU/LICENSE.html</loc>
+  </url>
+  <url>
     <loc>https://impact-initiatives.github.io/impactR4PHU/authors.html</loc>
   </url>
   <url>
@@ -35,6 +41,9 @@
   </url>
   <url>
     <loc>https://impact-initiatives.github.io/impactR4PHU/reference/check_fsl_flags.html</loc>
+  </url>
+  <url>
+    <loc>https://impact-initiatives.github.io/impactR4PHU/reference/check_wash_flags.html</loc>
   </url>
   <url>
     <loc>https://impact-initiatives.github.io/impactR4PHU/reference/get.label.html</loc>
