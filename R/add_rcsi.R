@@ -1,6 +1,6 @@
 #' Add indicator for reduced Household CSI Score(rcsi)
 #'
-#' @param .dataset dataset
+#' @param .dataset Main Dataset
 #' @param fsl_rcsi_lessquality Column representing question- During the last 7 days, were there days (and, if so, how many) when your household had to rely on less preferred and less expensive food to cope with a lack of food or money to buy it?
 #' @param fsl_rcsi_borrow   Column representing question- During the last 7 days, were there days (and, if so, how many) when your household had to borrow food or rely on help from a relative or friend to cope with a lack of food or money to buy it?
 #' @param fsl_rcsi_mealsize Column representing question- During the last 7 days, were there days (and, if so, how many) when your household had to limit portion size of meals at meal times to cope with a lack of food or money to buy it?

@@ -14,7 +14,7 @@ add_rcsi(
 )
 }
 \arguments{
-\item{.dataset}{dataset}
+\item{.dataset}{Main Dataset}
 
 \item{fsl_rcsi_lessquality}{Column representing question- During the last 7 days, were there days (and, if so, how many) when your household had to rely on less preferred and less expensive food to cope with a lack of food or money to buy it?}
 

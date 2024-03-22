@@ -1,6 +1,6 @@
 #' add_hdds
 #'
-#' @param .dataset the clean dataset
+#' @param .dataset Main Dataset
 #' @param fsl_hdds_cereals the name of the variable that indicates if cereals were consumed in the last 24 hours
 #' @param fsl_hdds_tubers the name of the variable that indicates if roots or tubers were consumed in the last 24 hours
 #' @param fsl_hdds_veg the name of the variable that indicates if vergetables were consumed in the last 24 hours

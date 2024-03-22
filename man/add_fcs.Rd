@@ -18,7 +18,7 @@ add_fcs(
 )
 }
 \arguments{
-\item{.dataset}{the clean dataset}
+\item{.dataset}{Main Dataset}
 
 \item{cutoffs}{either "normal", or "alternative". The default is set to normal}
 

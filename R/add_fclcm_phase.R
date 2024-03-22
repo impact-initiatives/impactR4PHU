@@ -1,6 +1,6 @@
 #' Calculating FEWSNET Food Consumption-Livelihood Coping Matrix
 #'
-#' @param .dataset Dataset
+#' @param .dataset Main Dataset
 #' @param fc_phase_var Column name containing food consumption phase.
 #' @param fc_phase_1 The name of the value "Phase 1 FC" (by default) in the food consumption phase.
 #' @param fc_phase_2 The name of the value "Phase 2 FC" (by default) in the food consumption phase.

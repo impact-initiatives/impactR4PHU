@@ -23,7 +23,7 @@ add_lcsi(
 )
 }
 \arguments{
-\item{.dataset}{A dataframe with the ten LCSI variables needed for analysis.}
+\item{.dataset}{Main Dataset}
 
 \item{fsl_lcsi_stress1}{the name of the variable that indicates the first stress LCSI strategy}
 

@@ -23,7 +23,7 @@ add_hdds(
 )
 }
 \arguments{
-\item{.dataset}{the clean dataset}
+\item{.dataset}{Main Dataset}
 
 \item{fsl_hdds_cereals}{the name of the variable that indicates if cereals were consumed in the last 24 hours}
 
