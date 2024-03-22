@@ -2,7 +2,7 @@
 #'
 #' Function to calculate Livelihood Coping Strategy Index (LCSI)
 #'
-#' @param .dataset A dataframe with the ten LCSI variables needed for analysis.
+#' @param .dataset Main Dataset
 #' @param fsl_lcsi_stress1 the name of the variable that indicates the first stress LCSI strategy
 #' @param fsl_lcsi_stress2 the name of the variable that indicates the second stress LCSI strategy
 #' @param fsl_lcsi_stress3 the name of the variable that indicates the third stress LCSI strategy

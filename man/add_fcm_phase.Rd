@@ -27,7 +27,7 @@ add_fcm_phase(
 )
 }
 \arguments{
-\item{.dataset}{A dataframe}
+\item{.dataset}{Main Dataset}
 
 \item{fcs_column_name}{A string specifying the column name of the food consumption score in the dataset}
 

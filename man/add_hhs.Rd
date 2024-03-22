@@ -20,7 +20,7 @@ add_hhs(
 )
 }
 \arguments{
-\item{.dataset}{Dataset}
+\item{.dataset}{Main Dataset}
 
 \item{fsl_hhs_nofoodhh}{The name of the column "In the past 4 weeks (30 days), was there ever no food to eat
 of any kind in your house because of lack of resources to get food?". It has to be a string.}

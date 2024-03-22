@@ -20,7 +20,7 @@ add_fclcm_phase(
 )
 }
 \arguments{
-\item{.dataset}{Dataset}
+\item{.dataset}{Main Dataset}
 
 \item{fc_phase_var}{Column name containing food consumption phase.}
 

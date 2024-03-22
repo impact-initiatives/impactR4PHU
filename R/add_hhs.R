@@ -1,6 +1,6 @@
 #' Add the household hunger scale to the dataset
 #'
-#' @param .dataset Dataset
+#' @param .dataset Main Dataset
 #' @param fsl_hhs_nofoodhh The name of the column "In the past 4 weeks (30 days), was there ever no food to eat
 #' of any kind in your house because of lack of resources to get food?". It has to be a string.
 #' @param fsl_hhs_nofoodhh_freq The name of the column "How often did this happen in the past (4 weeks/30 days)?".

@@ -100,7 +100,6 @@ check_wash_flags <- function(.dataset,
 
   if (is.null(grouping)) {
     .dataset <- .dataset %>% dplyr::mutate(group = "All")
-    grouping <- "group"
   } else {
     .dataset <- .dataset %>% dplyr::mutate(group = !!rlang::sym(grouping))
   }

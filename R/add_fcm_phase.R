@@ -1,6 +1,6 @@
 #' Add the food consumption matrix to the dataset
 #'
-#' @param .dataset A dataframe
+#' @param .dataset Main Dataset
 #' @param fcs_column_name A string specifying the column name of the food consumption score in the dataset
 #' @param rcsi_column_name A string specifying the column name of the reduced coping strategy index in the dataset
 #' @param hhs_column_name A string specifying the column name of the household hunger scale in the dataset

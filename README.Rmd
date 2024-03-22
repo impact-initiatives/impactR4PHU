@@ -35,7 +35,10 @@ library(impactR4PHU)
 df <- impactR4PHU_data_template
 ```
 
+### FSL ADD Incicators
+
 ### Example:: Add Food Consumption Score (FCS)
+
 ``` {r eval=T,warning=F}
 df_with_fcs <- df %>% add_fcs(
   cutoffs = "normal",
@@ -246,6 +249,36 @@ df_with_fclcm %>%
 ```
 
 
+### NUTRITION ADD Incicators
+
+
+```{r include=T,eval=T}
+df_nut <- impactR4PHU_data_nut_template
+```
+
+
+### Example:: Add MUAC
+
+``` {r eval=T,warning=F}
+df_with_muac <- df_nut %>% 
+  add_muac()
+df_with_muac %>%
+  dplyr::select(
+    uuid, sam_muac, mam_muac, gam_muac) %>%
+  head(20)
+```
+
+### Example:: Add MFAZ
+
+``` {r eval=T,warning=F}
+df_with_mfaz <- df_with_muac %>% 
+  add_mfaz()
+df_with_mfaz %>%
+  dplyr::select(
+    uuid, mfaz, severe_mfaz, moderate_mfaz, global_mfaz) %>%
+  head(20)
+```
+
 ## Checking Flags (For Quality reports and Plausibility checks)
 
 ```{r include=T,eval=T}
@@ -259,6 +292,29 @@ fsl_flags <- df_with_fclcm %>%
   check_fsl_flags(tool.survey = tool,
                   grouping = "enumerator")
 fsl_flags %>% 
+  dplyr::select(uuid, group,starts_with("flag_")) %>% 
+  head(20)
+```
+
+
+### Example:: Check Food Security and Livelihoods Flags 
+
+``` {r, eval=TRUE, warning=F}
+nut_flags <- df_with_mfaz %>% 
+  check_nut_flags(loop_index = "loop_index")
+nut_flags %>% 
+  dplyr::select(uuid, group,starts_with("flag_"), ends_with("noflag")) %>% 
+  head(20)
+```
+
+### Example:: Check WASH Flags 
+
+``` {r, eval=TRUE, warning=F}
+container_df <- impactR4PHU_data_wash_template
+wash_flags <- df %>% 
+  check_wash_flags(data_container_loop = container_df,
+                   grouping = "enumerator")
+wash_flags %>% 
   dplyr::select(uuid, group,starts_with("flag_")) %>% 
   head(20)
 ```
