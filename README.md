@@ -768,12 +768,12 @@ fsl_flags %>%
     ## 19                        0
     ## 20                        0
 
-### Example:: Check Food Security and Livelihoods Flags
+### Example:: Check Anthropometric Flags
 
 ``` r
-nut_flags <- df_with_mfaz %>% 
-  check_nut_flags(loop_index = "loop_index")
-nut_flags %>% 
+anthro_flags <- df_with_mfaz %>% 
+  check_anthro_flags(loop_index = "loop_index")
+anthro_flags %>% 
   dplyr::select(uuid, group,starts_with("flag_"), ends_with("noflag")) %>% 
   head(20)
 ```
@@ -922,6 +922,62 @@ wash_flags %>%
     ## 18              NA                  NA                 0                  0
     ## 19              NA                  NA                 0                  0
     ## 20              NA                   0                 0                  0
+
+### Example:: Check Health Flags (to add more flags related to WGSS)
+
+``` r
+msna_data <- impactR4PHU_MSNA_template_data
+health_flags <- check_health_flags(
+  .dataset = msna_data
+)
+
+health_flags %>% 
+  dplyr::select(uuid, group, starts_with("flag_")) %>% 
+  head(20)
+```
+
+    ##                                        uuid group flag_severe_health_exp
+    ## 1  eaf540cd-32bd-41474b-b4beb5-d62fc987e45a   All                      0
+    ## 2  89e706c3-53d8-4a4049-898586-4926085db71e   All                      0
+    ## 3  afd921c6-e54a-4c4740-919c93-87f59bd0e63a   All                      0
+    ## 4  d8b05f39-ba85-494c4d-808c84-9dc57823a4f1   All                      0
+    ## 5  d6b42f9e-c209-4c4541-808a81-86bea53df142   All                      0
+    ## 6  f1b9ec67-20db-47404d-a3ada0-1a37e5c49d02   All                      0
+    ## 7  95ea286d-ae86-47404a-828487-feba6d1503c9   All                      0
+    ## 8  85b4a96f-cea2-4f4b48-9d929f-5d76892f31b0   All                      0
+    ## 9  ef13a764-0af7-4f494c-838b88-6cb31a50842e   All                      0
+    ## 10 1a69e87b-ec61-4e4a40-8f868a-fe24c6a705bd   All                      0
+    ## 11 5613d0fe-34dc-474c43-b4b0bd-36a4c8edf902   All                      0
+    ## 12 091aef7d-2b31-4f4741-a5a8af-36e8f1bd075a   All                      0
+    ## 13 e21a34f5-1a46-42404b-b7b6be-7bc9286d0f13   All                      0
+    ## 14 42dc8573-e2d0-43484b-aaada2-c37ef865d041   All                      0
+    ## 15 3a180db5-d126-4d4b49-808d88-b3e5c71d908f   All                      0
+    ## 16 789a632b-53da-4c4f40-a0a1ad-f53ca2e9074b   All                      0
+    ## 17 cd41675b-eb48-444e4f-b8b7b3-1e493cb02f5a   All                      0
+    ## 18 f741c29d-b7c5-424a4d-94999c-6018bac9274e   All                      0
+    ## 19 2516eba7-789c-4c4b41-afa0ad-f0a7365bd81c   All                      0
+    ## 20 c7896215-b36f-40444c-aaa2af-fa4d37c6502e   All                      0
+    ##    flag_catastrophic_health_exp
+    ## 1                             0
+    ## 2                             0
+    ## 3                             0
+    ## 4                             0
+    ## 5                             0
+    ## 6                             0
+    ## 7                             0
+    ## 8                             0
+    ## 9                             0
+    ## 10                            0
+    ## 11                            0
+    ## 12                            0
+    ## 13                            0
+    ## 14                            0
+    ## 15                            0
+    ## 16                            0
+    ## 17                            0
+    ## 18                            0
+    ## 19                            0
+    ## 20                            0
 
 ## Code of Conduct
 

@@ -3,7 +3,7 @@
 \docType{data}
 \name{impactR4PHU_data_template}
 \alias{impactR4PHU_data_template}
-\title{MSNA template dataset (example)}
+\title{IPHRA template dataset (example)}
 \usage{
 impactR4PHU_data_template
 }

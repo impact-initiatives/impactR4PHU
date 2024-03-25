@@ -3,11 +3,11 @@
 \docType{data}
 \name{impactR4PHU_data_roster_template}
 \alias{impactR4PHU_data_roster_template}
-\title{MSNA template roster dataset (example)}
+\title{IPHRA template roster dataset (example)}
 \usage{
 impactR4PHU_data_roster_template
 }
 \description{
-MSNA template roster dataset (example)
+IPHRA template roster dataset (example)
 }
 \keyword{datasets}

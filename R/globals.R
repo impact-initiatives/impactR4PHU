@@ -19,6 +19,17 @@ globalVariables(unique(c(
   "rcsi_lessquality_weighted", "rcsi_borrow_weighted",
   "rcsi_mealsize_weighted", "rcsi_mealadult_weighted",
   "rcsi_mealnb_weighted", "fsl_rcsi_score",
+  # add_mfaz:
+  "mfaz","age_months","severe_mfaz","moderate_mfaz","global_mfaz",
+  # add_muac
+  "age_months","sam_muac","mam_muac","gam_muac",
+  # check_anthro_flags:
+  "sex","age_months","age_days","mfaz",
+  "flag_sd_mfaz","mfaz_noflag","global_mfaz","moderate_mfaz",
+  "severe_mfaz","mfaz_who_flag","mean_mfaz_noflag","sd_mfaz_noflag",
+  "global_mfaz_noflag","moderate_mfaz_noflag","severe_mfaz_noflag","flag_extreme_muac",
+  "gam_muac","mam_muac","sam_muac","nut_muac_mm",
+  "gam_muac_noflag","mam_muac_noflag","sam_muac_noflag","muac_noflag","flag_edema_pitting",
   # check_fsl_flags:
   "group", "flag_meat_cereal_ratio",
   "flag_low_cereal", "flag_low_fcs", "flag_low_oil",
@@ -34,6 +45,9 @@ globalVariables(unique(c(
   "litre_per_day_per_person", "litre_z_score",
   "flag_low_litre", "flag_high_container", "flag_high_litre",
   "flag_no_container", "container_type_litre",
+  # check_health_flags:
+  "month_exp","health_exp","prop_health_exp","flag_severe_health_exp",
+  "flag_catastrophic_health_exp","month_exp_1","month_exp_2",
   # get.label:
   "name"
 )))

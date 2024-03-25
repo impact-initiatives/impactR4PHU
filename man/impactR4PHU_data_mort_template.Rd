@@ -3,15 +3,11 @@
 \docType{data}
 \name{impactR4PHU_data_mort_template}
 \alias{impactR4PHU_data_mort_template}
-\title{MSNA template mortality dataset (example)}
+\title{IPHRA template mortality dataset (example)}
 \usage{
-impactR4PHU_data_mort_template
-
 impactR4PHU_data_mort_template
 }
 \description{
-MSNA template mortality dataset (example)
-
-MSNA template mortality dataset (example)
+IPHRA template mortality dataset (example)
 }
 \keyword{datasets}

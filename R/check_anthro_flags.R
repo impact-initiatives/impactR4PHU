@@ -1,4 +1,4 @@
-#' check_nut_flags
+#' check_anthro_flags
 #'
 #' @param .dataset the raw child nutrition loop dataset with all add_muac and add_mfaz called
 #' @param nut_muac_cm the name of the variable that indicates the MUAC measurement by CM.
@@ -32,8 +32,8 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{check_nut_flags(df)}
-check_nut_flags <- function(.dataset,
+#' \dontrun{check_anthro_flags(df)}
+check_anthro_flags <- function(.dataset,
                             nut_muac_cm = "nut_muac_cm",
                             edema_confirm = "nut_edema_confirm",
                             value_edema_confirm = "yes",

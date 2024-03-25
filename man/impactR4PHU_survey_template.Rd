@@ -3,11 +3,11 @@
 \docType{data}
 \name{impactR4PHU_survey_template}
 \alias{impactR4PHU_survey_template}
-\title{MSNA template survey tool (example)}
+\title{IPHRA template survey tool (example)}
 \usage{
 impactR4PHU_survey_template
 }
 \description{
-MSNA template survey tool (example)
+IPHRA template survey tool (example)
 }
 \keyword{datasets}
