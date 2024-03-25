@@ -3,11 +3,11 @@
 \docType{data}
 \name{impactR4PHU_data_nut_template}
 \alias{impactR4PHU_data_nut_template}
-\title{MSNA template nutrition dataset (example)}
+\title{IPHRA template nutrition dataset (example)}
 \usage{
 impactR4PHU_data_nut_template
 }
 \description{
-MSNA template nutrition dataset (example)
+IPHRA template nutrition dataset (example)
 }
 \keyword{datasets}

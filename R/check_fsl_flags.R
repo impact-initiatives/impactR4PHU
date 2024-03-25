@@ -276,7 +276,7 @@ check_fsl_flags <- function(.dataset,
 
   ## Test if all columns are in the dataset
   if(!all(fcs_flag_columns %in% names(.dataset))) {
-    stop("Missing fcs columns")
+    warning("Missing fcs columns")
   } else{
     ## flag issues in data with FCS
     results2 <- .dataset %>%
@@ -312,8 +312,8 @@ check_fsl_flags <- function(.dataset,
   ## flag issues in data with rCSI
 
   rcsi_flag_columns <- c(rcsi_lessquality,rcsi_borrow,rcsi_mealsize,rcsi_mealadult,rcsi_mealnb,rcsi_score)
-  if(!all(rcsi_flag_columns %in% names(.dataset))) {
-    stop("Missing rcsi columns")
+  if(!all(c(rcsi_flag_columns,fcs_cereal,fcs_dairy,fcs_meat,fcs_score) %in% names(.dataset))) {
+    warning("Missing rcsi or fcs_cereal/fcs_dairy/fcs_meat/fcs_score columns")
   } else {
     results2 <- .dataset %>%
       dplyr::mutate_at(dplyr::vars(rcsi_flag_columns),as.numeric)%>%
@@ -353,7 +353,7 @@ check_fsl_flags <- function(.dataset,
   hhs_flag_columns <- c(hhs_nofoodhh,hhs_nofoodhh_freq,hhs_sleephungry,
                         hhs_sleephungry_freq,hhs_alldaynight,hhs_alldaynight_freq,hhs_score,hhs_cat)
   if(!all(hhs_flag_columns %in% names(.dataset))) {
-    stop("Missing hhs columns")
+    warning("Missing hhs columns")
   } else {
     results2 <- .dataset %>%
       dplyr::mutate(flag_severe_hhs = ifelse(is.na(!!rlang::sym(hhs_score)), NA, ifelse(!!rlang::sym(hhs_score) >= 5, 1, 0))) %>%
@@ -370,7 +370,7 @@ check_fsl_flags <- function(.dataset,
                         lcsi_crisis3,lcsi_emergency1,lcsi_emergency2,lcsi_emergency3,lcsi_stress,
                         lcsi_crisis,lcsi_emergency,lcsi_cat_yes,lcsi_cat_exhaust,lcsi_cat)
   if(!all(lcs_flag_columns %in% names(.dataset))) {
-    stop("Missing lcsi columns")
+    warning("Missing lcsi columns")
   } else {
     results2 <- .dataset %>%
       dplyr::mutate(flag_lcsi_coherence = ifelse(is.na(!!rlang::sym(lcsi_emergency)), NA,
@@ -439,7 +439,7 @@ check_fsl_flags <- function(.dataset,
   }
   fc_phase_col <- c(fc_cell,fc_phase)
   if(!all(fc_phase_col %in% names(.dataset))) {
-    stop("Missing fc_cell and fc_phase columns")
+    warning("Missing fc_cell and fc_phase columns")
   } else {
     ## flag phase
     results2 <- .dataset %>%
@@ -457,7 +457,7 @@ check_fsl_flags <- function(.dataset,
                          hdds_meat,hdds_fish,hdds_dairy,hdds_eggs,hdds_sugar,
                          hdds_oil,hdds_condiments,hdds_cat,hdds_score)
   if(!all(hdds_flag_columns %in% names(.dataset))) {
-    stop("Missing fc_cell and fc_phase columns")
+    warning("Missing hdds columns")
   } else{
     results2 <- .dataset %>%
       dplyr::mutate(flag_low_sugar_cond_hdds = ifelse(is.na(!!rlang::sym(hdds_score)), NA,

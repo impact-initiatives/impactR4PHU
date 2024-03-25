@@ -3,11 +3,11 @@
 \docType{data}
 \name{impactR4PHU_data_wash_template}
 \alias{impactR4PHU_data_wash_template}
-\title{MSNA template wash dataset (example)}
+\title{IPHRA template wash dataset (example)}
 \usage{
 impactR4PHU_data_wash_template
 }
 \description{
-MSNA template wash dataset (example)
+IPHRA template wash dataset (example)
 }
 \keyword{datasets}

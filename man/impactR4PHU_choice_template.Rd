@@ -3,11 +3,11 @@
 \docType{data}
 \name{impactR4PHU_choice_template}
 \alias{impactR4PHU_choice_template}
-\title{MSNA template choices tool (example)}
+\title{IPHRA template choices tool (example)}
 \usage{
 impactR4PHU_choice_template
 }
 \description{
-MSNA template choices tool (example)
+IPHRA template choices tool (example)
 }
 \keyword{datasets}

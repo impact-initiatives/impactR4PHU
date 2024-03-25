@@ -297,12 +297,12 @@ fsl_flags %>%
 ```
 
 
-### Example:: Check Food Security and Livelihoods Flags 
+### Example:: Check Anthropometric Flags 
 
 ``` {r, eval=TRUE, warning=F}
-nut_flags <- df_with_mfaz %>% 
-  check_nut_flags(loop_index = "loop_index")
-nut_flags %>% 
+anthro_flags <- df_with_mfaz %>% 
+  check_anthro_flags(loop_index = "loop_index")
+anthro_flags %>% 
   dplyr::select(uuid, group,starts_with("flag_"), ends_with("noflag")) %>% 
   head(20)
 ```
@@ -316,6 +316,19 @@ wash_flags <- df %>%
                    grouping = "enumerator")
 wash_flags %>% 
   dplyr::select(uuid, group,starts_with("flag_")) %>% 
+  head(20)
+```
+
+### Example:: Check Health Flags (to add more flags related to WGSS)
+
+``` {r, eval=TRUE, warning=F}
+msna_data <- impactR4PHU_MSNA_template_data
+health_flags <- check_health_flags(
+  .dataset = msna_data
+)
+
+health_flags %>% 
+  dplyr::select(uuid, group, starts_with("flag_")) %>% 
   head(20)
 ```
 

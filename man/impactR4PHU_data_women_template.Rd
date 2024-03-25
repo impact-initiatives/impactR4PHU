@@ -3,11 +3,11 @@
 \docType{data}
 \name{impactR4PHU_data_women_template}
 \alias{impactR4PHU_data_women_template}
-\title{MSNA template women dataset (example)}
+\title{IPHRA template women dataset (example)}
 \usage{
 impactR4PHU_data_women_template
 }
 \description{
-MSNA template women dataset (example)
+IPHRA template women dataset (example)
 }
 \keyword{datasets}
