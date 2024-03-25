@@ -42,6 +42,15 @@ testthat::test_that("UUID variable not available", {
   ))
 })
 
+
+testthat::test_that("check data_container_loop is null", {
+  load(testthat::test_path("testdata", "test_df.rda"))
+
+  testthat::expect_warning(check_wash_flags(
+    .dataset = test_df
+  ))
+})
+
 ######### Happy Path #########
 
 testthat::test_that("check column group added if missing grouping", {
@@ -94,67 +103,7 @@ testthat::test_that("check column group added if missing grouping", {
   testthat::expect_equal(actual, expected_output)
 })
 
-testthat::test_that("check column different_water_sources", {
-  load(testthat::test_path("testdata", "test_df.rda"))
-  load(testthat::test_path("testdata", "test_df_wash.rda"))
-  actual <- c(NA,NA,0,1,0)
-  expected_output <- check_wash_flags(
-    .dataset = test_df,
-    data_container_loop = test_df_wash,
-    different_water_sources = "wash_different_water_sources") %>%
-    head(5) %>%
-    pull(flag_no_container)
-  testthat::expect_equal(actual, expected_output)
-})
-
-testthat::test_that("check output without data_container_loop without different_water_sources", {
-  load(testthat::test_path("testdata", "test_df.rda"))
-  load(testthat::test_path("testdata", "test_df_wash.rda"))
-  actual <- c(NA,NA,0,0,1)
-  expected_output <- check_wash_flags(
-    .dataset = test_df,
-    data_container_loop = test_df_wash) %>%
-    head(5) %>%
-    pull(flag_not_immediate)
-  testthat::expect_equal(actual, expected_output)
-})
 
 
 
-testthat::test_that("check output without data_container_loop with different_water_sources", {
-  load(testthat::test_path("testdata", "test_df.rda"))
-  load(testthat::test_path("testdata", "test_df_wash.rda"))
-  actual <- c(NA,NA,0,0,1)
-  expected_output <- check_wash_flags(
-    .dataset = test_df,
-    data_container_loop = test_df_wash,
-    different_water_sources = "wash_different_water_sources") %>%
-    head(5) %>%
-    pull(flag_not_immediate)
-  testthat::expect_equal(actual, expected_output)
-})
 
-
-testthat::test_that("check output without data_container_loop without different_water_sources", {
-  load(testthat::test_path("testdata", "test_df.rda"))
-  actual <- c(NA,NA,0,0,1)
-  expected_output <- check_wash_flags(
-    .dataset = test_df,
-    grouping = "enumerator") %>%
-    head(5) %>%
-    pull(flag_not_immediate)
-  testthat::expect_equal(actual, expected_output)
-})
-
-
-
-testthat::test_that("check output without data_container_loop with different_water_sources", {
-  load(testthat::test_path("testdata", "test_df.rda"))
-  actual <- c(NA,NA,0,0,1)
-  expected_output <- check_wash_flags(
-    .dataset = test_df,
-    different_water_sources = "wash_different_water_sources") %>%
-    head(5) %>%
-    pull(flag_not_immediate)
-  testthat::expect_equal(actual, expected_output)
-})

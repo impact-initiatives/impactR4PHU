@@ -11,10 +11,8 @@ check_wash_flags(
   container_litre_other = "wash_container_litre_other",
   container_journey_collection = "wash_container_journey_collection",
   num_containers = "wash_num_containers",
-  water_source = "wash_water_source",
-  different_water_sources = NULL,
-  water_collect_time = "wash_water_collect_time",
-  choice_inside_compound = "inside_compound",
+  wash_water_collect_time = "wash_water_collect_time",
+  value_on_premise = "on_premise",
   num_hh = "num_hh",
   grouping = NULL,
   uuid = "uuid"
@@ -34,15 +32,9 @@ the amount per liter (ex: choicex_20l)}
 
 \item{num_containers}{the name of the variable that indicates the number of containers per HH}
 
-\item{water_source}{the name of the variable that indicates the main water source}
+\item{wash_water_collect_time}{the name of the variable that indicates if water on premise}
 
-\item{different_water_sources}{the name of the variable that indicates the other water source (Select_multiple up to 2)
-by default NULL, but better to call it if you collect this indicator.}
-
-\item{water_collect_time}{the name of the variable that indicates the collection time}
-
-\item{choice_inside_compound}{the name of the choice inside the water_collection_time variable that indicate
-that the collection time is none because water source is inside the compound. By default: (inside_compound)}
+\item{value_on_premise}{the value of the choice indicating the water is collected on premise}
 
 \item{num_hh}{the name of the variable that indicates the number of people per HH}
 
@@ -61,9 +53,6 @@ If loop containers available:
 - flag_high_litre
 - flag_high_container
 - flag_no_container
-- flag_not_immediate
-If loop containers not available:
-- flag_not_immediate
 }
 \description{
 check_wash_flags
@@ -73,8 +62,7 @@ df <- data.frame(
   num_hh = c("3","4"),
   wash_num_containers = c("2","3"),
   enumerator = c("1","2"),
-  wash_water_source = c("asdasd", "piped_dwelling"),
-  wash_water_collect_time = c("inside_compound", "aasdasd"),
+  wash_water_collect_time = c("on_premise", "num_minutes"),
   uuid = c("uuid_1","uuid_2")
 )
 
