@@ -39,6 +39,9 @@ By default: 6}
 \item{grouping}{the name of the variable that indicates the grouping variable - usually "enumerator"}
 
 \item{uuid}{uuid variable}
+
+\item{loop_index}{unique identifier for each individual in the child nutrition loop.
+By default, loop_index}
 }
 \value{
 a dataframe that includes all the logical flags related to health

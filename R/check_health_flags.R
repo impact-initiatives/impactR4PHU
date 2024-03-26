@@ -11,6 +11,8 @@
 #' By default: 6
 #' @param grouping the name of the variable that indicates the grouping variable - usually "enumerator"
 #' @param uuid uuid variable
+#' @param loop_index unique identifier for each individual in the child nutrition loop.
+#' By default, loop_index
 #'
 #' @return a dataframe that includes all the logical flags related to health
 #' This includes:
