@@ -23,6 +23,12 @@ globalVariables(unique(c(
   "mfaz","age_months","severe_mfaz","moderate_mfaz","global_mfaz",
   # add_muac
   "age_months","sam_muac","mam_muac","gam_muac",
+  # add_iycf
+  "mdd1", "mdd2","mdd3", "mdd4","mdd5", "mdd6",
+  "mdd7", "mdd8","iycf_6b_num", "iycf_6c_num","iycf_6d_num", "iycf_7a_num",
+  "iycf_evbf", "iycf_eibf","iycf_ebf2d", "iycf_ebf","iycf_mixmf", "iycf_cbf",
+  "iycf_isssf", "iycf_mdd_score","iycf_mdd_cat", "iycf_mmf","iycf_mmff", "iycf_mad",
+  "iycf_eff", "iycf_swb", "iycf_ufc", "iycf_zvf","iycf_bof",
   # check_anthro_flags:
   "sex","age_months","age_days","mfaz",
   "flag_sd_mfaz","mfaz_noflag","global_mfaz","moderate_mfaz",

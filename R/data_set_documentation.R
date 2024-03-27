@@ -60,6 +60,12 @@
 #' @format NULL
 "impactR4PHU_MSNA_template_data"
 
+#' @title IYCF template main dataset (example)
+#' @name impactR4PHU_iycf_template_data
+#' @rdname impactR4PHU_iycf_template_data
+#' @format NULL
+"impactR4PHU_iycf_template_data"
+
 #' @title IPHRA template survey tool (example)
 #' @name impactR4PHU_survey_template
 #' @rdname impactR4PHU_survey_template
