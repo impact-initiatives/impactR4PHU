@@ -49,10 +49,8 @@
 <span>  container_litre_other <span class="op">=</span> <span class="st">"wash_container_litre_other"</span>,</span>
 <span>  container_journey_collection <span class="op">=</span> <span class="st">"wash_container_journey_collection"</span>,</span>
 <span>  num_containers <span class="op">=</span> <span class="st">"wash_num_containers"</span>,</span>
-<span>  water_source <span class="op">=</span> <span class="st">"wash_water_source"</span>,</span>
-<span>  different_water_sources <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  water_collect_time <span class="op">=</span> <span class="st">"wash_water_collect_time"</span>,</span>
-<span>  choice_inside_compound <span class="op">=</span> <span class="st">"inside_compound"</span>,</span>
+<span>  wash_water_collect_time <span class="op">=</span> <span class="st">"wash_water_collect_time"</span>,</span>
+<span>  value_on_premise <span class="op">=</span> <span class="st">"on_premise"</span>,</span>
 <span>  num_hh <span class="op">=</span> <span class="st">"num_hh"</span>,</span>
 <span>  grouping <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  uuid <span class="op">=</span> <span class="st">"uuid"</span></span>
@@ -86,22 +84,12 @@ the amount per liter (ex: choicex_20l)</p></dd>
 <dd><p>the name of the variable that indicates the number of containers per HH</p></dd>
 
 
-<dt>water_source</dt>
-<dd><p>the name of the variable that indicates the main water source</p></dd>
+<dt>wash_water_collect_time</dt>
+<dd><p>the name of the variable that indicates if water on premise</p></dd>
 
 
-<dt>different_water_sources</dt>
-<dd><p>the name of the variable that indicates the other water source (Select_multiple up to 2)
-by default NULL, but better to call it if you collect this indicator.</p></dd>
-
-
-<dt>water_collect_time</dt>
-<dd><p>the name of the variable that indicates the collection time</p></dd>
-
-
-<dt>choice_inside_compound</dt>
-<dd><p>the name of the choice inside the water_collection_time variable that indicate
-that the collection time is none because water source is inside the compound. By default: (inside_compound)</p></dd>
+<dt>value_on_premise</dt>
+<dd><p>the value of the choice indicating the water is collected on premise</p></dd>
 
 
 <dt>num_hh</dt>
@@ -129,10 +117,7 @@ If loop containers available:
 - flag_low_litre
 - flag_high_litre
 - flag_high_container
-- flag_no_container
-- flag_not_immediate
-If loop containers not available:
-- flag_not_immediate</p>
+- flag_no_container</p>
     </div>
 
     <div class="section level2">
@@ -141,8 +126,7 @@ If loop containers not available:
 <span class="r-in"><span>  num_hh <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"3"</span>,<span class="st">"4"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  wash_num_containers <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"2"</span>,<span class="st">"3"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  enumerator <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"1"</span>,<span class="st">"2"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  wash_water_source <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"asdasd"</span>, <span class="st">"piped_dwelling"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  wash_water_collect_time <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"inside_compound"</span>, <span class="st">"aasdasd"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  wash_water_collect_time <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"on_premise"</span>, <span class="st">"num_minutes"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  uuid <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"uuid_1"</span>,<span class="st">"uuid_2"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
@@ -160,15 +144,15 @@ If loop containers not available:
 <span class="r-in"><span>  grouping <span class="op">=</span> <span class="st">"enumerator"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Joining with `by = join_by(uuid)`</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     uuid group wash_water_source wash_num_containers litre_per_day_per_person</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1 uuid_1     1            asdasd                   2                    16.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2 uuid_2     2    piped_dwelling                   3                    11.25</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   litre_z_score wash_water_collect_time flag_sd_litre flag_low_litre</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1     0.7071068         inside_compound             0              0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2    -0.7071068                 aasdasd             0              0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   flag_high_litre flag_high_container flag_no_container flag_not_immediate</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1               0                   0                 0                  0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2               0                   0                 0                  1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     uuid group wash_water_collect_time wash_num_containers</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 uuid_1     1              on_premise                   2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2 uuid_2     2             num_minutes                   3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   litre_per_day_per_person litre_z_score flag_sd_litre flag_low_litre</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1                    16.00     0.7071068             0              0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2                    11.25    -0.7071068             0              0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   flag_high_litre flag_high_container flag_no_container</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1               0                   0                 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2               0                   0                 0</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
