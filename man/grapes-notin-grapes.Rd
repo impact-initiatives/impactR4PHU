@@ -2,17 +2,24 @@
 % Please edit documentation in R/utils_not_in.R
 \name{\%notin\%}
 \alias{\%notin\%}
-\title{Negate %in%}
+\title{Negate in pipe}
 \usage{
-... \%notin\% NA
+a \%notin\% b
+}
+\arguments{
+\item{a}{- a variable present in the environment}
+
+\item{b}{- a variable present in the environment}
 }
 \value{
 not in
 }
 \description{
-Negate %in%
+Negate in pipe
 }
 \examples{
+\dontrun{
 a <- 2
 a \%notin\% c(3,4)
+}
 }

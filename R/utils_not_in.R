@@ -1,10 +1,16 @@
-#' Negate %in%
+#' Negate in pipe
+#'
+#' @param a - a variable present in the environment
+#' @param b - a variable present in the environment
 #'
 #' @return not in
-#' @export
 #'
 #' @examples
+#' \dontrun{
 #' a <- 2
 #' a %notin% c(3,4)
+#' }
 
-`%notin%` <- Negate(`%in%`)
+"%notin%" <- function (a,b) {
+  !a %in% b
+}
