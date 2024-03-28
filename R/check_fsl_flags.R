@@ -237,12 +237,12 @@ check_fsl_flags <- function(.dataset,
                            tool.survey = NULL,
                            uuid = "uuid") {
 
+  options(warn = -1)
   ## Throw an error if a dataset wasn't provided as a first argument
   if (!is.data.frame(.dataset)) {
     stop("First argument should be a dataset")
   }
 
-  options(warn = -1)
   ## Throw an error if the tool is empty
   if(is.null(tool.survey)) stop("Tool survey not available")
 
