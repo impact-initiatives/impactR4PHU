@@ -6,63 +6,63 @@
 \usage{
 check_fsl_flags(
   .dataset,
-  fcs_cereal = "fsl_fcs_cereal",
-  fcs_legumes = "fsl_fcs_legumes",
-  fcs_dairy = "fsl_fcs_dairy",
-  fcs_meat = "fsl_fcs_meat",
-  fcs_veg = "fsl_fcs_veg",
-  fcs_fruit = "fsl_fcs_fruit",
-  fcs_oil = "fsl_fcs_oil",
-  fcs_sugar = "fsl_fcs_sugar",
-  rcsi_lessquality = "fsl_rcsi_lessquality",
-  rcsi_borrow = "fsl_rcsi_borrow",
-  rcsi_mealsize = "fsl_rcsi_mealsize",
-  rcsi_mealadult = "fsl_rcsi_mealadult",
-  rcsi_mealnb = "fsl_rcsi_mealnb",
-  hhs_nofoodhh = "fsl_hhs_nofoodhh",
-  hhs_nofoodhh_freq = "fsl_hhs_nofoodhh_freq",
-  hhs_sleephungry = "fsl_hhs_sleephungry",
-  hhs_sleephungry_freq = "fsl_hhs_sleephungry_freq",
-  hhs_alldaynight = "fsl_hhs_alldaynight",
-  hhs_alldaynight_freq = "fsl_hhs_alldaynight_freq",
-  hdds_cereals = "fsl_hdds_cereals",
-  hdds_tubers = "fsl_hdds_tubers",
-  hdds_legumes = "fsl_hdds_legumes",
-  hdds_veg = "fsl_hdds_veg",
-  hdds_fruit = "fsl_hdds_fruit",
-  hdds_meat = "fsl_hdds_meat",
-  hdds_fish = "fsl_hdds_fish",
-  hdds_dairy = "fsl_hdds_dairy",
-  hdds_eggs = "fsl_hdds_eggs",
-  hdds_sugar = "fsl_hdds_sugar",
-  hdds_oil = "fsl_hdds_oil",
-  hdds_condiments = "fsl_hdds_condiments",
-  lcsi_stress1 = "fsl_lcsi_stress1",
-  lcsi_stress2 = "fsl_lcsi_stress2",
-  lcsi_stress3 = "fsl_lcsi_stress3",
-  lcsi_stress4 = "fsl_lcsi_stress4",
-  lcsi_crisis1 = "fsl_lcsi_crisis1",
-  lcsi_crisis2 = "fsl_lcsi_crisis2",
-  lcsi_crisis3 = "fsl_lcsi_crisis3",
-  lcsi_emergency1 = "fsl_lcsi_emergency1",
-  lcsi_emergency2 = "fsl_lcsi_emergency2",
-  lcsi_emergency3 = "fsl_lcsi_emergency3",
-  lcsi_stress = "fsl_lcsi_stress",
-  lcsi_crisis = "fsl_lcsi_crisis",
-  lcsi_emergency = "fsl_lcsi_emergency",
-  lcsi_cat_yes = "fsl_lcsi_cat_yes",
-  lcsi_cat_exhaust = "fsl_lcsi_cat_exhaust",
-  lcsi_cat = "fsl_lcsi_cat",
-  fcs_cat = "fsl_fcs_cat",
-  fcs_score = "fsl_fcs_score",
-  rcsi_cat = "fsl_rcsi_cat",
-  rcsi_score = "fsl_rcsi_score",
-  hhs_cat = "fsl_hhs_cat",
-  hhs_score = "fsl_hhs_score",
-  hdds_cat = "fsl_hdds_cat",
-  hdds_score = "fsl_hdds_score",
-  fc_cell = "fc_cell",
-  fc_phase = "fc_phase",
+  fsl_fcs_cereal = "fsl_fcs_cereal",
+  fsl_fcs_legumes = "fsl_fcs_legumes",
+  fsl_fcs_dairy = "fsl_fcs_dairy",
+  fsl_fcs_meat = "fsl_fcs_meat",
+  fsl_fcs_veg = "fsl_fcs_veg",
+  fsl_fcs_fruit = "fsl_fcs_fruit",
+  fsl_fcs_oil = "fsl_fcs_oil",
+  fsl_fcs_sugar = "fsl_fcs_sugar",
+  fsl_rcsi_lessquality = "fsl_rcsi_lessquality",
+  fsl_rcsi_borrow = "fsl_rcsi_borrow",
+  fsl_rcsi_mealsize = "fsl_rcsi_mealsize",
+  fsl_rcsi_mealadult = "fsl_rcsi_mealadult",
+  fsl_rcsi_mealnb = "fsl_rcsi_mealnb",
+  fsl_hhs_nofoodhh = "fsl_hhs_nofoodhh",
+  fsl_hhs_nofoodhh_freq = "fsl_hhs_nofoodhh_freq",
+  fsl_hhs_sleephungry = "fsl_hhs_sleephungry",
+  fsl_hhs_sleephungry_freq = "fsl_hhs_sleephungry_freq",
+  fsl_hhs_alldaynight = "fsl_hhs_alldaynight",
+  fsl_hhs_alldaynight_freq = "fsl_hhs_alldaynight_freq",
+  fsl_hdds_cereals = "fsl_hdds_cereals",
+  fsl_hdds_tubers = "fsl_hdds_tubers",
+  fsl_hdds_legumes = "fsl_hdds_legumes",
+  fsl_hdds_veg = "fsl_hdds_veg",
+  fsl_hdds_fruit = "fsl_hdds_fruit",
+  fsl_hdds_meat = "fsl_hdds_meat",
+  fsl_hdds_fish = "fsl_hdds_fish",
+  fsl_hdds_dairy = "fsl_hdds_dairy",
+  fsl_hdds_eggs = "fsl_hdds_eggs",
+  fsl_hdds_sugar = "fsl_hdds_sugar",
+  fsl_hdds_oil = "fsl_hdds_oil",
+  fsl_hdds_condiments = "fsl_hdds_condiments",
+  fsl_lcsi_stress1 = "fsl_lcsi_stress1",
+  fsl_lcsi_stress2 = "fsl_lcsi_stress2",
+  fsl_lcsi_stress3 = "fsl_lcsi_stress3",
+  fsl_lcsi_stress4 = "fsl_lcsi_stress4",
+  fsl_lcsi_crisis1 = "fsl_lcsi_crisis1",
+  fsl_lcsi_crisis2 = "fsl_lcsi_crisis2",
+  fsl_lcsi_crisis3 = "fsl_lcsi_crisis3",
+  fsl_lcsi_emergency1 = "fsl_lcsi_emergency1",
+  fsl_lcsi_emergency2 = "fsl_lcsi_emergency2",
+  fsl_lcsi_emergency3 = "fsl_lcsi_emergency3",
+  fsl_lcsi_stress = "fsl_lcsi_stress",
+  fsl_lcsi_crisis = "fsl_lcsi_crisis",
+  fsl_lcsi_emergency = "fsl_lcsi_emergency",
+  fsl_lcsi_cat_yes = "fsl_lcsi_cat_yes",
+  fsl_lcsi_cat_exhaust = "fsl_lcsi_cat_exhaust",
+  fsl_lcsi_cat = "fsl_lcsi_cat",
+  fsl_fcs_cat = "fsl_fcs_cat",
+  fsl_fcs_score = "fsl_fcs_score",
+  fsl_rcsi_cat = "fsl_rcsi_cat",
+  fsl_rcsi_score = "fsl_rcsi_score",
+  fsl_hhs_cat = "fsl_hhs_cat",
+  fsl_hhs_score = "fsl_hhs_score",
+  fsl_hdds_cat = "fsl_hdds_cat",
+  fsl_hdds_score = "fsl_hdds_score",
+  fsl_fc_cell = "fc_cell",
+  fsl_fc_phase = "fc_phase",
   num_children = "num_children",
   income_types = c("fsl_first_income_types", "fsl_second_income_types",
     "fsl_third_income_types"),
@@ -76,126 +76,126 @@ check_fsl_flags(
 \arguments{
 \item{.dataset}{the raw dataset with all add_x indicators functions called in}
 
-\item{fcs_cereal}{the name of the variable that indicates the number of days cereals were consumed}
+\item{fsl_fcs_cereal}{the name of the variable that indicates the number of days cereals were consumed}
 
-\item{fcs_legumes}{the name of the variable that indicates the number of days legumes were consumed}
+\item{fsl_fcs_legumes}{the name of the variable that indicates the number of days legumes were consumed}
 
-\item{fcs_dairy}{the name of the variable that indicates the number of days dairy were consumed}
+\item{fsl_fcs_dairy}{the name of the variable that indicates the number of days dairy were consumed}
 
-\item{fcs_meat}{the name of the variable that indicates the number of days meat were consumed}
+\item{fsl_fcs_meat}{the name of the variable that indicates the number of days meat were consumed}
 
-\item{fcs_veg}{the name of the variable that indicates the number of days vegetables were consumed}
+\item{fsl_fcs_veg}{the name of the variable that indicates the number of days vegetables were consumed}
 
-\item{fcs_fruit}{the name of the variable that indicates the number of days fruit were consumed}
+\item{fsl_fcs_fruit}{the name of the variable that indicates the number of days fruit were consumed}
 
-\item{fcs_oil}{the name of the variable that indicates the number of days oil was consumed}
+\item{fsl_fcs_oil}{the name of the variable that indicates the number of days oil was consumed}
 
-\item{fcs_sugar}{the name of the variable that indicates the number of days sugar was consumed}
+\item{fsl_fcs_sugar}{the name of the variable that indicates the number of days sugar was consumed}
 
-\item{rcsi_lessquality}{Column representing question- During the last 7 days, were there days (and, if so, how many) when your household had to rely on less preferred and less expensive food to cope with a lack of food or money to buy it?}
+\item{fsl_rcsi_lessquality}{Column representing question- During the last 7 days, were there days (and, if so, how many) when your household had to rely on less preferred and less expensive food to cope with a lack of food or money to buy it?}
 
-\item{rcsi_borrow}{Column representing question- During the last 7 days, were there days (and, if so, how many) when your household had to borrow food or rely on help from a relative or friend to cope with a lack of food or money to buy it?}
+\item{fsl_rcsi_borrow}{Column representing question- During the last 7 days, were there days (and, if so, how many) when your household had to borrow food or rely on help from a relative or friend to cope with a lack of food or money to buy it?}
 
-\item{rcsi_mealsize}{Column representing question- During the last 7 days, were there days (and, if so, how many) when your household had to limit portion size of meals at meal times to cope with a lack of food or money to buy it?}
+\item{fsl_rcsi_mealsize}{Column representing question- During the last 7 days, were there days (and, if so, how many) when your household had to limit portion size of meals at meal times to cope with a lack of food or money to buy it?}
 
-\item{rcsi_mealadult}{Column representing question- During the last 7 days, were there days (and, if so, how many) when your household had to restrict consumption by adults in order for small children to eat to cope with a lack of food or money to buy it?}
+\item{fsl_rcsi_mealadult}{Column representing question- During the last 7 days, were there days (and, if so, how many) when your household had to restrict consumption by adults in order for small children to eat to cope with a lack of food or money to buy it?}
 
-\item{rcsi_mealnb}{Column representing question - During the last 7 days, were there days (and, if so, how many) when your household had to reduce number of meals eaten in a day to cope with a lack of food or money to buy it?}
+\item{fsl_rcsi_mealnb}{Column representing question - During the last 7 days, were there days (and, if so, how many) when your household had to reduce number of meals eaten in a day to cope with a lack of food or money to buy it?}
 
-\item{hhs_nofoodhh}{The name of the column "In the past 4 weeks (30 days), was there ever no food to eat
+\item{fsl_hhs_nofoodhh}{The name of the column "In the past 4 weeks (30 days), was there ever no food to eat
 of any kind in your house because of lack of resources to get food?". It has to be a string.}
 
-\item{hhs_nofoodhh_freq}{The name of the column "How often did this happen in the past (4 weeks/30 days)?".
+\item{fsl_hhs_nofoodhh_freq}{The name of the column "How often did this happen in the past (4 weeks/30 days)?".
 It has to be a string.}
 
-\item{hhs_sleephungry}{The name of the column "In the past 4 weeks (30 days), did you or any household
+\item{fsl_hhs_sleephungry}{The name of the column "In the past 4 weeks (30 days), did you or any household
 member go to sleep at night hungry because there was not enough food?". It has to be a string.}
 
-\item{hhs_sleephungry_freq}{The name of the column "How often did this happen in the past (4 weeks/30 days)?".
+\item{fsl_hhs_sleephungry_freq}{The name of the column "How often did this happen in the past (4 weeks/30 days)?".
 It has to be a string.}
 
-\item{hhs_alldaynight}{The name of the column "In the past 4 weeks (30 days), did you or any household
+\item{fsl_hhs_alldaynight}{The name of the column "In the past 4 weeks (30 days), did you or any household
 member go a whole day and night without eating anything at all because there was not enough food?".
 It has to be a string.}
 
-\item{hhs_alldaynight_freq}{The name of the column "How often did this happen in the past (4 weeks/30 days)?".
+\item{fsl_hhs_alldaynight_freq}{The name of the column "How often did this happen in the past (4 weeks/30 days)?".
 It has to be a string.}
 
-\item{hdds_cereals}{the name of the variable that indicates if cereals were consumed in the last 24 hours}
+\item{fsl_hdds_cereals}{the name of the variable that indicates if cereals were consumed in the last 24 hours}
 
-\item{hdds_tubers}{the name of the variable that indicates if roots or tubers were consumed in the last 24 hours}
+\item{fsl_hdds_tubers}{the name of the variable that indicates if roots or tubers were consumed in the last 24 hours}
 
-\item{hdds_legumes}{the name of the variable that indicates if pulses or legumes were consumed in the last 24 hours}
+\item{fsl_hdds_legumes}{the name of the variable that indicates if pulses or legumes were consumed in the last 24 hours}
 
-\item{hdds_veg}{the name of the variable that indicates if vegetables were consumed in the last 24 hours}
+\item{fsl_hdds_veg}{the name of the variable that indicates if vegetables were consumed in the last 24 hours}
 
-\item{hdds_fruit}{the name of the variable that indicates if fruit were consumed in the last 24 hours}
+\item{fsl_hdds_fruit}{the name of the variable that indicates if fruit were consumed in the last 24 hours}
 
-\item{hdds_meat}{the name of the variable that indicates if meat were consumed in the last 24 hours}
+\item{fsl_hdds_meat}{the name of the variable that indicates if meat were consumed in the last 24 hours}
 
-\item{hdds_fish}{the name of the variable that indicates if fish were consumed in the last 24 hours}
+\item{fsl_hdds_fish}{the name of the variable that indicates if fish were consumed in the last 24 hours}
 
-\item{hdds_dairy}{the name of the variable that indicates if dairy were consumed in the last 24 hours}
+\item{fsl_hdds_dairy}{the name of the variable that indicates if dairy were consumed in the last 24 hours}
 
-\item{hdds_eggs}{the name of the variable that indicates if eggs were consumed in the last 24 hours}
+\item{fsl_hdds_eggs}{the name of the variable that indicates if eggs were consumed in the last 24 hours}
 
-\item{hdds_sugar}{the name of the variable that indicates if sugar were consumed in the last 24 hours}
+\item{fsl_hdds_sugar}{the name of the variable that indicates if sugar were consumed in the last 24 hours}
 
-\item{hdds_oil}{the name of the variable that indicates if oil was consumed in the last 24 hours}
+\item{fsl_hdds_oil}{the name of the variable that indicates if oil was consumed in the last 24 hours}
 
-\item{hdds_condiments}{the name of the variable that indicates if condiments were consumed in the last 24 hours}
+\item{fsl_hdds_condiments}{the name of the variable that indicates if condiments were consumed in the last 24 hours}
 
-\item{lcsi_stress1}{the name of the variable that indicates the first stress LCSI strategy}
+\item{fsl_lcsi_stress1}{the name of the variable that indicates the first stress LCSI strategy}
 
-\item{lcsi_stress2}{the name of the variable that indicates the second stress LCSI strategy}
+\item{fsl_lcsi_stress2}{the name of the variable that indicates the second stress LCSI strategy}
 
-\item{lcsi_stress3}{the name of the variable that indicates the third stress LCSI strategy}
+\item{fsl_lcsi_stress3}{the name of the variable that indicates the third stress LCSI strategy}
 
-\item{lcsi_stress4}{the name of the variable that indicates the fourth stress LCSI strategy}
+\item{fsl_lcsi_stress4}{the name of the variable that indicates the fourth stress LCSI strategy}
 
-\item{lcsi_crisis1}{the name of the variable that indicates the first crisis LCSI strategy}
+\item{fsl_lcsi_crisis1}{the name of the variable that indicates the first crisis LCSI strategy}
 
-\item{lcsi_crisis2}{the name of the variable that indicates the second crisis LCSI strategy}
+\item{fsl_lcsi_crisis2}{the name of the variable that indicates the second crisis LCSI strategy}
 
-\item{lcsi_crisis3}{the name of the variable that indicates the third crisis LCSI strategy}
+\item{fsl_lcsi_crisis3}{the name of the variable that indicates the third crisis LCSI strategy}
 
-\item{lcsi_emergency1}{the name of the variable that indicates the first emergency LCSI strategy}
+\item{fsl_lcsi_emergency1}{the name of the variable that indicates the first emergency LCSI strategy}
 
-\item{lcsi_emergency2}{the name of the variable that indicates the second emergency LCSI strategy}
+\item{fsl_lcsi_emergency2}{the name of the variable that indicates the second emergency LCSI strategy}
 
-\item{lcsi_emergency3}{the name of the variable that indicates the third emergency LCSI strategy}
+\item{fsl_lcsi_emergency3}{the name of the variable that indicates the third emergency LCSI strategy}
 
-\item{lcsi_stress}{the name of the variable that indicates the calculation of the stress LCSI strategy}
+\item{fsl_lcsi_stress}{the name of the variable that indicates the calculation of the stress LCSI strategy}
 
-\item{lcsi_crisis}{the name of the variable that indicates the calculation of the crisis LCSI strategy}
+\item{fsl_lcsi_crisis}{the name of the variable that indicates the calculation of the crisis LCSI strategy}
 
-\item{lcsi_emergency}{the name of the variable that indicates the calculation of the stress LCSI strategy}
+\item{fsl_lcsi_emergency}{the name of the variable that indicates the calculation of the stress LCSI strategy}
 
-\item{lcsi_cat_yes}{the name of the variable that indicates the highest category of the LCSI strategy used yes}
+\item{fsl_lcsi_cat_yes}{the name of the variable that indicates the highest category of the LCSI strategy used yes}
 
-\item{lcsi_cat_exhaust}{the name of the variable that indicates the highest category of the LCSI strategy used exhaustively}
+\item{fsl_lcsi_cat_exhaust}{the name of the variable that indicates the highest category of the LCSI strategy used exhaustively}
 
-\item{lcsi_cat}{the name of the variable that indicates the highest category of the LCSI strategy}
+\item{fsl_lcsi_cat}{the name of the variable that indicates the highest category of the LCSI strategy}
 
-\item{fcs_cat}{the name of the variable that indicates the food consumption score category}
+\item{fsl_fcs_cat}{the name of the variable that indicates the food consumption score category}
 
-\item{fcs_score}{the name of the variable that indicates the food consumption score}
+\item{fsl_fcs_score}{the name of the variable that indicates the food consumption score}
 
-\item{rcsi_cat}{the name of the variable that indicates the reduced coping strategy index category}
+\item{fsl_rcsi_cat}{the name of the variable that indicates the reduced coping strategy index category}
 
-\item{rcsi_score}{the name of the variable that indicates the reduced coping strategy index score}
+\item{fsl_rcsi_score}{the name of the variable that indicates the reduced coping strategy index score}
 
-\item{hhs_cat}{the name of the variable that indicates the household hunger scale category}
+\item{fsl_hhs_cat}{the name of the variable that indicates the household hunger scale category}
 
-\item{hhs_score}{the name of the variable that indicates the household hunger scale score}
+\item{fsl_hhs_score}{the name of the variable that indicates the household hunger scale score}
 
-\item{hdds_cat}{the name of the variable that indicates the household dietary diversity score category}
+\item{fsl_hdds_cat}{the name of the variable that indicates the household dietary diversity score category}
 
-\item{hdds_score}{the name of the variable that indicates the household dietary diversity score}
+\item{fsl_hdds_score}{the name of the variable that indicates the household dietary diversity score}
 
-\item{fc_cell}{the name of the variable that indicates the food consumption matrix score}
+\item{fsl_fc_cell}{the name of the variable that indicates the food consumption matrix score}
 
-\item{fc_phase}{the name of the variable that indicates the food consumption matrix phase}
+\item{fsl_fc_phase}{the name of the variable that indicates the food consumption matrix phase}
 
 \item{num_children}{the name of the variable that indicates the number of children available in each household}
 
