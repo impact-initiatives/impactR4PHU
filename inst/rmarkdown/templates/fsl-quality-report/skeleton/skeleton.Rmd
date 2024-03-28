@@ -1,0 +1,357 @@
+---
+title: "FSL Data quality and plausibility Report"
+subtitle: "`r Sys.Date()`"
+output: html_document
+---
+
+<style>
+.tocify-subheader {
+  font-size: 0.7em;
+}
+.tocify-item {
+  font-size: 0.85em;
+  padding-left: 25px;
+  text-indent: 0;
+}
+</style>
+
+```{r logo, echo=FALSE}
+htmltools::img(src = knitr::image_uri("Logo_Reach_RGB_1.png"),
+               alt = "REACH logo",
+               style = 'position:absolute; top:0; right:0; padding:0; margin:20; width:250px')
+```
+
+```{r setup, include=FALSE}
+  knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE)
+  options(scipen = 999)
+
+```
+
+# {.tabset .tabset-fade}
+
+## Introduction
+
+```{r, results='asis'}
+  cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",3), collapse=""), " ", "What is this tool?"))
+  cat('\nThe Data Quality and Plausibility Report serves as a crucial tool for assessing the reliability and accuracy of the IPHRA data collection across different sectors such as Nutrition, Mortality, Water, Sanitation and Hygiene (WASH), Food Security, and Livelihoods. This comprehensive analysis is designed to identify and address potential issues within the data, ensuring that field teams are being informed on potential issues detected in the data collection.\n\nFor each of these sectors, the report provides a detailed examination of the datasets, employing a variety of metrics and methodologies to evaluate data quality and plausibility. This includes checks for completeness, consistency, and accuracy of the data collected. This report aims to uncover any discrepancies, outliers, or anomalies that may suggest data collection, entry errors, or underlying issues that could impact the integrity of the findings.</p>')
+  cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",3), collapse=""), " ", "What is in this tool?"))
+  cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",4), collapse=""), " ", "METADATA CHECK SECTION"))
+  cat('\nThis section provides a summary of some key findings as well as some metadata checks such as the number of <strong>UUID duplicates</strong>, <strong>outliers in survey durations/soft duplicates</strong>, <strong> inconsistencies between loop rosters and the main datasets</strong>, and <strong> some age distribution plots</strong>.\n\nThis section includes as well a map that shows the geo locations of the assessed households. ')
+  cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",4), collapse=""), " ", "FSL SECTION"))
+  cat('\nThis section includes:\n\n- Overall Plausibility Report / By Enumerator\n- All the flags related to Food Security and Livelihoods (details shown for each flag in the section)\n- Plots showing the distribution of the data.')
+  cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",4), collapse=""), " ", "MUAC/NUTRITION SECTION"))
+  cat('\nThis section includes:\n\n- Overall Plausibility Report / By Enumerator\n- All the flags related to MUAC and Nutrition (details shown for each flag in the section)\n- Plots showing the distribution of the data.')
+  cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",4), collapse=""), " ", "WATER CONSUMPTION SECTION"))
+  cat('\nThis section includes:\n\n- All the flags related to WASH (details shown for each flag in the section)')
+  if(!is.null(raw.died_member)){
+     cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",4), collapse=""), " ", "MORTALITY SECTION"))
+    cat('\nThis section includes:\n\n- Overall Plausibility Report / By Enumerator\n- All the flags related to MORTALITY (details shown for each flag in the section)\n- Plots showing the distribution of the data.')
+  }
+  cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",3), collapse=""), " ", "What to do next?"))
+  cat('\nPlease check each flag and the <strong>ACTION</strong> related to it and act accordingly.\n\nAnother output will be associated to this HTML, the Excel file of the flags that were fired and requires follow-up with the field team. Please check the README tab in the excel file. This file will again be generated with the full data during the cleaning of the dataset. So please do use this file during data collection and relate to it in the final one to be filled.')
+  cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",3), collapse=""), " ", "Feedback"))
+  cat('\nFeedback on improvements to this product can be done through reaching out to:\n\n-abraham.azar@impact-initiatives.org \n\n -impact.geneva.phu@impact-initiatives.org')
+```
+
+## FSL {.tabset .tabset-fade}
+
+<!-- ```{r, echo=FALSE, warning=FALSE,include=FALSE} -->
+<!-- fcs_check_columns <- c("fsl_fcs_cereal", -->
+<!--                        "fsl_fcs_legumes", -->
+<!--                        "fsl_fcs_veg", -->
+<!--                        "fsl_fcs_fruit", -->
+<!--                        "fsl_fcs_meat", -->
+<!--                        "fsl_fcs_dairy", -->
+<!--                        "fsl_fcs_sugar", -->
+<!--                        "fsl_fcs_oil") -->
+
+<!-- if(all(fcs_check_columns %in% names(raw.main))) { -->
+<!--   raw.main <- raw.main %>% -->
+<!--     add_fcs_new(cutoffs = "normal") -->
+<!-- } -->
+
+<!-- rcsi_check_columns <- c("fsl_rcsi_lessquality", -->
+<!--                         "fsl_rcsi_borrow", -->
+<!--                         "fsl_rcsi_mealsize", -->
+<!--                         "fsl_rcsi_mealadult", -->
+<!--                         "fsl_rcsi_mealnb") -->
+
+<!-- if(all(rcsi_check_columns %in% names(raw.main))) { -->
+<!--   raw.main <- raw.main %>% -->
+<!--     add_rcsi_new() -->
+<!-- } -->
+
+<!-- hhs_check_columns <- c("fsl_hhs_nofoodhh", -->
+<!--                        "fsl_hhs_nofoodhh_freq", -->
+<!--                        "fsl_hhs_sleephungry", -->
+<!--                        "fsl_hhs_sleephungry_freq", -->
+<!--                        "fsl_hhs_alldaynight", -->
+<!--                        "fsl_hhs_alldaynight_freq") -->
+
+<!-- if(all(hhs_check_columns %in% names(raw.main))) { -->
+<!--   raw.main <- raw.main %>% -->
+<!--     add_hhs_new() -->
+<!-- } -->
+
+<!-- lcsi_check_columns <- c("fsl_lcsi_stress1","fsl_lcsi_stress2","fsl_lcsi_stress3","fsl_lcsi_stress4", -->
+<!--                         "fsl_lcsi_crisis1","fsl_lcsi_crisis2","fsl_lcsi_crisis3", -->
+<!--                         "fsl_lcsi_emergency1","fsl_lcsi_emergency2","fsl_lcsi_emergency3") -->
+
+<!-- if(all(lcsi_check_columns %in% names(raw.main))) { -->
+<!--   raw.main <- raw.main %>% -->
+<!--     add_lcsi_new() -->
+<!-- } -->
+
+<!-- hdds_check_columns <- c("fsl_hdds_cereals","fsl_hdds_tubers","fsl_hdds_veg","fsl_hdds_fruit","fsl_hdds_meat", -->
+<!--                         "fsl_hdds_eggs","fsl_hdds_fish","fsl_hdds_legumes","fsl_hdds_dairy","fsl_hdds_oil", -->
+<!--                         "fsl_hdds_sugar","fsl_hdds_condiments") -->
+
+<!-- if(all(hdds_check_columns %in% names(raw.main))) { -->
+<!--   raw.main <- raw.main %>% -->
+<!--     add_hdds_new() -->
+<!-- } -->
+
+<!-- fcm_check_1_columns <- c("fsl_fcs_cat", -->
+<!--                          "fsl_rcsi_cat") -->
+
+<!-- fcm_check_2_columns <- c("fsl_hdds_cat", -->
+<!--                          "fsl_rcsi_cat") -->
+
+<!-- fcm_check_3_columns <- c("fsl_fcs_cat", -->
+<!--                          "fsl_hhs_cat") -->
+
+<!-- fcm_check_4_columns <- c("fsl_hdds_cat", -->
+<!--                          "fsl_hhs_cat") -->
+
+<!-- fcm_check_5_columns <- c("fsl_hdds_cat", -->
+<!--                          "fsl_rcsi_cat", -->
+<!--                          "fsl_hhs_cat") -->
+
+<!-- fcm_check_6_columns <- c("fsl_fcs_cat", -->
+<!--                          "fsl_rcsi_cat", -->
+<!--                          "fsl_hhs_cat") -->
+
+
+
+<!-- if(all(fcm_check_1_columns %in% names(raw.main)) | -->
+<!--    all(fcm_check_2_columns %in% names(raw.main)) | -->
+<!--    all(fcm_check_3_columns %in% names(raw.main)) | -->
+<!--    all(fcm_check_4_columns %in% names(raw.main)) | -->
+<!--    all(fcm_check_5_columns %in% names(raw.main)) | -->
+<!--    all(fcm_check_6_columns %in% names(raw.main))) { -->
+<!--   raw.main <- raw.main %>% -->
+<!--     add_fcm_phase_new() -->
+<!-- } -->
+
+<!-- fclcm_check_columns <- c("fc_phase", -->
+<!--                          "fsl_lcsi_cat") -->
+<!-- if(all(fclcm_check_columns %in% names(raw.main))) { -->
+<!--   raw.main <- raw.main %>% -->
+<!--     add_fclcm_phase_new() -->
+<!-- } -->
+
+<!-- ## FCS -->
+<!-- raw.flag.fcs <- raw.main %>% -->
+<!--   check_fs_flags(date_dc_date = "today") -->
+<!-- ``` -->
+
+<!-- ```{r, include = FALSE} -->
+<!-- overall_fsl_plaus <- openxlsx::read.xlsx("./../resources/overall_plaus.xlsx",fillMergedCells = TRUE, sheet = "FSL") %>% -->
+<!--   distinct() -->
+<!-- result <- create_fsl_quality_report_phu(raw.flag.fcs) -->
+<!-- result_fsl_enum <- create_fsl_quality_report_phu(raw.flag.fcs, grouping = "enumerator") -->
+<!-- result_pivot <- result %>% -->
+<!--   mutate_all(., as.character) %>% -->
+<!--   tidyr::pivot_longer(cols = everything(),names_to = "Criteria", -->
+<!--                values_to = "Score") %>% -->
+<!--   filter(stringr::str_starts(Criteria,"plaus_")) -->
+<!-- bind <- data.frame(`Indicator Score` = c("plaus_fcs","plaus_fcs","plaus_fcs","plaus_fcs","plaus_fcs","plaus_fcs", -->
+<!--                                          "plaus_fcs","plaus_fcs","plaus_fcs","plaus_fcs","plaus_fcs","plaus_fcs", -->
+<!--                                          "plaus_rcsi","plaus_rcsi","plaus_rcsi","plaus_rcsi","plaus_rcsi", -->
+<!--                                          "plaus_rcsi","plaus_rcsi","plaus_rcsi","plaus_rcsi","plaus_rcsi", -->
+<!--                                          "plaus_hhs","plaus_hhs", -->
+<!--                                          "plaus_lcsi","plaus_lcsi","plaus_lcsi","plaus_lcsi","plaus_lcsi", -->
+<!--                                          "plaus_lcsi","plaus_lcsi","plaus_lcsi","plaus_lcsi","plaus_lcsi", -->
+<!--                                          "plaus_other_fsl","plaus_other_fsl","plaus_other_fsl", -->
+<!--                                          "plaus_other_fsl","plaus_other_fsl","plaus_other_fsl", -->
+<!--                                          "plaus_other_fsl","plaus_other_fsl","plaus_other_fsl", -->
+<!--                                          "plaus_other_fsl","plaus_other_fsl","plaus_other_fsl",NA,NA)) -->
+<!-- overall_fsl_plaus_overall <- overall_fsl_plaus%>% -->
+<!--   left_join(result_pivot, by = c("flag_name"="Criteria")) %>% -->
+<!--   mutate_all(., ~ifelse(is.na(.),"NA",.)) %>% -->
+<!--   cbind(bind)%>% -->
+<!--   left_join(result_pivot %>% filter(Criteria %in% c("plaus_other_fsl", -->
+<!--                                                     "plaus_lcsi", -->
+<!--                                                     "plaus_hhs", -->
+<!--                                                     "plaus_rcsi", -->
+<!--                                                     "plaus_fcs")) %>% -->
+<!--               rename(indscore = "Score"), by = c("Indicator.Score"="Criteria")) %>% -->
+<!--   mutate(indscore = case_when(flag_name == "plaus_flag_severe_hhs"~paste0(indscore,"/10"), -->
+<!--                               TRUE ~paste0(indscore,"/20"))) %>% -->
+<!--   select(-Indicator.Score) -->
+<!-- fsl <- flextable::flextable(overall_fsl_plaus_overall) -->
+
+
+<!-- final_table <- create_table_fsl(fsl) -->
+
+<!-- ``` -->
+
+<!-- ### Data Quality FSL {.tabset .tabset-fade} -->
+
+<!-- #### Plausbility {.tabset .tabset-fade} -->
+
+<!-- ##### Overall -->
+
+<!-- ```{r} -->
+<!-- final_table -->
+<!-- ``` -->
+
+<!-- ```{r, results='asis'} -->
+<!-- result_fsl_pivot <- result_fsl_enum %>% -->
+<!--   mutate_all(., as.character) %>% -->
+<!--   tidyr::pivot_longer(-enumerator,names_to = "Criteria", -->
+<!--                values_to = "Score") %>% -->
+<!--   filter(stringr::str_starts(Criteria,"plaus_")) -->
+<!-- list_enum <- result_fsl_pivot$enumerator %>% unique -->
+<!-- list_flex_enum <- list() -->
+<!-- for (i in list_enum) { -->
+
+<!--   cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",5), collapse=""), " ", "<strong>",i,"</strong>")) -->
+<!--   overall_fsl_plaus_enum <- overall_fsl_plaus %>% -->
+<!--     left_join(result_fsl_pivot %>% filter(enumerator == i), by = c("flag_name"="Criteria"))%>% -->
+<!--     mutate_all(., ~ifelse(is.na(.),"NA",.)) %>% -->
+<!--     cbind(bind) %>% -->
+<!--     select(-enumerator) %>% -->
+<!--     left_join(result_fsl_pivot %>% -->
+<!--                 filter(enumerator == i) %>% -->
+<!--                 filter(Criteria %in% c("plaus_other_fsl", -->
+<!--                                        "plaus_lcsi", -->
+<!--                                        "plaus_hhs", -->
+<!--                                        "plaus_rcsi", -->
+<!--                                        "plaus_fcs")) %>% -->
+<!--               rename(indscore = "Score"), by = c("Indicator.Score"="Criteria")) %>% -->
+<!--     mutate(indscore = case_when(flag_name == "plaus_flag_severe_hhs"~paste0(indscore,"/10"), -->
+<!--                               TRUE ~paste0(indscore,"/20"))) %>% -->
+<!--     select(-c(Indicator.Score,enumerator)) -->
+
+<!--   fsl_enum <- flextable::flextable(overall_fsl_plaus_enum) -->
+
+<!--   final_table_fsl_enum <- create_table_fsl(fsl_enum) -->
+<!--   subch(final_table_fsl_enum) -->
+<!--   list_flex_enum <- append(list_flex_enum,final_table_fsl_enum) -->
+<!-- } -->
+
+<!-- ``` -->
+
+
+<!-- ```{r, results='asis'} -->
+<!-- flag_description <- readxl::read_excel("./../resources/flag_description.xlsx", sheet = "FSL") -->
+<!-- flags_fsl_columns <- names(raw.flag.fcs)[stringr::str_starts(names(raw.flag.fcs),"flag_")] -->
+<!-- overall_flag <- tibble() -->
+<!-- for(flag in flags_fsl_columns) { -->
+
+<!--   flag_overall <- raw.flag.fcs %>% -->
+<!--     select(enumerator, !!rlang::sym(flag)) %>% -->
+<!--     filter(!is.na(!!rlang::sym(flag))) %>% -->
+<!--     mutate(flag := flag) %>% -->
+<!--     group_by(flag) %>% -->
+<!--     summarise(num_samples = n(), -->
+<!--               flagged = sum(!!rlang::sym(flag))) %>% -->
+<!--     mutate(percentage_flaggged = paste0(round((flagged/num_samples)*100,2),"%")) %>% -->
+<!--     ungroup() -->
+<!--   if(nrow(flag_overall)>0){ -->
+<!--     overall_flag <- rbind(overall_flag,flag_overall) -->
+<!--   } -->
+<!-- } -->
+<!-- add_to_html.title("Overall Flag Table") -->
+<!-- subch(DT::datatable(overall_flag, -->
+<!--                   extensions = 'Buttons', options = list( -->
+<!--                     dom = 'Blfrtip', -->
+<!--                     buttons = c('copy', 'csv', 'excel', 'pdf'), -->
+<!--                     lengthMenu = list(c(50), -->
+<!--                                       c('All')), -->
+<!--                     paging = T))) -->
+
+<!-- for(flag in flags_fsl_columns) { -->
+<!--   flag_rational <- flag_description %>% -->
+<!--     filter(flag_name %in% flag) %>% -->
+<!--     pull(Rationale) -->
+<!--   flag_action <- flag_description %>% -->
+<!--     filter(flag_name %in% flag) %>% -->
+<!--     pull(Action) -->
+<!--   flag_by_enum <- raw.flag.fcs %>% -->
+<!--     select(enumerator, !!rlang::sym(flag)) %>% -->
+<!--     filter(!is.na(!!rlang::sym(flag))) %>% -->
+<!--     mutate(flag := flag) %>% -->
+<!--     group_by(flag,enumerator) %>% -->
+<!--     summarise(num_samples = n(), -->
+<!--               flagged = sum(!!rlang::sym(flag))) %>% -->
+<!--     mutate(percentage_flagged = paste0(round((flagged/num_samples)*100,2),"%")) %>% -->
+<!--     ungroup() %>% -->
+<!--     select(-1) -->
+<!--   if(nrow(flag_by_enum)>0){ -->
+<!--     add_to_html.title(flag) -->
+<!--     cat("\n") -->
+<!--     cat(paste("<em><strong>Rational</strong>: ",flag_rational,"</em>\n")) -->
+<!--     if(!is.null(flag_action)){ -->
+<!--       cat("\n") -->
+<!--       cat(paste("<em><strong>Action</strong>: ",flag_action,"</em>\n")) -->
+<!--     } -->
+<!--     subch(DT::datatable(flag_by_enum, -->
+<!--                   extensions = 'Buttons', options = list( -->
+<!--                     dom = 'Blfrtip', -->
+<!--                     buttons = c('copy', 'csv', 'excel', 'pdf'), -->
+<!--                     lengthMenu = list(c(50), -->
+<!--                                       c('All')), -->
+<!--                     paging = T))) -->
+<!--   } -->
+<!-- } -->
+
+<!-- ``` -->
+
+
+<!-- ```{r, results='asis'} -->
+<!-- if(all(fcs_check_columns %in% names(raw.flag.fcs))) { -->
+<!--   cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",3), collapse=""), " ", "Plots {.tabset .tabset-fade}")) -->
+<!--   cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",4), collapse=""), " ", "FCS Ridge Overall Distribution Plot")) -->
+<!--   (plot_ridge_distribution_phu(raw.flag.fcs, numeric_cols = c("fsl_fcs_cereal", "fsl_fcs_dairy", "fsl_fcs_veg", "fsl_fcs_fruit", "fsl_fcs_legumes", "fsl_fcs_sugar", "fsl_fcs_oil"), -->
+<!--                          name_groups = "Food Groups", name_units = "Days")) -->
+<!-- } -->
+<!-- ``` -->
+
+
+<!-- ```{r, results='asis'} -->
+<!-- if(all(fcs_check_columns %in% names(raw.flag.fcs))) { -->
+<!--     cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",4), collapse=""), " ", "FCS Ridge by Enumerator Distribution Plot")) -->
+<!--   (plot_ridge_distribution_phu(raw.flag.fcs, numeric_cols = c("fsl_fcs_cereal", "fsl_fcs_dairy", "fsl_fcs_veg", "fsl_fcs_fruit", "fsl_fcs_legumes", "fsl_fcs_sugar", "fsl_fcs_oil"), -->
+<!--                          name_groups = "Food Groups", name_units = "Days", grouping = "enumerator")) -->
+<!-- } -->
+<!-- ``` -->
+
+<!-- ```{r, results='asis'} -->
+<!-- if(all(rcsi_check_columns %in% names(raw.flag.fcs))) { -->
+<!--   cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",4), collapse=""), " ", "RCSI Ridge Overall Distribution Plot")) -->
+<!--   (plot_ridge_distribution_phu(raw.flag.fcs, numeric_cols = c("fsl_rcsi_lessquality", "fsl_rcsi_borrow", "fsl_rcsi_mealsize","fsl_rcsi_mealadult", "fsl_rcsi_mealnb"), -->
+<!--                          name_groups = "Food Coping Strategy", name_units = "Days")) -->
+<!-- } -->
+<!-- ``` -->
+
+<!-- #### RCSI Ridge by Enumerator Distribution Plot -->
+
+<!-- ```{r, results='asis'} -->
+<!-- if(all(rcsi_check_columns %in% names(raw.flag.fcs))) { -->
+<!--   cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",4), collapse=""), " ", "RCSI Ridge by Enumerator Distribution Plot")) -->
+<!-- (plot_ridge_distribution_phu(raw.flag.fcs, numeric_cols = c("fsl_rcsi_lessquality", "fsl_rcsi_borrow", "fsl_rcsi_mealsize","fsl_rcsi_mealadult", "fsl_rcsi_mealnb"), -->
+<!--                          name_groups = "Food Coping Strategy", name_units = "Days", grouping = "enumerator")) -->
+<!-- } -->
+<!-- ``` -->
+
+
+<!-- ```{r} -->
+<!-- if(all(fcs_check_columns %in% names(raw.flag.fcs)) & -->
+<!--    all(rcsi_check_columns %in% names(raw.flag.fcs)) & -->
+<!--    all(hhs_check_columns %in% names(raw.flag.fcs))) { -->
+<!--   cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",4), collapse=""), " ", "FCS/RCSI/HHS Correlation Plot")) -->
+<!--   (plot_correlogram_phu(raw.flag.fcs, numeric_cols = c("fsl_fcs_score",  "fsl_rcsi_score",  "fsl_hhs_score"))) -->
+<!-- } -->
+<!-- ``` -->
