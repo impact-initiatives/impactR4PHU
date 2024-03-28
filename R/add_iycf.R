@@ -194,8 +194,6 @@ add_iycf <- function(.dataset,
   # IYCF Indicator 1: Ever Breastfed
   if(!iycf_1 %in% names(.dataset)){
     warning("IYCF 1 not found in dataset.\nIYCF Indicator 1: Ever Breastfed not calculated")
-    .dataset <- .dataset %>%
-      dplyr::mutate(iycf_evbf = NA)
   } else {
     .dataset <- .dataset %>%
       dplyr::mutate(iycf_evbf = dplyr::case_when(!!rlang::sym(iycf_1) == yes_value ~ 1,
@@ -209,8 +207,6 @@ add_iycf <- function(.dataset,
   # IYCF Indicator 2: Early Initiation of Breastfeeding
   if(!iycf_2 %in% names(.dataset)){
     warning("IYCF 2 not found in dataset.\nIYCF Indicator 2: Early Initiation of Breastfeeding not calculated")
-    .dataset <- .dataset %>%
-      dplyr::mutate(iycf_eibf = NA)
   } else {
     .dataset <- .dataset %>%
       dplyr::mutate(iycf_eibf =  dplyr::case_when(!!rlang::sym(iycf_2) %in% c(iycf2_immediate_value,
@@ -228,8 +224,6 @@ add_iycf <- function(.dataset,
   # IYCF Indicator 3: Exclusive Breastfeeding First 2 Days After Birth
   if(!iycf_3 %in% names(.dataset)){
     warning("IYCF 3 not found in dataset.\nIYCF Indicator 3: Exclusive Breastfeeding First 2 Days After Birth not calculated")
-    .dataset <- .dataset %>%
-      dplyr::mutate(iycf_ebf2d = NA)
   } else {
     .dataset <- .dataset %>%
       dplyr::mutate(iycf_ebf2d = dplyr::case_when(!!rlang::sym(iycf_3) == no_value ~ 1,
@@ -252,8 +246,6 @@ add_iycf <- function(.dataset,
   if(!all(c(ebf_foods,ebf_liquids,iycf_4) %in% names(.dataset))) {
     warning("Your dataset appears not to have all the foods/liquids from the standard IYCF 2021 question sequence.\nIt is advised you ask about all recommended foods/liquids or there is a risk of overestimating EBF.\nIYCF Indicator 4: Exclusive Breastfeeding not calculated ")
     warning(paste0("Missing the following variables ", setdiff(c(ebf_foods,ebf_liquids), names(.dataset))))
-    .dataset <- .dataset %>%
-      dplyr::mutate(iycf_ebf = NA)
   } else {
     .dataset <- .dataset %>%
       dplyr::mutate(iycf_6b_num = as.numeric(!!rlang::sym(iycf_6b)),
@@ -271,7 +263,7 @@ add_iycf <- function(.dataset,
                                      iycf_7f,iycf_7g,iycf_7h,iycf_7i,iycf_7j,
                                      iycf_7k,iycf_7l,iycf_7m,iycf_7o,iycf_7n,
                                      iycf_7p,iycf_7q,iycf_7r), ~ dplyr::case_when(. == yes_value ~ 1,
-                                                                                  . != yes_value ~ 0,
+                                                                                  . == no_value ~ 0,
                                                                                   TRUE ~ NA)) %>%
       dplyr::mutate_at(dplyr::vars(iycf_6b,iycf_6c,iycf_6d,iycf_7a), ~ dplyr::case_when(as.numeric(.) > 0 ~ 1,
                                                                                         as.numeric(.) == 0 ~ 0,
@@ -291,8 +283,6 @@ add_iycf <- function(.dataset,
 
   if(!all(c(iycf_4,iycf_6b,iycf_6c) %in% names(.dataset))) {
     warning("IYCF 4 or IYCF 6b or IYCF 6c not found in dataset.\nIYCF Indicator 5: Mixed Milk Feeding (MIxMF) not calculated")
-    .dataset <- .dataset %>%
-      dplyr::mutate(iycf_mixmf = NA)
   } else {
     .dataset <- .dataset %>%
       dplyr::mutate(iycf_mixmf = dplyr::case_when(!!rlang::sym(iycf_4) == yes_value &
@@ -311,8 +301,6 @@ add_iycf <- function(.dataset,
   # IYCF Indicator 6: Continued Breastfeeding 12-23 months
   if(!iycf_4 %in% names(.dataset)){
     warning("IYCF 4 not found in dataset.\nIYCF Indicator 6: Continued Breastfeeding 12-23 months not calculated")
-    .dataset <- .dataset %>%
-      dplyr::mutate(iycf_cbf = NA)
   } else {
     .dataset <- .dataset %>%
       dplyr::mutate(iycf_cbf =  dplyr::case_when(!!rlang::sym(iycf_4) == yes_value ~ 1,
@@ -329,8 +317,6 @@ add_iycf <- function(.dataset,
   if(!all(ebf_foods %in% names(.dataset))) {
     warning("Your dataset appears not to have all the foods from the standard IYCF 2021 question sequence.\nIYCF Indicator 7: Introduction of Solid, Semi-Solid, or Soft Foods (ISSSF) not calculated")
     warning(paste0("Missing the following variables ", setdiff(ebf_foods, names(.dataset))))
-    .dataset <- .dataset %>%
-      dplyr::mutate(iycf_isssf = NA)
   } else {
     .dataset <- .dataset %>%
       dplyr::mutate(count_foods = rowSums(dplyr::across(ebf_foods, .fns = as.numeric)),
@@ -351,9 +337,6 @@ add_iycf <- function(.dataset,
 
   if(!all(mdd_columns %in% names(.dataset))) {
     warning("Minimum Dietary Diversity related columns not found in dataset.\nIYCF Indicator 8: Minimum Dietary Diversity 6-23 months (MDD) not calculated")
-    .dataset <- .dataset %>%
-      dplyr::mutate(iycf_mdd_score = NA,
-                    iycf_mdd_cat = NA)
   } else {
     .dataset <- .dataset %>%
       dplyr::mutate(mdd1 = dplyr::case_when(!!rlang::sym(iycf_4) == yes_value ~ 1,
@@ -425,8 +408,6 @@ add_iycf <- function(.dataset,
 
   if(!all(mmf_columns %in% names(.dataset))) {
     warning("Minimum Meal Frequency related columns not found in dataset.\nIYCF Indicator 9: Minimum Meal Frequency 6-23 months (MMF) not calculated")
-    .dataset <- .dataset %>%
-      dplyr::mutate(iycf_mmf = NA)
   } else {
     .dataset <- .dataset %>%
       dplyr::mutate(mmf_bf_6to8months = dplyr::case_when(!!rlang::sym(iycf_4) == yes_value &
@@ -479,8 +460,6 @@ add_iycf <- function(.dataset,
 
   if(!all(mmf_columns %in% names(.dataset))) {
     warning("Minimum Milk Feeding Frequency related columns not found in dataset.\nIYCF Indicator 10: Minimum Milk Feeding Frequency For Non-Breastfed Children 6-23 months (MMFF) not calculated")
-    .dataset <- .dataset %>%
-      dplyr::mutate(iycf_mmff = NA)
   } else {
     .dataset <- .dataset %>%
       dplyr::mutate(count_dairy = rowSums(dplyr::across(c(iycf_6b_num,iycf_6c_num,
@@ -502,8 +481,6 @@ add_iycf <- function(.dataset,
 
   if(!all(ind_11_columns %in% names(.dataset))) {
     warning("Minimum Acceptable Diet 6-23 months related columns not found in dataset.\nIYCF Indicator 11: Minimum Acceptable Diet 6-23 months (MAD) not calculated")
-    .dataset <- .dataset %>%
-      dplyr::mutate(iycf_mad = NA)
   } else {
     .dataset <- .dataset %>%
       dplyr::mutate(iycf_mad = dplyr::case_when((!!rlang::sym(iycf_4) == yes_value |
@@ -528,8 +505,6 @@ add_iycf <- function(.dataset,
 
   if(!all(ind_12_columns %in% names(.dataset))) {
     warning("Eggs & Flesh Foods Consumption related columns not found in dataset.\nIYCF Indicator 12: Eggs & Flesh Foods Consumption 6-23 months (EFF) not calculated")
-    .dataset <- .dataset %>%
-      dplyr::mutate(iycf_eff = NA)
   } else {
     .dataset <- .dataset %>%
       dplyr::mutate(iycf_eff = dplyr::case_when(!!rlang::sym(iycf_7i) == 1 |
@@ -555,8 +530,6 @@ add_iycf <- function(.dataset,
                  iycf_6e, iycf_6f,iycf_6g)
   if(!all(sweet_col %in% names(.dataset))) {
     warning("Sweet Beverage Consumption  related columns not found in dataset.\nIYCF Indicator 13: Sweet Beverage Consumption 6-23 months (SWB) not calculated")
-    .dataset <- .dataset %>%
-      dplyr::mutate(iycf_swb = NA)
   } else {
     .dataset <- .dataset %>%
       dplyr::mutate(iycf_swb = dplyr::case_when(!!rlang::sym(iycf_6c_swt) == yes_value |
@@ -583,8 +556,6 @@ add_iycf <- function(.dataset,
   # IYCF Indicator 14: Unhealthy Food Consumption (UFC)
   if(!all(c(iycf_7p,iycf_7q) %in% names(.dataset))) {
     warning("Unhealthy Food Consumption related columns not found in dataset.\nIYCF Indicator 14: Unhealthy Food Consumption (UFC) not calculated")
-    .dataset <- .dataset %>%
-      dplyr::mutate(iycf_ufc = NA)
   } else {
     .dataset <- .dataset %>%
       dplyr::mutate(iycf_ufc = dplyr::case_when(!!rlang::sym(iycf_7p) == yes_value |
@@ -603,8 +574,6 @@ add_iycf <- function(.dataset,
                     "iycf_7f_zero","iycf_7g_zero","iycf_7h_zero")
   if(!all(zero_columns %in% names(.dataset))) {
     warning("Zero Vegetable or Fruit Consumption related columns not found in dataset.\nIYCF Indicator 15: Zero Vegetable or Fruit Consumption 6-23 months (ZVF) not calculated")
-    .dataset <- .dataset %>%
-      dplyr::mutate(iycf_zvf = NA)
   } else {
     .dataset <- .dataset %>%
       dplyr::mutate_at(dplyr::vars(zero_columns), ~ dplyr::case_when(. == no_value ~ 1,
@@ -623,8 +592,6 @@ add_iycf <- function(.dataset,
   # IYCF Indicator 16: Bottle Feeding 0-23 months
   if(!iycf_5 %in% names(.dataset)) {
     warning("IYCF 5 column not found in dataset.\nIYCF Indicator 16: Bottle Feeding 0-23 months not calculated")
-    .dataset <- .dataset %>%
-      dplyr::mutate(iycf_bof = NA)
   } else {
     .dataset <- .dataset %>%
       dplyr::mutate(iycf_bof = dplyr::case_when(!!rlang::sym(iycf_5) == yes_value ~ 1,
@@ -640,18 +607,8 @@ add_iycf <- function(.dataset,
     ## initiate the return output
     .dataset <- .dataset %>%
       dplyr::mutate(loop_index = paste0("loop_iycf_",dplyr::row_number())) %>%
-      dplyr::select(uuid, group, loop_index,age_months,iycf_evbf,
-                    iycf_eibf,iycf_ebf2d,iycf_ebf,iycf_mixmf,
-                    iycf_cbf,iycf_isssf,iycf_mdd_score,iycf_mdd_cat,
-                    iycf_mmf,iycf_mmff,iycf_mad,iycf_eff,
-                    iycf_swb,iycf_ufc,iycf_zvf,iycf_bof)
-  } else {
-    .dataset <- .dataset %>%
-      dplyr::select(uuid, group, loop_index,age_months,iycf_evbf,
-                    iycf_eibf,iycf_ebf2d,iycf_ebf,iycf_mixmf,
-                    iycf_cbf,iycf_isssf,iycf_mdd_score,iycf_mdd_cat,
-                    iycf_mmf,iycf_mmff,iycf_mad,iycf_eff,
-                    iycf_swb,iycf_ufc,iycf_zvf,iycf_bof)
+      dplyr::rename("uuid" = uuid,
+                    "age_months" = age_months)
   }
 
   options(warn = 0)

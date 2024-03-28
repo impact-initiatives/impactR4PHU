@@ -54,6 +54,8 @@ globalVariables(unique(c(
   # check_health_flags:
   "month_exp","health_exp","prop_health_exp","flag_severe_health_exp",
   "flag_catastrophic_health_exp","month_exp_1","month_exp_2",
+  # check_iycf_flags:
+  "foods_all_no","liquids_all_no","flag_yes_foods",
   # get.label:
   "name"
 )))
