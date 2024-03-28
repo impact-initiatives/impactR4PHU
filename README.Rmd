@@ -279,6 +279,20 @@ df_with_mfaz %>%
   head(20)
 ```
 
+
+### Example:: Add IYCF
+
+``` {r eval=T,warning=F}
+df_iycf <- impactR4PHU_iycf_template_data
+df_with_iycf <- df_iycf %>% 
+  add_iycf(uuid = "_submission__uuid",
+           age_months = "child_age_months_2")
+df_with_iycf %>%
+  dplyr::select(
+    uuid, age_months, starts_with("iycf_")) %>%
+  head(20)
+```
+
 ## Checking Flags (For Quality reports and Plausibility checks)
 
 ```{r include=T,eval=T}
@@ -332,6 +346,19 @@ health_flags %>%
   head(20)
 ```
 
+### Example:: Check IYCF Flags
+
+``` {r, eval=TRUE, warning=F}
+iycf_flags <- check_iycf_flags(
+  .dataset = df_with_iycf
+)
+
+iycf_flags %>% 
+  dplyr::select(uuid, age_months, group, starts_with("flag_")) %>% 
+  head(20)
+```
+
+
 ## Code of Conduct
 
-Please note that the addindicators project is released with a [Contributor Code of Conduct](https://impact-initiatives.github.io/impactR4PHU/CODE_OF_CONDUCT.html). By contributing to this project, you agree to abide by its terms.
+Please note that the impactR4PHU project is released with a [Contributor Code of Conduct](https://impact-initiatives.github.io/impactR4PHU/CODE_OF_CONDUCT.html). By contributing to this project, you agree to abide by its terms.

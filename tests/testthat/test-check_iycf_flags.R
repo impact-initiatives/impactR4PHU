@@ -40,288 +40,224 @@ testthat::test_that("Check for missing columns", {
     .dataset = add_iycf(.dataset = test_df_iycf,
                         uuid = "_submission__uuid",
                         age_months = "child_age_months_2") %>%
-      dplyr::select(-iycf_4),
-    uuid = "_submission__uuid",
-    age_months = "child_age_months_2"
+      dplyr::select(-iycf_4)
   ))
 
   testthat::expect_warning(check_iycf_flags(
     .dataset = add_iycf(.dataset = test_df_iycf,
                         uuid = "_submission__uuid",
                         age_months = "child_age_months_2") %>%
-      dplyr::select(-iycf_6a),
-    uuid = "_submission__uuid",
-    age_months = "child_age_months_2"
+      dplyr::select(-iycf_6a)
   ))
 
   testthat::expect_warning(check_iycf_flags(
     .dataset = add_iycf(.dataset = test_df_iycf,
                         uuid = "_submission__uuid",
                         age_months = "child_age_months_2")  %>%
-      dplyr::select(-iycf_6b),
-    uuid = "_submission__uuid",
-    age_months = "child_age_months_2"
+      dplyr::select(-iycf_6b)
   ))
 
   testthat::expect_warning(check_iycf_flags(
     .dataset = add_iycf(.dataset = test_df_iycf,
                         uuid = "_submission__uuid",
                         age_months = "child_age_months_2")  %>%
-      dplyr::select(-iycf_6c),
-    uuid = "_submission__uuid",
-    age_months = "child_age_months_2"
+      dplyr::select(-iycf_6c)
   ))
 
   testthat::expect_warning(check_iycf_flags(
     .dataset = add_iycf(.dataset = test_df_iycf,
                         uuid = "_submission__uuid",
                         age_months = "child_age_months_2")  %>%
-      dplyr::select(-iycf_6d),
-    uuid = "_submission__uuid",
-    age_months = "child_age_months_2"
+      dplyr::select(-iycf_6d)
   ))
 
   testthat::expect_warning(check_iycf_flags(
     .dataset = add_iycf(.dataset = test_df_iycf,
                         uuid = "_submission__uuid",
                         age_months = "child_age_months_2")  %>%
-      dplyr::select(-iycf_6e),
-    uuid = "_submission__uuid",
-    age_months = "child_age_months_2"
+      dplyr::select(-iycf_6e)
   ))
 
   testthat::expect_warning(check_iycf_flags(
     .dataset = add_iycf(.dataset = test_df_iycf,
                         uuid = "_submission__uuid",
                         age_months = "child_age_months_2")  %>%
-      dplyr::select(-iycf_6f),
-    uuid = "_submission__uuid",
-    age_months = "child_age_months_2"
+      dplyr::select(-iycf_6f)
   ))
 
   testthat::expect_warning(check_iycf_flags(
     .dataset = add_iycf(.dataset = test_df_iycf,
                         uuid = "_submission__uuid",
                         age_months = "child_age_months_2")  %>%
-      dplyr::select(-iycf_6g),
-    uuid = "_submission__uuid",
-    age_months = "child_age_months_2"
+      dplyr::select(-iycf_6g)
   ))
 
   testthat::expect_warning(check_iycf_flags(
     .dataset = add_iycf(.dataset = test_df_iycf,
                         uuid = "_submission__uuid",
                         age_months = "child_age_months_2")  %>%
-      dplyr::select(-iycf_6h),
-    uuid = "_submission__uuid",
-    age_months = "child_age_months_2"
+      dplyr::select(-iycf_6h)
   ))
 
   testthat::expect_warning(check_iycf_flags(
     .dataset = add_iycf(.dataset = test_df_iycf,
                         uuid = "_submission__uuid",
                         age_months = "child_age_months_2")  %>%
-      dplyr::select(-iycf_6i),
-    uuid = "_submission__uuid",
-    age_months = "child_age_months_2"
+      dplyr::select(-iycf_6i)
   ))
 
   testthat::expect_warning(check_iycf_flags(
     .dataset = add_iycf(.dataset = test_df_iycf,
                         uuid = "_submission__uuid",
                         age_months = "child_age_months_2")  %>%
-      dplyr::select(-iycf_6j),
-    uuid = "_submission__uuid",
-    age_months = "child_age_months_2"
+      dplyr::select(-iycf_6j)
   ))
 
   testthat::expect_warning(check_iycf_flags(
     .dataset = add_iycf(.dataset = test_df_iycf,
                         uuid = "_submission__uuid",
                         age_months = "child_age_months_2")  %>%
-      dplyr::select(-iycf_7a),
-    uuid = "_submission__uuid",
-    age_months = "child_age_months_2"
+      dplyr::select(-iycf_7a)
   ))
 
   testthat::expect_warning(check_iycf_flags(
     .dataset = add_iycf(.dataset = test_df_iycf,
                         uuid = "_submission__uuid",
                         age_months = "child_age_months_2")  %>%
-      dplyr::select(-iycf_7b),
-    uuid = "_submission__uuid",
-    age_months = "child_age_months_2"
+      dplyr::select(-iycf_7b)
   ))
 
   testthat::expect_warning(check_iycf_flags(
     .dataset = add_iycf(.dataset = test_df_iycf,
                         uuid = "_submission__uuid",
                         age_months = "child_age_months_2")  %>%
-      dplyr::select(-iycf_7c),
-    uuid = "_submission__uuid",
-    age_months = "child_age_months_2"
+      dplyr::select(-iycf_7c)
   ))
 
   testthat::expect_warning(check_iycf_flags(
     .dataset = add_iycf(.dataset = test_df_iycf,
                         uuid = "_submission__uuid",
                         age_months = "child_age_months_2")  %>%
-      dplyr::select(-iycf_7d),
-    uuid = "_submission__uuid",
-    age_months = "child_age_months_2"
+      dplyr::select(-iycf_7d)
   ))
 
   testthat::expect_warning(check_iycf_flags(
     .dataset = add_iycf(.dataset = test_df_iycf,
                         uuid = "_submission__uuid",
                         age_months = "child_age_months_2")  %>%
-      dplyr::select(-iycf_7e),
-    uuid = "_submission__uuid",
-    age_months = "child_age_months_2"
+      dplyr::select(-iycf_7e)
   ))
 
   testthat::expect_warning(check_iycf_flags(
     .dataset = add_iycf(.dataset = test_df_iycf,
                         uuid = "_submission__uuid",
                         age_months = "child_age_months_2")  %>%
-      dplyr::select(-iycf_7f),
-    uuid = "_submission__uuid",
-    age_months = "child_age_months_2"
+      dplyr::select(-iycf_7f)
   ))
 
   testthat::expect_warning(check_iycf_flags(
     .dataset = add_iycf(.dataset = test_df_iycf,
                         uuid = "_submission__uuid",
                         age_months = "child_age_months_2")  %>%
-      dplyr::select(-iycf_7g),
-    uuid = "_submission__uuid",
-    age_months = "child_age_months_2"
+      dplyr::select(-iycf_7g)
   ))
 
   testthat::expect_warning(check_iycf_flags(
     .dataset = add_iycf(.dataset = test_df_iycf,
                         uuid = "_submission__uuid",
                         age_months = "child_age_months_2")  %>%
-      dplyr::select(-iycf_7h),
-    uuid = "_submission__uuid",
-    age_months = "child_age_months_2"
+      dplyr::select(-iycf_7h)
   ))
 
   testthat::expect_warning(check_iycf_flags(
     .dataset = add_iycf(.dataset = test_df_iycf,
                         uuid = "_submission__uuid",
                         age_months = "child_age_months_2")  %>%
-      dplyr::select(-iycf_7i),
-    uuid = "_submission__uuid",
-    age_months = "child_age_months_2"
+      dplyr::select(-iycf_7i)
   ))
 
   testthat::expect_warning(check_iycf_flags(
     .dataset = add_iycf(.dataset = test_df_iycf,
                         uuid = "_submission__uuid",
                         age_months = "child_age_months_2")  %>%
-      dplyr::select(-iycf_7j),
-    uuid = "_submission__uuid",
-    age_months = "child_age_months_2"
+      dplyr::select(-iycf_7j)
   ))
 
   testthat::expect_warning(check_iycf_flags(
     .dataset = add_iycf(.dataset = test_df_iycf,
                         uuid = "_submission__uuid",
                         age_months = "child_age_months_2")  %>%
-      dplyr::select(-iycf_7k),
-    uuid = "_submission__uuid",
-    age_months = "child_age_months_2"
+      dplyr::select(-iycf_7k)
   ))
 
   testthat::expect_warning(check_iycf_flags(
     .dataset = add_iycf(.dataset = test_df_iycf,
                         uuid = "_submission__uuid",
                         age_months = "child_age_months_2")  %>%
-      dplyr::select(-iycf_7l),
-    uuid = "_submission__uuid",
-    age_months = "child_age_months_2"
+      dplyr::select(-iycf_7l)
   ))
 
   testthat::expect_warning(check_iycf_flags(
     .dataset = add_iycf(.dataset = test_df_iycf,
                         uuid = "_submission__uuid",
                         age_months = "child_age_months_2")  %>%
-      dplyr::select(-iycf_7m),
-    uuid = "_submission__uuid",
-    age_months = "child_age_months_2"
+      dplyr::select(-iycf_7m)
   ))
 
   testthat::expect_warning(check_iycf_flags(
     .dataset = add_iycf(.dataset = test_df_iycf,
                         uuid = "_submission__uuid",
                         age_months = "child_age_months_2")  %>%
-      dplyr::select(-iycf_7n),
-    uuid = "_submission__uuid",
-    age_months = "child_age_months_2"
+      dplyr::select(-iycf_7n)
   ))
 
   testthat::expect_warning(check_iycf_flags(
     .dataset = add_iycf(.dataset = test_df_iycf,
                         uuid = "_submission__uuid",
                         age_months = "child_age_months_2")  %>%
-      dplyr::select(-iycf_7o),
-    uuid = "_submission__uuid",
-    age_months = "child_age_months_2"
+      dplyr::select(-iycf_7o)
   ))
 
   testthat::expect_warning(check_iycf_flags(
     .dataset = add_iycf(.dataset = test_df_iycf,
                         uuid = "_submission__uuid",
                         age_months = "child_age_months_2")  %>%
-      dplyr::select(-iycf_7p),
-    uuid = "_submission__uuid",
-    age_months = "child_age_months_2"
+      dplyr::select(-iycf_7p)
   ))
 
   testthat::expect_warning(check_iycf_flags(
     .dataset = add_iycf(.dataset = test_df_iycf,
                         uuid = "_submission__uuid",
                         age_months = "child_age_months_2")  %>%
-      dplyr::select(-iycf_7q),
-    uuid = "_submission__uuid",
-    age_months = "child_age_months_2"
+      dplyr::select(-iycf_7q)
   ))
 
   testthat::expect_warning(check_iycf_flags(
     .dataset = add_iycf(.dataset = test_df_iycf ,
                         uuid = "_submission__uuid",
                         age_months = "child_age_months_2") %>%
-      dplyr::select(-iycf_7r),
-    uuid = "_submission__uuid",
-    age_months = "child_age_months_2"
+      dplyr::select(-iycf_7r)
   ))
 
   testthat::expect_warning(check_iycf_flags(
     .dataset = add_iycf(.dataset = test_df_iycf,
                         uuid = "_submission__uuid",
                         age_months = "child_age_months_2")  %>%
-      dplyr::select(-iycf_8),
-    uuid = "_submission__uuid",
-    age_months = "child_age_months_2"
+      dplyr::select(-iycf_8)
   ))
 
   testthat::expect_warning(check_iycf_flags(
     .dataset = add_iycf(.dataset = test_df_iycf,
                         uuid = "_submission__uuid",
                         age_months = "child_age_months_2")  %>%
-      dplyr::select(-iycf_6b_num),
-    uuid = "_submission__uuid",
-    age_months = "child_age_months_2"
+      dplyr::select(-iycf_6b_num)
   ))
 
   testthat::expect_warning(check_iycf_flags(
     .dataset = add_iycf(.dataset = test_df_iycf,
                         uuid = "_submission__uuid",
                         age_months = "child_age_months_2")  %>%
-      dplyr::select(-iycf_6c_num),
-    uuid = "_submission__uuid",
-    age_months = "child_age_months_2"
+      dplyr::select(-iycf_6c_num)
   ))
 
   testthat::expect_warning(check_iycf_flags(
@@ -329,8 +265,6 @@ testthat::test_that("Check for missing columns", {
                         uuid = "_submission__uuid",
                         age_months = "child_age_months_2")  %>%
       dplyr::select(-iycf_6d_num),
-    uuid = "_submission__uuid",
-    age_months = "child_age_months_2",
     grouping = "enum_iycf"
   ))
 

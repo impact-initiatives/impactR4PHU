@@ -603,6 +603,50 @@ df_with_mfaz %>%
     ## 19 31d0cfb8-21d7-414b4f-94999f-04a1… NA             NA            NA          NA
     ## 20 31d0cfb8-21d7-414b4f-94999f-04a1… NA             NA            NA          NA
 
+### Example:: Add IYCF
+
+``` r
+df_iycf <- impactR4PHU_iycf_template_data
+df_with_iycf <- df_iycf %>% 
+  add_iycf(uuid = "_submission__uuid",
+           age_months = "child_age_months_2")
+df_with_iycf %>%
+  dplyr::select(
+    uuid, age_months, starts_with("iycf_")) %>%
+  head(20)
+```
+
+    ## # A tibble: 20 × 67
+    ##    uuid    age_months iycf_1 iycf_2 iycf_3 iycf_4 iycf_5 iycf_6a iycf_6b iycf_6c
+    ##    <chr>   <chr>      <chr>  <chr>  <chr>  <chr>  <chr>    <dbl>   <dbl>   <dbl>
+    ##  1 0f1346… 11         yes    first… no     yes    yes          1       0       1
+    ##  2 0f1346… 11         yes    first… no     no     no           1       0       0
+    ##  3 bae8a3… 17         yes    first… no     yes    no           1       0       0
+    ##  4 8561a2… 9          yes    first… no     yes    no           1       0       1
+    ##  5 8561a2… 9          yes    first… no     yes    no           1       0       1
+    ##  6 b69d05… 12         no     <NA>   <NA>   <NA>   yes          1       0       1
+    ##  7 1e0496… 19         no     <NA>   <NA>   <NA>   no           1       0       1
+    ##  8 373977… 14         yes    immed… no     yes    no           1       0       1
+    ##  9 373977… 16         yes    immed… no     yes    no           1       0       1
+    ## 10 4b806c… 20         no     <NA>   <NA>   <NA>   no           1       0       1
+    ## 11 4b806c… 12         yes    immed… no     yes    no           1       0       1
+    ## 12 5cce47… 12         yes    immed… no     yes    yes          1       1       1
+    ## 13 78cde5… 20         yes    immed… yes    yes    no           1       1       1
+    ## 14 d929f0… 11         yes    immed… no     no     no           1       1       1
+    ## 15 987389… 14         yes    immed… yes    yes    no           1       1       0
+    ## 16 0fa5d9… 11         yes    immed… yes    yes    no           0       0       0
+    ## 17 18ef33… 10         yes    immed… yes    yes    yes          1       1       1
+    ## 18 5a91d4… 7          yes    immed… yes    yes    yes          1       0       0
+    ## 19 e4a46d… 17         no     <NA>   <NA>   <NA>   no           1       0       1
+    ## 20 28b24b… 21         no     <NA>   <NA>   <NA>   no           1       0       1
+    ## # ℹ 57 more variables: iycf_6d <dbl>, iycf_6e <dbl>, iycf_6f <dbl>,
+    ## #   iycf_6g <dbl>, iycf_6h <dbl>, iycf_6i <dbl>, iycf_6j <dbl>,
+    ## #   iycf_6j_swt <lgl>, iycf_6c_swt <chr>, iycf_6d_swt <chr>, iycf_6h_swt <chr>,
+    ## #   iycf_7a <dbl>, iycf_7b <dbl>, iycf_7c <dbl>, iycf_7d <dbl>, iycf_7e <dbl>,
+    ## #   iycf_7f <dbl>, iycf_7g <dbl>, iycf_7h <dbl>, iycf_7i <dbl>, iycf_7j <dbl>,
+    ## #   iycf_7k <dbl>, iycf_7l <dbl>, iycf_7m <dbl>, iycf_7n <dbl>, iycf_7o <dbl>,
+    ## #   iycf_7p <dbl>, iycf_7q <dbl>, iycf_7r <dbl>, iycf_cf_check <lgl>, …
+
 ## Checking Flags (For Quality reports and Plausibility checks)
 
 ``` r
@@ -901,27 +945,27 @@ wash_flags %>%
     ## 18 3b6948fe-3409-4f4143-b3bab2-86301b529fc7     5            NA             NA
     ## 19 3c1704f5-2473-474e4f-808982-f9830c51d7b2     2            NA             NA
     ## 20 3e02914b-eb25-484243-909498-dcfa793514b2     5            NA             NA
-    ##    flag_high_litre flag_high_container flag_no_container flag_not_immediate
-    ## 1               NA                  NA                NA                 NA
-    ## 2               NA                  NA                NA                 NA
-    ## 3               NA                  NA                 0                  0
-    ## 4               NA                  NA                 1                  0
-    ## 5                0                   0                 0                  1
-    ## 6               NA                   0                 0                  0
-    ## 7               NA                  NA                 0                  0
-    ## 8               NA                   0                 0                  0
-    ## 9               NA                   0                 0                  0
-    ## 10              NA                  NA                NA                 NA
-    ## 11              NA                  NA                 1                  1
-    ## 12              NA                   0                 0                  0
-    ## 13              NA                   0                 0                  0
-    ## 14              NA                   0                 0                  0
-    ## 15              NA                  NA                 0                  0
-    ## 16              NA                  NA                 0                  0
-    ## 17              NA                  NA                 0                  0
-    ## 18              NA                  NA                 0                  0
-    ## 19              NA                  NA                 0                  0
-    ## 20              NA                   0                 0                  0
+    ##    flag_high_litre flag_high_container flag_no_container
+    ## 1               NA                  NA                NA
+    ## 2               NA                  NA                NA
+    ## 3               NA                  NA                 0
+    ## 4               NA                  NA                 0
+    ## 5                0                   0                 0
+    ## 6               NA                   0                 0
+    ## 7               NA                  NA                 0
+    ## 8               NA                   0                 0
+    ## 9               NA                   0                 0
+    ## 10              NA                  NA                NA
+    ## 11              NA                  NA                 0
+    ## 12              NA                   0                 0
+    ## 13              NA                   0                 0
+    ## 14              NA                   0                 0
+    ## 15              NA                  NA                 0
+    ## 16              NA                  NA                 0
+    ## 17              NA                  NA                 0
+    ## 18              NA                  NA                 0
+    ## 19              NA                  NA                 0
+    ## 20              NA                   0                 0
 
 ### Example:: Check Health Flags (to add more flags related to WGSS)
 
@@ -979,9 +1023,48 @@ health_flags %>%
     ## 19                            0
     ## 20                            0
 
+### Example:: Check IYCF Flags
+
+``` r
+iycf_flags <- check_iycf_flags(
+  .dataset = df_with_iycf
+)
+
+iycf_flags %>% 
+  dplyr::select(uuid, age_months, group, starts_with("flag_")) %>% 
+  head(20)
+```
+
+    ## # A tibble: 20 × 12
+    ##    uuid        age_months group flag_yes_foods flag_yes_liquids flag_no_anything
+    ##    <chr>       <chr>      <chr>          <dbl>            <dbl>            <dbl>
+    ##  1 0f1346c8-6… 11         All                0                0                0
+    ##  2 0f1346c8-6… 11         All                0                0                0
+    ##  3 bae8a3a7-d… 17         All                0                0                0
+    ##  4 8561a27d-e… 9          All                0                0                0
+    ##  5 8561a27d-e… 9          All                0                0                0
+    ##  6 b69d0571-d… 12         All                0                0               NA
+    ##  7 1e049682-6… 19         All                0                0               NA
+    ##  8 3739779b-f… 14         All                0                0                0
+    ##  9 3739779b-f… 16         All                0                0                0
+    ## 10 4b806c8c-4… 20         All                0                0               NA
+    ## 11 4b806c8c-4… 12         All                0                0                0
+    ## 12 5cce4725-4… 12         All                0                0                0
+    ## 13 78cde5ca-7… 20         All                0                0                0
+    ## 14 d929f004-a… 11         All                0                0                0
+    ## 15 98738911-e… 14         All                0                0                0
+    ## 16 0fa5d936-e… 11         All                0                0                0
+    ## 17 18ef3371-6… 10         All                0                0                0
+    ## 18 5a91d4d2-d… 7          All                0                0                0
+    ## 19 e4a46dc1-d… 17         All                0                0               NA
+    ## 20 28b24ba6-0… 21         All                0                0               NA
+    ## # ℹ 6 more variables: flag_no_foods <dbl>, flag_all_foods_no_meal <dbl>,
+    ## #   flag_some_foods_no_meal <dbl>, flag_high_mdd_low_mmf <dbl>,
+    ## #   flag_under6_nobf_nomilk <dbl>, flag_meats_nostaples <dbl>
+
 ## Code of Conduct
 
-Please note that the addindicators project is released with a
-[Contributor Code of
+Please note that the impactR4PHU project is released with a [Contributor
+Code of
 Conduct](https://impact-initiatives.github.io/impactR4PHU/CODE_OF_CONDUCT.html).
 By contributing to this project, you agree to abide by its terms.
