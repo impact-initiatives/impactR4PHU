@@ -44,6 +44,19 @@
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">create_fsl_plaus</span><span class="op">(</span></span>
 <span>  <span class="va">.dataset</span>,</span>
+<span>  fsl_fcs_cereal <span class="op">=</span> <span class="st">"fsl_fcs_cereal"</span>,</span>
+<span>  fsl_fcs_legumes <span class="op">=</span> <span class="st">"fsl_fcs_legumes"</span>,</span>
+<span>  fsl_fcs_dairy <span class="op">=</span> <span class="st">"fsl_fcs_dairy"</span>,</span>
+<span>  fsl_fcs_meat <span class="op">=</span> <span class="st">"fsl_fcs_meat"</span>,</span>
+<span>  fsl_fcs_veg <span class="op">=</span> <span class="st">"fsl_fcs_veg"</span>,</span>
+<span>  fsl_fcs_fruit <span class="op">=</span> <span class="st">"fsl_fcs_fruit"</span>,</span>
+<span>  fsl_fcs_oil <span class="op">=</span> <span class="st">"fsl_fcs_oil"</span>,</span>
+<span>  fsl_fcs_sugar <span class="op">=</span> <span class="st">"fsl_fcs_sugar"</span>,</span>
+<span>  fsl_rcsi_lessquality <span class="op">=</span> <span class="st">"fsl_rcsi_lessquality"</span>,</span>
+<span>  fsl_rcsi_borrow <span class="op">=</span> <span class="st">"fsl_rcsi_borrow"</span>,</span>
+<span>  fsl_rcsi_mealsize <span class="op">=</span> <span class="st">"fsl_rcsi_mealsize"</span>,</span>
+<span>  fsl_rcsi_mealadult <span class="op">=</span> <span class="st">"fsl_rcsi_mealadult"</span>,</span>
+<span>  fsl_rcsi_mealnb <span class="op">=</span> <span class="st">"fsl_rcsi_mealnb"</span>,</span>
 <span>  grouping <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  uuid <span class="op">=</span> <span class="st">"uuid"</span>,</span>
 <span>  short_report <span class="op">=</span> <span class="cn">FALSE</span>,</span>
@@ -56,6 +69,58 @@
     <dl><dt>.dataset</dt>
 <dd><p>raw/clean data with all calculated
 fcs/rcsi/hhs/hdds/fcm/fclcm add_x indicators</p></dd>
+
+
+<dt>fsl_fcs_cereal</dt>
+<dd><p>the name of the variable that indicates the number of days cereals were consumed</p></dd>
+
+
+<dt>fsl_fcs_legumes</dt>
+<dd><p>the name of the variable that indicates the number of days legumes were consumed</p></dd>
+
+
+<dt>fsl_fcs_dairy</dt>
+<dd><p>the name of the variable that indicates the number of days dairy were consumed</p></dd>
+
+
+<dt>fsl_fcs_meat</dt>
+<dd><p>the name of the variable that indicates the number of days meat were consumed</p></dd>
+
+
+<dt>fsl_fcs_veg</dt>
+<dd><p>the name of the variable that indicates the number of days vegetables were consumed</p></dd>
+
+
+<dt>fsl_fcs_fruit</dt>
+<dd><p>the name of the variable that indicates the number of days fruit were consumed</p></dd>
+
+
+<dt>fsl_fcs_oil</dt>
+<dd><p>the name of the variable that indicates the number of days oil was consumed</p></dd>
+
+
+<dt>fsl_fcs_sugar</dt>
+<dd><p>the name of the variable that indicates the number of days sugar was consumed</p></dd>
+
+
+<dt>fsl_rcsi_lessquality</dt>
+<dd><p>Column representing question- During the last 7 days, were there days (and, if so, how many) when your household had to rely on less preferred and less expensive food to cope with a lack of food or money to buy it?</p></dd>
+
+
+<dt>fsl_rcsi_borrow</dt>
+<dd><p>Column representing question- During the last 7 days, were there days (and, if so, how many) when your household had to borrow food or rely on help from a relative or friend to cope with a lack of food or money to buy it?</p></dd>
+
+
+<dt>fsl_rcsi_mealsize</dt>
+<dd><p>Column representing question- During the last 7 days, were there days (and, if so, how many) when your household had to limit portion size of meals at meal times to cope with a lack of food or money to buy it?</p></dd>
+
+
+<dt>fsl_rcsi_mealadult</dt>
+<dd><p>Column representing question- During the last 7 days, were there days (and, if so, how many) when your household had to restrict consumption by adults in order for small children to eat to cope with a lack of food or money to buy it?</p></dd>
+
+
+<dt>fsl_rcsi_mealnb</dt>
+<dd><p>Column representing question - During the last 7 days, were there days (and, if so, how many) when your household had to reduce number of meals eaten in a day to cope with a lack of food or money to buy it?</p></dd>
 
 
 <dt>grouping</dt>
