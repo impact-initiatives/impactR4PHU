@@ -51,7 +51,7 @@ add_mfaz <- function(.dataset,
     stop("Missing nut_muac_cm column")
   } else {
     .dataset <- .dataset %>%
-      dplyr::mutate(nut_muac_cm = as.numeric(nut_muac_cm),
+      dplyr::mutate(!!rlang::sym(nut_muac_cm) := as.numeric(!!rlang::sym(nut_muac_cm)),
                     sex = ifelse(!!rlang::sym(child_sex) == value_male_sex,1,2),
                     age_months = as.numeric(!!rlang::sym(child_age_months)),
                     age_days = as.numeric(!!rlang::sym(child_age_months))* 30.25)

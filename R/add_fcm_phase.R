@@ -124,7 +124,7 @@ add_fcm_phase <- function(.dataset,
 
   if (all(c(fcs_column_name,rcsi_column_name,hhs_column_name) %in% names(.dataset))){
     .dataset <-.dataset %>%
-      dplyr::mutate(fc_cell = dplyr::case_when(!!rlang::sym(fcs_column_name) == fcs_categories_acceptable & !!rlang::sym(rcsi_column_name) == rcsi_categories_low & !!rlang::sym(hhs_column_name) == hhs_categories_none ~ 1,
+      dplyr::mutate(fsl_fc_cell = dplyr::case_when(!!rlang::sym(fcs_column_name) == fcs_categories_acceptable & !!rlang::sym(rcsi_column_name) == rcsi_categories_low & !!rlang::sym(hhs_column_name) == hhs_categories_none ~ 1,
                                                !!rlang::sym(fcs_column_name) == fcs_categories_poor & !!rlang::sym(rcsi_column_name) == rcsi_categories_low & !!rlang::sym(hhs_column_name) == hhs_categories_none ~ 11,
                                                !!rlang::sym(fcs_column_name) == fcs_categories_borderline & !!rlang::sym(rcsi_column_name) == rcsi_categories_low & !!rlang::sym(hhs_column_name) == hhs_categories_none ~ 6,
                                                !!rlang::sym(fcs_column_name) == fcs_categories_acceptable & !!rlang::sym(rcsi_column_name) == rcsi_categories_medium & !!rlang::sym(hhs_column_name) == hhs_categories_none ~ 16,
@@ -172,7 +172,7 @@ add_fcm_phase <- function(.dataset,
                                                TRUE ~ NA_real_))
   } else if(all(c(hdds_column_name,rcsi_column_name,hhs_column_name) %in% names(.dataset))) {
     .dataset <-.dataset %>%
-      dplyr::mutate(fc_cell = dplyr::case_when(!!rlang::sym(hdds_column_name) == hdds_categories_high & !!rlang::sym(rcsi_column_name) == rcsi_categories_low & !!rlang::sym(hhs_column_name) == hhs_categories_none ~ 1,
+      dplyr::mutate(fsl_fc_cell = dplyr::case_when(!!rlang::sym(hdds_column_name) == hdds_categories_high & !!rlang::sym(rcsi_column_name) == rcsi_categories_low & !!rlang::sym(hhs_column_name) == hhs_categories_none ~ 1,
                                                !!rlang::sym(hdds_column_name) == hdds_categories_low & !!rlang::sym(rcsi_column_name) == rcsi_categories_low & !!rlang::sym(hhs_column_name) == hhs_categories_none ~ 11,
                                                !!rlang::sym(hdds_column_name) == hdds_categories_medium & !!rlang::sym(rcsi_column_name) == rcsi_categories_low & !!rlang::sym(hhs_column_name) == hhs_categories_none ~ 6,
                                                !!rlang::sym(hdds_column_name) == hdds_categories_high & !!rlang::sym(rcsi_column_name) == rcsi_categories_medium & !!rlang::sym(hhs_column_name) == hhs_categories_none ~ 16,
@@ -220,7 +220,7 @@ add_fcm_phase <- function(.dataset,
                                                TRUE ~ NA_real_))
   } else if(all(c(fcs_column_name,hhs_column_name) %in% names(.dataset))) {
     .dataset <-.dataset %>%
-      dplyr::mutate(fc_cell = dplyr::case_when(!!rlang::sym(fcs_column_name) == fcs_categories_acceptable & !!rlang::sym(hhs_column_name) == hhs_categories_none ~ 1,
+      dplyr::mutate(fsl_fc_cell = dplyr::case_when(!!rlang::sym(fcs_column_name) == fcs_categories_acceptable & !!rlang::sym(hhs_column_name) == hhs_categories_none ~ 1,
                                                !!rlang::sym(fcs_column_name) == fcs_categories_poor & !!rlang::sym(hhs_column_name) == hhs_categories_none ~ 11,
                                                !!rlang::sym(fcs_column_name) == fcs_categories_borderline & !!rlang::sym(hhs_column_name) == hhs_categories_none ~ 6,
                                                !!rlang::sym(fcs_column_name) == fcs_categories_acceptable & !!rlang::sym(hhs_column_name) == hhs_categories_little ~ 2,
@@ -238,7 +238,7 @@ add_fcm_phase <- function(.dataset,
                                                TRUE ~ NA_real_))
   } else if(all(c(hdds_column_name,hhs_column_name) %in% names(.dataset))) {
     .dataset <-.dataset %>%
-      dplyr::mutate(fc_cell = dplyr::case_when(!!rlang::sym(hdds_column_name) == hdds_categories_high & !!rlang::sym(hhs_column_name) == hhs_categories_none ~ 1,
+      dplyr::mutate(fsl_fc_cell = dplyr::case_when(!!rlang::sym(hdds_column_name) == hdds_categories_high & !!rlang::sym(hhs_column_name) == hhs_categories_none ~ 1,
                                                !!rlang::sym(hdds_column_name) == hdds_categories_low & !!rlang::sym(hhs_column_name) == hhs_categories_none ~ 11,
                                                !!rlang::sym(hdds_column_name) == hdds_categories_medium & !!rlang::sym(hhs_column_name) == hhs_categories_none ~ 6,
                                                !!rlang::sym(hdds_column_name) == hdds_categories_high & !!rlang::sym(hhs_column_name) == hhs_categories_little ~ 2,
@@ -259,20 +259,20 @@ add_fcm_phase <- function(.dataset,
   if(all(c(fcs_column_name,rcsi_column_name,hhs_column_name) %in% names(.dataset)) |
      all(c(hdds_column_name,rcsi_column_name,hhs_column_name) %in% names(.dataset))) {
     .dataset <- .dataset %>%
-      dplyr::mutate(fc_phase = dplyr::case_when(fc_cell %in% c(1, 6) ~ "Phase 1 FC",
-                                                fc_cell %in% c(2, 3, 7, 11, 12, 16, 17, 18, 21, 22, 26, 31, 32, 36) ~ "Phase 2 FC",
-                                                fc_cell %in% c(4, 5, 8, 9, 13, 19, 20, 23, 24, 27, 28, 33, 34, 37, 38, 41, 42, 43) ~ "Phase 3 FC",
-                                                fc_cell %in% c(10, 14, 15, 25, 29, 35, 39, 40, 44) ~ "Phase 4 FC",
-                                                fc_cell %in% c(30, 45) ~ "Phase 5 FC",
+      dplyr::mutate(fsl_fc_phase = dplyr::case_when(fsl_fc_cell %in% c(1, 6) ~ "Phase 1 FC",
+                                                fsl_fc_cell %in% c(2, 3, 7, 11, 12, 16, 17, 18, 21, 22, 26, 31, 32, 36) ~ "Phase 2 FC",
+                                                fsl_fc_cell %in% c(4, 5, 8, 9, 13, 19, 20, 23, 24, 27, 28, 33, 34, 37, 38, 41, 42, 43) ~ "Phase 3 FC",
+                                                fsl_fc_cell %in% c(10, 14, 15, 25, 29, 35, 39, 40, 44) ~ "Phase 4 FC",
+                                                fsl_fc_cell %in% c(30, 45) ~ "Phase 5 FC",
                                                 TRUE ~ NA))
   } else if(all(c(fcs_column_name,hhs_column_name) %in% names(.dataset)) |
      all(c(hdds_column_name,hhs_column_name) %in% names(.dataset))) {
     .dataset <- .dataset %>%
-      dplyr::mutate(fc_phase = dplyr::case_when(fc_cell %in% c(1, 6) ~ "Phase 1 FC",
-                                                fc_cell %in% c(2, 3, 7, 11) ~ "Phase 2 FC",
-                                                fc_cell %in% c(4, 8, 12, 13) ~ "Phase 3 FC",
-                                                fc_cell %in% c(5, 9, 10, 14) ~ "Phase 4 FC",
-                                                fc_cell %in% c(15) ~ "Phase 5 FC",
+      dplyr::mutate(fsl_fc_phase = dplyr::case_when(fsl_fc_cell %in% c(1, 6) ~ "Phase 1 FC",
+                                                fsl_fc_cell %in% c(2, 3, 7, 11) ~ "Phase 2 FC",
+                                                fsl_fc_cell %in% c(4, 8, 12, 13) ~ "Phase 3 FC",
+                                                fsl_fc_cell %in% c(5, 9, 10, 14) ~ "Phase 4 FC",
+                                                fsl_fc_cell %in% c(15) ~ "Phase 5 FC",
                                                 TRUE ~ NA))
 
   }
