@@ -93,12 +93,12 @@ check_anthro_flags <- function(.dataset,
     stop("Missing muac columns")
   } else{
     .dataset <- .dataset %>%
-      dplyr::mutate(flag_extreme_muac = ifelse(is.na(nut_muac_cm), NA,
-                                               ifelse(nut_muac_cm < 7 | nut_muac_cm > 22, 1, 0)),
-                    muac_noflag = ifelse(is.na(nut_muac_cm), NA, ifelse(flag_extreme_muac == 1, NA, nut_muac_cm)),
-                    gam_muac_noflag = ifelse(is.na(nut_muac_cm), NA, ifelse(flag_extreme_muac == 1, NA, gam_muac)),
-                    mam_muac_noflag = ifelse(is.na(nut_muac_cm), NA, ifelse(flag_extreme_muac == 1, NA, mam_muac)),
-                    sam_muac_noflag = ifelse(is.na(nut_muac_cm), NA, ifelse(flag_extreme_muac == 1, NA, sam_muac)))
+      dplyr::mutate(flag_extreme_muac = ifelse(is.na(!!rlang::sym(nut_muac_cm)), NA,
+                                               ifelse(!!rlang::sym(nut_muac_cm) < 7 | !!rlang::sym(nut_muac_cm) > 22, 1, 0)),
+                    muac_noflag = ifelse(is.na(!!rlang::sym(nut_muac_cm)), NA, ifelse(flag_extreme_muac == 1, NA, !!rlang::sym(nut_muac_cm))),
+                    gam_muac_noflag = ifelse(is.na(!!rlang::sym(nut_muac_cm)), NA, ifelse(flag_extreme_muac == 1, NA, gam_muac)),
+                    mam_muac_noflag = ifelse(is.na(!!rlang::sym(nut_muac_cm)), NA, ifelse(flag_extreme_muac == 1, NA, mam_muac)),
+                    sam_muac_noflag = ifelse(is.na(!!rlang::sym(nut_muac_cm)), NA, ifelse(flag_extreme_muac == 1, NA, sam_muac)))
 
   }
   ## Test if all columns are in the dataset
