@@ -16,3 +16,20 @@ testthat::test_that("Check dataframe empty", {
 })
 
 
+testthat::test_that("UUID variable not available", {
+  load(testthat::test_path("testdata", "test_df.rda"))
+  testthat::expect_error(create_fsl_plaus(
+    .dataset = test_df %>% dplyr::select(-uuid),
+    uuid = "uuid"
+  ))
+})
+
+testthat::test_that("Check result", {
+  load(testthat::test_path("testdata", "test_df_fsl_flags.rda"))
+  load(testthat::test_path("testdata", "test_survey.rda"))
+  load(testthat::test_path("testdata", "test_df_fsl_plaus.rda"))
+  actual <- test_df_fsl_plaus
+  expected <- test_df_fsl_flags %>%
+    create_fsl_plaus()
+  testthat::expect_equal(actual,expected)
+})

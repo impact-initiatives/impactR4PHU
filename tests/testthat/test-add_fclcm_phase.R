@@ -39,10 +39,7 @@ testthat::test_that("Checking column values fsl_fc_phase - [Phase 1 FC/Phase 2 F
 
   set.seed(30)
   test_df_with_calculation[sample.int(nrow(test_df_with_calculation), 3), c("fsl_fc_phase")] <- "Phase 6 FC"
-  set.seed(29)
   test_df_with_calculation[sample.int(nrow(test_df_with_calculation), 3), c("fsl_fc_phase")] <- "little"
-
-  set.seed(12)
   test_df_with_calculation[sample.int(nrow(test_df_with_calculation), 3), c("fsl_fc_phase")] <- "random_value"
   testthat::expect_error(add_fclcm_phase(
     .dataset = test_df_with_calculation
@@ -50,22 +47,18 @@ testthat::test_that("Checking column values fsl_fc_phase - [Phase 1 FC/Phase 2 F
 })
 
 
-
 testthat::test_that("Checking column values fsl_fc_phase - [None/Stress/Crisis/Emergency]", {
   load(testthat::test_path("testdata", "test_df_with_calculation.rda"))
 
-  set.seed(30)
+  set.seed(20)
   test_df_with_calculation[sample.int(nrow(test_df_with_calculation), 3), c("fsl_lcsi_cat")] <- "none"
-  set.seed(29)
   test_df_with_calculation[sample.int(nrow(test_df_with_calculation), 3), c("fsl_lcsi_cat")] <- "cris"
-
-  set.seed(12)
   test_df_with_calculation[sample.int(nrow(test_df_with_calculation), 3), c("fsl_lcsi_cat")] <- "random_value"
+
   testthat::expect_error(add_fclcm_phase(
     .dataset = test_df_with_calculation
   ))
 })
-
 
 
 testthat::test_that("check if function producing expected output with (FCS/RCSI/HHS)", {

@@ -52,7 +52,7 @@ calculate_plausibility <- function(.dataset){
   }
   if (length(setdiff(anthro_plaus_vars, names(.dataset))) == 0) {
     print("Generating anthropometric plausibility score and classification.")
-    .dataset <- .dataset %>% dplyr::mutate(plaus_anthro_score = rowSums(across(c(plaus_sd_muac_mm, plaus_n_children_muac,
+    .dataset <- .dataset %>% dplyr::mutate(plaus_anthro_score = rowSums(dplyr::across(c(plaus_sd_muac_mm, plaus_n_children_muac,
                                                                      plaus_ageratio,plaus_sexratio,plaus_perc_mfaz_children,plaus_dps_muac), .fns = as.numeric), na.rm=T),
                                plaus_anthro_cat = ifelse(plaus_anthro_score >= 0 & plaus_anthro_score <= 9, "Excellent",
                                                          ifelse(plaus_anthro_score > 9 & plaus_anthro_score <= 19, "Good",

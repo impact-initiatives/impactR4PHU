@@ -56,6 +56,21 @@ globalVariables(unique(c(
   "flag_catastrophic_health_exp","month_exp_1","month_exp_2",
   # check_iycf_flags:
   "foods_all_no","liquids_all_no","flag_yes_foods",
+  # calculate_plausibility
+  "age_ratio.pvalue","sex_ratio.pvalue","dps_muac","flag_perc_mfaz_children","n_children_muac",
+  "sd_muac_mm","plaus_sd_muac_mm","plaus_n_children_muac","plaus_ageratio","plaus_sexratio",
+  "plaus_perc_mfaz_children","plaus_dps_muac","plaus_anthro_score","cdr","prop_hh_flag_deaths",
+  "age_ratio_0_5.pvalue","age_ratio_2_5.pvalue","age_ratio_5_10.pvalue","mean_hh_size.pvalue","prop_join_people",
+  "prop_left_people","poisson_pvalues.deaths","plaus_cdr","plaus_prop_hh_flag_deaths","plaus_sex_ratio.pvalue",
+  "plaus_age_ratio_0_5.pvalue","plaus_age_ratio_2_5.pvalue","plaus_age_ratio_5_10.pvalue","plaus_mean_hh_size.pvalue",
+  "plaus_prop_joiners","plaus_prop_leavers","plaus_poisson_pvalues.deaths","mort_plaus_score","plaus_flag_lcsi_liv_agriculture",
+  "plaus_flag_lcsi_liv_livestock","corr.fcs_rcsi","corr.fcs_rcsi.pvalue","corr.fcs_hhs","corr.fcs_hhs.pvalue",
+  "corr.hhs_rcsi","corr.hhs_rcsi.pvalue","prop_fc_flags","mad_ratio.pvalue","prop_flag_high_mdd_low_mmf",
+  "age_ratio_under6m_6to23m.pvalue","sd_mdd","prop_iycf_caregiver","plaus_prop_iycf_caregiver","plaus_sdd_mdd",
+  "plaus_age_ratio_under6m_6to23m.pvalue","plaus_prop_flag_high_mdd_low_mmf","plaus_mad_ratio.pvalue","iycf_plaus_score",
+  # create_fsl_plaus
+  "fsl_fcs_score","n","fsl_fc_phase","flag_fsl_fc_cell","fsl_fc_cell",
+  "p1","p2","p3","p4","p5",
   # get.label:
   "name"
 )))
