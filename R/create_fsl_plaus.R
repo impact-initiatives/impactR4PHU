@@ -64,9 +64,8 @@ create_fsl_plaus <- function(.dataset,
   } else {
     .dataset <- .dataset %>% dplyr::mutate(group = !!rlang::sym(grouping))
   }
-
-  if (fsl_fcs_score %in% names(.dataset)) {
-    results2 <- .dataset %>% dplyr::group_by(!!rlang::sym(grouping)) %>%
+  if ("fsl_fcs_score" %in% names(.dataset)) {
+    results2 <- .dataset %>% dplyr::group_by(group) %>%
       dplyr::summarise(mean_fcs = round(mean(fsl_fcs_score, na.rm = TRUE), 2),
                        sd_fcs = round(stats::sd(fsl_fcs_score, na.rm = TRUE), 2),
                        mean_days_cereals = round(mean(!!rlang::sym(fsl_fcs_cereal), na.rm = TRUE), 2),
@@ -91,8 +90,8 @@ create_fsl_plaus <- function(.dataset,
       results <- merge(results, results2)
     }
   }
-  if (fsl_rcsi_score %in% names(.dataset)) {
-    results2 <- .dataset %>% dplyr::group_by(!!rlang::sym(grouping)) %>%
+  if ("fsl_rcsi_score" %in% names(.dataset)) {
+    results2 <- .dataset %>% dplyr::group_by(group) %>%
       dplyr::summarise(mean_rcsi = round(mean(fsl_rcsi_score, na.rm = TRUE), 2),
                        sd_rcsi = round(stats::sd(fsl_rcsi_score, na.rm = TRUE), 2),
                        mean_rcsi_lessquality = round(mean(!!rlang::sym(fsl_rcsi_lessquality), na.rm = TRUE), 2),
@@ -111,8 +110,8 @@ create_fsl_plaus <- function(.dataset,
       results <- merge(results, results2)
     }
   }
-  if (fsl_hhs_score %in% names(.dataset)) {
-    results2 <- .dataset %>% dplyr::group_by(!!rlang::sym(grouping)) %>%
+  if ("fsl_hhs_score" %in% names(.dataset)) {
+    results2 <- .dataset %>% dplyr::group_by(group) %>%
       dplyr::summarise(mean_hhs = round(mean(fsl_hhs_score, na.rm = TRUE), 2),
                        sd_hhs = round(stats::sd(fsl_hhs_score, na.rm = TRUE), 2))
     if (!exists("results")) {
@@ -121,8 +120,8 @@ create_fsl_plaus <- function(.dataset,
       results <- merge(results, results2)
     }
   }
-  if (fsl_hdds_score %in% names(.dataset)) {
-    results2 <- .dataset %>% dplyr::group_by(!!rlang::sym(grouping)) %>%
+  if ("fsl_hdds_score" %in% names(.dataset)) {
+    results2 <- .dataset %>% dplyr::group_by(group) %>%
       dplyr::summarise(mean_hdds = round(mean(fsl_hdds_score, na.rm = TRUE), 2),
                        sd_hdds = round(stats::sd(fsl_hdds_score, na.rm = TRUE), 2))
     if (!exists("results")) {
@@ -131,10 +130,10 @@ create_fsl_plaus <- function(.dataset,
       results <- merge(results, results2)
     }
   }
-  if (all(c(fsl_fcs_score, fsl_rcsi_score) %in% names(.dataset))) {
+  if (all(c("fsl_fcs_score", "fsl_rcsi_score") %in% names(.dataset))) {
     tryCatch(
       {
-        results2 <- .dataset %>% dplyr::group_by(!!rlang::sym(grouping)) %>%
+        results2 <- .dataset %>% dplyr::group_by(group) %>%
           dplyr::summarise(corr.fcs_rcsi = round(as.numeric(stats::cor.test(fsl_fcs_score, fsl_rcsi_score)[4]), 2),
                            corr.fcs_rcsi.pvalue = as.numeric(stats::cor.test(fsl_fcs_score, fsl_rcsi_score)[3]))
         if (!exists("results")) {
@@ -143,7 +142,7 @@ create_fsl_plaus <- function(.dataset,
           results <- merge(results, results2)
         }
       }, error = function(e) {
-        results2 <- .dataset %>% dplyr::group_by(!!rlang::sym(grouping)) %>%
+        results2 <- .dataset %>% dplyr::group_by(group) %>%
           dplyr::summarise(corr.fcs_rcsi = NA,
                            corr.fcs_rcsi.pvalue = NA)
         if (!exists("results")) {
@@ -154,10 +153,10 @@ create_fsl_plaus <- function(.dataset,
       }
     )
   }
-  if (all(c(fsl_fcs_score, fsl_hhs_score) %in% names(.dataset))) {
+  if (all(c("fsl_fcs_score", "fsl_hhs_score") %in% names(.dataset))) {
     tryCatch(
       {
-        results2 <- .dataset %>% dplyr::group_by(!!rlang::sym(grouping)) %>%
+        results2 <- .dataset %>% dplyr::group_by(group) %>%
           dplyr::summarise(corr.fcs_hhs = round(as.numeric(stats::cor.test(fsl_fcs_score, fsl_hhs_score)[4]), 2),
                            corr.fcs_hhs.pvalue = round(as.numeric(stats::cor.test(fsl_fcs_score, fsl_hhs_score)[3]), 6))
         if (!exists("results")) {
@@ -166,7 +165,7 @@ create_fsl_plaus <- function(.dataset,
           results <- merge(results, results2)
         }
       }, error = function(e) {
-        results2 <- .dataset %>% dplyr::group_by(!!rlang::sym(grouping)) %>%
+        results2 <- .dataset %>% dplyr::group_by(group) %>%
           dplyr::summarise(corr.fcs_hhs = NA,
                            corr.fcs_hhs.pvalue = NA)
         if (!exists("results")) {
@@ -177,10 +176,10 @@ create_fsl_plaus <- function(.dataset,
       }
     )
   }
-  if (all(c(fsl_fcs_score, fsl_hdds_score) %in% names(.dataset))) {
+  if (all(c("fsl_fcs_score", "fsl_hdds_score") %in% names(.dataset))) {
     tryCatch(
       {
-        results2 <- .dataset %>% dplyr::group_by(!!rlang::sym(grouping)) %>%
+        results2 <- .dataset %>% dplyr::group_by(group) %>%
           dplyr::summarise(corr.fcs_hdds = round(as.numeric(stats::cor.test(fsl_fcs_score, fsl_hdds_score)[4]), 2),
                            corr.fcs_hdds.pvalue = round(as.numeric(stats::cor.test(fsl_fcs_score, fsl_hdds_score)[3]), 3))
         if (!exists("results")) {
@@ -189,7 +188,7 @@ create_fsl_plaus <- function(.dataset,
           results <- merge(results, results2)
         }
       }, error = function(e) {
-        results2 <- .dataset %>% dplyr::group_by(!!rlang::sym(grouping)) %>%
+        results2 <- .dataset %>% dplyr::group_by(group) %>%
           dplyr::summarise(corr.fcs_hdds = NA,
                            corr.fcs_hdds.pvalue = NA)
         if (!exists("results")) {
@@ -200,10 +199,10 @@ create_fsl_plaus <- function(.dataset,
       }
     )
   }
-  if (all(c(fsl_hdds_score, fsl_rcsi_score) %in% names(.dataset))) {
+  if (all(c("fsl_hdds_score", "fsl_rcsi_score") %in% names(.dataset))) {
     tryCatch(
       {
-        results2 <- .dataset %>% dplyr::group_by(!!rlang::sym(grouping)) %>%
+        results2 <- .dataset %>% dplyr::group_by(group) %>%
           dplyr::summarise(corr.hdds_rcsi = round(as.numeric(stats::cor.test(fsl_hdds_score, fsl_rcsi_score)[4]), 2),
                            corr.hdds_rcsi.pvalue = round(as.numeric(stats::cor.test(fsl_hdds_score, fsl_rcsi_score)[3]), 3))
         if (!exists("results")) {
@@ -212,7 +211,7 @@ create_fsl_plaus <- function(.dataset,
           results <- merge(results, results2)
         }
       }, error = function(e) {
-        results2 <- .dataset %>% dplyr::group_by(!!rlang::sym(grouping)) %>%
+        results2 <- .dataset %>% dplyr::group_by(group) %>%
           dplyr::summarise(corr.hdds_rcsi = NA,
                            corr.hdds_rcsi.pvalue = NA)
         if (!exists("results")) {
@@ -223,10 +222,10 @@ create_fsl_plaus <- function(.dataset,
       }
     )
   }
-  if (all(c(fsl_hhs_score, fsl_rcsi_score) %in% names(.dataset))) {
+  if (all(c("fsl_hhs_score", "fsl_rcsi_score") %in% names(.dataset))) {
     tryCatch(
       {
-        results2 <- .dataset %>% dplyr::group_by(!!rlang::sym(grouping)) %>%
+        results2 <- .dataset %>% dplyr::group_by(group) %>%
           dplyr::summarise(corr.hhs_rcsi = round(as.numeric(stats::cor.test(fsl_hhs_score, fsl_rcsi_score)[4]), 2),
                            corr.hhs_rcsi.pvalue = round(as.numeric(stats::cor.test(fsl_hhs_score, fsl_rcsi_score)[3]), 3))
         if (!exists("results")) {
@@ -235,7 +234,7 @@ create_fsl_plaus <- function(.dataset,
           results <- merge(results, results2)
         }
       }, error = function(e) {
-        results2 <- .dataset %>% dplyr::group_by(!!rlang::sym(grouping)) %>%
+        results2 <- .dataset %>% dplyr::group_by(group) %>%
           dplyr::summarise(corr.hhs_rcsi = NA,
                            corr.hhs_rcsi.pvalue = NA)
         if (!exists("results")) {
@@ -247,11 +246,11 @@ create_fsl_plaus <- function(.dataset,
     )
   }
 
-  if (all(c(fsl_fcs_score, fsl_hhs_score, fsl_hdds_score,
-            fsl_rcsi_score, "flag_lcsi_coherence") %in% names(.dataset))) {
+  if (all(c("fsl_fcs_score", "fsl_hhs_score", "fsl_hdds_score",
+            "fsl_rcsi_score", "flag_lcsi_coherence") %in% names(.dataset))) {
     nms <- .dataset %>% dplyr::select(dplyr::starts_with("flag")) %>%
       names()
-    results2 <- .dataset %>% dplyr::group_by(!!rlang::sym(grouping)) %>%
+    results2 <- .dataset %>% dplyr::group_by(group) %>%
       dplyr::summarise_at(.vars = nms, ~round(mean(., na.rm = TRUE), 3) * 100)
     if (!exists("results")) {
       results <- results2
@@ -259,7 +258,7 @@ create_fsl_plaus <- function(.dataset,
       results <- merge(results, results2)
     }
   }
-  results2 <- .dataset %>% dplyr::group_by(!!rlang::sym(grouping)) %>%
+  results2 <- .dataset %>% dplyr::group_by(group) %>%
     dplyr::summarise(n = dplyr::n())
   if (!exists("results")) {
     results <- results2
@@ -268,7 +267,7 @@ create_fsl_plaus <- function(.dataset,
   }
 
   results <- results %>% dplyr::select(c(1, n, dplyr::everything()))
-  if ("flag_fsl_fc_cell" %in% names(.dataset)) {
+  if ("flag_fc_cell" %in% names(.dataset)) {
     results2 <- .dataset %>% dplyr::mutate(p1 = ifelse(is.na(fsl_fc_phase), NA,
                                                  ifelse(fsl_fc_phase == "Phase 1 FC", 1, 0)),
                                      p2 = ifelse(is.na(fsl_fc_phase), NA,
@@ -279,7 +278,7 @@ create_fsl_plaus <- function(.dataset,
                                                  ifelse(fsl_fc_phase == "Phase 4 FC", 1, 0)),
                                      p5 = ifelse(is.na(fsl_fc_phase), NA,
                                                  ifelse(fsl_fc_phase == "Phase 5 FC", 1, 0))) %>%
-      dplyr::group_by(!!rlang::sym(grouping)) %>%
+      dplyr::group_by(group) %>%
       dplyr::summarise(prop_fc_flags = sum(flag_fsl_fc_cell, na.rm = TRUE)/sum(!is.na(fsl_fc_cell), na.rm = TRUE),
                        fews_p1 = round(sum(p1, na.rm = TRUE)/sum(!is.na(fsl_fc_cell)), 2),
                        fews_p2 = round(sum(p2, na.rm = TRUE)/sum(!is.na(fsl_fc_cell)), 2),
