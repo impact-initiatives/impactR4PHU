@@ -60,14 +60,9 @@ check_anthro_flags <- function(.dataset,
 
   if (is.null(loop_index)) {
     ## initiate the return output
-    results <- .dataset %>%
-      dplyr::mutate(loop_index = paste0("loop_nut_",dplyr::row_number())) %>%
-      dplyr::select(uuid, group, loop_index,sex,age_months,age_days,edema_confirm)
-  } else {
-    results <- .dataset %>%
-      dplyr::select(uuid, group, loop_index,sex,age_months,age_days,edema_confirm)
+    .dataset <- .dataset %>%
+      dplyr::mutate(loop_index = paste0("loop_nut_",dplyr::row_number()))
   }
-
   # combine all mfaz_cols together
   mfaz_cols <- c("mfaz","severe_mfaz","moderate_mfaz","global_mfaz")
 
@@ -75,11 +70,11 @@ check_anthro_flags <- function(.dataset,
   if(!all(mfaz_cols %in% names(.dataset))) {
     stop("Missing mfaz columns")
   } else{
-    results2 <- .dataset
+    .dataset <- .dataset
 
-    mean_mfaz_dataset <- mean(results2$mfaz, na.rm=T)
+    mean_mfaz_dataset <- mean(.dataset$mfaz, na.rm=T)
 
-    results2 <- results2 %>%
+    .dataset <- .dataset %>%
       dplyr::mutate(flag_sd_mfaz = ifelse(is.na(mfaz),NA,
                                           ifelse(mfaz < mean_mfaz_dataset - 4 | mfaz > mean_mfaz_dataset + 3, 1, 0)),
                     mfaz_who_flag = ifelse(is.na(mfaz), NA, ifelse(mfaz < -5 | mfaz > 5, 1, 0)),
@@ -88,16 +83,8 @@ check_anthro_flags <- function(.dataset,
                     sd_mfaz_noflag = round(stats::sd(mfaz_noflag, na.rm = TRUE),2),
                     global_mfaz_noflag = ifelse(is.na(global_mfaz), NA, ifelse(is.na(flag_sd_mfaz), global_mfaz, ifelse(flag_sd_mfaz == 1, NA, global_mfaz))),
                     moderate_mfaz_noflag = ifelse(is.na(moderate_mfaz), NA, ifelse(is.na(flag_sd_mfaz), moderate_mfaz, ifelse(flag_sd_mfaz == 1, NA, moderate_mfaz))),
-                    severe_mfaz_noflag = ifelse(is.na(severe_mfaz), NA, ifelse(is.na(flag_sd_mfaz), severe_mfaz, ifelse(flag_sd_mfaz == 1, NA, severe_mfaz))))%>%
-      dplyr::select(mfaz,severe_mfaz,moderate_mfaz,global_mfaz,flag_sd_mfaz,mfaz_who_flag,
-                    mfaz_noflag,mean_mfaz_noflag,sd_mfaz_noflag,
-                    global_mfaz_noflag,moderate_mfaz_noflag,severe_mfaz_noflag)
+                    severe_mfaz_noflag = ifelse(is.na(severe_mfaz), NA, ifelse(is.na(flag_sd_mfaz), severe_mfaz, ifelse(flag_sd_mfaz == 1, NA, severe_mfaz))))
 
-    if(!exists("results")){
-      results <- results2
-    } else {
-      results <- cbind(results,results2)
-    }
   }
   # combine all muac_cols together
   muac_cols <- c(nut_muac_cm,"sam_muac","mam_muac","gam_muac")
@@ -105,38 +92,25 @@ check_anthro_flags <- function(.dataset,
   if(!all(muac_cols %in% names(.dataset))) {
     stop("Missing muac columns")
   } else{
-    results2 <- .dataset %>%
+    .dataset <- .dataset %>%
       dplyr::mutate(flag_extreme_muac = ifelse(is.na(nut_muac_cm), NA,
                                                ifelse(nut_muac_cm < 7 | nut_muac_cm > 22, 1, 0)),
                     muac_noflag = ifelse(is.na(nut_muac_cm), NA, ifelse(flag_extreme_muac == 1, NA, nut_muac_cm)),
                     gam_muac_noflag = ifelse(is.na(nut_muac_cm), NA, ifelse(flag_extreme_muac == 1, NA, gam_muac)),
                     mam_muac_noflag = ifelse(is.na(nut_muac_cm), NA, ifelse(flag_extreme_muac == 1, NA, mam_muac)),
-                    sam_muac_noflag = ifelse(is.na(nut_muac_cm), NA, ifelse(flag_extreme_muac == 1, NA, sam_muac))) %>%
-      dplyr::select(nut_muac_cm,sam_muac,mam_muac,gam_muac,gam_muac_noflag,
-                    mam_muac_noflag,sam_muac_noflag,flag_extreme_muac,muac_noflag)
+                    sam_muac_noflag = ifelse(is.na(nut_muac_cm), NA, ifelse(flag_extreme_muac == 1, NA, sam_muac)))
 
-    if(!exists("results")){
-      results <- results2
-    } else {
-      results <- cbind(results,results2)
-    }
   }
   ## Test if all columns are in the dataset
   if(!edema_confirm %in% names(.dataset)) {
     stop("Missing edema_confirm columns")
   } else{
-    results2 <- .dataset %>%
+    .dataset <- .dataset %>%
       dplyr::mutate(flag_edema_pitting = ifelse(is.na(!!rlang::sym(edema_confirm)), NA,
-                                                ifelse(!!rlang::sym(edema_confirm) == value_edema_confirm,1,0))) %>%
-      dplyr::select(flag_edema_pitting)
+                                                ifelse(!!rlang::sym(edema_confirm) == value_edema_confirm,1,0)))
 
-    if(!exists("results")){
-      results <- results2
-    } else {
-      results <- cbind(results,results2)
-    }
   }
 
   options(warn = 0)
-  return(results)
+  return(.dataset)
 }
