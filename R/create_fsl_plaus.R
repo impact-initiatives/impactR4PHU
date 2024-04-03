@@ -2,6 +2,19 @@
 #'
 #' @param .dataset raw/clean data with all calculated
 #' fcs/rcsi/hhs/hdds/fcm/fclcm add_x indicators
+#' @param fsl_fcs_cereal  the name of the variable that indicates the number of days cereals were consumed
+#' @param fsl_fcs_legumes  the name of the variable that indicates the number of days legumes were consumed
+#' @param fsl_fcs_dairy  the name of the variable that indicates the number of days dairy were consumed
+#' @param fsl_fcs_meat  the name of the variable that indicates the number of days meat were consumed
+#' @param fsl_fcs_veg  the name of the variable that indicates the number of days vegetables were consumed
+#' @param fsl_fcs_fruit  the name of the variable that indicates the number of days fruit were consumed
+#' @param fsl_fcs_oil  the name of the variable that indicates the number of days oil was consumed
+#' @param fsl_fcs_sugar  the name of the variable that indicates the number of days sugar was consumed
+#' @param fsl_rcsi_lessquality Column representing question- During the last 7 days, were there days (and, if so, how many) when your household had to rely on less preferred and less expensive food to cope with a lack of food or money to buy it?
+#' @param fsl_rcsi_borrow Column representing question- During the last 7 days, were there days (and, if so, how many) when your household had to borrow food or rely on help from a relative or friend to cope with a lack of food or money to buy it?
+#' @param fsl_rcsi_mealsize Column representing question- During the last 7 days, were there days (and, if so, how many) when your household had to limit portion size of meals at meal times to cope with a lack of food or money to buy it?
+#' @param fsl_rcsi_mealadult Column representing question- During the last 7 days, were there days (and, if so, how many) when your household had to restrict consumption by adults in order for small children to eat to cope with a lack of food or money to buy it?
+#' @param fsl_rcsi_mealnb Column representing question - During the last 7 days, were there days (and, if so, how many) when your household had to reduce number of meals eaten in a day to cope with a lack of food or money to buy it?
 #' @param grouping the name of the variable that indicates the grouping variable - usually "enumerator"
 #' @param uuid uuid variable
 #' @param short_report Inputs a boolean value TRUE or FALSE to return just key variables. If FALSE,
@@ -16,6 +29,19 @@
 #' \dontrun{create_fsl_plaus(df)}
 
 create_fsl_plaus <- function(.dataset,
+                             fsl_fcs_cereal = "fsl_fcs_cereal",
+                             fsl_fcs_legumes = "fsl_fcs_legumes",
+                             fsl_fcs_dairy = "fsl_fcs_dairy",
+                             fsl_fcs_meat = "fsl_fcs_meat",
+                             fsl_fcs_veg = "fsl_fcs_veg",
+                             fsl_fcs_fruit = "fsl_fcs_fruit",
+                             fsl_fcs_oil = "fsl_fcs_oil",
+                             fsl_fcs_sugar = "fsl_fcs_sugar",
+                             fsl_rcsi_lessquality = "fsl_rcsi_lessquality",
+                             fsl_rcsi_borrow = "fsl_rcsi_borrow",
+                             fsl_rcsi_mealsize = "fsl_rcsi_mealsize",
+                             fsl_rcsi_mealadult = "fsl_rcsi_mealadult",
+                             fsl_rcsi_mealnb = "fsl_rcsi_mealnb",
                              grouping = NULL,
                              uuid = "uuid",
                              short_report = FALSE,
@@ -39,53 +65,53 @@ create_fsl_plaus <- function(.dataset,
     .dataset <- .dataset %>% dplyr::mutate(group = !!rlang::sym(grouping))
   }
 
-  if (c("fsl_fcs_score") %in% colnames(.dataset)) {
+  if (fsl_fcs_score %in% names(.dataset)) {
     results2 <- .dataset %>% dplyr::group_by(!!rlang::sym(grouping)) %>%
       dplyr::summarise(mean_fcs = round(mean(fsl_fcs_score, na.rm = TRUE), 2),
                        sd_fcs = round(stats::sd(fsl_fcs_score, na.rm = TRUE), 2),
-                       mean_days_cereals = round(mean(fsl_fcs_cereal, na.rm = TRUE), 2),
-                       sd_days_cereals = round(stats::sd(fsl_fcs_cereal, na.rm = TRUE), 2),
-                       mean_days_legumes = round(mean(fsl_fcs_legumes, na.rm = TRUE), 2),
-                       sd_days_legumes = round(stats::sd(fsl_fcs_legumes, na.rm = TRUE), 2),
-                       mean_days_dairy = round(mean(fsl_fcs_dairy, na.rm = TRUE), 2),
-                       sd_days_dairy = round(stats::sd(fsl_fcs_dairy, na.rm = TRUE), 2),
-                       mean_days_meat = round(mean(fsl_fcs_meat, na.rm = TRUE), 2),
-                       sd_days_meat = round(stats::sd(fsl_fcs_meat, na.rm = TRUE), 2),
-                       mean_days_veg = round(mean(fsl_fcs_veg, na.rm = TRUE), 2),
-                       sd_days_veg = round(stats::sd(fsl_fcs_veg, na.rm = TRUE), 2),
-                       mean_days_fruit = round(mean(fsl_fcs_fruit, na.rm = TRUE), 2),
-                       sd_days_fruit = round(stats::sd(fsl_fcs_fruit, na.rm = TRUE), 2),
-                       mean_days_oils = round(mean(fsl_fcs_oil, na.rm = TRUE), 2),
-                       sd_days_oils = round(stats::sd(fsl_fcs_oil, na.rm = TRUE), 2),
-                       mean_days_sugar = round(mean(fsl_fcs_sugar, na.rm = TRUE), 2),
-                       sd_days_sugar = round(stats::sd(fsl_fcs_sugar, na.rm = TRUE), 2))
+                       mean_days_cereals = round(mean(!!rlang::sym(fsl_fcs_cereal), na.rm = TRUE), 2),
+                       sd_days_cereals = round(stats::sd(!!rlang::sym(fsl_fcs_cereal), na.rm = TRUE), 2),
+                       mean_days_legumes = round(mean(!!rlang::sym(fsl_fcs_legumes), na.rm = TRUE), 2),
+                       sd_days_legumes = round(stats::sd(!!rlang::sym(fsl_fcs_legumes), na.rm = TRUE), 2),
+                       mean_days_dairy = round(mean(!!rlang::sym(fsl_fcs_dairy), na.rm = TRUE), 2),
+                       sd_days_dairy = round(stats::sd(!!rlang::sym(fsl_fcs_dairy), na.rm = TRUE), 2),
+                       mean_days_meat = round(mean(!!rlang::sym(fsl_fcs_meat), na.rm = TRUE), 2),
+                       sd_days_meat = round(stats::sd(!!rlang::sym(fsl_fcs_meat), na.rm = TRUE), 2),
+                       mean_days_veg = round(mean(!!rlang::sym(fsl_fcs_veg), na.rm = TRUE), 2),
+                       sd_days_veg = round(stats::sd(!!rlang::sym(fsl_fcs_veg), na.rm = TRUE), 2),
+                       mean_days_fruit = round(mean(!!rlang::sym(fsl_fcs_fruit), na.rm = TRUE), 2),
+                       sd_days_fruit = round(stats::sd(!!rlang::sym(fsl_fcs_fruit), na.rm = TRUE), 2),
+                       mean_days_oils = round(mean(!!rlang::sym(fsl_fcs_oil), na.rm = TRUE), 2),
+                       sd_days_oils = round(stats::sd(!!rlang::sym(fsl_fcs_oil), na.rm = TRUE), 2),
+                       mean_days_sugar = round(mean(!!rlang::sym(fsl_fcs_sugar), na.rm = TRUE), 2),
+                       sd_days_sugar = round(stats::sd(!!rlang::sym(fsl_fcs_sugar), na.rm = TRUE), 2))
     if (!exists("results")) {
       results <- results2
     }else {
       results <- merge(results, results2)
     }
   }
-  if (c("fsl_rcsi_score") %in% colnames(.dataset)) {
+  if (fsl_rcsi_score %in% names(.dataset)) {
     results2 <- .dataset %>% dplyr::group_by(!!rlang::sym(grouping)) %>%
       dplyr::summarise(mean_rcsi = round(mean(fsl_rcsi_score, na.rm = TRUE), 2),
                        sd_rcsi = round(stats::sd(fsl_rcsi_score, na.rm = TRUE), 2),
-                       mean_rcsi_lessquality = round(mean(fsl_rcsi_lessquality, na.rm = TRUE), 2),
-                       sd_rcsi_lessquality = round(stats::sd(fsl_rcsi_lessquality, na.rm = TRUE), 2),
-                       mean_rcsi_borrow = round(mean(fsl_rcsi_borrow, na.rm = TRUE), 2),
-                       sd_rcsi_borrow = round(stats::sd(fsl_rcsi_borrow, na.rm = TRUE), 2),
-                       mean_rcsi_mealsize = round(mean(fsl_rcsi_mealsize, na.rm = TRUE), 2),
-                       sd_rcsi_mealsize = round(stats::sd(fsl_rcsi_mealsize, na.rm = TRUE), 2),
-                       mean_rcsi_mealadult = round(mean(fsl_rcsi_mealadult, na.rm = TRUE), 2),
-                       sd_rcsi_mealadult = round(stats::sd(fsl_rcsi_mealadult, na.rm = TRUE), 2),
-                       mean_rcsi_mealnb = round(mean(fsl_rcsi_mealnb, na.rm = TRUE), 2),
-                       sd_rcsi_mealnb = round(stats::sd(fsl_rcsi_mealnb, na.rm = TRUE), 2))
+                       mean_rcsi_lessquality = round(mean(!!rlang::sym(fsl_rcsi_lessquality), na.rm = TRUE), 2),
+                       sd_rcsi_lessquality = round(stats::sd(!!rlang::sym(fsl_rcsi_lessquality), na.rm = TRUE), 2),
+                       mean_rcsi_borrow = round(mean(!!rlang::sym(fsl_rcsi_borrow), na.rm = TRUE), 2),
+                       sd_rcsi_borrow = round(stats::sd(!!rlang::sym(fsl_rcsi_borrow), na.rm = TRUE), 2),
+                       mean_rcsi_mealsize = round(mean(!!rlang::sym(fsl_rcsi_mealsize), na.rm = TRUE), 2),
+                       sd_rcsi_mealsize = round(stats::sd(!!rlang::sym(fsl_rcsi_mealsize), na.rm = TRUE), 2),
+                       mean_rcsi_mealadult = round(mean(!!rlang::sym(fsl_rcsi_mealadult), na.rm = TRUE), 2),
+                       sd_rcsi_mealadult = round(stats::sd(!!rlang::sym(fsl_rcsi_mealadult), na.rm = TRUE), 2),
+                       mean_rcsi_mealnb = round(mean(!!rlang::sym(fsl_rcsi_mealnb), na.rm = TRUE), 2),
+                       sd_rcsi_mealnb = round(stats::sd(!!rlang::sym(fsl_rcsi_mealnb), na.rm = TRUE), 2))
     if (!exists("results")) {
       results <- results2
     }else {
       results <- merge(results, results2)
     }
   }
-  if (c("fsl_hhs_score") %in% colnames(.dataset)) {
+  if (fsl_hhs_score %in% names(.dataset)) {
     results2 <- .dataset %>% dplyr::group_by(!!rlang::sym(grouping)) %>%
       dplyr::summarise(mean_hhs = round(mean(fsl_hhs_score, na.rm = TRUE), 2),
                        sd_hhs = round(stats::sd(fsl_hhs_score, na.rm = TRUE), 2))
@@ -95,7 +121,7 @@ create_fsl_plaus <- function(.dataset,
       results <- merge(results, results2)
     }
   }
-  if (c("fsl_hdds_score") %in% colnames(.dataset)) {
+  if (fsl_hdds_score %in% names(.dataset)) {
     results2 <- .dataset %>% dplyr::group_by(!!rlang::sym(grouping)) %>%
       dplyr::summarise(mean_hdds = round(mean(fsl_hdds_score, na.rm = TRUE), 2),
                        sd_hdds = round(stats::sd(fsl_hdds_score, na.rm = TRUE), 2))
@@ -105,7 +131,7 @@ create_fsl_plaus <- function(.dataset,
       results <- merge(results, results2)
     }
   }
-  if (length(setdiff(c("fsl_fcs_score", "fsl_rcsi_score"), colnames(.dataset))) == 0) {
+  if (all(c(fsl_fcs_score, fsl_rcsi_score) %in% names(.dataset))) {
     tryCatch(
       {
         results2 <- .dataset %>% dplyr::group_by(!!rlang::sym(grouping)) %>%
@@ -128,7 +154,7 @@ create_fsl_plaus <- function(.dataset,
       }
     )
   }
-  if (length(setdiff(c("fsl_fcs_score", "fsl_hhs_score"), colnames(.dataset))) == 0) {
+  if (all(c(fsl_fcs_score, fsl_hhs_score) %in% names(.dataset))) {
     tryCatch(
       {
         results2 <- .dataset %>% dplyr::group_by(!!rlang::sym(grouping)) %>%
@@ -151,7 +177,7 @@ create_fsl_plaus <- function(.dataset,
       }
     )
   }
-  if (length(setdiff(c("fsl_fcs_score", "fsl_hdds_score"), colnames(.dataset))) == 0) {
+  if (all(c(fsl_fcs_score, fsl_hdds_score) %in% names(.dataset))) {
     tryCatch(
       {
         results2 <- .dataset %>% dplyr::group_by(!!rlang::sym(grouping)) %>%
@@ -174,7 +200,7 @@ create_fsl_plaus <- function(.dataset,
       }
     )
   }
-  if (length(setdiff(c("fsl_hdds_score", "fsl_rcsi_score"), colnames(.dataset))) == 0) {
+  if (all(c(fsl_hdds_score, fsl_rcsi_score) %in% names(.dataset))) {
     tryCatch(
       {
         results2 <- .dataset %>% dplyr::group_by(!!rlang::sym(grouping)) %>%
@@ -197,7 +223,7 @@ create_fsl_plaus <- function(.dataset,
       }
     )
   }
-  if (length(setdiff(c("fsl_hhs_score", "fsl_rcsi_score"), colnames(.dataset))) == 0) {
+  if (all(c(fsl_hhs_score, fsl_rcsi_score) %in% names(.dataset))) {
     tryCatch(
       {
         results2 <- .dataset %>% dplyr::group_by(!!rlang::sym(grouping)) %>%
@@ -221,8 +247,8 @@ create_fsl_plaus <- function(.dataset,
     )
   }
 
-  if (length(setdiff(c("fsl_fcs_score", "fsl_hhs_score", "fsl_hdds_score",
-                       "fsl_rcsi_score", "flag_lcsi_coherence"), names(.dataset))) < 5) {
+  if (all(c(fsl_fcs_score, fsl_hhs_score, fsl_hdds_score,
+            fsl_rcsi_score, "flag_lcsi_coherence") %in% names(.dataset))) {
     nms <- .dataset %>% dplyr::select(dplyr::starts_with("flag")) %>%
       names()
     results2 <- .dataset %>% dplyr::group_by(!!rlang::sym(grouping)) %>%
@@ -242,7 +268,7 @@ create_fsl_plaus <- function(.dataset,
   }
 
   results <- results %>% dplyr::select(c(1, n, dplyr::everything()))
-  if (c("flag_fsl_fc_cell") %in% names(.dataset)) {
+  if ("flag_fsl_fc_cell" %in% names(.dataset)) {
     results2 <- .dataset %>% dplyr::mutate(p1 = ifelse(is.na(fsl_fc_phase), NA,
                                                  ifelse(fsl_fc_phase == "Phase 1 FC", 1, 0)),
                                      p2 = ifelse(is.na(fsl_fc_phase), NA,

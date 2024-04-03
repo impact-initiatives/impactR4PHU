@@ -112,7 +112,7 @@ check_anthro_flags <- function(.dataset,
                     gam_muac_noflag = ifelse(is.na(nut_muac_cm), NA, ifelse(flag_extreme_muac == 1, NA, gam_muac)),
                     mam_muac_noflag = ifelse(is.na(nut_muac_cm), NA, ifelse(flag_extreme_muac == 1, NA, mam_muac)),
                     sam_muac_noflag = ifelse(is.na(nut_muac_cm), NA, ifelse(flag_extreme_muac == 1, NA, sam_muac))) %>%
-      dplyr::select(nut_muac_cm,sam_muac,mam_muac,gam_muac,nut_muac_mm,gam_muac_noflag,
+      dplyr::select(nut_muac_cm,sam_muac,mam_muac,gam_muac,gam_muac_noflag,
                     mam_muac_noflag,sam_muac_noflag,flag_extreme_muac,muac_noflag)
 
     if(!exists("results")){

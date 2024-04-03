@@ -164,8 +164,8 @@
 #'   fsl_hhs_score= c(1,2),
 #'   fsl_hdds_cat= c("High","Low"),
 #'   fsl_hdds_score= c(10,0),
-#'   fc_cell= c(22,33),
-#'   fc_phase= c("Phase 2 FC","Phase 3 FC"),
+#'   fsl_fc_cell= c(22,33),
+#'   fsl_fc_phase= c("Phase 2 FC","Phase 3 FC"),
 #'   num_children= c(2,3),
 #'   fsl_first_income_types = c("sell_agri_prod","trader"),
 #'   fsl_second_income_types = c("daily_labour_skilled","sell_anim_prod"),
@@ -235,8 +235,8 @@ check_fsl_flags <- function(.dataset,
                            fsl_hhs_score = "fsl_hhs_score",
                            fsl_hdds_cat = "fsl_hdds_cat",
                            fsl_hdds_score = "fsl_hdds_score",
-                           fsl_fc_cell = "fc_cell",
-                           fsl_fc_phase = "fc_phase",
+                           fsl_fc_cell = "fsl_fc_cell",
+                           fsl_fc_phase = "fsl_fc_phase",
                            num_children = "num_children",
                            income_types = c("fsl_first_income_types","fsl_second_income_types","fsl_third_income_types"),
                            sell_agri_prod = "sell_agri_prod",
@@ -277,9 +277,6 @@ check_fsl_flags <- function(.dataset,
     .dataset <- .dataset %>% dplyr::mutate(group = !!rlang::sym(grouping))
   }
 
-  ## initiate the return output
-  results <- .dataset %>%
-    dplyr::select(uuid, group)
 
   # combine all fcs_columns together
   fcs_flag_columns <- c(fsl_fcs_cereal,fsl_fcs_legumes,fsl_fcs_dairy,fsl_fcs_meat,
@@ -290,7 +287,7 @@ check_fsl_flags <- function(.dataset,
     warning("Missing fcs columns")
   } else{
     ## flag issues in data with FCS
-    results2 <- .dataset %>%
+    .dataset <- .dataset %>%
       dplyr::mutate_at(dplyr::vars(fcs_flag_columns),as.numeric)%>%
       dplyr::mutate(flag_meat_cereal_ratio = ifelse(is.na(!!rlang::sym(fsl_fcs_cereal)), NA, ifelse(!!rlang::sym(fsl_fcs_cereal) < !!rlang::sym(fsl_fcs_meat), 1, 0)),
                     flag_low_cereal = ifelse(is.na(!!rlang::sym(fsl_fcs_cereal)), NA, ifelse(!!rlang::sym(fsl_fcs_cereal) < 5, 1, 0)),
@@ -304,31 +301,7 @@ check_fsl_flags <- function(.dataset,
                     flag_sd_foodgroup = dplyr::case_when(is.na(sd_foods) ~ NA,
                                                          sd_foods < 0.8 ~ 1,
                                                          TRUE ~ 0)) %>%
-      dplyr::ungroup() %>%
-      dplyr::select(fcs_flag_columns,
-                    fsl_fcs_cat,
-                    flag_meat_cereal_ratio,
-                    flag_low_cereal,
-                    flag_low_oil,
-                    flag_low_fcs,
-                    flag_high_fcs,
-                    flag_sd_foodgroup) %>%
-      dplyr::rename("fsl_fcs_cereal" = fsl_fcs_cereal,
-                    "fsl_fcs_legumes" = fsl_fcs_legumes,
-                    "fsl_fcs_dairy" = fsl_fcs_dairy,
-                    "fsl_fcs_meat" = fsl_fcs_meat,
-                    "fsl_fcs_veg" = fsl_fcs_veg,
-                    "fsl_fcs_fruit" = fsl_fcs_fruit,
-                    "fsl_fcs_oil" = fsl_fcs_oil,
-                    "fsl_fcs_sugar" = fsl_fcs_sugar,
-                    "fsl_fcs_cat" =fsl_fcs_cat,
-                    "fsl_fcs_score" = fsl_fcs_score)
-
-    if(!exists("results")){
-      results <- results2
-    } else {
-      results <- cbind(results,results2)
-    }
+      dplyr::ungroup()
   }
   ## flag issues in data with rCSI
 
@@ -337,7 +310,7 @@ check_fsl_flags <- function(.dataset,
   if(!all(c(rcsi_flag_columns,fsl_fcs_cereal,fsl_fcs_dairy,fsl_fcs_meat,fsl_fcs_score) %in% names(.dataset))) {
     warning("Missing rcsi or fsl_fcs_cereal/fsl_fcs_dairy/fsl_fcs_meat/fsl_fcs_score columns")
   } else {
-    results2 <- .dataset %>%
+    .dataset <- .dataset %>%
       dplyr::mutate_at(dplyr::vars(rcsi_flag_columns),as.numeric)%>%
       dplyr::mutate(flag_protein_rcsi = ifelse(is.na(!!rlang::sym(fsl_rcsi_score)), NA,
                                                ifelse(is.na(!!rlang::sym(fsl_fcs_cereal)), NA,
@@ -352,15 +325,16 @@ check_fsl_flags <- function(.dataset,
                                             ifelse(!!rlang::sym(fsl_rcsi_score) >= 43, 1, 0)))
     if(!num_children %in% names(.dataset)) {
       warning("num_children argument incorrect or not available in the dataset.")
-      results2 <- results2 %>%
+      .dataset <- .dataset %>%
         dplyr::mutate(flag_rcsi_children = NA)
     } else{
-      results2 <- results2 %>%
-        dplyr::mutate(flag_rcsi_children = ifelse(is.na(!!rlang::sym(fsl_rcsi_mealadult)), NA,
-                                                  ifelse(!is.na(!!rlang::sym(fsl_rcsi_mealadult)) &
-                                                           as.numeric(num_children) == 0, 1,0)))
+      .dataset <- .dataset %>%
+        dplyr::mutate(flag_rcsi_children = ifelse(is.na(!!rlang::sym(fsl_rcsi_mealadult)) |
+                                                    is.na(!!rlang::sym(num_children)), NA,
+                                                  ifelse(as.numeric(!!rlang::sym(fsl_rcsi_mealadult)) > 0 &
+                                                           as.numeric(!!rlang::sym(num_children)) == 0, 1,0)))
     }
-    results2 <- results2 %>%
+    .dataset <- .dataset %>%
       dplyr::mutate(flag_fcsrcsi_box = dplyr::case_when(is.na(!!rlang::sym(fsl_rcsi_score)) |
                                                           is.na(!!rlang::sym(fsl_fcs_score)) ~ NA,
                                                         as.numeric(!!rlang::sym(fsl_rcsi_score)) > 18 &
@@ -371,26 +345,10 @@ check_fsl_flags <- function(.dataset,
                                          !!rlang::sym(fsl_rcsi_mealadult), !!rlang::sym(fsl_rcsi_mealnb)), na.rm = TRUE)) %>%
       dplyr::ungroup() %>%
       dplyr::mutate(flag_sd_rcsicoping = dplyr::case_when(is.na(sd_rcsicoping) |
-                                                            !!rlang::sym(fsl_rcsi_score) ~ NA,
+                                                            is.na(!!rlang::sym(fsl_rcsi_score)) ~ NA,
                                                           sd_rcsicoping < 0.8 &
                                                             !!rlang::sym(fsl_rcsi_score) < 4 ~ 1,
-                                                          TRUE ~ 0)) %>%
-      dplyr::select(rcsi_flag_columns,fsl_rcsi_cat,flag_protein_rcsi,
-                    flag_fcs_rcsi,flag_high_rcsi,flag_rcsi_children,
-                    flag_fcsrcsi_box,flag_sd_rcsicoping) %>%
-      dplyr::rename("fsl_rcsi_lessquality" = fsl_rcsi_lessquality,
-                    "fsl_rcsi_borrow" = fsl_rcsi_borrow,
-                    "fsl_rcsi_mealsize" = fsl_rcsi_mealsize,
-                    "fsl_rcsi_mealadult" = fsl_rcsi_mealadult,
-                    "fsl_rcsi_mealnb" = fsl_rcsi_mealnb,
-                    "fsl_rcsi_cat" = fsl_rcsi_cat,
-                    "fsl_rcsi_score" = fsl_rcsi_score)
-
-    if(!exists("results")){
-      results <- results2
-    } else {
-      results <- cbind(results,results2)
-    }
+                                                          TRUE ~ 0))
   }
 
   ## flag issue in data with HHS
@@ -399,24 +357,9 @@ check_fsl_flags <- function(.dataset,
   if(!all(hhs_flag_columns %in% names(.dataset))) {
     warning("Missing hhs columns")
   } else {
-    results2 <- .dataset %>%
+    .dataset <- .dataset %>%
       dplyr::mutate(flag_severe_hhs = ifelse(is.na(!!rlang::sym(fsl_hhs_score)), NA,
-                                             ifelse(!!rlang::sym(fsl_hhs_score) >= 5, 1, 0))) %>%
-      dplyr::select(hhs_flag_columns,flag_severe_hhs) %>%
-      dplyr::rename("fsl_hhs_nofoodhh" = fsl_hhs_nofoodhh,
-                    "fsl_hhs_nofoodhh_freq" = fsl_hhs_nofoodhh_freq,
-                    "fsl_hhs_sleephungry" = fsl_hhs_sleephungry,
-                    "fsl_hhs_sleephungry_freq" = fsl_hhs_sleephungry_freq,
-                    "fsl_hhs_alldaynight" = fsl_hhs_alldaynight,
-                    "fsl_hhs_alldaynight_freq" = fsl_hhs_alldaynight_freq,
-                    "fsl_hhs_cat" = fsl_hhs_cat,
-                    "fsl_hhs_score" = fsl_hhs_score)
-
-    if(!exists("results")){
-      results <- results2
-    } else {
-      results <- cbind(results,results2)
-    }
+                                             ifelse(!!rlang::sym(fsl_hhs_score) >= 5, 1, 0)))
   }
   ## flag issues with LCSI
   lcs_flag_columns <- c(fsl_lcsi_stress1,fsl_lcsi_stress2,fsl_lcsi_stress3,fsl_lcsi_stress4,fsl_lcsi_crisis1,fsl_lcsi_crisis2,
@@ -425,7 +368,7 @@ check_fsl_flags <- function(.dataset,
   if(!all(lcs_flag_columns %in% names(.dataset))) {
     warning("Missing lcsi columns")
   } else {
-    results2 <- .dataset %>%
+    .dataset <- .dataset %>%
       dplyr::mutate(flag_lcsi_coherence = ifelse(is.na(!!rlang::sym(fsl_lcsi_emergency)), NA,
                                                  ifelse(!!rlang::sym(fsl_lcsi_emergency) == 1 & !!rlang::sym(fsl_lcsi_stress) == 0 |
                                                           !!rlang::sym(fsl_lcsi_emergency) == 1 & !!rlang::sym(fsl_lcsi_crisis) == 0 |
@@ -436,9 +379,9 @@ check_fsl_flags <- function(.dataset,
 
     lcs_variables <- c(fsl_lcsi_stress1,fsl_lcsi_stress2,fsl_lcsi_stress3,fsl_lcsi_stress4,fsl_lcsi_crisis1,
                        fsl_lcsi_crisis2,fsl_lcsi_crisis3,fsl_lcsi_emergency1,fsl_lcsi_emergency2,fsl_lcsi_emergency3)
-    results2$lcsi.count.na <-  apply(results2[c(lcs_variables)], 1, function(x) sum(x == "not_applicable"))
+    .dataset$lcsi.count.na <-  apply(.dataset[c(lcs_variables)], 1, function(x) sum(x == "not_applicable"))
 
-    results2 <- results2 %>%
+    .dataset <- .dataset %>%
       dplyr::mutate(flag_lcsi_na = dplyr::case_when(is.na(lcsi.count.na) ~ NA,
                                                     lcsi.count.na == 10 ~ 1,
                                                     TRUE ~ 0))
@@ -456,77 +399,28 @@ check_fsl_flags <- function(.dataset,
       displ <- lcs_variables[which(grepl("displaced|migration|migrated",get.label(lcs_variables, tool.survey = tool.survey)))]
     )
 
-    ###### TO CONTINUE HEREEEEe
+
     if(length(agric)>0){
-      results2$flag_lcsi_liv_agriculture <- dplyr::case_when(rowSums(sapply(results2[agric], function(i) grepl(fsl_lcsi_yes_value,i))) > 0 & any(results2[income_types] == sell_agri_prod) > 0 ~ 1, .default = 0, TRUE ~ NA)
+      .dataset$flag_lcsi_liv_agriculture <-  dplyr::case_when(rowSums(sapply(.dataset[agric], function(i) grepl(fsl_lcsi_yes_value,i))) > 0 & rowSums(sapply(.dataset[income_types], function(i) grepl(sell_agri_prod,i))) > 0 ~ 1, TRUE ~ 0)
     }
 
     if(length(livest)>0){
-      results2$flag_lcsi_liv_livestock  <- dplyr::case_when(rowSums(sapply(results2[livest], function(i) grepl(fsl_lcsi_yes_value,i))) > 0 & any(results2[income_types] == sell_anim_prod) > 0 ~ 1, .default = 0, TRUE ~ NA)
+      .dataset$flag_lcsi_liv_livestock  <- dplyr::case_when(rowSums(sapply(.dataset[livest], function(i) grepl(fsl_lcsi_yes_value,i))) > 0 & rowSums(sapply(.dataset[income_types], function(i) grepl(sell_anim_prod,i))) > 0 ~ 1, TRUE ~ 0)
     }
 
     if(length(displ)>0){
-      results2$flag_lcsi_displ  <- dplyr::case_when(rowSums(sapply(results2[displ], function(i) grepl(fsl_lcsi_yes_value,i))) > 0 & results2[residency_status] == value_idp ~ 1, .default = 0, TRUE ~ NA) ## Fix second part to take only select_one from three columns
-    }
-
-    # Initialize a vector with the base columns that are always selected
-    columns_to_select <- c(lcs_flag_columns, "flag_lcsi_coherence", "flag_lcsi_severity", "flag_lcsi_na")
-
-    # Dynamically add columns based on the presence of elements in the vectors
-    if (length(livest) > 0) {
-      columns_to_select <- c(columns_to_select, "flag_lcsi_liv_livestock")
-    }
-    if (length(agric) > 0) {
-      columns_to_select <- c(columns_to_select, "flag_lcsi_liv_agriculture")
-    }
-    if (length(displ) > 0) {
-      columns_to_select <- c(columns_to_select, "flag_lcsi_displ")
-    }
-
-    # Select the dynamically determined columns
-    results2 <- results2 %>%
-      dplyr::select(all_of(columns_to_select)) %>%
-      dplyr::rename("fsl_lcsi_stress1" = fsl_lcsi_stress1,
-                    "fsl_lcsi_stress2" = fsl_lcsi_stress2,
-                    "fsl_lcsi_stress3" = fsl_lcsi_stress3,
-                    "fsl_lcsi_stress4" = fsl_lcsi_stress4,
-                    "fsl_lcsi_crisis1" = fsl_lcsi_crisis1,
-                    "fsl_lcsi_crisis2" = fsl_lcsi_crisis2,
-                    "fsl_lcsi_crisis3" = fsl_lcsi_crisis3,
-                    "fsl_lcsi_emergency1" = fsl_lcsi_emergency1,
-                    "fsl_lcsi_emergency2" = fsl_lcsi_emergency2,
-                    "fsl_lcsi_emergency3" = fsl_lcsi_emergency3,
-                    "fsl_lcsi_stress" = fsl_lcsi_stress,
-                    "fsl_lcsi_crisis" = fsl_lcsi_crisis,
-                    "fsl_lcsi_emergency" = fsl_lcsi_emergency,
-                    "fsl_lcsi_cat_yes" = fsl_lcsi_cat_yes,
-                    "fsl_lcsi_cat_exhaust" = fsl_lcsi_cat_exhaust,
-                    "fsl_lcsi_cat" = fsl_lcsi_cat)
-
-
-    if(!exists("results")){
-      results <- results2
-    } else {
-      results <- cbind(results,results2)
+      .dataset$flag_lcsi_displ <- dplyr::case_when(rowSums(sapply(.dataset[displ], function(i) grepl(fsl_lcsi_yes_value,i))) > 0 & .dataset[residency_status] == value_idp ~ 1, TRUE ~ 0)
     }
   }
+
   fc_phase_col <- c(fsl_fc_cell,fsl_fc_phase)
   if(!all(fc_phase_col %in% names(.dataset))) {
     warning("Missing fc_cell and fc_phase columns")
   } else {
     ## flag phase
-    results2 <- .dataset %>%
-      dplyr::mutate(flag_fc_cell = ifelse(is.na(fsl_fc_cell), NA,
-                                          ifelse(fsl_fc_cell %in% c(3,4,5,8,9,10), 1, 0))) %>%
-      dplyr::select(fc_phase_col, flag_fc_cell) %>%
-      dplyr::rename("fsl_fc_cell" = fsl_fc_cell,
-                    "fsl_fc_phase" = fsl_fc_phase)
-
-    if(!exists("results")){
-      results <- results2
-    } else {
-      results <- cbind(results,results2)
-    }
+    .dataset <- .dataset %>%
+      dplyr::mutate(flag_fc_cell = ifelse(is.na(!!rlang::sym(fsl_fc_cell)), NA,
+                                          ifelse(!!rlang::sym(fsl_fc_cell) %in% c(3,4,5,8,9,10), 1, 0)))
   }
   ## flag hhds
   hdds_flag_columns <- c(fsl_hdds_cereals,fsl_hdds_tubers,fsl_hdds_legumes,fsl_hdds_veg,fsl_hdds_fruit,
@@ -535,33 +429,12 @@ check_fsl_flags <- function(.dataset,
   if(!all(hdds_flag_columns %in% names(.dataset))) {
     warning("Missing hdds columns")
   } else{
-    results2 <- .dataset %>%
+    .dataset <- .dataset %>%
       dplyr::mutate(flag_low_sugar_cond_hdds = ifelse(is.na(!!rlang::sym(fsl_hdds_score)), NA,
                                                       ifelse((!!rlang::sym(fsl_hdds_score) <= 2 & !!rlang::sym(fsl_hdds_sugar) == fsl_hdds_yes_value & !!rlang::sym(fsl_hdds_condiments) == fsl_hdds_yes_value) |
                                                                (!!rlang::sym(fsl_hdds_score) <= 1 & !!rlang::sym(fsl_hdds_sugar) == fsl_hdds_yes_value) |
-                                                               (!!rlang::sym(fsl_hdds_score) <= 1 & !!rlang::sym(fsl_hdds_condiments) == fsl_hdds_yes_value), 1, 0))) %>%
-      dplyr::select(hdds_flag_columns,flag_low_sugar_cond_hdds) %>%
-      dplyr::rename("fsl_hdds_cereals" = fsl_hdds_cereals,
-                    "fsl_hdds_tubers" = fsl_hdds_tubers,
-                    "fsl_hdds_legumes" = fsl_hdds_legumes,
-                    "fsl_hdds_veg" = fsl_hdds_veg,
-                    "fsl_hdds_fruit" = fsl_hdds_fruit,
-                    "fsl_hdds_meat" = fsl_hdds_meat,
-                    "fsl_hdds_fish" = fsl_hdds_fish,
-                    "fsl_hdds_dairy" = fsl_hdds_dairy,
-                    "fsl_hdds_eggs" = fsl_hdds_eggs,
-                    "fsl_hdds_sugar" = fsl_hdds_sugar,
-                    "fsl_hdds_oil" = fsl_hdds_oil,
-                    "fsl_hdds_condiments" = fsl_hdds_condiments,
-                    "fsl_hdds_cat" = fsl_hdds_cat,
-                    "fsl_hdds_score" = fsl_hdds_score)
-
-    if(!exists("results")){
-      results <- results2
-    } else {
-      results <- cbind(results,results2)
-    }
+                                                               (!!rlang::sym(fsl_hdds_score) <= 1 & !!rlang::sym(fsl_hdds_condiments) == fsl_hdds_yes_value), 1, 0)))
   }
   options(warn = 0)
-  return(results)
+  return(.dataset)
 }

@@ -6,6 +6,19 @@
 \usage{
 create_fsl_plaus(
   .dataset,
+  fsl_fcs_cereal = "fsl_fcs_cereal",
+  fsl_fcs_legumes = "fsl_fcs_legumes",
+  fsl_fcs_dairy = "fsl_fcs_dairy",
+  fsl_fcs_meat = "fsl_fcs_meat",
+  fsl_fcs_veg = "fsl_fcs_veg",
+  fsl_fcs_fruit = "fsl_fcs_fruit",
+  fsl_fcs_oil = "fsl_fcs_oil",
+  fsl_fcs_sugar = "fsl_fcs_sugar",
+  fsl_rcsi_lessquality = "fsl_rcsi_lessquality",
+  fsl_rcsi_borrow = "fsl_rcsi_borrow",
+  fsl_rcsi_mealsize = "fsl_rcsi_mealsize",
+  fsl_rcsi_mealadult = "fsl_rcsi_mealadult",
+  fsl_rcsi_mealnb = "fsl_rcsi_mealnb",
   grouping = NULL,
   uuid = "uuid",
   short_report = FALSE,
@@ -15,6 +28,32 @@ create_fsl_plaus(
 \arguments{
 \item{.dataset}{raw/clean data with all calculated
 fcs/rcsi/hhs/hdds/fcm/fclcm add_x indicators}
+
+\item{fsl_fcs_cereal}{the name of the variable that indicates the number of days cereals were consumed}
+
+\item{fsl_fcs_legumes}{the name of the variable that indicates the number of days legumes were consumed}
+
+\item{fsl_fcs_dairy}{the name of the variable that indicates the number of days dairy were consumed}
+
+\item{fsl_fcs_meat}{the name of the variable that indicates the number of days meat were consumed}
+
+\item{fsl_fcs_veg}{the name of the variable that indicates the number of days vegetables were consumed}
+
+\item{fsl_fcs_fruit}{the name of the variable that indicates the number of days fruit were consumed}
+
+\item{fsl_fcs_oil}{the name of the variable that indicates the number of days oil was consumed}
+
+\item{fsl_fcs_sugar}{the name of the variable that indicates the number of days sugar was consumed}
+
+\item{fsl_rcsi_lessquality}{Column representing question- During the last 7 days, were there days (and, if so, how many) when your household had to rely on less preferred and less expensive food to cope with a lack of food or money to buy it?}
+
+\item{fsl_rcsi_borrow}{Column representing question- During the last 7 days, were there days (and, if so, how many) when your household had to borrow food or rely on help from a relative or friend to cope with a lack of food or money to buy it?}
+
+\item{fsl_rcsi_mealsize}{Column representing question- During the last 7 days, were there days (and, if so, how many) when your household had to limit portion size of meals at meal times to cope with a lack of food or money to buy it?}
+
+\item{fsl_rcsi_mealadult}{Column representing question- During the last 7 days, were there days (and, if so, how many) when your household had to restrict consumption by adults in order for small children to eat to cope with a lack of food or money to buy it?}
+
+\item{fsl_rcsi_mealnb}{Column representing question - During the last 7 days, were there days (and, if so, how many) when your household had to reduce number of meals eaten in a day to cope with a lack of food or money to buy it?}
 
 \item{grouping}{the name of the variable that indicates the grouping variable - usually "enumerator"}
 

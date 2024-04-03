@@ -98,7 +98,7 @@ testthat::test_that("check if function producing expected output with (FCS/RCSI/
   ) |>
     as.data.frame()
   expected_output_success <- test_df |>
-    dplyr::mutate(fc_cell = dplyr::case_when(
+    dplyr::mutate(fsl_fc_cell = dplyr::case_when(
       fsl_fcs_cat == "Acceptable" & fsl_rcsi_cat == "No to Low" & fsl_hhs_cat_ipc == "None" ~ 1,
       fsl_fcs_cat == "Poor" & fsl_rcsi_cat == "No to Low" & fsl_hhs_cat_ipc == "None" ~ 11,
       fsl_fcs_cat == "Borderline" & fsl_rcsi_cat == "No to Low" & fsl_hhs_cat_ipc == "None" ~ 6,
@@ -146,12 +146,12 @@ testthat::test_that("check if function producing expected output with (FCS/RCSI/
       fsl_fcs_cat == "Borderline" & fsl_rcsi_cat == "High" & fsl_hhs_cat_ipc == "Very Severe" ~ 40,
       TRUE ~ NA_real_
     )) |>
-    dplyr::mutate(fc_phase = dplyr::case_when(
-      fc_cell %in% c(1, 6) ~ "Phase 1 FC",
-      fc_cell %in% c(2, 3, 7, 11, 12, 16, 17, 18, 21, 22, 26, 31, 32, 36) ~ "Phase 2 FC",
-      fc_cell %in% c(4, 5, 8, 9, 13, 19, 20, 23, 24, 27, 28, 33, 34, 37, 38, 41, 42, 43) ~ "Phase 3 FC",
-      fc_cell %in% c(10, 14, 15, 25, 29, 35, 39, 40, 44) ~ "Phase 4 FC",
-      fc_cell %in% c(30, 45) ~ "Phase 5 FC",
+    dplyr::mutate(fsl_fc_phase = dplyr::case_when(
+      fsl_fc_cell %in% c(1, 6) ~ "Phase 1 FC",
+      fsl_fc_cell %in% c(2, 3, 7, 11, 12, 16, 17, 18, 21, 22, 26, 31, 32, 36) ~ "Phase 2 FC",
+      fsl_fc_cell %in% c(4, 5, 8, 9, 13, 19, 20, 23, 24, 27, 28, 33, 34, 37, 38, 41, 42, 43) ~ "Phase 3 FC",
+      fsl_fc_cell %in% c(10, 14, 15, 25, 29, 35, 39, 40, 44) ~ "Phase 4 FC",
+      fsl_fc_cell %in% c(30, 45) ~ "Phase 5 FC",
       TRUE ~ NA_character_
     ))
 
@@ -185,7 +185,7 @@ testthat::test_that("check if function producing expected output with (HDDS/RCSI
   ) |>
     as.data.frame()
   expected_output_success <- test_df |>
-    dplyr::mutate(fc_cell = dplyr::case_when(
+    dplyr::mutate(fsl_fc_cell = dplyr::case_when(
       fsl_hdds_cat == "High" & fsl_rcsi_cat == "No to Low" & fsl_hhs_cat_ipc == "None" ~ 1,
       fsl_hdds_cat == "Low" & fsl_rcsi_cat == "No to Low" & fsl_hhs_cat_ipc == "None" ~ 11,
       fsl_hdds_cat == "Medium" & fsl_rcsi_cat == "No to Low" & fsl_hhs_cat_ipc == "None" ~ 6,
@@ -233,12 +233,12 @@ testthat::test_that("check if function producing expected output with (HDDS/RCSI
       fsl_hdds_cat == "Medium" & fsl_rcsi_cat == "High" & fsl_hhs_cat_ipc == "Very Severe" ~ 40,
       TRUE ~ NA_real_
     )) |>
-    dplyr::mutate(fc_phase = dplyr::case_when(
-      fc_cell %in% c(1, 6) ~ "Phase 1 FC",
-      fc_cell %in% c(2, 3, 7, 11, 12, 16, 17, 18, 21, 22, 26, 31, 32, 36) ~ "Phase 2 FC",
-      fc_cell %in% c(4, 5, 8, 9, 13, 19, 20, 23, 24, 27, 28, 33, 34, 37, 38, 41, 42, 43) ~ "Phase 3 FC",
-      fc_cell %in% c(10, 14, 15, 25, 29, 35, 39, 40, 44) ~ "Phase 4 FC",
-      fc_cell %in% c(30, 45) ~ "Phase 5 FC",
+    dplyr::mutate(fsl_fc_phase = dplyr::case_when(
+      fsl_fc_cell %in% c(1, 6) ~ "Phase 1 FC",
+      fsl_fc_cell %in% c(2, 3, 7, 11, 12, 16, 17, 18, 21, 22, 26, 31, 32, 36) ~ "Phase 2 FC",
+      fsl_fc_cell %in% c(4, 5, 8, 9, 13, 19, 20, 23, 24, 27, 28, 33, 34, 37, 38, 41, 42, 43) ~ "Phase 3 FC",
+      fsl_fc_cell %in% c(10, 14, 15, 25, 29, 35, 39, 40, 44) ~ "Phase 4 FC",
+      fsl_fc_cell %in% c(30, 45) ~ "Phase 5 FC",
       TRUE ~ NA_character_
     ))
 
@@ -270,7 +270,7 @@ testthat::test_that("check if function producing expected output with (FCS/HHS)"
   ) |>
     as.data.frame()
   expected_output_success <- test_df |>
-    dplyr::mutate(fc_cell = dplyr::case_when(
+    dplyr::mutate(fsl_fc_cell = dplyr::case_when(
       fsl_fcs_cat == "Acceptable" & fsl_hhs_cat_ipc == "None" ~ 1,
       fsl_fcs_cat == "Poor" & fsl_hhs_cat_ipc == "None" ~ 11,
       fsl_fcs_cat == "Borderline" & fsl_hhs_cat_ipc == "None" ~ 6,
@@ -288,11 +288,11 @@ testthat::test_that("check if function producing expected output with (FCS/HHS)"
       fsl_fcs_cat == "Borderline" & fsl_hhs_cat_ipc == "Very Severe" ~ 10,
       TRUE ~ NA_real_
     )) |>
-    dplyr::mutate(fc_phase = dplyr::case_when(fc_cell %in% c(1, 6) ~ "Phase 1 FC",
-                                              fc_cell %in% c(2, 3, 7, 11) ~ "Phase 2 FC",
-                                              fc_cell %in% c(4, 8, 12, 13) ~ "Phase 3 FC",
-                                              fc_cell %in% c(5, 9, 10, 14) ~ "Phase 4 FC",
-                                              fc_cell %in% c(15) ~ "Phase 5 FC",
+    dplyr::mutate(fsl_fc_phase = dplyr::case_when(fsl_fc_cell %in% c(1, 6) ~ "Phase 1 FC",
+                                              fsl_fc_cell %in% c(2, 3, 7, 11) ~ "Phase 2 FC",
+                                              fsl_fc_cell %in% c(4, 8, 12, 13) ~ "Phase 3 FC",
+                                              fsl_fc_cell %in% c(5, 9, 10, 14) ~ "Phase 4 FC",
+                                              fsl_fc_cell %in% c(15) ~ "Phase 5 FC",
                                               TRUE ~ NA))
 
   testthat::expect_equal(
@@ -320,7 +320,7 @@ testthat::test_that("check if function producing expected output with (HDDS/HHS)
   ) |>
     as.data.frame()
   expected_output_success <- test_df |>
-    dplyr::mutate(fc_cell = dplyr::case_when(
+    dplyr::mutate(fsl_fc_cell = dplyr::case_when(
       fsl_hdds_cat == "High" & fsl_hhs_cat_ipc == "None" ~ 1,
       fsl_hdds_cat == "Low" & fsl_hhs_cat_ipc == "None" ~ 11,
       fsl_hdds_cat == "Medium" & fsl_hhs_cat_ipc == "None" ~ 6,
@@ -338,11 +338,11 @@ testthat::test_that("check if function producing expected output with (HDDS/HHS)
       fsl_hdds_cat == "Medium" & fsl_hhs_cat_ipc == "Very Severe" ~ 10,
       TRUE ~ NA_real_
     )) |>
-    dplyr::mutate(fc_phase = dplyr::case_when(fc_cell %in% c(1, 6) ~ "Phase 1 FC",
-                                              fc_cell %in% c(2, 3, 7, 11) ~ "Phase 2 FC",
-                                              fc_cell %in% c(4, 8, 12, 13) ~ "Phase 3 FC",
-                                              fc_cell %in% c(5, 9, 10, 14) ~ "Phase 4 FC",
-                                              fc_cell %in% c(15) ~ "Phase 5 FC",
+    dplyr::mutate(fsl_fc_phase = dplyr::case_when(fsl_fc_cell %in% c(1, 6) ~ "Phase 1 FC",
+                                              fsl_fc_cell %in% c(2, 3, 7, 11) ~ "Phase 2 FC",
+                                              fsl_fc_cell %in% c(4, 8, 12, 13) ~ "Phase 3 FC",
+                                              fsl_fc_cell %in% c(5, 9, 10, 14) ~ "Phase 4 FC",
+                                              fsl_fc_cell %in% c(15) ~ "Phase 5 FC",
                                               TRUE ~ NA))
 
   testthat::expect_equal(

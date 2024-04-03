@@ -6,7 +6,7 @@
 \usage{
 add_fclcm_phase(
   .dataset,
-  fc_phase_var = "fc_phase",
+  fc_phase_var = "fsl_fc_phase",
   fc_phase_1 = "Phase 1 FC",
   fc_phase_2 = "Phase 2 FC",
   fc_phase_3 = "Phase 3 FC",
@@ -53,7 +53,7 @@ Calculating FEWSNET Food Consumption-Livelihood Coping Matrix
 \examples{
 test_df <- data.frame(
   fsl_lcsi_cat = c("None", "Stress"),
-  fc_phase = c("Phase 1 FC", "Phase 2 FC")
+  fsl_fc_phase = c("Phase 1 FC", "Phase 2 FC")
 )
 test_df |> add_fclcm_phase()
 }
