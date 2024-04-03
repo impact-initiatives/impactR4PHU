@@ -57,7 +57,7 @@ add_mfaz <- function(.dataset,
                     age_days = as.numeric(!!rlang::sym(child_age_months))* 30.25)
     .dataset <- zscorer::addWGSR(data = .dataset,
                                  sex = "sex",
-                                 firstPart = "nut_muac_cm",
+                                 firstPart = nut_muac_cm,
                                  secondPart = "age_days",
                                  index = "mfa")
 
