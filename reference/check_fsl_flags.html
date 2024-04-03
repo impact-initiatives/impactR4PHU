@@ -44,66 +44,70 @@
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">check_fsl_flags</span><span class="op">(</span></span>
 <span>  <span class="va">.dataset</span>,</span>
-<span>  fcs_cereal <span class="op">=</span> <span class="st">"fsl_fcs_cereal"</span>,</span>
-<span>  fcs_legumes <span class="op">=</span> <span class="st">"fsl_fcs_legumes"</span>,</span>
-<span>  fcs_dairy <span class="op">=</span> <span class="st">"fsl_fcs_dairy"</span>,</span>
-<span>  fcs_meat <span class="op">=</span> <span class="st">"fsl_fcs_meat"</span>,</span>
-<span>  fcs_veg <span class="op">=</span> <span class="st">"fsl_fcs_veg"</span>,</span>
-<span>  fcs_fruit <span class="op">=</span> <span class="st">"fsl_fcs_fruit"</span>,</span>
-<span>  fcs_oil <span class="op">=</span> <span class="st">"fsl_fcs_oil"</span>,</span>
-<span>  fcs_sugar <span class="op">=</span> <span class="st">"fsl_fcs_sugar"</span>,</span>
-<span>  rcsi_lessquality <span class="op">=</span> <span class="st">"fsl_rcsi_lessquality"</span>,</span>
-<span>  rcsi_borrow <span class="op">=</span> <span class="st">"fsl_rcsi_borrow"</span>,</span>
-<span>  rcsi_mealsize <span class="op">=</span> <span class="st">"fsl_rcsi_mealsize"</span>,</span>
-<span>  rcsi_mealadult <span class="op">=</span> <span class="st">"fsl_rcsi_mealadult"</span>,</span>
-<span>  rcsi_mealnb <span class="op">=</span> <span class="st">"fsl_rcsi_mealnb"</span>,</span>
-<span>  hhs_nofoodhh <span class="op">=</span> <span class="st">"fsl_hhs_nofoodhh"</span>,</span>
-<span>  hhs_nofoodhh_freq <span class="op">=</span> <span class="st">"fsl_hhs_nofoodhh_freq"</span>,</span>
-<span>  hhs_sleephungry <span class="op">=</span> <span class="st">"fsl_hhs_sleephungry"</span>,</span>
-<span>  hhs_sleephungry_freq <span class="op">=</span> <span class="st">"fsl_hhs_sleephungry_freq"</span>,</span>
-<span>  hhs_alldaynight <span class="op">=</span> <span class="st">"fsl_hhs_alldaynight"</span>,</span>
-<span>  hhs_alldaynight_freq <span class="op">=</span> <span class="st">"fsl_hhs_alldaynight_freq"</span>,</span>
-<span>  hdds_cereals <span class="op">=</span> <span class="st">"fsl_hdds_cereals"</span>,</span>
-<span>  hdds_tubers <span class="op">=</span> <span class="st">"fsl_hdds_tubers"</span>,</span>
-<span>  hdds_legumes <span class="op">=</span> <span class="st">"fsl_hdds_legumes"</span>,</span>
-<span>  hdds_veg <span class="op">=</span> <span class="st">"fsl_hdds_veg"</span>,</span>
-<span>  hdds_fruit <span class="op">=</span> <span class="st">"fsl_hdds_fruit"</span>,</span>
-<span>  hdds_meat <span class="op">=</span> <span class="st">"fsl_hdds_meat"</span>,</span>
-<span>  hdds_fish <span class="op">=</span> <span class="st">"fsl_hdds_fish"</span>,</span>
-<span>  hdds_dairy <span class="op">=</span> <span class="st">"fsl_hdds_dairy"</span>,</span>
-<span>  hdds_eggs <span class="op">=</span> <span class="st">"fsl_hdds_eggs"</span>,</span>
-<span>  hdds_sugar <span class="op">=</span> <span class="st">"fsl_hdds_sugar"</span>,</span>
-<span>  hdds_oil <span class="op">=</span> <span class="st">"fsl_hdds_oil"</span>,</span>
-<span>  hdds_condiments <span class="op">=</span> <span class="st">"fsl_hdds_condiments"</span>,</span>
-<span>  lcsi_stress1 <span class="op">=</span> <span class="st">"fsl_lcsi_stress1"</span>,</span>
-<span>  lcsi_stress2 <span class="op">=</span> <span class="st">"fsl_lcsi_stress2"</span>,</span>
-<span>  lcsi_stress3 <span class="op">=</span> <span class="st">"fsl_lcsi_stress3"</span>,</span>
-<span>  lcsi_stress4 <span class="op">=</span> <span class="st">"fsl_lcsi_stress4"</span>,</span>
-<span>  lcsi_crisis1 <span class="op">=</span> <span class="st">"fsl_lcsi_crisis1"</span>,</span>
-<span>  lcsi_crisis2 <span class="op">=</span> <span class="st">"fsl_lcsi_crisis2"</span>,</span>
-<span>  lcsi_crisis3 <span class="op">=</span> <span class="st">"fsl_lcsi_crisis3"</span>,</span>
-<span>  lcsi_emergency1 <span class="op">=</span> <span class="st">"fsl_lcsi_emergency1"</span>,</span>
-<span>  lcsi_emergency2 <span class="op">=</span> <span class="st">"fsl_lcsi_emergency2"</span>,</span>
-<span>  lcsi_emergency3 <span class="op">=</span> <span class="st">"fsl_lcsi_emergency3"</span>,</span>
-<span>  lcsi_stress <span class="op">=</span> <span class="st">"fsl_lcsi_stress"</span>,</span>
-<span>  lcsi_crisis <span class="op">=</span> <span class="st">"fsl_lcsi_crisis"</span>,</span>
-<span>  lcsi_emergency <span class="op">=</span> <span class="st">"fsl_lcsi_emergency"</span>,</span>
-<span>  lcsi_cat_yes <span class="op">=</span> <span class="st">"fsl_lcsi_cat_yes"</span>,</span>
-<span>  lcsi_cat_exhaust <span class="op">=</span> <span class="st">"fsl_lcsi_cat_exhaust"</span>,</span>
-<span>  lcsi_cat <span class="op">=</span> <span class="st">"fsl_lcsi_cat"</span>,</span>
-<span>  fcs_cat <span class="op">=</span> <span class="st">"fsl_fcs_cat"</span>,</span>
-<span>  fcs_score <span class="op">=</span> <span class="st">"fsl_fcs_score"</span>,</span>
-<span>  rcsi_cat <span class="op">=</span> <span class="st">"fsl_rcsi_cat"</span>,</span>
-<span>  rcsi_score <span class="op">=</span> <span class="st">"fsl_rcsi_score"</span>,</span>
-<span>  hhs_cat <span class="op">=</span> <span class="st">"fsl_hhs_cat"</span>,</span>
-<span>  hhs_score <span class="op">=</span> <span class="st">"fsl_hhs_score"</span>,</span>
-<span>  hdds_cat <span class="op">=</span> <span class="st">"fsl_hdds_cat"</span>,</span>
-<span>  hdds_score <span class="op">=</span> <span class="st">"fsl_hdds_score"</span>,</span>
-<span>  fc_cell <span class="op">=</span> <span class="st">"fc_cell"</span>,</span>
-<span>  fc_phase <span class="op">=</span> <span class="st">"fc_phase"</span>,</span>
+<span>  fsl_fcs_cereal <span class="op">=</span> <span class="st">"fsl_fcs_cereal"</span>,</span>
+<span>  fsl_fcs_legumes <span class="op">=</span> <span class="st">"fsl_fcs_legumes"</span>,</span>
+<span>  fsl_fcs_dairy <span class="op">=</span> <span class="st">"fsl_fcs_dairy"</span>,</span>
+<span>  fsl_fcs_meat <span class="op">=</span> <span class="st">"fsl_fcs_meat"</span>,</span>
+<span>  fsl_fcs_veg <span class="op">=</span> <span class="st">"fsl_fcs_veg"</span>,</span>
+<span>  fsl_fcs_fruit <span class="op">=</span> <span class="st">"fsl_fcs_fruit"</span>,</span>
+<span>  fsl_fcs_oil <span class="op">=</span> <span class="st">"fsl_fcs_oil"</span>,</span>
+<span>  fsl_fcs_sugar <span class="op">=</span> <span class="st">"fsl_fcs_sugar"</span>,</span>
+<span>  fsl_rcsi_lessquality <span class="op">=</span> <span class="st">"fsl_rcsi_lessquality"</span>,</span>
+<span>  fsl_rcsi_borrow <span class="op">=</span> <span class="st">"fsl_rcsi_borrow"</span>,</span>
+<span>  fsl_rcsi_mealsize <span class="op">=</span> <span class="st">"fsl_rcsi_mealsize"</span>,</span>
+<span>  fsl_rcsi_mealadult <span class="op">=</span> <span class="st">"fsl_rcsi_mealadult"</span>,</span>
+<span>  fsl_rcsi_mealnb <span class="op">=</span> <span class="st">"fsl_rcsi_mealnb"</span>,</span>
+<span>  fsl_hhs_nofoodhh <span class="op">=</span> <span class="st">"fsl_hhs_nofoodhh"</span>,</span>
+<span>  fsl_hhs_nofoodhh_freq <span class="op">=</span> <span class="st">"fsl_hhs_nofoodhh_freq"</span>,</span>
+<span>  fsl_hhs_sleephungry <span class="op">=</span> <span class="st">"fsl_hhs_sleephungry"</span>,</span>
+<span>  fsl_hhs_sleephungry_freq <span class="op">=</span> <span class="st">"fsl_hhs_sleephungry_freq"</span>,</span>
+<span>  fsl_hhs_alldaynight <span class="op">=</span> <span class="st">"fsl_hhs_alldaynight"</span>,</span>
+<span>  fsl_hhs_alldaynight_freq <span class="op">=</span> <span class="st">"fsl_hhs_alldaynight_freq"</span>,</span>
+<span>  fsl_hdds_cereals <span class="op">=</span> <span class="st">"fsl_hdds_cereals"</span>,</span>
+<span>  fsl_hdds_tubers <span class="op">=</span> <span class="st">"fsl_hdds_tubers"</span>,</span>
+<span>  fsl_hdds_legumes <span class="op">=</span> <span class="st">"fsl_hdds_legumes"</span>,</span>
+<span>  fsl_hdds_veg <span class="op">=</span> <span class="st">"fsl_hdds_veg"</span>,</span>
+<span>  fsl_hdds_fruit <span class="op">=</span> <span class="st">"fsl_hdds_fruit"</span>,</span>
+<span>  fsl_hdds_meat <span class="op">=</span> <span class="st">"fsl_hdds_meat"</span>,</span>
+<span>  fsl_hdds_fish <span class="op">=</span> <span class="st">"fsl_hdds_fish"</span>,</span>
+<span>  fsl_hdds_dairy <span class="op">=</span> <span class="st">"fsl_hdds_dairy"</span>,</span>
+<span>  fsl_hdds_eggs <span class="op">=</span> <span class="st">"fsl_hdds_eggs"</span>,</span>
+<span>  fsl_hdds_sugar <span class="op">=</span> <span class="st">"fsl_hdds_sugar"</span>,</span>
+<span>  fsl_hdds_oil <span class="op">=</span> <span class="st">"fsl_hdds_oil"</span>,</span>
+<span>  fsl_hdds_condiments <span class="op">=</span> <span class="st">"fsl_hdds_condiments"</span>,</span>
+<span>  fsl_hdds_yes_value <span class="op">=</span> <span class="st">"yes"</span>,</span>
+<span>  fsl_lcsi_stress1 <span class="op">=</span> <span class="st">"fsl_lcsi_stress1"</span>,</span>
+<span>  fsl_lcsi_stress2 <span class="op">=</span> <span class="st">"fsl_lcsi_stress2"</span>,</span>
+<span>  fsl_lcsi_stress3 <span class="op">=</span> <span class="st">"fsl_lcsi_stress3"</span>,</span>
+<span>  fsl_lcsi_stress4 <span class="op">=</span> <span class="st">"fsl_lcsi_stress4"</span>,</span>
+<span>  fsl_lcsi_crisis1 <span class="op">=</span> <span class="st">"fsl_lcsi_crisis1"</span>,</span>
+<span>  fsl_lcsi_crisis2 <span class="op">=</span> <span class="st">"fsl_lcsi_crisis2"</span>,</span>
+<span>  fsl_lcsi_crisis3 <span class="op">=</span> <span class="st">"fsl_lcsi_crisis3"</span>,</span>
+<span>  fsl_lcsi_emergency1 <span class="op">=</span> <span class="st">"fsl_lcsi_emergency1"</span>,</span>
+<span>  fsl_lcsi_emergency2 <span class="op">=</span> <span class="st">"fsl_lcsi_emergency2"</span>,</span>
+<span>  fsl_lcsi_emergency3 <span class="op">=</span> <span class="st">"fsl_lcsi_emergency3"</span>,</span>
+<span>  fsl_lcsi_stress <span class="op">=</span> <span class="st">"fsl_lcsi_stress"</span>,</span>
+<span>  fsl_lcsi_crisis <span class="op">=</span> <span class="st">"fsl_lcsi_crisis"</span>,</span>
+<span>  fsl_lcsi_emergency <span class="op">=</span> <span class="st">"fsl_lcsi_emergency"</span>,</span>
+<span>  fsl_lcsi_cat_yes <span class="op">=</span> <span class="st">"fsl_lcsi_cat_yes"</span>,</span>
+<span>  fsl_lcsi_cat_exhaust <span class="op">=</span> <span class="st">"fsl_lcsi_cat_exhaust"</span>,</span>
+<span>  fsl_lcsi_cat <span class="op">=</span> <span class="st">"fsl_lcsi_cat"</span>,</span>
+<span>  fsl_lcsi_yes_value <span class="op">=</span> <span class="st">"yes"</span>,</span>
+<span>  fsl_fcs_cat <span class="op">=</span> <span class="st">"fsl_fcs_cat"</span>,</span>
+<span>  fsl_fcs_score <span class="op">=</span> <span class="st">"fsl_fcs_score"</span>,</span>
+<span>  fsl_rcsi_cat <span class="op">=</span> <span class="st">"fsl_rcsi_cat"</span>,</span>
+<span>  fsl_rcsi_score <span class="op">=</span> <span class="st">"fsl_rcsi_score"</span>,</span>
+<span>  fsl_hhs_cat <span class="op">=</span> <span class="st">"fsl_hhs_cat"</span>,</span>
+<span>  fsl_hhs_score <span class="op">=</span> <span class="st">"fsl_hhs_score"</span>,</span>
+<span>  fsl_hdds_cat <span class="op">=</span> <span class="st">"fsl_hdds_cat"</span>,</span>
+<span>  fsl_hdds_score <span class="op">=</span> <span class="st">"fsl_hdds_score"</span>,</span>
+<span>  fsl_fc_cell <span class="op">=</span> <span class="st">"fc_cell"</span>,</span>
+<span>  fsl_fc_phase <span class="op">=</span> <span class="st">"fc_phase"</span>,</span>
 <span>  num_children <span class="op">=</span> <span class="st">"num_children"</span>,</span>
 <span>  income_types <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"fsl_first_income_types"</span>, <span class="st">"fsl_second_income_types"</span>,</span>
 <span>    <span class="st">"fsl_third_income_types"</span><span class="op">)</span>,</span>
+<span>  sell_agri_prod <span class="op">=</span> <span class="st">"sell_agri_prod"</span>,</span>
+<span>  sell_anim_prod <span class="op">=</span> <span class="st">"sell_anim_prod"</span>,</span>
 <span>  residency_status <span class="op">=</span> <span class="st">"residency_status"</span>,</span>
 <span>  value_idp <span class="op">=</span> <span class="st">"idp"</span>,</span>
 <span>  grouping <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -118,238 +122,246 @@
 <dd><p>the raw dataset with all add_x indicators functions called in</p></dd>
 
 
-<dt>fcs_cereal</dt>
+<dt>fsl_fcs_cereal</dt>
 <dd><p>the name of the variable that indicates the number of days cereals were consumed</p></dd>
 
 
-<dt>fcs_legumes</dt>
+<dt>fsl_fcs_legumes</dt>
 <dd><p>the name of the variable that indicates the number of days legumes were consumed</p></dd>
 
 
-<dt>fcs_dairy</dt>
+<dt>fsl_fcs_dairy</dt>
 <dd><p>the name of the variable that indicates the number of days dairy were consumed</p></dd>
 
 
-<dt>fcs_meat</dt>
+<dt>fsl_fcs_meat</dt>
 <dd><p>the name of the variable that indicates the number of days meat were consumed</p></dd>
 
 
-<dt>fcs_veg</dt>
+<dt>fsl_fcs_veg</dt>
 <dd><p>the name of the variable that indicates the number of days vegetables were consumed</p></dd>
 
 
-<dt>fcs_fruit</dt>
+<dt>fsl_fcs_fruit</dt>
 <dd><p>the name of the variable that indicates the number of days fruit were consumed</p></dd>
 
 
-<dt>fcs_oil</dt>
+<dt>fsl_fcs_oil</dt>
 <dd><p>the name of the variable that indicates the number of days oil was consumed</p></dd>
 
 
-<dt>fcs_sugar</dt>
+<dt>fsl_fcs_sugar</dt>
 <dd><p>the name of the variable that indicates the number of days sugar was consumed</p></dd>
 
 
-<dt>rcsi_lessquality</dt>
+<dt>fsl_rcsi_lessquality</dt>
 <dd><p>Column representing question- During the last 7 days, were there days (and, if so, how many) when your household had to rely on less preferred and less expensive food to cope with a lack of food or money to buy it?</p></dd>
 
 
-<dt>rcsi_borrow</dt>
+<dt>fsl_rcsi_borrow</dt>
 <dd><p>Column representing question- During the last 7 days, were there days (and, if so, how many) when your household had to borrow food or rely on help from a relative or friend to cope with a lack of food or money to buy it?</p></dd>
 
 
-<dt>rcsi_mealsize</dt>
+<dt>fsl_rcsi_mealsize</dt>
 <dd><p>Column representing question- During the last 7 days, were there days (and, if so, how many) when your household had to limit portion size of meals at meal times to cope with a lack of food or money to buy it?</p></dd>
 
 
-<dt>rcsi_mealadult</dt>
+<dt>fsl_rcsi_mealadult</dt>
 <dd><p>Column representing question- During the last 7 days, were there days (and, if so, how many) when your household had to restrict consumption by adults in order for small children to eat to cope with a lack of food or money to buy it?</p></dd>
 
 
-<dt>rcsi_mealnb</dt>
+<dt>fsl_rcsi_mealnb</dt>
 <dd><p>Column representing question - During the last 7 days, were there days (and, if so, how many) when your household had to reduce number of meals eaten in a day to cope with a lack of food or money to buy it?</p></dd>
 
 
-<dt>hhs_nofoodhh</dt>
+<dt>fsl_hhs_nofoodhh</dt>
 <dd><p>The name of the column "In the past 4 weeks (30 days), was there ever no food to eat
 of any kind in your house because of lack of resources to get food?". It has to be a string.</p></dd>
 
 
-<dt>hhs_nofoodhh_freq</dt>
+<dt>fsl_hhs_nofoodhh_freq</dt>
 <dd><p>The name of the column "How often did this happen in the past (4 weeks/30 days)?".
 It has to be a string.</p></dd>
 
 
-<dt>hhs_sleephungry</dt>
+<dt>fsl_hhs_sleephungry</dt>
 <dd><p>The name of the column "In the past 4 weeks (30 days), did you or any household
 member go to sleep at night hungry because there was not enough food?". It has to be a string.</p></dd>
 
 
-<dt>hhs_sleephungry_freq</dt>
+<dt>fsl_hhs_sleephungry_freq</dt>
 <dd><p>The name of the column "How often did this happen in the past (4 weeks/30 days)?".
 It has to be a string.</p></dd>
 
 
-<dt>hhs_alldaynight</dt>
+<dt>fsl_hhs_alldaynight</dt>
 <dd><p>The name of the column "In the past 4 weeks (30 days), did you or any household
 member go a whole day and night without eating anything at all because there was not enough food?".
 It has to be a string.</p></dd>
 
 
-<dt>hhs_alldaynight_freq</dt>
+<dt>fsl_hhs_alldaynight_freq</dt>
 <dd><p>The name of the column "How often did this happen in the past (4 weeks/30 days)?".
 It has to be a string.</p></dd>
 
 
-<dt>hdds_cereals</dt>
+<dt>fsl_hdds_cereals</dt>
 <dd><p>the name of the variable that indicates if cereals were consumed in the last 24 hours</p></dd>
 
 
-<dt>hdds_tubers</dt>
+<dt>fsl_hdds_tubers</dt>
 <dd><p>the name of the variable that indicates if roots or tubers were consumed in the last 24 hours</p></dd>
 
 
-<dt>hdds_legumes</dt>
+<dt>fsl_hdds_legumes</dt>
 <dd><p>the name of the variable that indicates if pulses or legumes were consumed in the last 24 hours</p></dd>
 
 
-<dt>hdds_veg</dt>
+<dt>fsl_hdds_veg</dt>
 <dd><p>the name of the variable that indicates if vegetables were consumed in the last 24 hours</p></dd>
 
 
-<dt>hdds_fruit</dt>
+<dt>fsl_hdds_fruit</dt>
 <dd><p>the name of the variable that indicates if fruit were consumed in the last 24 hours</p></dd>
 
 
-<dt>hdds_meat</dt>
+<dt>fsl_hdds_meat</dt>
 <dd><p>the name of the variable that indicates if meat were consumed in the last 24 hours</p></dd>
 
 
-<dt>hdds_fish</dt>
+<dt>fsl_hdds_fish</dt>
 <dd><p>the name of the variable that indicates if fish were consumed in the last 24 hours</p></dd>
 
 
-<dt>hdds_dairy</dt>
+<dt>fsl_hdds_dairy</dt>
 <dd><p>the name of the variable that indicates if dairy were consumed in the last 24 hours</p></dd>
 
 
-<dt>hdds_eggs</dt>
+<dt>fsl_hdds_eggs</dt>
 <dd><p>the name of the variable that indicates if eggs were consumed in the last 24 hours</p></dd>
 
 
-<dt>hdds_sugar</dt>
+<dt>fsl_hdds_sugar</dt>
 <dd><p>the name of the variable that indicates if sugar were consumed in the last 24 hours</p></dd>
 
 
-<dt>hdds_oil</dt>
+<dt>fsl_hdds_oil</dt>
 <dd><p>the name of the variable that indicates if oil was consumed in the last 24 hours</p></dd>
 
 
-<dt>hdds_condiments</dt>
+<dt>fsl_hdds_condiments</dt>
 <dd><p>the name of the variable that indicates if condiments were consumed in the last 24 hours</p></dd>
 
 
-<dt>lcsi_stress1</dt>
+<dt>fsl_hdds_yes_value</dt>
+<dd><p>the "yes" choice value of the variables that indicates the HDDS</p></dd>
+
+
+<dt>fsl_lcsi_stress1</dt>
 <dd><p>the name of the variable that indicates the first stress LCSI strategy</p></dd>
 
 
-<dt>lcsi_stress2</dt>
+<dt>fsl_lcsi_stress2</dt>
 <dd><p>the name of the variable that indicates the second stress LCSI strategy</p></dd>
 
 
-<dt>lcsi_stress3</dt>
+<dt>fsl_lcsi_stress3</dt>
 <dd><p>the name of the variable that indicates the third stress LCSI strategy</p></dd>
 
 
-<dt>lcsi_stress4</dt>
+<dt>fsl_lcsi_stress4</dt>
 <dd><p>the name of the variable that indicates the fourth stress LCSI strategy</p></dd>
 
 
-<dt>lcsi_crisis1</dt>
+<dt>fsl_lcsi_crisis1</dt>
 <dd><p>the name of the variable that indicates the first crisis LCSI strategy</p></dd>
 
 
-<dt>lcsi_crisis2</dt>
+<dt>fsl_lcsi_crisis2</dt>
 <dd><p>the name of the variable that indicates the second crisis LCSI strategy</p></dd>
 
 
-<dt>lcsi_crisis3</dt>
+<dt>fsl_lcsi_crisis3</dt>
 <dd><p>the name of the variable that indicates the third crisis LCSI strategy</p></dd>
 
 
-<dt>lcsi_emergency1</dt>
+<dt>fsl_lcsi_emergency1</dt>
 <dd><p>the name of the variable that indicates the first emergency LCSI strategy</p></dd>
 
 
-<dt>lcsi_emergency2</dt>
+<dt>fsl_lcsi_emergency2</dt>
 <dd><p>the name of the variable that indicates the second emergency LCSI strategy</p></dd>
 
 
-<dt>lcsi_emergency3</dt>
+<dt>fsl_lcsi_emergency3</dt>
 <dd><p>the name of the variable that indicates the third emergency LCSI strategy</p></dd>
 
 
-<dt>lcsi_stress</dt>
+<dt>fsl_lcsi_stress</dt>
 <dd><p>the name of the variable that indicates the calculation of the stress LCSI strategy</p></dd>
 
 
-<dt>lcsi_crisis</dt>
+<dt>fsl_lcsi_crisis</dt>
 <dd><p>the name of the variable that indicates the calculation of the crisis LCSI strategy</p></dd>
 
 
-<dt>lcsi_emergency</dt>
+<dt>fsl_lcsi_emergency</dt>
 <dd><p>the name of the variable that indicates the calculation of the stress LCSI strategy</p></dd>
 
 
-<dt>lcsi_cat_yes</dt>
+<dt>fsl_lcsi_cat_yes</dt>
 <dd><p>the name of the variable that indicates the highest category of the LCSI strategy used yes</p></dd>
 
 
-<dt>lcsi_cat_exhaust</dt>
+<dt>fsl_lcsi_cat_exhaust</dt>
 <dd><p>the name of the variable that indicates the highest category of the LCSI strategy used exhaustively</p></dd>
 
 
-<dt>lcsi_cat</dt>
+<dt>fsl_lcsi_cat</dt>
 <dd><p>the name of the variable that indicates the highest category of the LCSI strategy</p></dd>
 
 
-<dt>fcs_cat</dt>
+<dt>fsl_lcsi_yes_value</dt>
+<dd><p>the "yes" choice value of the variables that indicates the LCSI strategies</p></dd>
+
+
+<dt>fsl_fcs_cat</dt>
 <dd><p>the name of the variable that indicates the food consumption score category</p></dd>
 
 
-<dt>fcs_score</dt>
+<dt>fsl_fcs_score</dt>
 <dd><p>the name of the variable that indicates the food consumption score</p></dd>
 
 
-<dt>rcsi_cat</dt>
+<dt>fsl_rcsi_cat</dt>
 <dd><p>the name of the variable that indicates the reduced coping strategy index category</p></dd>
 
 
-<dt>rcsi_score</dt>
+<dt>fsl_rcsi_score</dt>
 <dd><p>the name of the variable that indicates the reduced coping strategy index score</p></dd>
 
 
-<dt>hhs_cat</dt>
+<dt>fsl_hhs_cat</dt>
 <dd><p>the name of the variable that indicates the household hunger scale category</p></dd>
 
 
-<dt>hhs_score</dt>
+<dt>fsl_hhs_score</dt>
 <dd><p>the name of the variable that indicates the household hunger scale score</p></dd>
 
 
-<dt>hdds_cat</dt>
+<dt>fsl_hdds_cat</dt>
 <dd><p>the name of the variable that indicates the household dietary diversity score category</p></dd>
 
 
-<dt>hdds_score</dt>
+<dt>fsl_hdds_score</dt>
 <dd><p>the name of the variable that indicates the household dietary diversity score</p></dd>
 
 
-<dt>fc_cell</dt>
+<dt>fsl_fc_cell</dt>
 <dd><p>the name of the variable that indicates the food consumption matrix score</p></dd>
 
 
-<dt>fc_phase</dt>
+<dt>fsl_fc_phase</dt>
 <dd><p>the name of the variable that indicates the food consumption matrix phase</p></dd>
 
 
@@ -360,6 +372,16 @@ It has to be a string.</p></dd>
 <dt>income_types</dt>
 <dd><p>a vector of the three income_types variables. By default,
 c("fsl_first_income_types","fsl_second_income_types","fsl_third_income_types")</p></dd>
+
+
+<dt>sell_agri_prod</dt>
+<dd><p>the "sell_agri_prod" choice value of the variables that indicates
+income from agriculture</p></dd>
+
+
+<dt>sell_anim_prod</dt>
+<dd><p>the "sell_anim_prod" choice value of the variables that indicates
+income from animal</p></dd>
 
 
 <dt>residency_status</dt>
@@ -493,8 +515,8 @@ This includes:
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1             6          32.5  Borderline                      1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2             2          64.0  Acceptable                      0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   flag_low_cereal flag_low_oil flag_low_fcs flag_high_fcs flag_sd_foodgroup</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1               1            1            0             0                NA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2               1            1            0             1                NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1               1            1            0             0                 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2               1            1            0             1                 0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   fsl_rcsi_lessquality fsl_rcsi_borrow fsl_rcsi_mealsize fsl_rcsi_mealadult</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1                    2               1                 4                  2</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2                    4               4                 5                  4</span>
@@ -502,7 +524,7 @@ This includes:
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1               3             17       Medium                 0             0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2               2             31         High                 1             0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   flag_high_rcsi flag_rcsi_children flag_fcsrcsi_box flag_sd_rcsicoping</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1              0                  0               NA                 NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1              0                  0                0                 NA</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2              0                  0                1                 NA</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   fsl_hhs_nofoodhh fsl_hhs_nofoodhh_freq fsl_hhs_sleephungry</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1              yes                rarely                  no</span>
@@ -523,14 +545,14 @@ This includes:
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1               1               1                  0             None</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2               1               1                  1        Emergency</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   fsl_lcsi_cat_exhaust fsl_lcsi_cat flag_lcsi_coherence flag_lcsi_severity</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1               Crisis       Crisis                   0                 NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1               Crisis       Crisis                   0                  0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2            Emergency    Emergency                   0                  1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   flag_lcsi_na flag_lcsi_liv_livestock flag_lcsi_liv_agriculture</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1           NA                      NA                        NA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2           NA                      NA                         1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   flag_lcsi_displ fc_cell   fc_phase flag_fc_cell fsl_hdds_cereals</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1              NA      22 Phase 2 FC            0              yes</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2              NA      33 Phase 3 FC            0               no</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1            0                      NA                        NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2            0                      NA                         1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   flag_lcsi_displ fsl_fc_cell fsl_fc_phase flag_fc_cell fsl_hdds_cereals</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1              NA          22   Phase 2 FC            0              yes</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2              NA          33   Phase 3 FC            0               no</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   fsl_hdds_tubers fsl_hdds_legumes fsl_hdds_veg fsl_hdds_fruit fsl_hdds_meat</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1             yes              yes           no            yes           yes</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2              no               no           no             no            no</span>
