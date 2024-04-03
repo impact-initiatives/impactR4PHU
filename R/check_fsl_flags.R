@@ -39,6 +39,7 @@
 #' @param fsl_hdds_sugar the name of the variable that indicates if sugar were consumed in the last 24 hours
 #' @param fsl_hdds_oil the name of the variable that indicates if oil was consumed in the last 24 hours
 #' @param fsl_hdds_condiments the name of the variable that indicates if condiments were consumed in the last 24 hours
+#' @param fsl_hdds_yes_value the "yes" choice value of the variables that indicates the HDDS
 #' @param fsl_lcsi_stress1 the name of the variable that indicates the first stress LCSI strategy
 #' @param fsl_lcsi_stress2 the name of the variable that indicates the second stress LCSI strategy
 #' @param fsl_lcsi_stress3 the name of the variable that indicates the third stress LCSI strategy
@@ -55,6 +56,7 @@
 #' @param fsl_lcsi_cat_yes the name of the variable that indicates the highest category of the LCSI strategy used yes
 #' @param fsl_lcsi_cat_exhaust the name of the variable that indicates the highest category of the LCSI strategy used exhaustively
 #' @param fsl_lcsi_cat the name of the variable that indicates the highest category of the LCSI strategy
+#' @param fsl_lcsi_yes_value the "yes" choice value of the variables that indicates the LCSI strategies
 #' @param fsl_fcs_cat the name of the variable that indicates the food consumption score category
 #' @param fsl_fcs_score the name of the variable that indicates the food consumption score
 #' @param fsl_rcsi_cat the name of the variable that indicates the reduced coping strategy index category
@@ -68,6 +70,10 @@
 #' @param num_children the name of the variable that indicates the number of children available in each household
 #' @param income_types a vector of the three income_types variables. By default,
 #'  c("fsl_first_income_types","fsl_second_income_types","fsl_third_income_types")
+#' @param sell_agri_prod the "sell_agri_prod" choice value of the variables that indicates
+#'  income from agriculture
+#' @param sell_anim_prod the "sell_anim_prod" choice value of the variables that indicates
+#'  income from animal
 #' @param residency_status the name of the variable that indicates the residency status of HH,
 #'  By default, "residency_status"
 #' @param value_idp the name of the choice value representing the idp residency status. By default, "idp"
@@ -203,6 +209,7 @@ check_fsl_flags <- function(.dataset,
                            fsl_hdds_sugar = "fsl_hdds_sugar",
                            fsl_hdds_oil = "fsl_hdds_oil",
                            fsl_hdds_condiments = "fsl_hdds_condiments",
+                           fsl_hdds_yes_value = "yes",
                            fsl_lcsi_stress1 = "fsl_lcsi_stress1",
                            fsl_lcsi_stress2 = "fsl_lcsi_stress2",
                            fsl_lcsi_stress3 = "fsl_lcsi_stress3",
@@ -219,6 +226,7 @@ check_fsl_flags <- function(.dataset,
                            fsl_lcsi_cat_yes = "fsl_lcsi_cat_yes",
                            fsl_lcsi_cat_exhaust = "fsl_lcsi_cat_exhaust",
                            fsl_lcsi_cat = "fsl_lcsi_cat",
+                           fsl_lcsi_yes_value = "yes",
                            fsl_fcs_cat ="fsl_fcs_cat",
                            fsl_fcs_score = "fsl_fcs_score",
                            fsl_rcsi_cat = "fsl_rcsi_cat",
@@ -231,6 +239,8 @@ check_fsl_flags <- function(.dataset,
                            fsl_fc_phase = "fc_phase",
                            num_children = "num_children",
                            income_types = c("fsl_first_income_types","fsl_second_income_types","fsl_third_income_types"),
+                           sell_agri_prod = "sell_agri_prod",
+                           sell_anim_prod = "sell_anim_prod",
                            residency_status = "residency_status",
                            value_idp = "idp",
                            grouping = NULL,
@@ -302,7 +312,17 @@ check_fsl_flags <- function(.dataset,
                     flag_low_oil,
                     flag_low_fcs,
                     flag_high_fcs,
-                    flag_sd_foodgroup)
+                    flag_sd_foodgroup) %>%
+      dplyr::rename("fsl_fcs_cereal" = fsl_fcs_cereal,
+                    "fsl_fcs_legumes" = fsl_fcs_legumes,
+                    "fsl_fcs_dairy" = fsl_fcs_dairy,
+                    "fsl_fcs_meat" = fsl_fcs_meat,
+                    "fsl_fcs_veg" = fsl_fcs_veg,
+                    "fsl_fcs_fruit" = fsl_fcs_fruit,
+                    "fsl_fcs_oil" = fsl_fcs_oil,
+                    "fsl_fcs_sugar" = fsl_fcs_sugar,
+                    "fsl_fcs_cat" =fsl_fcs_cat,
+                    "fsl_fcs_score" = fsl_fcs_score)
 
     if(!exists("results")){
       results <- results2
@@ -357,7 +377,14 @@ check_fsl_flags <- function(.dataset,
                                                           TRUE ~ 0)) %>%
       dplyr::select(rcsi_flag_columns,fsl_rcsi_cat,flag_protein_rcsi,
                     flag_fcs_rcsi,flag_high_rcsi,flag_rcsi_children,
-                    flag_fcsrcsi_box,flag_sd_rcsicoping)
+                    flag_fcsrcsi_box,flag_sd_rcsicoping) %>%
+      dplyr::rename("fsl_rcsi_lessquality" = fsl_rcsi_lessquality,
+                    "fsl_rcsi_borrow" = fsl_rcsi_borrow,
+                    "fsl_rcsi_mealsize" = fsl_rcsi_mealsize,
+                    "fsl_rcsi_mealadult" = fsl_rcsi_mealadult,
+                    "fsl_rcsi_mealnb" = fsl_rcsi_mealnb,
+                    "fsl_rcsi_cat" = fsl_rcsi_cat,
+                    "fsl_rcsi_score" = fsl_rcsi_score)
 
     if(!exists("results")){
       results <- results2
@@ -375,7 +402,15 @@ check_fsl_flags <- function(.dataset,
     results2 <- .dataset %>%
       dplyr::mutate(flag_severe_hhs = ifelse(is.na(!!rlang::sym(fsl_hhs_score)), NA,
                                              ifelse(!!rlang::sym(fsl_hhs_score) >= 5, 1, 0))) %>%
-      dplyr::select(hhs_flag_columns,flag_severe_hhs)
+      dplyr::select(hhs_flag_columns,flag_severe_hhs) %>%
+      dplyr::rename("fsl_hhs_nofoodhh" = fsl_hhs_nofoodhh,
+                    "fsl_hhs_nofoodhh_freq" = fsl_hhs_nofoodhh_freq,
+                    "fsl_hhs_sleephungry" = fsl_hhs_sleephungry,
+                    "fsl_hhs_sleephungry_freq" = fsl_hhs_sleephungry_freq,
+                    "fsl_hhs_alldaynight" = fsl_hhs_alldaynight,
+                    "fsl_hhs_alldaynight_freq" = fsl_hhs_alldaynight_freq,
+                    "fsl_hhs_cat" = fsl_hhs_cat,
+                    "fsl_hhs_score" = fsl_hhs_score)
 
     if(!exists("results")){
       results <- results2
@@ -399,8 +434,8 @@ check_fsl_flags <- function(.dataset,
                                                           !!rlang::sym(fsl_lcsi_emergency) == 1 ~ 1,
                                                           TRUE ~ 0))
 
-    lcs_variables <- c("fsl_lcsi_stress1","fsl_lcsi_stress2","fsl_lcsi_stress3","fsl_lcsi_stress4","fsl_lcsi_crisis1",
-                       "fsl_lcsi_crisis2","fsl_lcsi_crisis3","fsl_lcsi_emergency1","fsl_lcsi_emergency2","fsl_lcsi_emergency3")
+    lcs_variables <- c(fsl_lcsi_stress1,fsl_lcsi_stress2,fsl_lcsi_stress3,fsl_lcsi_stress4,fsl_lcsi_crisis1,
+                       fsl_lcsi_crisis2,fsl_lcsi_crisis3,fsl_lcsi_emergency1,fsl_lcsi_emergency2,fsl_lcsi_emergency3)
     results2$lcsi.count.na <-  apply(results2[c(lcs_variables)], 1, function(x) sum(x == "not_applicable"))
 
     results2 <- results2 %>%
@@ -423,15 +458,15 @@ check_fsl_flags <- function(.dataset,
 
     ###### TO CONTINUE HEREEEEe
     if(length(agric)>0){
-      results2$flag_lcsi_liv_agriculture <- dplyr::case_when(rowSums(sapply(results2[agric], function(i) grepl("yes",i))) > 0 & any(results2[income_types] == "sell_agri_prod") > 0 ~ 1, .default = 0, TRUE ~ NA)
+      results2$flag_lcsi_liv_agriculture <- dplyr::case_when(rowSums(sapply(results2[agric], function(i) grepl(fsl_lcsi_yes_value,i))) > 0 & any(results2[income_types] == sell_agri_prod) > 0 ~ 1, .default = 0, TRUE ~ NA)
     }
 
     if(length(livest)>0){
-      results2$flag_lcsi_liv_livestock  <- dplyr::case_when(rowSums(sapply(results2[livest], function(i) grepl("yes",i))) > 0 & any(results2[income_types] == "sell_anim_prod") > 0 ~ 1, .default = 0, TRUE ~ NA)
+      results2$flag_lcsi_liv_livestock  <- dplyr::case_when(rowSums(sapply(results2[livest], function(i) grepl(fsl_lcsi_yes_value,i))) > 0 & any(results2[income_types] == sell_anim_prod) > 0 ~ 1, .default = 0, TRUE ~ NA)
     }
 
     if(length(displ)>0){
-      results2$flag_lcsi_displ  <- dplyr::case_when(rowSums(sapply(results2[displ], function(i) grepl("yes",i))) > 0 & results2[residency_status] == value_idp ~ 1, .default = 0, TRUE ~ NA) ## Fix second part to take only select_one from three columns
+      results2$flag_lcsi_displ  <- dplyr::case_when(rowSums(sapply(results2[displ], function(i) grepl(fsl_lcsi_yes_value,i))) > 0 & results2[residency_status] == value_idp ~ 1, .default = 0, TRUE ~ NA) ## Fix second part to take only select_one from three columns
     }
 
     # Initialize a vector with the base columns that are always selected
@@ -450,7 +485,23 @@ check_fsl_flags <- function(.dataset,
 
     # Select the dynamically determined columns
     results2 <- results2 %>%
-      dplyr::select(all_of(columns_to_select))
+      dplyr::select(all_of(columns_to_select)) %>%
+      dplyr::rename("fsl_lcsi_stress1" = fsl_lcsi_stress1,
+                    "fsl_lcsi_stress2" = fsl_lcsi_stress2,
+                    "fsl_lcsi_stress3" = fsl_lcsi_stress3,
+                    "fsl_lcsi_stress4" = fsl_lcsi_stress4,
+                    "fsl_lcsi_crisis1" = fsl_lcsi_crisis1,
+                    "fsl_lcsi_crisis2" = fsl_lcsi_crisis2,
+                    "fsl_lcsi_crisis3" = fsl_lcsi_crisis3,
+                    "fsl_lcsi_emergency1" = fsl_lcsi_emergency1,
+                    "fsl_lcsi_emergency2" = fsl_lcsi_emergency2,
+                    "fsl_lcsi_emergency3" = fsl_lcsi_emergency3,
+                    "fsl_lcsi_stress" = fsl_lcsi_stress,
+                    "fsl_lcsi_crisis" = fsl_lcsi_crisis,
+                    "fsl_lcsi_emergency" = fsl_lcsi_emergency,
+                    "fsl_lcsi_cat_yes" = fsl_lcsi_cat_yes,
+                    "fsl_lcsi_cat_exhaust" = fsl_lcsi_cat_exhaust,
+                    "fsl_lcsi_cat" = fsl_lcsi_cat)
 
 
     if(!exists("results")){
@@ -467,7 +518,10 @@ check_fsl_flags <- function(.dataset,
     results2 <- .dataset %>%
       dplyr::mutate(flag_fc_cell = ifelse(is.na(fsl_fc_cell), NA,
                                           ifelse(fsl_fc_cell %in% c(3,4,5,8,9,10), 1, 0))) %>%
-      dplyr::select(fc_phase_col, flag_fc_cell)
+      dplyr::select(fc_phase_col, flag_fc_cell) %>%
+      dplyr::rename("fsl_fc_cell" = fsl_fc_cell,
+                    "fsl_fc_phase" = fsl_fc_phase)
+
     if(!exists("results")){
       results <- results2
     } else {
@@ -483,10 +537,25 @@ check_fsl_flags <- function(.dataset,
   } else{
     results2 <- .dataset %>%
       dplyr::mutate(flag_low_sugar_cond_hdds = ifelse(is.na(!!rlang::sym(fsl_hdds_score)), NA,
-                                                      ifelse((!!rlang::sym(fsl_hdds_score) <= 2 & !!rlang::sym(fsl_hdds_sugar) == "yes" & !!rlang::sym(fsl_hdds_condiments) == "yes") |
-                                                               (!!rlang::sym(fsl_hdds_score) <= 1 & !!rlang::sym(fsl_hdds_sugar) == "yes") |
-                                                               (!!rlang::sym(fsl_hdds_score) <= 1 & !!rlang::sym(fsl_hdds_condiments) == "yes"), 1, 0))) %>%
-      dplyr::select(hdds_flag_columns,flag_low_sugar_cond_hdds)
+                                                      ifelse((!!rlang::sym(fsl_hdds_score) <= 2 & !!rlang::sym(fsl_hdds_sugar) == fsl_hdds_yes_value & !!rlang::sym(fsl_hdds_condiments) == fsl_hdds_yes_value) |
+                                                               (!!rlang::sym(fsl_hdds_score) <= 1 & !!rlang::sym(fsl_hdds_sugar) == fsl_hdds_yes_value) |
+                                                               (!!rlang::sym(fsl_hdds_score) <= 1 & !!rlang::sym(fsl_hdds_condiments) == fsl_hdds_yes_value), 1, 0))) %>%
+      dplyr::select(hdds_flag_columns,flag_low_sugar_cond_hdds) %>%
+      dplyr::rename("fsl_hdds_cereals" = fsl_hdds_cereals,
+                    "fsl_hdds_tubers" = fsl_hdds_tubers,
+                    "fsl_hdds_legumes" = fsl_hdds_legumes,
+                    "fsl_hdds_veg" = fsl_hdds_veg,
+                    "fsl_hdds_fruit" = fsl_hdds_fruit,
+                    "fsl_hdds_meat" = fsl_hdds_meat,
+                    "fsl_hdds_fish" = fsl_hdds_fish,
+                    "fsl_hdds_dairy" = fsl_hdds_dairy,
+                    "fsl_hdds_eggs" = fsl_hdds_eggs,
+                    "fsl_hdds_sugar" = fsl_hdds_sugar,
+                    "fsl_hdds_oil" = fsl_hdds_oil,
+                    "fsl_hdds_condiments" = fsl_hdds_condiments,
+                    "fsl_hdds_cat" = fsl_hdds_cat,
+                    "fsl_hdds_score" = fsl_hdds_score)
+
     if(!exists("results")){
       results <- results2
     } else {
@@ -494,63 +563,5 @@ check_fsl_flags <- function(.dataset,
     }
   }
   options(warn = 0)
-  results <- results %>%
-    dplyr::rename("fsl_fcs_cereal" = fsl_fcs_cereal,
-                  "fsl_fcs_legumes" = fsl_fcs_legumes,
-                  "fsl_fcs_dairy" = fsl_fcs_dairy,
-                  "fsl_fcs_meat" = fsl_fcs_meat,
-                  "fsl_fcs_veg" = fsl_fcs_veg,
-                  "fsl_fcs_fruit" = fsl_fcs_fruit,
-                  "fsl_fcs_oil" = fsl_fcs_oil,
-                  "fsl_fcs_sugar" = fsl_fcs_sugar,
-                  "fsl_rcsi_lessquality" = fsl_rcsi_lessquality,
-                  "fsl_rcsi_borrow" = fsl_rcsi_borrow,
-                  "fsl_rcsi_mealsize" = fsl_rcsi_mealsize,
-                  "fsl_rcsi_mealadult" = fsl_rcsi_mealadult,
-                  "fsl_rcsi_mealnb" = fsl_rcsi_mealnb,
-                  "fsl_hhs_nofoodhh" = fsl_hhs_nofoodhh,
-                  "fsl_hhs_nofoodhh_freq" = fsl_hhs_nofoodhh_freq,
-                  "fsl_hhs_sleephungry" = fsl_hhs_sleephungry,
-                  "fsl_hhs_sleephungry_freq" = fsl_hhs_sleephungry_freq,
-                  "fsl_hhs_alldaynight" = fsl_hhs_alldaynight,
-                  "fsl_hhs_alldaynight_freq" = fsl_hhs_alldaynight_freq,
-                  "fsl_hdds_cereals" = fsl_hdds_cereals,
-                  "fsl_hdds_tubers" = fsl_hdds_tubers,
-                  "fsl_hdds_legumes" = fsl_hdds_legumes,
-                  "fsl_hdds_veg" = fsl_hdds_veg,
-                  "fsl_hdds_fruit" = fsl_hdds_fruit,
-                  "fsl_hdds_meat" = fsl_hdds_meat,
-                  "fsl_hdds_fish" = fsl_hdds_fish,
-                  "fsl_hdds_dairy" = fsl_hdds_dairy,
-                  "fsl_hdds_eggs" = fsl_hdds_eggs,
-                  "fsl_hdds_sugar" = fsl_hdds_sugar,
-                  "fsl_hdds_oil" = fsl_hdds_oil,
-                  "fsl_hdds_condiments" = fsl_hdds_condiments,
-                  "fsl_lcsi_stress1" = fsl_lcsi_stress1,
-                  "fsl_lcsi_stress2" = fsl_lcsi_stress2,
-                  "fsl_lcsi_stress3" = fsl_lcsi_stress3,
-                  "fsl_lcsi_stress4" = fsl_lcsi_stress4,
-                  "fsl_lcsi_crisis1" = fsl_lcsi_crisis1,
-                  "fsl_lcsi_crisis2" = fsl_lcsi_crisis2,
-                  "fsl_lcsi_crisis3" = fsl_lcsi_crisis3,
-                  "fsl_lcsi_emergency1" = fsl_lcsi_emergency1,
-                  "fsl_lcsi_emergency2" = fsl_lcsi_emergency2,
-                  "fsl_lcsi_emergency3" = fsl_lcsi_emergency3,
-                  "fsl_lcsi_stress" = fsl_lcsi_stress,
-                  "fsl_lcsi_crisis" = fsl_lcsi_crisis,
-                  "fsl_lcsi_emergency" = fsl_lcsi_emergency,
-                  "fsl_lcsi_cat_yes" = fsl_lcsi_cat_yes,
-                  "fsl_lcsi_cat_exhaust" = fsl_lcsi_cat_exhaust,
-                  "fsl_lcsi_cat" = fsl_lcsi_cat,
-                  "fsl_fcs_cat" =fsl_fcs_cat,
-                  "fsl_fcs_score" = fsl_fcs_score,
-                  "fsl_rcsi_cat" = fsl_rcsi_cat,
-                  "fsl_rcsi_score" = fsl_rcsi_score,
-                  "fsl_hhs_cat" = fsl_hhs_cat,
-                  "fsl_hhs_score" = fsl_hhs_score,
-                  "fsl_hdds_cat" = fsl_hdds_cat,
-                  "fsl_hdds_score" = fsl_hdds_score,
-                  "fsl_fc_cell" = fsl_fc_cell,
-                  "fsl_fc_phase" = fsl_fc_phase)
   return(results)
 }

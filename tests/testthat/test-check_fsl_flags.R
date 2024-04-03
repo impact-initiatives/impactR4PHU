@@ -38,6 +38,7 @@ testthat::test_that("Check dataframe empty", {
   testthat::expect_error(check_fsl_flags(.dataset = df1, tool.survey = test_survey))
 })
 
+
 testthat::test_that("UUID variable not available", {
   load(testthat::test_path("testdata", "test_df.rda"))
   load(testthat::test_path("testdata", "test_survey.rda"))
@@ -263,7 +264,7 @@ testthat::test_that("Check for missing columns", {
     .dataset = test_df_with_calculation %>% dplyr::select(-fsl_lcsi_crisis1),
     fsl_lcsi_crisis1 = "fsl_lcsi_crisis1",
     grouping = NULL
-  )) <- <- <- <- <- <- <- <-
+  ))
   testthat::expect_warning(check_fsl_flags(tool.survey = test_survey,
     .dataset = test_df_with_calculation %>% dplyr::select(-fsl_lcsi_crisis2),
     fsl_lcsi_crisis2 = "fsl_lcsi_crisis2",

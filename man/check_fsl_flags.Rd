@@ -37,6 +37,7 @@ check_fsl_flags(
   fsl_hdds_sugar = "fsl_hdds_sugar",
   fsl_hdds_oil = "fsl_hdds_oil",
   fsl_hdds_condiments = "fsl_hdds_condiments",
+  fsl_hdds_yes_value = "yes",
   fsl_lcsi_stress1 = "fsl_lcsi_stress1",
   fsl_lcsi_stress2 = "fsl_lcsi_stress2",
   fsl_lcsi_stress3 = "fsl_lcsi_stress3",
@@ -53,6 +54,7 @@ check_fsl_flags(
   fsl_lcsi_cat_yes = "fsl_lcsi_cat_yes",
   fsl_lcsi_cat_exhaust = "fsl_lcsi_cat_exhaust",
   fsl_lcsi_cat = "fsl_lcsi_cat",
+  fsl_lcsi_yes_value = "yes",
   fsl_fcs_cat = "fsl_fcs_cat",
   fsl_fcs_score = "fsl_fcs_score",
   fsl_rcsi_cat = "fsl_rcsi_cat",
@@ -66,6 +68,8 @@ check_fsl_flags(
   num_children = "num_children",
   income_types = c("fsl_first_income_types", "fsl_second_income_types",
     "fsl_third_income_types"),
+  sell_agri_prod = "sell_agri_prod",
+  sell_anim_prod = "sell_anim_prod",
   residency_status = "residency_status",
   value_idp = "idp",
   grouping = NULL,
@@ -145,6 +149,8 @@ It has to be a string.}
 
 \item{fsl_hdds_condiments}{the name of the variable that indicates if condiments were consumed in the last 24 hours}
 
+\item{fsl_hdds_yes_value}{the "yes" choice value of the variables that indicates the HDDS}
+
 \item{fsl_lcsi_stress1}{the name of the variable that indicates the first stress LCSI strategy}
 
 \item{fsl_lcsi_stress2}{the name of the variable that indicates the second stress LCSI strategy}
@@ -177,6 +183,8 @@ It has to be a string.}
 
 \item{fsl_lcsi_cat}{the name of the variable that indicates the highest category of the LCSI strategy}
 
+\item{fsl_lcsi_yes_value}{the "yes" choice value of the variables that indicates the LCSI strategies}
+
 \item{fsl_fcs_cat}{the name of the variable that indicates the food consumption score category}
 
 \item{fsl_fcs_score}{the name of the variable that indicates the food consumption score}
@@ -201,6 +209,12 @@ It has to be a string.}
 
 \item{income_types}{a vector of the three income_types variables. By default,
 c("fsl_first_income_types","fsl_second_income_types","fsl_third_income_types")}
+
+\item{sell_agri_prod}{the "sell_agri_prod" choice value of the variables that indicates
+income from agriculture}
+
+\item{sell_anim_prod}{the "sell_anim_prod" choice value of the variables that indicates
+income from animal}
 
 \item{residency_status}{the name of the variable that indicates the residency status of HH,
 By default, "residency_status"}

@@ -4,6 +4,10 @@
 #' fcs/rcsi/hhs/hdds/fcm/fclcm add_x indicators
 #' @param grouping the name of the variable that indicates the grouping variable - usually "enumerator"
 #' @param uuid uuid variable
+#' @param short_report Inputs a boolean value TRUE or FALSE to return just key variables. If FALSE,
+#' returns a dataframe of all the variables calculated.
+#' @param file_path Inputs an optional character value specifying the file location to save a copy
+#' of the results.
 #'
 #' @return a dataframe with all fsl related plausibility columns
 #' @export
@@ -13,7 +17,9 @@
 
 create_fsl_plaus <- function(.dataset,
                              grouping = NULL,
-                             uuid = "uuid"){
+                             uuid = "uuid",
+                             short_report = FALSE,
+                             file_path = NULL){
   options(warn = -1)
   ## Throw an error if a dataset wasn't provided as a first argument
   if (!is.data.frame(.dataset)) {
@@ -236,24 +242,24 @@ create_fsl_plaus <- function(.dataset,
   }
 
   results <- results %>% dplyr::select(c(1, n, dplyr::everything()))
-  if (c("flag_fc_cell") %in% names(.dataset)) {
-    results2 <- .dataset %>% dplyr::mutate(p1 = ifelse(is.na(fc_phase), NA,
-                                                 ifelse(fc_phase == "Phase 1 FC", 1, 0)),
-                                     p2 = ifelse(is.na(fc_phase), NA,
-                                                 ifelse(fc_phase == "Phase 2 FC", 1, 0)),
-                                     p3 = ifelse(is.na(fc_phase), NA,
-                                                 ifelse(fc_phase == "Phase 3 FC", 1, 0)),
-                                     p4 = ifelse(is.na(fc_phase), NA,
-                                                 ifelse(fc_phase == "Phase 4 FC", 1, 0)),
-                                     p5 = ifelse(is.na(fc_phase), NA,
-                                                 ifelse(fc_phase == "Phase 5 FC", 1, 0))) %>%
+  if (c("flag_fsl_fc_cell") %in% names(.dataset)) {
+    results2 <- .dataset %>% dplyr::mutate(p1 = ifelse(is.na(fsl_fc_phase), NA,
+                                                 ifelse(fsl_fc_phase == "Phase 1 FC", 1, 0)),
+                                     p2 = ifelse(is.na(fsl_fc_phase), NA,
+                                                 ifelse(fsl_fc_phase == "Phase 2 FC", 1, 0)),
+                                     p3 = ifelse(is.na(fsl_fc_phase), NA,
+                                                 ifelse(fsl_fc_phase == "Phase 3 FC", 1, 0)),
+                                     p4 = ifelse(is.na(fsl_fc_phase), NA,
+                                                 ifelse(fsl_fc_phase == "Phase 4 FC", 1, 0)),
+                                     p5 = ifelse(is.na(fsl_fc_phase), NA,
+                                                 ifelse(fsl_fc_phase == "Phase 5 FC", 1, 0))) %>%
       dplyr::group_by(!!rlang::sym(grouping)) %>%
-      dplyr::summarise(prop_fc_flags = sum(flag_fc_cell, na.rm = TRUE)/sum(!is.na(fc_cell), na.rm = TRUE),
-                       fews_p1 = round(sum(p1, na.rm = TRUE)/sum(!is.na(fc_cell)), 2),
-                       fews_p2 = round(sum(p2, na.rm = TRUE)/sum(!is.na(fc_cell)), 2),
-                       fews_p3 = round(sum(p3, na.rm = TRUE)/sum(!is.na(fc_cell)), 2),
-                       fews_p4 = round(sum(p4, na.rm = TRUE)/sum(!is.na(fc_cell)), 2),
-                       fews_p5 = round(sum(p5, na.rm = TRUE)/sum(!is.na(fc_cell)), 2))
+      dplyr::summarise(prop_fc_flags = sum(flag_fsl_fc_cell, na.rm = TRUE)/sum(!is.na(fsl_fc_cell), na.rm = TRUE),
+                       fews_p1 = round(sum(p1, na.rm = TRUE)/sum(!is.na(fsl_fc_cell)), 2),
+                       fews_p2 = round(sum(p2, na.rm = TRUE)/sum(!is.na(fsl_fc_cell)), 2),
+                       fews_p3 = round(sum(p3, na.rm = TRUE)/sum(!is.na(fsl_fc_cell)), 2),
+                       fews_p4 = round(sum(p4, na.rm = TRUE)/sum(!is.na(fsl_fc_cell)), 2),
+                       fews_p5 = round(sum(p5, na.rm = TRUE)/sum(!is.na(fsl_fc_cell)), 2))
     if (!exists("results")) {
       results <- results2
     }else {
@@ -262,20 +268,7 @@ create_fsl_plaus <- function(.dataset,
     results <- results %>%
       dplyr::select(c(1, n, dplyr::everything()))
   }
-  if (c("food_exp_share") %in% names(.dataset)) {
-    results2 <- .dataset %>% dplyr::group_by(!!rlang::sym(grouping)) %>%
-      dplyr::summarise(prop_fc_flags = sum(flag_fc_cell, na.rm = TRUE)/sum(!is.na(fc_cell), na.rm = TRUE),
-                       fes_1 = round(sum(food_exp_share == "1", na.rm = TRUE)/sum(!is.na(food_exp_share)), 2),
-                       fes_2 = round(sum(food_exp_share == "2", na.rm = TRUE)/sum(!is.na(food_exp_share)), 2),
-                       fes_3 = round(sum(food_exp_share == "3", na.rm = TRUE)/sum(!is.na(food_exp_share)), 2),
-                       fes_4 = round(sum(food_exp_share == "4", na.rm = TRUE)/sum(!is.na(food_exp_share)), 2))
-    if (!exists("results")) {
-      results <- results2
-    }else {
-      results <- merge(results, results2)
-    }
-    results <- results %>% dplyr::select(c(1, n, dplyr::everything()))
-  }
+
   results <- calculate_plausibility(.dataset = results)
   a <- c("n", "fews_p1", "fews_p2", "fews_p3", "fews_p4",
          "fews_p5", "flag_severe_hhs", "flag_lcsi_severity",
