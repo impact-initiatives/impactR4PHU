@@ -55,105 +55,105 @@ htmltools::img(src = knitr::image_uri("Logo_Reach_RGB_1.png"),
 
 ## FSL {.tabset .tabset-fade}
 
-<!-- ```{r, echo=FALSE, warning=FALSE,include=FALSE} -->
-<!-- fcs_check_columns <- c("fsl_fcs_cereal", -->
-<!--                        "fsl_fcs_legumes", -->
-<!--                        "fsl_fcs_veg", -->
-<!--                        "fsl_fcs_fruit", -->
-<!--                        "fsl_fcs_meat", -->
-<!--                        "fsl_fcs_dairy", -->
-<!--                        "fsl_fcs_sugar", -->
-<!--                        "fsl_fcs_oil") -->
+```{r, echo=FALSE, warning=FALSE,include=FALSE}
+fcs_check_columns <- c("fsl_fcs_cereal",
+                       "fsl_fcs_legumes",
+                       "fsl_fcs_veg",
+                       "fsl_fcs_fruit",
+                       "fsl_fcs_meat",
+                       "fsl_fcs_dairy",
+                       "fsl_fcs_sugar",
+                       "fsl_fcs_oil")
 
-<!-- if(all(fcs_check_columns %in% names(raw.main))) { -->
-<!--   raw.main <- raw.main %>% -->
-<!--     add_fcs_new(cutoffs = "normal") -->
-<!-- } -->
+if(all(fcs_check_columns %in% names(raw.main))) {
+  raw.main <- raw.main %>%
+    add_fcs_new(cutoffs = "normal")
+}
 
-<!-- rcsi_check_columns <- c("fsl_rcsi_lessquality", -->
-<!--                         "fsl_rcsi_borrow", -->
-<!--                         "fsl_rcsi_mealsize", -->
-<!--                         "fsl_rcsi_mealadult", -->
-<!--                         "fsl_rcsi_mealnb") -->
+rcsi_check_columns <- c("fsl_rcsi_lessquality",
+                        "fsl_rcsi_borrow",
+                        "fsl_rcsi_mealsize",
+                        "fsl_rcsi_mealadult",
+                        "fsl_rcsi_mealnb")
 
-<!-- if(all(rcsi_check_columns %in% names(raw.main))) { -->
-<!--   raw.main <- raw.main %>% -->
-<!--     add_rcsi_new() -->
-<!-- } -->
+if(all(rcsi_check_columns %in% names(raw.main))) {
+  raw.main <- raw.main %>%
+    add_rcsi_new()
+}
 
-<!-- hhs_check_columns <- c("fsl_hhs_nofoodhh", -->
-<!--                        "fsl_hhs_nofoodhh_freq", -->
-<!--                        "fsl_hhs_sleephungry", -->
-<!--                        "fsl_hhs_sleephungry_freq", -->
-<!--                        "fsl_hhs_alldaynight", -->
-<!--                        "fsl_hhs_alldaynight_freq") -->
+hhs_check_columns <- c("fsl_hhs_nofoodhh",
+                       "fsl_hhs_nofoodhh_freq",
+                       "fsl_hhs_sleephungry",
+                       "fsl_hhs_sleephungry_freq",
+                       "fsl_hhs_alldaynight",
+                       "fsl_hhs_alldaynight_freq")
 
-<!-- if(all(hhs_check_columns %in% names(raw.main))) { -->
-<!--   raw.main <- raw.main %>% -->
-<!--     add_hhs_new() -->
-<!-- } -->
+if(all(hhs_check_columns %in% names(raw.main))) {
+  raw.main <- raw.main %>%
+    add_hhs_new()
+}
 
-<!-- lcsi_check_columns <- c("fsl_lcsi_stress1","fsl_lcsi_stress2","fsl_lcsi_stress3","fsl_lcsi_stress4", -->
-<!--                         "fsl_lcsi_crisis1","fsl_lcsi_crisis2","fsl_lcsi_crisis3", -->
-<!--                         "fsl_lcsi_emergency1","fsl_lcsi_emergency2","fsl_lcsi_emergency3") -->
+lcsi_check_columns <- c("fsl_lcsi_stress1","fsl_lcsi_stress2","fsl_lcsi_stress3","fsl_lcsi_stress4",
+                        "fsl_lcsi_crisis1","fsl_lcsi_crisis2","fsl_lcsi_crisis3",
+                        "fsl_lcsi_emergency1","fsl_lcsi_emergency2","fsl_lcsi_emergency3")
 
-<!-- if(all(lcsi_check_columns %in% names(raw.main))) { -->
-<!--   raw.main <- raw.main %>% -->
-<!--     add_lcsi_new() -->
-<!-- } -->
+if(all(lcsi_check_columns %in% names(raw.main))) {
+  raw.main <- raw.main %>%
+    add_lcsi_new()
+}
 
-<!-- hdds_check_columns <- c("fsl_hdds_cereals","fsl_hdds_tubers","fsl_hdds_veg","fsl_hdds_fruit","fsl_hdds_meat", -->
-<!--                         "fsl_hdds_eggs","fsl_hdds_fish","fsl_hdds_legumes","fsl_hdds_dairy","fsl_hdds_oil", -->
-<!--                         "fsl_hdds_sugar","fsl_hdds_condiments") -->
+hdds_check_columns <- c("fsl_hdds_cereals","fsl_hdds_tubers","fsl_hdds_veg","fsl_hdds_fruit","fsl_hdds_meat",
+                        "fsl_hdds_eggs","fsl_hdds_fish","fsl_hdds_legumes","fsl_hdds_dairy","fsl_hdds_oil",
+                        "fsl_hdds_sugar","fsl_hdds_condiments")
 
-<!-- if(all(hdds_check_columns %in% names(raw.main))) { -->
-<!--   raw.main <- raw.main %>% -->
-<!--     add_hdds_new() -->
-<!-- } -->
+if(all(hdds_check_columns %in% names(raw.main))) {
+  raw.main <- raw.main %>%
+    add_hdds_new()
+}
 
-<!-- fcm_check_1_columns <- c("fsl_fcs_cat", -->
-<!--                          "fsl_rcsi_cat") -->
+fcm_check_1_columns <- c("fsl_fcs_cat",
+                         "fsl_rcsi_cat")
 
-<!-- fcm_check_2_columns <- c("fsl_hdds_cat", -->
-<!--                          "fsl_rcsi_cat") -->
+fcm_check_2_columns <- c("fsl_hdds_cat",
+                         "fsl_rcsi_cat")
 
-<!-- fcm_check_3_columns <- c("fsl_fcs_cat", -->
-<!--                          "fsl_hhs_cat") -->
+fcm_check_3_columns <- c("fsl_fcs_cat",
+                         "fsl_hhs_cat")
 
-<!-- fcm_check_4_columns <- c("fsl_hdds_cat", -->
-<!--                          "fsl_hhs_cat") -->
+fcm_check_4_columns <- c("fsl_hdds_cat",
+                         "fsl_hhs_cat")
 
-<!-- fcm_check_5_columns <- c("fsl_hdds_cat", -->
-<!--                          "fsl_rcsi_cat", -->
-<!--                          "fsl_hhs_cat") -->
+fcm_check_5_columns <- c("fsl_hdds_cat",
+                         "fsl_rcsi_cat",
+                         "fsl_hhs_cat")
 
-<!-- fcm_check_6_columns <- c("fsl_fcs_cat", -->
-<!--                          "fsl_rcsi_cat", -->
-<!--                          "fsl_hhs_cat") -->
+fcm_check_6_columns <- c("fsl_fcs_cat",
+                         "fsl_rcsi_cat",
+                         "fsl_hhs_cat")
 
 
 
-<!-- if(all(fcm_check_1_columns %in% names(raw.main)) | -->
-<!--    all(fcm_check_2_columns %in% names(raw.main)) | -->
-<!--    all(fcm_check_3_columns %in% names(raw.main)) | -->
-<!--    all(fcm_check_4_columns %in% names(raw.main)) | -->
-<!--    all(fcm_check_5_columns %in% names(raw.main)) | -->
-<!--    all(fcm_check_6_columns %in% names(raw.main))) { -->
-<!--   raw.main <- raw.main %>% -->
-<!--     add_fcm_phase_new() -->
-<!-- } -->
+if(all(fcm_check_1_columns %in% names(raw.main)) |
+   all(fcm_check_2_columns %in% names(raw.main)) |
+   all(fcm_check_3_columns %in% names(raw.main)) |
+   all(fcm_check_4_columns %in% names(raw.main)) |
+   all(fcm_check_5_columns %in% names(raw.main)) |
+   all(fcm_check_6_columns %in% names(raw.main))) {
+  raw.main <- raw.main %>%
+    add_fcm_phase_new()
+}
 
-<!-- fclcm_check_columns <- c("fc_phase", -->
-<!--                          "fsl_lcsi_cat") -->
-<!-- if(all(fclcm_check_columns %in% names(raw.main))) { -->
-<!--   raw.main <- raw.main %>% -->
-<!--     add_fclcm_phase_new() -->
-<!-- } -->
+fclcm_check_columns <- c("fc_phase",
+                         "fsl_lcsi_cat")
+if(all(fclcm_check_columns %in% names(raw.main))) {
+  raw.main <- raw.main %>%
+    add_fclcm_phase_new()
+}
 
-<!-- ## FCS -->
-<!-- raw.flag.fcs <- raw.main %>% -->
-<!--   check_fs_flags(date_dc_date = "today") -->
-<!-- ``` -->
+## FCS
+raw.flag.fcs <- raw.main %>%
+  check_fs_flags(date_dc_date = "today")
+```
 
 <!-- ```{r, include = FALSE} -->
 <!-- overall_fsl_plaus <- openxlsx::read.xlsx("./../resources/overall_plaus.xlsx",fillMergedCells = TRUE, sheet = "FSL") %>% -->

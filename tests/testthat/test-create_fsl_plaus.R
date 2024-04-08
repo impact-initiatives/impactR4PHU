@@ -33,3 +33,31 @@ testthat::test_that("Check result", {
     create_fsl_plaus()
   testthat::expect_equal(actual,expected)
 })
+
+
+testthat::test_that("Check for missing columns", {
+  load(testthat::test_path("testdata", "test_df_fsl_flags.rda"))
+  actual <- NA
+  expected <- test_df_fsl_flags %>% dplyr::select(-fsl_fcs_score) %>%
+    create_fsl_plaus() %>%
+    pull(corr.fcs_rcsi) %>% unique()
+  testthat::expect_equal(actual,expected)
+})
+
+testthat::test_that("Check for missing columns", {
+  load(testthat::test_path("testdata", "test_df_fsl_flags.rda"))
+  actual <- NA
+  expected <- test_df_fsl_flags %>% dplyr::select(-fsl_hdds_score) %>%
+    create_fsl_plaus() %>%
+    pull(corr.fcs_hdds) %>% unique()
+  testthat::expect_equal(actual,expected)
+})
+
+testthat::test_that("Check for missing columns", {
+  load(testthat::test_path("testdata", "test_df_fsl_flags.rda"))
+  actual <- NA
+  expected <- test_df_fsl_flags %>% dplyr::select(-fsl_hhs_score) %>%
+    create_fsl_plaus() %>%
+    pull(corr.fcs_hhs) %>% unique()
+  testthat::expect_equal(actual,expected)
+})
