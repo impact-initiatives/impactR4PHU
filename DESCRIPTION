@@ -13,10 +13,14 @@ URL: https://impact-initiatives.github.io/impactR4PHU/
 Imports: 
     dplyr,
     flextable,
+    GGally,
+    ggplot2,
+    ggridges,
     magrittr,
     rlang,
     stats,
     stringr,
+    tidyr,
     writexl,
     zscorer
 Suggests: 

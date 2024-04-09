@@ -15,20 +15,25 @@ output: html_document
 }
 </style>
 
+
+
+```{r setup, include=FALSE}
+if (!require("pacman")) install.packages("pacman")
+pacman::p_load(tidyverse, readxl, writexl, openxlsx, randomcoloR, anytime, 
+               cluster, DT, stringr, knitr, svDialogs, flextable)
+
+knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE)
+options(scipen = 999)
+```
+
 ```{r logo, echo=FALSE}
 htmltools::img(src = knitr::image_uri("Logo_Reach_RGB_1.png"),
                alt = "REACH logo",
                style = 'position:absolute; top:0; right:0; padding:0; margin:20; width:250px')
 ```
 
-```{r setup, include=FALSE}
-if (!require("pacman")) install.packages("pacman")
-pacman::p_load(tidyverse, readxl, writexl, openxlsx, randomcoloR, anytime, 
-               cluster, DT, stringr, knitr, svDialogs, flextable)
-knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE)
-options(scipen = 999)
-```
 ```{r, include=FALSE, eval=TRUE}
+source("tabular_analysis_utils.R")
 path.raw.main <- svDialogs::dlg_open(multiple = F, title = "Please select your data excel file.")$res
 path.tool <- svDialogs::dlg_open(multiple = F, title = "Please select your Kobo tool file.")$res
 main.sheets <- readxl::excel_sheets(path.raw.main)
@@ -734,21 +739,21 @@ final_table
 ```{r, results='asis'}
 result_fsl_pivot <- result_fsl_enum %>%
   mutate_all(., as.character) %>%
-  tidyr::pivot_longer(-enumerator,names_to = "Criteria",
+  tidyr::pivot_longer(-group,names_to = "Criteria",
                values_to = "Score") %>%
   filter(stringr::str_starts(Criteria,"plaus_"))
-list_enum <- result_fsl_pivot$enumerator %>% unique
+list_enum <- result_fsl_pivot$group %>% unique
 list_flex_enum <- list()
 for (i in list_enum) {
 
   cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",5), collapse=""), " ", "<strong>",i,"</strong>"))
   overall_fsl_plaus_enum <- overall_fsl_plaus %>%
-    left_join(result_fsl_pivot %>% filter(enumerator == i), by = c("flag_name"="Criteria"))%>%
+    left_join(result_fsl_pivot %>% filter(group == i), by = c("flag_name"="Criteria"))%>%
     mutate_all(., ~ifelse(is.na(.),"NA",.)) %>%
     cbind(bind) %>%
-    select(-enumerator) %>%
+    select(-group) %>%
     left_join(result_fsl_pivot %>%
-                filter(enumerator == i) %>%
+                filter(group == i) %>%
                 filter(Criteria %in% c("plaus_other_fsl",
                                        "plaus_lcsi",
                                        "plaus_hhs",
@@ -757,11 +762,11 @@ for (i in list_enum) {
               rename(indscore = "Score"), by = c("Indicator.Score"="Criteria")) %>%
     mutate(indscore = case_when(flag_name == "plaus_flag_severe_hhs"~paste0(indscore,"/10"),
                               TRUE ~paste0(indscore,"/20"))) %>%
-    select(-c(Indicator.Score,enumerator))
+    select(-c(Indicator.Score,group))
 
   fsl_enum <- flextable::flextable(overall_fsl_plaus_enum)
 
-  final_table_fsl_enum <- create_table_fsl(fsl_enum)
+  final_table_fsl_enum <- impactR4PHU::create_plaus_table_fsl(fsl_enum)
   subch(final_table_fsl_enum)
   list_flex_enum <- append(list_flex_enum,final_table_fsl_enum)
 }
@@ -770,13 +775,13 @@ for (i in list_enum) {
 
 
 ```{r, results='asis'}
-flag_description <- readxl::read_excel("./../resources/flag_description.xlsx", sheet = "FSL")
+flag_description <- readxl::read_excel("flag_description.xlsx", sheet = "FSL")
 flags_fsl_columns <- names(raw.flag.fcs)[stringr::str_starts(names(raw.flag.fcs),"flag_")]
 overall_flag <- tibble()
 for(flag in flags_fsl_columns) {
 
   flag_overall <- raw.flag.fcs %>%
-    select(enumerator, !!rlang::sym(flag)) %>%
+    select(group, !!rlang::sym(flag)) %>%
     filter(!is.na(!!rlang::sym(flag))) %>%
     mutate(flag := flag) %>%
     group_by(flag) %>%
@@ -805,10 +810,10 @@ for(flag in flags_fsl_columns) {
     filter(flag_name %in% flag) %>%
     pull(Action)
   flag_by_enum <- raw.flag.fcs %>%
-    select(enumerator, !!rlang::sym(flag)) %>%
+    select(group, !!rlang::sym(flag)) %>%
     filter(!is.na(!!rlang::sym(flag))) %>%
     mutate(flag := flag) %>%
-    group_by(flag,enumerator) %>%
+    group_by(flag,group) %>%
     summarise(num_samples = n(),
               flagged = sum(!!rlang::sym(flag))) %>%
     mutate(percentage_flagged = paste0(round((flagged/num_samples)*100,2),"%")) %>%
@@ -839,7 +844,7 @@ for(flag in flags_fsl_columns) {
 if(all(fcs_check_columns %in% names(raw.flag.fcs))) {
   cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",3), collapse=""), " ", "Plots {.tabset .tabset-fade}"))
   cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",4), collapse=""), " ", "FCS Ridge Overall Distribution Plot"))
-  (plot_ridge_distribution_phu(raw.flag.fcs, numeric_cols = c("fsl_fcs_cereal", "fsl_fcs_dairy", "fsl_fcs_veg", "fsl_fcs_fruit", "fsl_fcs_legumes", "fsl_fcs_sugar", "fsl_fcs_oil"),
+  (impactR4PHU::plot_ridge_distribution(raw.flag.fcs, numeric_cols = c("fsl_fcs_cereal", "fsl_fcs_dairy", "fsl_fcs_veg", "fsl_fcs_fruit", "fsl_fcs_legumes", "fsl_fcs_sugar", "fsl_fcs_oil"),
                          name_groups = "Food Groups", name_units = "Days"))
 }
 ```
@@ -848,15 +853,15 @@ if(all(fcs_check_columns %in% names(raw.flag.fcs))) {
 ```{r, results='asis'}
 if(all(fcs_check_columns %in% names(raw.flag.fcs))) {
     cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",4), collapse=""), " ", "FCS Ridge by Enumerator Distribution Plot"))
-  (plot_ridge_distribution_phu(raw.flag.fcs, numeric_cols = c("fsl_fcs_cereal", "fsl_fcs_dairy", "fsl_fcs_veg", "fsl_fcs_fruit", "fsl_fcs_legumes", "fsl_fcs_sugar", "fsl_fcs_oil"),
-                         name_groups = "Food Groups", name_units = "Days", grouping = "enumerator"))
+  (impactR4PHU::plot_ridge_distribution(raw.flag.fcs, numeric_cols = c("fsl_fcs_cereal", "fsl_fcs_dairy", "fsl_fcs_veg", "fsl_fcs_fruit", "fsl_fcs_legumes", "fsl_fcs_sugar", "fsl_fcs_oil"),
+                         name_groups = "Food Groups", name_units = "Days", grouping = enumerator))
 }
 ```
 
 ```{r, results='asis'}
 if(all(rcsi_check_columns %in% names(raw.flag.fcs))) {
   cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",4), collapse=""), " ", "RCSI Ridge Overall Distribution Plot"))
-  (plot_ridge_distribution_phu(raw.flag.fcs, numeric_cols = c("fsl_rcsi_lessquality", "fsl_rcsi_borrow", "fsl_rcsi_mealsize","fsl_rcsi_mealadult", "fsl_rcsi_mealnb"),
+  (impactR4PHU::plot_ridge_distribution(raw.flag.fcs, numeric_cols = c("fsl_rcsi_lessquality", "fsl_rcsi_borrow", "fsl_rcsi_mealsize","fsl_rcsi_mealadult", "fsl_rcsi_mealnb"),
                          name_groups = "Food Coping Strategy", name_units = "Days"))
 }
 ```
@@ -866,8 +871,8 @@ if(all(rcsi_check_columns %in% names(raw.flag.fcs))) {
 ```{r, results='asis'}
 if(all(rcsi_check_columns %in% names(raw.flag.fcs))) {
   cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",4), collapse=""), " ", "RCSI Ridge by Enumerator Distribution Plot"))
-(plot_ridge_distribution_phu(raw.flag.fcs, numeric_cols = c("fsl_rcsi_lessquality", "fsl_rcsi_borrow", "fsl_rcsi_mealsize","fsl_rcsi_mealadult", "fsl_rcsi_mealnb"),
-                         name_groups = "Food Coping Strategy", name_units = "Days", grouping = "enumerator"))
+(impactR4PHU::plot_ridge_distribution(raw.flag.fcs, numeric_cols = c("fsl_rcsi_lessquality", "fsl_rcsi_borrow", "fsl_rcsi_mealsize","fsl_rcsi_mealadult", "fsl_rcsi_mealnb"),
+                         name_groups = "Food Coping Strategy", name_units = "Days", grouping = enumerator))
 }
 ```
 
@@ -877,6 +882,6 @@ if(all(fcs_check_columns %in% names(raw.flag.fcs)) &
    all(rcsi_check_columns %in% names(raw.flag.fcs)) &
    all(hhs_check_columns %in% names(raw.flag.fcs))) {
   cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",4), collapse=""), " ", "FCS/RCSI/HHS Correlation Plot"))
-  (plot_correlogram_phu(raw.flag.fcs, numeric_cols = c("fsl_fcs_score",  "fsl_rcsi_score",  "fsl_hhs_score")))
+  (impactR4PHU::plot_correlogram(raw.flag.fcs, numeric_cols = c("fsl_fcs_score",  "fsl_rcsi_score",  "fsl_hhs_score")))
 }
 ```
