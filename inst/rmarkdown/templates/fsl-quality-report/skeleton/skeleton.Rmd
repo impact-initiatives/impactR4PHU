@@ -844,7 +844,7 @@ for(flag in flags_fsl_columns) {
 if(all(fcs_check_columns %in% names(raw.flag.fcs))) {
   cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",3), collapse=""), " ", "Plots {.tabset .tabset-fade}"))
   cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",4), collapse=""), " ", "FCS Ridge Overall Distribution Plot"))
-  (plot_ridge_distribution_phu(raw.flag.fcs, numeric_cols = c("fsl_fcs_cereal", "fsl_fcs_dairy", "fsl_fcs_veg", "fsl_fcs_fruit", "fsl_fcs_legumes", "fsl_fcs_sugar", "fsl_fcs_oil"),
+  (impactR4PHU::plot_ridge_distribution(raw.flag.fcs, numeric_cols = c("fsl_fcs_cereal", "fsl_fcs_dairy", "fsl_fcs_veg", "fsl_fcs_fruit", "fsl_fcs_legumes", "fsl_fcs_sugar", "fsl_fcs_oil"),
                          name_groups = "Food Groups", name_units = "Days"))
 }
 ```
@@ -853,7 +853,7 @@ if(all(fcs_check_columns %in% names(raw.flag.fcs))) {
 ```{r, results='asis'}
 if(all(fcs_check_columns %in% names(raw.flag.fcs))) {
     cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",4), collapse=""), " ", "FCS Ridge by Enumerator Distribution Plot"))
-  (plot_ridge_distribution_phu(raw.flag.fcs, numeric_cols = c("fsl_fcs_cereal", "fsl_fcs_dairy", "fsl_fcs_veg", "fsl_fcs_fruit", "fsl_fcs_legumes", "fsl_fcs_sugar", "fsl_fcs_oil"),
+  (impactR4PHU::plot_ridge_distribution(raw.flag.fcs, numeric_cols = c("fsl_fcs_cereal", "fsl_fcs_dairy", "fsl_fcs_veg", "fsl_fcs_fruit", "fsl_fcs_legumes", "fsl_fcs_sugar", "fsl_fcs_oil"),
                          name_groups = "Food Groups", name_units = "Days", grouping = enumerator))
 }
 ```
@@ -861,7 +861,7 @@ if(all(fcs_check_columns %in% names(raw.flag.fcs))) {
 ```{r, results='asis'}
 if(all(rcsi_check_columns %in% names(raw.flag.fcs))) {
   cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",4), collapse=""), " ", "RCSI Ridge Overall Distribution Plot"))
-  (plot_ridge_distribution_phu(raw.flag.fcs, numeric_cols = c("fsl_rcsi_lessquality", "fsl_rcsi_borrow", "fsl_rcsi_mealsize","fsl_rcsi_mealadult", "fsl_rcsi_mealnb"),
+  (impactR4PHU::plot_ridge_distribution(raw.flag.fcs, numeric_cols = c("fsl_rcsi_lessquality", "fsl_rcsi_borrow", "fsl_rcsi_mealsize","fsl_rcsi_mealadult", "fsl_rcsi_mealnb"),
                          name_groups = "Food Coping Strategy", name_units = "Days"))
 }
 ```
@@ -871,7 +871,7 @@ if(all(rcsi_check_columns %in% names(raw.flag.fcs))) {
 ```{r, results='asis'}
 if(all(rcsi_check_columns %in% names(raw.flag.fcs))) {
   cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",4), collapse=""), " ", "RCSI Ridge by Enumerator Distribution Plot"))
-(plot_ridge_distribution_phu(raw.flag.fcs, numeric_cols = c("fsl_rcsi_lessquality", "fsl_rcsi_borrow", "fsl_rcsi_mealsize","fsl_rcsi_mealadult", "fsl_rcsi_mealnb"),
+(impactR4PHU::plot_ridge_distribution(raw.flag.fcs, numeric_cols = c("fsl_rcsi_lessquality", "fsl_rcsi_borrow", "fsl_rcsi_mealsize","fsl_rcsi_mealadult", "fsl_rcsi_mealnb"),
                          name_groups = "Food Coping Strategy", name_units = "Days", grouping = enumerator))
 }
 ```
@@ -882,6 +882,6 @@ if(all(fcs_check_columns %in% names(raw.flag.fcs)) &
    all(rcsi_check_columns %in% names(raw.flag.fcs)) &
    all(hhs_check_columns %in% names(raw.flag.fcs))) {
   cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",4), collapse=""), " ", "FCS/RCSI/HHS Correlation Plot"))
-  (plot_correlogram_phu(raw.flag.fcs, numeric_cols = c("fsl_fcs_score",  "fsl_rcsi_score",  "fsl_hhs_score")))
+  (impactR4PHU::plot_correlogram(raw.flag.fcs, numeric_cols = c("fsl_fcs_score",  "fsl_rcsi_score",  "fsl_hhs_score")))
 }
 ```
