@@ -12,6 +12,7 @@ License: MIT + file LICENSE
 URL: https://impact-initiatives.github.io/impactR4PHU/
 Imports: 
     dplyr,
+    flextable,
     magrittr,
     rlang,
     stats,

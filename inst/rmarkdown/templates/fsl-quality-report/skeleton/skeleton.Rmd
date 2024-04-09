@@ -22,9 +22,21 @@ htmltools::img(src = knitr::image_uri("Logo_Reach_RGB_1.png"),
 ```
 
 ```{r setup, include=FALSE}
-  knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE)
-  options(scipen = 999)
-
+if (!require("pacman")) install.packages("pacman")
+pacman::p_load(tidyverse, readxl, writexl, openxlsx, randomcoloR, anytime, 
+               cluster, DT, stringr, knitr, svDialogs, flextable)
+knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE)
+options(scipen = 999)
+```
+```{r, include=FALSE, eval=TRUE}
+path.raw.main <- svDialogs::dlg_open(multiple = F, title = "Please select your data excel file.")$res
+path.tool <- svDialogs::dlg_open(multiple = F, title = "Please select your Kobo tool file.")$res
+main.sheets <- readxl::excel_sheets(path.raw.main)
+path.sheet.with.fsl <- svDialogs::dlg_list(main.sheets, title = "FSL indicators sheet")$res
+raw.main <- readxl::read_excel(path.raw.main, path.sheet.with.fsl)
+tool.survey <- readxl::read_excel(path.tool, 1)
+tool.choices <- readxl::read_excel(path.tool, 2)
+FSL_indicators <- svDialogs::dlg_list(c("FCS","rCSI","HHS","LCSI","HDDS"), title = "FSL indicators", multiple = T)$res
 ```
 
 # {.tabset .tabset-fade}
@@ -33,325 +45,838 @@ htmltools::img(src = knitr::image_uri("Logo_Reach_RGB_1.png"),
 
 ```{r, results='asis'}
   cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",3), collapse=""), " ", "What is this tool?"))
-  cat('\nThe Data Quality and Plausibility Report serves as a crucial tool for assessing the reliability and accuracy of the IPHRA data collection across different sectors such as Nutrition, Mortality, Water, Sanitation and Hygiene (WASH), Food Security, and Livelihoods. This comprehensive analysis is designed to identify and address potential issues within the data, ensuring that field teams are being informed on potential issues detected in the data collection.\n\nFor each of these sectors, the report provides a detailed examination of the datasets, employing a variety of metrics and methodologies to evaluate data quality and plausibility. This includes checks for completeness, consistency, and accuracy of the data collected. This report aims to uncover any discrepancies, outliers, or anomalies that may suggest data collection, entry errors, or underlying issues that could impact the integrity of the findings.</p>')
-  cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",3), collapse=""), " ", "What is in this tool?"))
+  cat('\nThe FSL Data Quality and Plausibility Report serves as a crucial tool for assessing the reliability and accuracy of the data collection of FSL indicators across different assessments. This comprehensive analysis is designed to identify and address potential issues within the data, ensuring that field teams are being informed on potential issues detected in the data collection.\n\nThe report provides a detailed examination of the datasets, employing a variety of metrics and methodologies to evaluate data quality and plausibility. This includes checks for completeness, consistency, and accuracy of the data collected. This report aims to uncover any discrepancies, outliers, or anomalies that may suggest data collection, entry errors, or underlying issues that could impact the integrity of the findings.</p>')
+  cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",3), collapse=""), " ", "What is in this tool?")) 
   cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",4), collapse=""), " ", "METADATA CHECK SECTION"))
   cat('\nThis section provides a summary of some key findings as well as some metadata checks such as the number of <strong>UUID duplicates</strong>, <strong>outliers in survey durations/soft duplicates</strong>, <strong> inconsistencies between loop rosters and the main datasets</strong>, and <strong> some age distribution plots</strong>.\n\nThis section includes as well a map that shows the geo locations of the assessed households. ')
   cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",4), collapse=""), " ", "FSL SECTION"))
   cat('\nThis section includes:\n\n- Overall Plausibility Report / By Enumerator\n- All the flags related to Food Security and Livelihoods (details shown for each flag in the section)\n- Plots showing the distribution of the data.')
-  cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",4), collapse=""), " ", "MUAC/NUTRITION SECTION"))
-  cat('\nThis section includes:\n\n- Overall Plausibility Report / By Enumerator\n- All the flags related to MUAC and Nutrition (details shown for each flag in the section)\n- Plots showing the distribution of the data.')
-  cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",4), collapse=""), " ", "WATER CONSUMPTION SECTION"))
-  cat('\nThis section includes:\n\n- All the flags related to WASH (details shown for each flag in the section)')
-  if(!is.null(raw.died_member)){
-     cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",4), collapse=""), " ", "MORTALITY SECTION"))
-    cat('\nThis section includes:\n\n- Overall Plausibility Report / By Enumerator\n- All the flags related to MORTALITY (details shown for each flag in the section)\n- Plots showing the distribution of the data.')
-  }
+
   cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",3), collapse=""), " ", "What to do next?"))
   cat('\nPlease check each flag and the <strong>ACTION</strong> related to it and act accordingly.\n\nAnother output will be associated to this HTML, the Excel file of the flags that were fired and requires follow-up with the field team. Please check the README tab in the excel file. This file will again be generated with the full data during the cleaning of the dataset. So please do use this file during data collection and relate to it in the final one to be filled.')
   cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",3), collapse=""), " ", "Feedback"))
-  cat('\nFeedback on improvements to this product can be done through reaching out to:\n\n-abraham.azar@impact-initiatives.org \n\n -impact.geneva.phu@impact-initiatives.org')
+  cat('\nFeedback on improvements to this product can be done through reaching out to:\n\n-abraham.azar@impact-initiatives.org \n\n-impact.geneva.phu@impact-initiatives.org')
 ```
 
 ## FSL {.tabset .tabset-fade}
 
-<!-- ```{r, echo=FALSE, warning=FALSE,include=FALSE} -->
-<!-- fcs_check_columns <- c("fsl_fcs_cereal", -->
-<!--                        "fsl_fcs_legumes", -->
-<!--                        "fsl_fcs_veg", -->
-<!--                        "fsl_fcs_fruit", -->
-<!--                        "fsl_fcs_meat", -->
-<!--                        "fsl_fcs_dairy", -->
-<!--                        "fsl_fcs_sugar", -->
-<!--                        "fsl_fcs_oil") -->
+```{r, echo=FALSE, warning=FALSE,include=FALSE}
+if ("FCS" %in% FSL_indicators){
+  fsl_fcs_cereal <- names(raw.main)[grepl("cereal",names(raw.main))]
+  if(length(fsl_fcs_cereal) == 1){
+  yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_fcs_cereal, "' the correct fcs_cereal column?"), type = "yesno")$res
+  fsl_fcs_cereal <- fsl_fcs_cereal
+} else if (length(fsl_fcs_cereal) > 1){
+  fsl_fcs_cereal <- svDialogs::dlg_list(fsl_fcs_cereal, title = "FCS Cereal column")$res
+} else if (length(fsl_fcs_cereal) == 0 | yes_no == "no") {
+  fsl_fcs_cereal <- svDialogs::dlg_input(message= "Enter the name of the fsl_fcs_cereal","fsl_fcs_cereal")$res
+}
 
-<!-- if(all(fcs_check_columns %in% names(raw.main))) { -->
-<!--   raw.main <- raw.main %>% -->
-<!--     add_fcs_new(cutoffs = "normal") -->
-<!-- } -->
+  fsl_fcs_legumes <- names(raw.main)[grepl("legume|pulse",names(raw.main))]
+  if(length(fsl_fcs_legumes) == 1){
+  yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_fcs_legumes, "' the correct fsl_fcs_legumes column?"), type = "yesno")$res
+  fsl_fcs_legumes <- fsl_fcs_legumes
+} else if (length(fsl_fcs_legumes) > 1){
+  fsl_fcs_legumes <- svDialogs::dlg_list(fsl_fcs_legumes, title = "FCS Legumes/Pulses column")$res
+} else if (length(fsl_fcs_legumes) == 0 | yes_no == "no") {
+  fsl_fcs_legumes <- svDialogs::dlg_input(message= "Enter the name of the fsl_fcs_legumes","fsl_fcs_legumes")$res
+}
+  fsl_fcs_veg <- names(raw.main)[grepl("veg",names(raw.main))]
+  if(length(fsl_fcs_veg) == 1){
+  yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_fcs_veg, "' the correct fsl_fcs_veg column?"), type = "yesno")$res
+  fsl_fcs_veg <- fsl_fcs_veg
+} else if (length(fsl_fcs_veg) > 1){
+  fsl_fcs_veg <- svDialogs::dlg_list(fsl_fcs_veg, title = "FCS Vegetables column")$res
+} else if (length(fsl_fcs_veg) == 0 | yes_no == "no") {
+  fsl_fcs_veg <- svDialogs::dlg_input(message= "Enter the name of the fsl_fcs_veg","fsl_fcs_veg")$res
+}
+  fsl_fcs_fruit <- names(raw.main)[grepl("fruit",names(raw.main))]
+  if(length(fsl_fcs_fruit) == 1){
+  yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_fcs_fruit, "' the correct fsl_fcs_fruit column?"), type = "yesno")$res
+  fsl_fcs_fruit <- fsl_fcs_fruit
+} else if (length(fsl_fcs_fruit) > 1){
+  fsl_fcs_fruit <- svDialogs::dlg_list(fsl_fcs_fruit, title = "FCS Fruits column")$res
+} else if (length(fsl_fcs_fruit) == 0 | yes_no == "no") {
+  fsl_fcs_fruit <- svDialogs::dlg_input(message= "Enter the name of the fsl_fcs_fruit","fsl_fcs_fruit")$res
+}
+  fsl_fcs_meat <- names(raw.main)[grepl("meat",names(raw.main))]
+  if(length(fsl_fcs_meat) == 1){
+  yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_fcs_meat, "' the correct fsl_fcs_meat column?"), type = "yesno")$res
+  fsl_fcs_meat <- fsl_fcs_meat
+} else if (length(fsl_fcs_meat) > 1){
+  fsl_fcs_meat <- svDialogs::dlg_list(fsl_fcs_meat, title = "FCS Meat column")$res
+} else if (length(fsl_fcs_meat) == 0 | yes_no == "no") {
+  fsl_fcs_meat <- svDialogs::dlg_input(message= "Enter the name of the fsl_fcs_meat","fsl_fcs_meat")$res
+}
+  fsl_fcs_dairy <- names(raw.main)[grepl("dairy|milk",names(raw.main))]
+  if(length(fsl_fcs_dairy) == 1){
+  yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_fcs_dairy, "' the correct fsl_fcs_dairy column?"), type = "yesno")$res
+  fsl_fcs_dairy <- fsl_fcs_dairy
+} else if (length(fsl_fcs_dairy) > 1){
+  fsl_fcs_dairy <- svDialogs::dlg_list(fsl_fcs_dairy, title = "FCS Dairy/Milk column")$res
+} else if (length(fsl_fcs_dairy) == 0 | yes_no == "no") {
+  fsl_fcs_dairy <- svDialogs::dlg_input(message= "Enter the name of the fsl_fcs_dairy","fsl_fcs_dairy")$res
+}
+  fsl_fcs_sugar <- names(raw.main)[grepl("sugar",names(raw.main))]
+  if(length(fsl_fcs_sugar) == 1){
+  yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_fcs_sugar, "' the correct fsl_fcs_sugar column?"), type = "yesno")$res
+  fsl_fcs_sugar <- fsl_fcs_sugar
+} else if (length(fsl_fcs_sugar) > 1){
+  fsl_fcs_sugar <- svDialogs::dlg_list(fsl_fcs_sugar, title = "FCS Sugar column")$res
+} else if (length(fsl_fcs_sugar) == 0 | yes_no == "no") {
+  fsl_fcs_sugar <- svDialogs::dlg_input(message= "Enter the name of the fsl_fcs_sugar","fsl_fcs_sugar")$res
+}
+  fsl_fcs_oil <- names(raw.main)[grepl("oil",names(raw.main))]
+  if(length(fsl_fcs_oil) == 1){
+  yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_fcs_oil, "' the correct fsl_fcs_oil column?"), type = "yesno")$res
+  fsl_fcs_oil <- fsl_fcs_oil
+} else if (length(fsl_fcs_oil) > 1){
+  fsl_fcs_oil <- svDialogs::dlg_list(fsl_fcs_oil, title = "FCS Sugar column")$res
+} else if (length(fsl_fcs_oil) == 0 | yes_no == "no") {
+  fsl_fcs_oil <- svDialogs::dlg_input(message= "Enter the name of the fsl_fcs_oil","fsl_fcs_oil")$res
+}
 
-<!-- rcsi_check_columns <- c("fsl_rcsi_lessquality", -->
-<!--                         "fsl_rcsi_borrow", -->
-<!--                         "fsl_rcsi_mealsize", -->
-<!--                         "fsl_rcsi_mealadult", -->
-<!--                         "fsl_rcsi_mealnb") -->
+  fcs_check_columns <- c(fsl_fcs_cereal,
+                         fsl_fcs_legumes,
+                         fsl_fcs_veg,
+                         fsl_fcs_fruit,
+                         fsl_fcs_meat,
+                         fsl_fcs_dairy,
+                         fsl_fcs_sugar,
+                         fsl_fcs_oil)
+  
+  if(!all(fcs_check_columns %in% names(raw.main))) {
+    svDialogs::dlg_message("Please check if the FCS columns selected are correct and available in the dataset")
+    stop("Please check if the FCS columns selected are correct and available in the dataset")
+  } else {
+    raw.main <- raw.main %>%
+      impactR4PHU::add_fcs(cutoffs = "normal",
+                           fsl_fcs_cereal = fsl_fcs_cereal,
+                           fsl_fcs_legumes = fsl_fcs_legumes,
+                           fsl_fcs_veg = fsl_fcs_veg,
+                           fsl_fcs_fruit = fsl_fcs_fruit,
+                           fsl_fcs_meat = fsl_fcs_meat,
+                           fsl_fcs_dairy = fsl_fcs_dairy,
+                           fsl_fcs_sugar = fsl_fcs_sugar,
+                           fsl_fcs_oil = fsl_fcs_oil)
+  }
+}
 
-<!-- if(all(rcsi_check_columns %in% names(raw.main))) { -->
-<!--   raw.main <- raw.main %>% -->
-<!--     add_rcsi_new() -->
-<!-- } -->
+if ("rCSI" %in% FSL_indicators){
+  fsl_rcsi_lessquality <- names(raw.main)[grepl("less|quality|lessquality",names(raw.main))]
+  if(length(fsl_rcsi_lessquality) == 1){
+  yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_rcsi_lessquality, "' the correct fsl_rcsi_lessquality column?"), type = "yesno")$res
+  fsl_rcsi_lessquality <- fsl_rcsi_lessquality
+} else if (length(fsl_rcsi_lessquality) > 1){
+  fsl_rcsi_lessquality <- svDialogs::dlg_list(fsl_rcsi_lessquality, title = "rCSI Less Quality column")$res
+} else if (length(fsl_rcsi_lessquality) == 0 | yes_no == "no") {
+  fsl_rcsi_lessquality <- svDialogs::dlg_input(message= "Enter the name of the fsl_rcsi_lessquality","fsl_rcsi_lessquality")$res
+}
+  fsl_rcsi_borrow <- names(raw.main)[grepl("borrow",names(raw.main))]
+  if(length(fsl_rcsi_borrow) == 1){
+  yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_rcsi_borrow, "' the correct fsl_rcsi_borrow column?"), type = "yesno")$res
+  fsl_rcsi_borrow <- fsl_rcsi_borrow
+} else if (length(fsl_rcsi_borrow) > 1){
+  fsl_rcsi_borrow <- svDialogs::dlg_list(fsl_rcsi_borrow, title = "rCSI Borrow column")$res
+} else if (length(fsl_rcsi_borrow) == 0 | yes_no == "no") {
+  fsl_rcsi_borrow <- svDialogs::dlg_input(message= "Enter the name of the fsl_rcsi_borrow","fsl_rcsi_borrow")$res
+}
+  fsl_rcsi_mealsize <- names(raw.main)[grepl("mealsize",names(raw.main))]
+  if(length(fsl_rcsi_mealsize) == 1){
+  yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_rcsi_mealsize, "' the correct fsl_rcsi_mealsize column?"), type = "yesno")$res
+  fsl_rcsi_mealsize <- fsl_rcsi_mealsize
+} else if (length(fsl_rcsi_mealsize) > 1){
+  fsl_rcsi_mealsize <- svDialogs::dlg_list(fsl_rcsi_mealsize, title = "rCSI Meal Size column")$res
+} else if (length(fsl_rcsi_mealsize) == 0 | yes_no == "no") {
+  fsl_rcsi_mealsize <- svDialogs::dlg_input(message= "Enter the name of the fsl_rcsi_mealsize","fsl_rcsi_mealsize")$res
+}
+  fsl_rcsi_mealadult <- names(raw.main)[grepl("mealadult",names(raw.main))]
+  if(length(fsl_rcsi_mealadult) == 1){
+  yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_rcsi_mealadult, "' the correct fsl_rcsi_mealadult column?"), type = "yesno")$res
+  fsl_rcsi_mealadult <- fsl_rcsi_mealadult
+} else if (length(fsl_rcsi_mealadult) > 1){
+  fsl_rcsi_mealadult <- svDialogs::dlg_list(fsl_rcsi_mealadult, title = "rCSI Meal Adult column")$res
+} else if (length(fsl_rcsi_mealadult) == 0 | yes_no == "no") {
+  fsl_rcsi_mealadult <- svDialogs::dlg_input(message= "Enter the name of the fsl_rcsi_mealadult","fsl_rcsi_mealadult")$res
+}
+  fsl_rcsi_mealnb <- names(raw.main)[grepl("mealnb",names(raw.main))]
+  if(length(fsl_rcsi_mealnb) == 1){
+  yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_rcsi_mealnb, "' the correct fsl_rcsi_mealnb column?"), type = "yesno")$res
+  fsl_rcsi_mealnb <- fsl_rcsi_mealnb
+} else if (length(fsl_rcsi_mealnb) > 1){
+  fsl_rcsi_mealnb <- svDialogs::dlg_list(fsl_rcsi_mealnb, title = "rCSI Meal Number column")$res
+} else if (length(fsl_rcsi_mealnb) == 0 | yes_no == "no") {
+  fsl_rcsi_mealnb <- svDialogs::dlg_input(message= "Enter the name of the fsl_rcsi_mealnb","fsl_rcsi_mealnb")$res
+}
+  rcsi_check_columns <- c(fsl_rcsi_lessquality,
+                          fsl_rcsi_borrow,
+                          fsl_rcsi_mealsize,
+                          fsl_rcsi_mealadult,
+                          fsl_rcsi_mealnb)
+  
+  if(!all(rcsi_check_columns %in% names(raw.main))) {
+    svDialogs::dlg_message("Please check if the rCSI columns selected are correct and available in the dataset")
+    stop("Please check if the rCSI columns selected are correct and available in the dataset")
+  } else {
+    raw.main <- raw.main %>%
+      impactR4PHU::add_rcsi(fsl_rcsi_lessquality = fsl_rcsi_lessquality,
+                            fsl_rcsi_borrow = fsl_rcsi_borrow,
+                            fsl_rcsi_mealsize = fsl_rcsi_mealsize,
+                            fsl_rcsi_mealadult = fsl_rcsi_mealadult,
+                            fsl_rcsi_mealnb = fsl_rcsi_mealnb)
+  }
+}
 
-<!-- hhs_check_columns <- c("fsl_hhs_nofoodhh", -->
-<!--                        "fsl_hhs_nofoodhh_freq", -->
-<!--                        "fsl_hhs_sleephungry", -->
-<!--                        "fsl_hhs_sleephungry_freq", -->
-<!--                        "fsl_hhs_alldaynight", -->
-<!--                        "fsl_hhs_alldaynight_freq") -->
+if ("HHS" %in% FSL_indicators){
+  fsl_hhs_nofoodhh <- names(raw.main)[grepl("nofoodhh",names(raw.main))]
+  if(length(fsl_hhs_nofoodhh) == 1){
+  yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_hhs_nofoodhh, "' the correct fsl_hhs_nofoodhh column?"), type = "yesno")$res
+  fsl_hhs_nofoodhh <- fsl_hhs_nofoodhh
+} else if (length(fsl_hhs_nofoodhh) > 1){
+  fsl_hhs_nofoodhh <- svDialogs::dlg_list(fsl_hhs_nofoodhh, title = "HHS No Food HH column")$res
+} else if (length(fsl_hhs_nofoodhh) == 0 | yes_no == "no") {
+  fsl_hhs_nofoodhh <- svDialogs::dlg_input(message= "Enter the name of the fsl_hhs_nofoodhh","fsl_hhs_nofoodhh")$res
+}
+  fsl_hhs_nofoodhh_freq <- names(raw.main)[grepl("nofoodhh_freq",names(raw.main))]
+  if(length(fsl_hhs_nofoodhh_freq) == 1){
+  yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_hhs_nofoodhh_freq, "' the correct fsl_hhs_nofoodhh_freq column?"), type = "yesno")$res
+  fsl_hhs_nofoodhh_freq <- fsl_hhs_nofoodhh_freq
+} else if (length(fsl_hhs_nofoodhh_freq) > 1){
+  fsl_hhs_nofoodhh_freq <- svDialogs::dlg_list(fsl_hhs_nofoodhh_freq, title = "HHS No Food HH Freq column")$res
+} else if (length(fsl_hhs_nofoodhh_freq) == 0 | yes_no == "no") {
+  fsl_hhs_nofoodhh_freq <- svDialogs::dlg_input(message= "Enter the name of the fsl_hhs_nofoodhh_freq","fsl_hhs_nofoodhh_freq")$res
+}
+  fsl_hhs_sleephungry <- names(raw.main)[grepl("sleephungry",names(raw.main))]
+  if(length(fsl_hhs_sleephungry) == 1){
+  yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_hhs_sleephungry, "' the correct fsl_hhs_sleephungry column?"), type = "yesno")$res
+  fsl_hhs_sleephungry <- fsl_hhs_sleephungry
+} else if (length(fsl_hhs_sleephungry) > 1){
+  fsl_hhs_sleephungry <- svDialogs::dlg_list(fsl_hhs_sleephungry, title = "HHS Sleep Hungry column")$res
+} else if (length(fsl_hhs_sleephungry) == 0 | yes_no == "no") {
+  fsl_hhs_sleephungry <- svDialogs::dlg_input(message= "Enter the name of the fsl_hhs_sleephungry","fsl_hhs_sleephungry")$res
+}
+  fsl_hhs_sleephungry_freq <- names(raw.main)[grepl("sleephungry_freq",names(raw.main))]
+  if(length(fsl_hhs_sleephungry_freq) == 1){
+  yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_hhs_sleephungry_freq, "' the correct fsl_hhs_sleephungry_freq column?"), type = "yesno")$res
+  fsl_hhs_sleephungry_freq <- fsl_hhs_sleephungry_freq
+} else if (length(fsl_hhs_sleephungry_freq) > 1){
+  fsl_hhs_sleephungry_freq <- svDialogs::dlg_list(fsl_hhs_sleephungry_freq, title = "HHS Sleep Hungry Freq column")$res
+} else if (length(fsl_hhs_sleephungry_freq) == 0 | yes_no == "no") {
+  fsl_hhs_sleephungry_freq <- svDialogs::dlg_input(message= "Enter the name of the fsl_hhs_sleephungry_freq","fsl_hhs_sleephungry_freq")$res
+}
+  fsl_hhs_alldaynight <- names(raw.main)[grepl("alldaynight",names(raw.main))]
+  if(length(fsl_hhs_alldaynight) == 1){
+  yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_hhs_alldaynight, "' the correct fsl_hhs_alldaynight column?"), type = "yesno")$res
+  fsl_hhs_alldaynight <- fsl_hhs_alldaynight
+} else if (length(fsl_hhs_alldaynight) > 1){
+  fsl_hhs_alldaynight <- svDialogs::dlg_list(fsl_hhs_alldaynight, title = "HHS All Day Night column")$res
+} else if (length(fsl_hhs_alldaynight) == 0 | yes_no == "no") {
+  fsl_hhs_alldaynight <- svDialogs::dlg_input(message= "Enter the name of the fsl_hhs_alldaynight","fsl_hhs_alldaynight")$res
+}
+  fsl_hhs_alldaynight_freq <- names(raw.main)[grepl("alldaynight_freq",names(raw.main))]
+  if(length(fsl_hhs_alldaynight_freq) == 1){
+  yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_hhs_alldaynight_freq, "' the correct fsl_hhs_alldaynight_freq column?"), type = "yesno")$res
+  fsl_hhs_alldaynight_freq <- fsl_hhs_alldaynight_freq
+} else if (length(fsl_hhs_alldaynight_freq) > 1){
+  fsl_hhs_alldaynight_freq <- svDialogs::dlg_list(fsl_hhs_alldaynight_freq, title = "HHS all Day Night Freq column")$res
+} else if (length(fsl_hhs_alldaynight_freq) == 0 | yes_no == "no") {
+  fsl_hhs_alldaynight_freq <- svDialogs::dlg_input(message= "Enter the name of the fsl_hhs_alldaynight_freq","fsl_hhs_alldaynight_freq")$res
+}
+  
+  hhs_check_columns <- c(fsl_hhs_nofoodhh,
+                         fsl_hhs_sleephungry,
+                         fsl_hhs_alldaynight)
+  
+  hhs_check_columns_freq <- c(fsl_hhs_nofoodhh_freq,
+                              fsl_hhs_sleephungry_freq,
+                              fsl_hhs_alldaynight_freq)
+  
+  if(!all(c(hhs_check_columns,hhs_check_columns_freq) %in% names(raw.main))) {
+    svDialogs::dlg_message("Please check if the HHS columns selected are correct and available in the dataset")
+    stop("Please check if the HHS columns selected are correct and available in the dataset")
+  } else{
+    yes_answer <- svDialogs::dlg_list(pull(raw.main[,hhs_check_columns]) %>% unique, title = "Yes Value")$res
+    no_answer <- svDialogs::dlg_list(pull(raw.main[,hhs_check_columns]) %>% unique, title = "No Value")$res
+    rarely_answer <- svDialogs::dlg_list(pull(raw.main[,hhs_check_columns_freq]) %>% unique, title = "Rarely Value")$res
+    sometimes_answer <- svDialogs::dlg_list(pull(raw.main[,hhs_check_columns_freq]) %>% unique, title = "Sometimes Value")$res
+    often_answer <- svDialogs::dlg_list(pull(raw.main[,hhs_check_columns_freq]) %>% unique, title = "Often Value")$res
+    raw.main <- raw.main %>%
+      impactR4PHU::add_hhs(fsl_hhs_nofoodhh = fsl_hhs_nofoodhh,
+                           fsl_hhs_nofoodhh_freq = fsl_hhs_nofoodhh_freq,
+                           fsl_hhs_sleephungry = fsl_hhs_sleephungry,
+                           fsl_hhs_sleephungry_freq = fsl_hhs_sleephungry_freq,
+                           fsl_hhs_alldaynight = fsl_hhs_alldaynight,
+                           fsl_hhs_alldaynight_freq = fsl_hhs_alldaynight_freq, 
+                           yes_answer = yes_answer,
+                           no_answer = no_answer,
+                           rarely_answer = rarely_answer, 
+                           sometimes_answer = sometimes_answer,
+                           often_answer = often_answer)
+  }
+}
 
-<!-- if(all(hhs_check_columns %in% names(raw.main))) { -->
-<!--   raw.main <- raw.main %>% -->
-<!--     add_hhs_new() -->
-<!-- } -->
+if ("LCSI" %in% FSL_indicators){
+  fsl_lcsi_stress1 <- names(raw.main)[grepl("stress|stress1",names(raw.main))]
+  if(length(fsl_lcsi_stress1) == 1){
+  yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_lcsi_stress1, "' the correct fsl_lcsi_stress1 column?"), type = "yesno")$res
+  fsl_lcsi_stress1 <- fsl_lcsi_stress1
+} else if (length(fsl_lcsi_stress1) > 1){
+  fsl_lcsi_stress1 <- svDialogs::dlg_list(fsl_lcsi_stress1, title = "LCSI Stress 1 column")$res
+} else if (length(fsl_lcsi_stress1) == 0 | yes_no == "no") {
+  fsl_lcsi_stress1 <- svDialogs::dlg_input(message= "Enter the name of the fsl_lcsi_stress1","fsl_lcsi_stress1")$res
+}
+  fsl_lcsi_stress2 <- names(raw.main)[grepl("stress|stress2",names(raw.main))]
+  if(length(fsl_lcsi_stress2) == 1){
+  yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_lcsi_stress2, "' the correct fsl_lcsi_stress2 column?"), type = "yesno")$res
+  fsl_lcsi_stress2 <- fsl_lcsi_stress2
+} else if (length(fsl_lcsi_stress2) > 1){
+  fsl_lcsi_stress2 <- svDialogs::dlg_list(fsl_lcsi_stress2, title = "LCSI Stress 2 column")$res
+} else if (length(fsl_lcsi_stress2) == 0 | yes_no == "no") {
+  fsl_lcsi_stress2 <- svDialogs::dlg_input(message= "Enter the name of the fsl_lcsi_stress2","fsl_lcsi_stress2")$res
+}
+  
+  fsl_lcsi_stress3 <- names(raw.main)[grepl("stress|stress3",names(raw.main))]
+  if(length(fsl_lcsi_stress3) == 1){
+  yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_lcsi_stress3, "' the correct fsl_lcsi_stress3 column?"), type = "yesno")$res
+  fsl_lcsi_stress3 <- fsl_lcsi_stress3
+} else if (length(fsl_lcsi_stress3) > 1){
+  fsl_lcsi_stress3 <- svDialogs::dlg_list(fsl_lcsi_stress3, title = "LCSI Stress 3 column")$res
+} else if (length(fsl_lcsi_stress3) == 0 | yes_no == "no") {
+  fsl_lcsi_stress3 <- svDialogs::dlg_input(message= "Enter the name of the fsl_lcsi_stress3","fsl_lcsi_stress3")$res
+}
+  
+  fsl_lcsi_stress4 <- names(raw.main)[grepl("stress|stress4",names(raw.main))]
+  if(length(fsl_lcsi_stress4) == 1){
+  yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_lcsi_stress4, "' the correct fsl_lcsi_stress4 column?"), type = "yesno")$res
+  fsl_lcsi_stress4 <- fsl_lcsi_stress4
+} else if (length(fsl_lcsi_stress4) > 1){
+  fsl_lcsi_stress4 <- svDialogs::dlg_list(fsl_lcsi_stress4, title = "LCSI Stress 4 column")$res
+} else if (length(fsl_lcsi_stress4) == 0 | yes_no == "no") {
+  fsl_lcsi_stress4 <- svDialogs::dlg_input(message= "Enter the name of the fsl_lcsi_stress4","fsl_lcsi_stress4")$res
+}
+  
+  fsl_lcsi_crisis1 <- names(raw.main)[grepl("crisis|crisis1",names(raw.main))]
+  if(length(fsl_lcsi_crisis1) == 1){
+  yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_lcsi_crisis1, "' the correct fsl_lcsi_crisis1 column?"), type = "yesno")$res
+  fsl_lcsi_crisis1 <- fsl_lcsi_crisis1
+} else if (length(fsl_lcsi_crisis1) > 1){
+  fsl_lcsi_crisis1 <- svDialogs::dlg_list(fsl_lcsi_crisis1, title = "LCSI Crisis 1 column")$res
+} else if (length(fsl_lcsi_crisis1) == 0 | yes_no == "no") {
+  fsl_lcsi_crisis1 <- svDialogs::dlg_input(message= "Enter the name of the fsl_lcsi_crisis1","fsl_lcsi_crisis1")$res
+}
+  
+  fsl_lcsi_crisis2 <- names(raw.main)[grepl("crisis|crisis2",names(raw.main))]
+  if(length(fsl_lcsi_crisis2) == 1){
+  yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_lcsi_crisis2, "' the correct fsl_lcsi_crisis2 column?"), type = "yesno")$res
+  fsl_lcsi_crisis2 <- fsl_lcsi_crisis2
+} else if (length(fsl_lcsi_crisis2) > 1){
+  fsl_lcsi_crisis2 <- svDialogs::dlg_list(fsl_lcsi_crisis2, title = "LCSI Crisis 2 column")$res
+} else if (length(fsl_lcsi_crisis2) == 0 | yes_no == "no") {
+  fsl_lcsi_crisis2 <- svDialogs::dlg_input(message= "Enter the name of the fsl_lcsi_crisis2","fsl_lcsi_crisis2")$res
+}
+  
+  fsl_lcsi_crisis3 <- names(raw.main)[grepl("crisis|crisis3",names(raw.main))]
+  if(length(fsl_lcsi_crisis3) == 1){
+  yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_lcsi_crisis3, "' the correct fsl_lcsi_crisis3 column?"), type = "yesno")$res
+  fsl_lcsi_crisis3 <- fsl_lcsi_crisis3
+} else if (length(fsl_lcsi_crisis3) > 1){
+  fsl_lcsi_crisis3 <- svDialogs::dlg_list(fsl_lcsi_crisis3, title = "LCSI Crisis 3 column")$res
+} else if (length(fsl_lcsi_crisis3) == 0 | yes_no == "no") {
+  fsl_lcsi_crisis3 <- svDialogs::dlg_input(message= "Enter the name of the fsl_lcsi_crisis3","fsl_lcsi_crisis3")$res
+}
+  
+  fsl_lcsi_emergency1 <- names(raw.main)[grepl("emergency|emergency1",names(raw.main))]
+  if(length(fsl_lcsi_emergency1) == 1){
+  yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_lcsi_emergency1, "' the correct fsl_lcsi_emergency1 column?"), type = "yesno")$res
+  fsl_lcsi_emergency1 <- fsl_lcsi_emergency1
+} else if (length(fsl_lcsi_emergency1) > 1){
+  fsl_lcsi_emergency1 <- svDialogs::dlg_list(fsl_lcsi_emergency1, title = "LCSI Emergency 1 column")$res
+} else if (length(fsl_lcsi_emergency1) == 0 | yes_no == "no") {
+  fsl_lcsi_emergency1 <- svDialogs::dlg_input(message= "Enter the name of the fsl_lcsi_emergency1","fsl_lcsi_emergency1")$res
+}
+  
+  fsl_lcsi_emergency2 <- names(raw.main)[grepl("emergency|emergency2",names(raw.main))]
+  if(length(fsl_lcsi_emergency2) == 1){
+  yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_lcsi_emergency2, "' the correct fsl_lcsi_emergency2 column?"), type = "yesno")$res
+  fsl_lcsi_emergency2 <- fsl_lcsi_emergency2
+} else if (length(fsl_lcsi_emergency2) > 1){
+  fsl_lcsi_emergency2 <- svDialogs::dlg_list(fsl_lcsi_emergency2, title = "LCSI Emergency 2 column")$res
+} else if (length(fsl_lcsi_emergency2) == 0 | yes_no == "no") {
+  fsl_lcsi_emergency2 <- svDialogs::dlg_input(message= "Enter the name of the fsl_lcsi_emergency2","fsl_lcsi_emergency2")$res
+}
+  
+  fsl_lcsi_emergency3 <- names(raw.main)[grepl("emergency|emergency3",names(raw.main))]
+  if(length(fsl_lcsi_emergency3) == 1){
+  yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_lcsi_emergency3, "' the correct fsl_lcsi_emergency3 column?"), type = "yesno")$res
+  fsl_lcsi_emergency3 <- fsl_lcsi_emergency3
+} else if (length(fsl_lcsi_emergency3) > 1){
+  fsl_lcsi_emergency3 <- svDialogs::dlg_list(fsl_lcsi_emergency3, title = "LCSI Emergency 3 column")$res
+} else if (length(fsl_lcsi_emergency3) == 0 | yes_no == "no") {
+  fsl_lcsi_emergency3 <- svDialogs::dlg_input(message= "Enter the name of the fsl_lcsi_emergency3","fsl_lcsi_emergency3")$res
+}
+  
+  lcsi_check_columns <- c(fsl_lcsi_stress1,fsl_lcsi_stress2,fsl_lcsi_stress3,fsl_lcsi_stress4,
+                          fsl_lcsi_crisis1,fsl_lcsi_crisis2,fsl_lcsi_crisis3,
+                          fsl_lcsi_emergency1,fsl_lcsi_emergency2,fsl_lcsi_emergency3)
+  
+  
+  if(!all(lcsi_check_columns %in% names(raw.main))) {
+    svDialogs::dlg_message("Please check if the LCSI columns selected are correct and available in the dataset")
+    stop("Please check if the LCSI columns selected are correct and available in the dataset")
+  } else{
+    yes_val <- svDialogs::dlg_list(pull(raw.main[,lcsi_check_columns]) %>% unique, title = "Yes Value")$res
+    no_val <- svDialogs::dlg_list(pull(raw.main[,lcsi_check_columns]) %>% unique, title = "No Value")$res
+    exhausted_val <- svDialogs::dlg_list(pull(raw.main[,lcsi_check_columns]) %>% unique, title = "Exhausted Value")$res
+    not_applicable_val <- svDialogs::dlg_list(pull(raw.main[,lcsi_check_columns]) %>% unique, title = "Not Applicable Value")$res
+    raw.main <- raw.main %>%
+      impactR4PHU::add_lcsi(fsl_lcsi_stress1 = fsl_lcsi_stress1,
+                            fsl_lcsi_stress2 = fsl_lcsi_stress2,
+                            fsl_lcsi_stress3 = fsl_lcsi_stress3,
+                            fsl_lcsi_stress4 = fsl_lcsi_stress4,
+                            fsl_lcsi_crisis1 = fsl_lcsi_crisis1,
+                            fsl_lcsi_crisis2 = fsl_lcsi_crisis2,
+                            fsl_lcsi_crisis3 = fsl_lcsi_crisis3,
+                            fsl_lcsi_emergency1 = fsl_lcsi_emergency1,
+                            fsl_lcsi_emergency2 = fsl_lcsi_emergency2,
+                            fsl_lcsi_emergency3 = fsl_lcsi_emergency3,
+                            yes_val = yes_val,
+                            no_val = no_val,
+                            exhausted_val = exhausted_val, 
+                            not_applicable_val = not_applicable_val)
+  }
+}
+if ("HDDS" %in% FSL_indicators){
+  fsl_hdds_cereals <- names(raw.main)[grepl("cereal",names(raw.main))]
+  if(length(fsl_hdds_cereals) == 1){
+  yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_hdds_cereals, "' the correct fsl_hdds_cereals column?"), type = "yesno")$res
+  fsl_hdds_cereals <- fsl_hdds_cereals
+} else if (length(fsl_hdds_cereals) > 1){
+  fsl_hdds_cereals <- svDialogs::dlg_list(fsl_hdds_cereals, title = "HDDS Cereals column")$res
+} else if (length(fsl_hdds_cereals) == 0 | yes_no == "no") {
+  fsl_hdds_cereals <- svDialogs::dlg_input(message= "Enter the name of the fsl_hdds_cereals","fsl_hdds_cereals")$res
+}
+  
+  fsl_hdds_tubers <- names(raw.main)[grepl("tubers",names(raw.main))]
+  if(length(fsl_hdds_tubers) == 1){
+  yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_hdds_tubers, "' the correct fsl_hdds_tubers column?"), type = "yesno")$res
+  fsl_hdds_tubers <- fsl_hdds_tubers
+} else if (length(fsl_hdds_tubers) > 1){
+  fsl_hdds_tubers <- svDialogs::dlg_list(fsl_hdds_tubers, title = "HDDS Tubers column")$res
+} else if (length(fsl_hdds_tubers) == 0 | yes_no == "no") {
+  fsl_hdds_tubers <- svDialogs::dlg_input(message= "Enter the name of the fsl_hdds_tubers","fsl_hdds_tubers")$res
+}
+  
+  fsl_hdds_veg <- names(raw.main)[grepl("veg",names(raw.main))]
+  if(length(fsl_hdds_veg) == 1){
+  yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_hdds_veg, "' the correct fsl_hdds_veg column?"), type = "yesno")$res
+  fsl_hdds_veg <- fsl_hdds_veg
+} else if (length(fsl_hdds_veg) > 1){
+  fsl_hdds_veg <- svDialogs::dlg_list(fsl_hdds_veg, title = "HDDS Vegetables column")$res
+} else if (length(fsl_hdds_veg) == 0 | yes_no == "no") {
+  fsl_hdds_veg <- svDialogs::dlg_input(message= "Enter the name of the fsl_hdds_veg","fsl_hdds_veg")$res
+}
+  
+  fsl_hdds_fruit <- names(raw.main)[grepl("fruit",names(raw.main))]
+  if(length(fsl_hdds_fruit) == 1){
+  yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_hdds_fruit, "' the correct fsl_hdds_fruit column?"), type = "yesno")$res
+  fsl_hdds_fruit <- fsl_hdds_fruit
+} else if (length(fsl_hdds_fruit) > 1){
+  fsl_hdds_fruit <- svDialogs::dlg_list(fsl_hdds_fruit, title = "HDDS Fruits column")$res
+} else if (length(fsl_hdds_fruit) == 0 | yes_no == "no") {
+  fsl_hdds_fruit <- svDialogs::dlg_input(message= "Enter the name of the fsl_hdds_fruit","fsl_hdds_fruit")$res
+}
 
-<!-- lcsi_check_columns <- c("fsl_lcsi_stress1","fsl_lcsi_stress2","fsl_lcsi_stress3","fsl_lcsi_stress4", -->
-<!--                         "fsl_lcsi_crisis1","fsl_lcsi_crisis2","fsl_lcsi_crisis3", -->
-<!--                         "fsl_lcsi_emergency1","fsl_lcsi_emergency2","fsl_lcsi_emergency3") -->
+  fsl_hdds_meat <- names(raw.main)[grepl("meat",names(raw.main))]
+  if(length(fsl_hdds_meat) == 1){
+  yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_hdds_meat, "' the correct fsl_hdds_meat column?"), type = "yesno")$res
+  fsl_hdds_meat <- fsl_hdds_meat
+} else if (length(fsl_hdds_meat) > 1){
+  fsl_hdds_meat <- svDialogs::dlg_list(fsl_hdds_meat, title = "HDDS Meat column")$res
+} else if (length(fsl_hdds_meat) == 0 | yes_no == "no") {
+  fsl_hdds_meat <- svDialogs::dlg_input(message= "Enter the name of the fsl_hdds_meat","fsl_hdds_meat")$res
+}
+  
+  fsl_hdds_eggs <- names(raw.main)[grepl("egg",names(raw.main))]
+  if(length(fsl_hdds_eggs) == 1){
+  yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_hdds_eggs, "' the correct fsl_hdds_eggs column?"), type = "yesno")$res
+  fsl_hdds_eggs <- fsl_hdds_eggs
+} else if (length(fsl_hdds_eggs) > 1){
+  fsl_hdds_eggs <- svDialogs::dlg_list(fsl_hdds_eggs, title = "HDDS Eggs column")$res
+} else if (length(fsl_hdds_eggs) == 0 | yes_no == "no") {
+  fsl_hdds_eggs <- svDialogs::dlg_input(message= "Enter the name of the fsl_hdds_eggs","fsl_hdds_eggs")$res
+}
+  
+  fsl_hdds_fish <- names(raw.main)[grepl("fish",names(raw.main))]
+  if(length(fsl_hdds_fish) == 1){
+  yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_hdds_fish, "' the correct fsl_hdds_fish column?"), type = "yesno")$res
+  fsl_hdds_fish <- fsl_hdds_fish
+} else if (length(fsl_hdds_fish) > 1){
+  fsl_hdds_fish <- svDialogs::dlg_list(fsl_hdds_fish, title = "HDDS Fish column")$res
+} else if (length(fsl_hdds_fish) == 0 | yes_no == "no") {
+  fsl_hdds_fish <- svDialogs::dlg_input(message= "Enter the name of the fsl_hdds_fish","fsl_hdds_fish")$res
+}
+  
+  fsl_hdds_legumes <- names(raw.main)[grepl("legume|pulse",names(raw.main))]
+  if(length(fsl_hdds_legumes) == 1){
+  yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_hdds_legumes, "' the correct fsl_hdds_legumes column?"), type = "yesno")$res
+  fsl_hdds_legumes <- fsl_hdds_legumes
+} else if (length(fsl_hdds_legumes) > 1){
+  fsl_hdds_legumes <- svDialogs::dlg_list(fsl_hdds_legumes, title = "HDDS Legumes/Pulses column")$res
+} else if (length(fsl_hdds_legumes) == 0 | yes_no == "no") {
+  fsl_hdds_legumes <- svDialogs::dlg_input(message= "Enter the name of the fsl_hdds_legumes","fsl_hdds_legumes")$res
+}
+  
+  fsl_hdds_dairy <- names(raw.main)[grepl("milk|dairy",names(raw.main))]
+  if(length(fsl_hdds_dairy) == 1){
+  yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_hdds_dairy, "' the correct fsl_hdds_dairy column?"), type = "yesno")$res
+  fsl_hdds_dairy <- fsl_hdds_dairy
+} else if (length(fsl_hdds_dairy) > 1){
+  fsl_hdds_dairy <- svDialogs::dlg_list(fsl_hdds_dairy, title = "HDDS Dairy/Milk column")$res
+} else if (length(fsl_hdds_dairy) == 0 | yes_no == "no") {
+  fsl_hdds_dairy <- svDialogs::dlg_input(message= "Enter the name of the fsl_hdds_dairy","fsl_hdds_dairy")$res
+}
+  
+  fsl_hdds_oil <- names(raw.main)[grepl("oil",names(raw.main))]
+  if(length(fsl_hdds_oil) == 1){
+  yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_hdds_oil, "' the correct fsl_hdds_oil column?"), type = "yesno")$res
+  fsl_hdds_oil <- fsl_hdds_oil
+} else if (length(fsl_hdds_oil) > 1){
+  fsl_hdds_oil <- svDialogs::dlg_list(fsl_hdds_oil, title = "HDDS Oil column")$res
+} else if (length(fsl_hdds_oil) == 0 | yes_no == "no") {
+  fsl_hdds_oil <- svDialogs::dlg_input(message= "Enter the name of the fsl_hdds_oil","fsl_hdds_oil")$res
+}
+  
+  fsl_hdds_sugar <- names(raw.main)[grepl("sugar",names(raw.main))]
+  if(length(fsl_hdds_sugar) == 1){
+  yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_hdds_sugar, "' the correct fsl_hdds_sugar column?"), type = "yesno")$res
+  fsl_hdds_sugar <- fsl_hdds_sugar
+} else if (length(fsl_hdds_sugar) > 1){
+  fsl_hdds_sugar <- svDialogs::dlg_list(fsl_hdds_sugar, title = "HDDS Sugar column")$res
+} else if (length(fsl_hdds_sugar) == 0 | yes_no == "no") {
+  fsl_hdds_sugar <- svDialogs::dlg_input(message= "Enter the name of the fsl_hdds_sugar","fsl_hdds_sugar")$res
+}
+  
+  fsl_hdds_condiments <- names(raw.main)[grepl("condiment",names(raw.main))]
+  if(length(fsl_hdds_condiments) == 1){
+  yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_hdds_condiments, "' the correct fsl_hdds_condiments column?"), type = "yesno")$res
+  fsl_hdds_condiments <- fsl_hdds_condiments
+} else if (length(fsl_hdds_condiments) > 1){
+  fsl_hdds_condiments <- svDialogs::dlg_list(fsl_hdds_condiments, title = "HDDS Condiments column")$res
+} else if (length(fsl_hdds_condiments) == 0 | yes_no == "no") {
+  fsl_hdds_condiments <- svDialogs::dlg_input(message= "Enter the name of the fsl_hdds_condiments","fsl_hdds_condiments")$res
+}
+  
+  hdds_check_columns <- c(fsl_hdds_cereals,fsl_hdds_tubers,fsl_hdds_veg,fsl_hdds_fruit,fsl_hdds_meat,
+                          fsl_hdds_eggs,fsl_hdds_fish,fsl_hdds_legumes,fsl_hdds_dairy,fsl_hdds_oil,
+                          fsl_hdds_sugar,fsl_hdds_condiments)
+  
+  if(!all(hdds_check_columns %in% names(raw.main))) {
+    svDialogs::dlg_message("Please check if the HDDS columns selected are correct and available in the dataset")
+    stop("Please check if the HDDS columns selected are correct and available in the dataset")
+  } else {
+    yes_val <- svDialogs::dlg_list(pull(raw.main[,hdds_check_columns]) %>% unique, title = "Yes Value")$res
+    no_val <- svDialogs::dlg_list(pull(raw.main[,hdds_check_columns]) %>% unique, title = "No Value")$res
+    raw.main <- raw.main %>%
+      impactR4PHU::add_hdds(fsl_hdds_cereals = fsl_hdds_cereals,
+                            fsl_hdds_tubers = fsl_hdds_tubers,
+                            fsl_hdds_veg = fsl_hdds_veg,
+                            fsl_hdds_fruit = fsl_hdds_fruit,
+                            fsl_hdds_meat = fsl_hdds_meat,
+                            fsl_hdds_eggs = fsl_hdds_eggs,
+                            fsl_hdds_fish = fsl_hdds_fish,
+                            fsl_hdds_legumes = fsl_hdds_legumes,
+                            fsl_hdds_dairy = fsl_hdds_dairy,
+                            fsl_hdds_oil = fsl_hdds_oil,
+                            fsl_hdds_sugar = fsl_hdds_sugar,
+                            fsl_hdds_condiments = fsl_hdds_condiments,
+                            yes_val = yes_val, 
+                            no_val = no_val)
+  }
+}
 
-<!-- if(all(lcsi_check_columns %in% names(raw.main))) { -->
-<!--   raw.main <- raw.main %>% -->
-<!--     add_lcsi_new() -->
-<!-- } -->
+fcm_check_1_columns <- c("fsl_fcs_cat",
+                         "fsl_rcsi_cat")
 
-<!-- hdds_check_columns <- c("fsl_hdds_cereals","fsl_hdds_tubers","fsl_hdds_veg","fsl_hdds_fruit","fsl_hdds_meat", -->
-<!--                         "fsl_hdds_eggs","fsl_hdds_fish","fsl_hdds_legumes","fsl_hdds_dairy","fsl_hdds_oil", -->
-<!--                         "fsl_hdds_sugar","fsl_hdds_condiments") -->
+fcm_check_2_columns <- c("fsl_hdds_cat",
+                         "fsl_rcsi_cat")
 
-<!-- if(all(hdds_check_columns %in% names(raw.main))) { -->
-<!--   raw.main <- raw.main %>% -->
-<!--     add_hdds_new() -->
-<!-- } -->
+fcm_check_3_columns <- c("fsl_fcs_cat",
+                         "fsl_hhs_cat")
 
-<!-- fcm_check_1_columns <- c("fsl_fcs_cat", -->
-<!--                          "fsl_rcsi_cat") -->
+fcm_check_4_columns <- c("fsl_hdds_cat",
+                         "fsl_hhs_cat")
 
-<!-- fcm_check_2_columns <- c("fsl_hdds_cat", -->
-<!--                          "fsl_rcsi_cat") -->
+fcm_check_5_columns <- c("fsl_hdds_cat",
+                         "fsl_rcsi_cat",
+                         "fsl_hhs_cat")
 
-<!-- fcm_check_3_columns <- c("fsl_fcs_cat", -->
-<!--                          "fsl_hhs_cat") -->
+fcm_check_6_columns <- c("fsl_fcs_cat",
+                         "fsl_rcsi_cat",
+                         "fsl_hhs_cat")
 
-<!-- fcm_check_4_columns <- c("fsl_hdds_cat", -->
-<!--                          "fsl_hhs_cat") -->
+if(all(fcm_check_1_columns %in% names(raw.main)) |
+   all(fcm_check_2_columns %in% names(raw.main)) |
+   all(fcm_check_3_columns %in% names(raw.main)) |
+   all(fcm_check_4_columns %in% names(raw.main)) |
+   all(fcm_check_5_columns %in% names(raw.main)) |
+   all(fcm_check_6_columns %in% names(raw.main))) {
+  raw.main <- raw.main %>%
+    impactR4PHU::add_fcm_phase()
+}
 
-<!-- fcm_check_5_columns <- c("fsl_hdds_cat", -->
-<!--                          "fsl_rcsi_cat", -->
-<!--                          "fsl_hhs_cat") -->
+fclcm_check_columns <- c("fsl_fc_phase",
+                         "fsl_lcsi_cat")
+if(all(fclcm_check_columns %in% names(raw.main))) {
+  raw.main <- raw.main %>%
+    impactR4PHU::add_fclcm_phase()
+}
 
-<!-- fcm_check_6_columns <- c("fsl_fcs_cat", -->
-<!--                          "fsl_rcsi_cat", -->
-<!--                          "fsl_hhs_cat") -->
+## FCS
+raw.flag.fcs <- raw.main %>%
+  impactR4PHU::check_fsl_flags(tool.survey = tool.survey)
+```
 
+```{r, include = FALSE}
 
+## Read the Plausibility excel file
+overall_fsl_plaus <- openxlsx::read.xlsx("overall_plaus.xlsx",fillMergedCells = TRUE, sheet = "FSL") %>%
+  distinct()
 
-<!-- if(all(fcm_check_1_columns %in% names(raw.main)) | -->
-<!--    all(fcm_check_2_columns %in% names(raw.main)) | -->
-<!--    all(fcm_check_3_columns %in% names(raw.main)) | -->
-<!--    all(fcm_check_4_columns %in% names(raw.main)) | -->
-<!--    all(fcm_check_5_columns %in% names(raw.main)) | -->
-<!--    all(fcm_check_6_columns %in% names(raw.main))) { -->
-<!--   raw.main <- raw.main %>% -->
-<!--     add_fcm_phase_new() -->
-<!-- } -->
+## Detect Enumerator column
+enumerator_column <- names(raw.flag.fcs)[grepl("enum|team",names(raw.flag.fcs))]
 
-<!-- fclcm_check_columns <- c("fc_phase", -->
-<!--                          "fsl_lcsi_cat") -->
-<!-- if(all(fclcm_check_columns %in% names(raw.main))) { -->
-<!--   raw.main <- raw.main %>% -->
-<!--     add_fclcm_phase_new() -->
-<!-- } -->
-
-<!-- ## FCS -->
-<!-- raw.flag.fcs <- raw.main %>% -->
-<!--   check_fs_flags(date_dc_date = "today") -->
-<!-- ``` -->
-
-<!-- ```{r, include = FALSE} -->
-<!-- overall_fsl_plaus <- openxlsx::read.xlsx("./../resources/overall_plaus.xlsx",fillMergedCells = TRUE, sheet = "FSL") %>% -->
-<!--   distinct() -->
-<!-- result <- create_fsl_quality_report_phu(raw.flag.fcs) -->
-<!-- result_fsl_enum <- create_fsl_quality_report_phu(raw.flag.fcs, grouping = "enumerator") -->
-<!-- result_pivot <- result %>% -->
-<!--   mutate_all(., as.character) %>% -->
-<!--   tidyr::pivot_longer(cols = everything(),names_to = "Criteria", -->
-<!--                values_to = "Score") %>% -->
-<!--   filter(stringr::str_starts(Criteria,"plaus_")) -->
-<!-- bind <- data.frame(`Indicator Score` = c("plaus_fcs","plaus_fcs","plaus_fcs","plaus_fcs","plaus_fcs","plaus_fcs", -->
-<!--                                          "plaus_fcs","plaus_fcs","plaus_fcs","plaus_fcs","plaus_fcs","plaus_fcs", -->
-<!--                                          "plaus_rcsi","plaus_rcsi","plaus_rcsi","plaus_rcsi","plaus_rcsi", -->
-<!--                                          "plaus_rcsi","plaus_rcsi","plaus_rcsi","plaus_rcsi","plaus_rcsi", -->
-<!--                                          "plaus_hhs","plaus_hhs", -->
-<!--                                          "plaus_lcsi","plaus_lcsi","plaus_lcsi","plaus_lcsi","plaus_lcsi", -->
-<!--                                          "plaus_lcsi","plaus_lcsi","plaus_lcsi","plaus_lcsi","plaus_lcsi", -->
-<!--                                          "plaus_other_fsl","plaus_other_fsl","plaus_other_fsl", -->
-<!--                                          "plaus_other_fsl","plaus_other_fsl","plaus_other_fsl", -->
-<!--                                          "plaus_other_fsl","plaus_other_fsl","plaus_other_fsl", -->
-<!--                                          "plaus_other_fsl","plaus_other_fsl","plaus_other_fsl",NA,NA)) -->
-<!-- overall_fsl_plaus_overall <- overall_fsl_plaus%>% -->
-<!--   left_join(result_pivot, by = c("flag_name"="Criteria")) %>% -->
-<!--   mutate_all(., ~ifelse(is.na(.),"NA",.)) %>% -->
-<!--   cbind(bind)%>% -->
-<!--   left_join(result_pivot %>% filter(Criteria %in% c("plaus_other_fsl", -->
-<!--                                                     "plaus_lcsi", -->
-<!--                                                     "plaus_hhs", -->
-<!--                                                     "plaus_rcsi", -->
-<!--                                                     "plaus_fcs")) %>% -->
-<!--               rename(indscore = "Score"), by = c("Indicator.Score"="Criteria")) %>% -->
-<!--   mutate(indscore = case_when(flag_name == "plaus_flag_severe_hhs"~paste0(indscore,"/10"), -->
-<!--                               TRUE ~paste0(indscore,"/20"))) %>% -->
-<!--   select(-Indicator.Score) -->
-<!-- fsl <- flextable::flextable(overall_fsl_plaus_overall) -->
-
-
-<!-- final_table <- create_table_fsl(fsl) -->
-
-<!-- ``` -->
-
-<!-- ### Data Quality FSL {.tabset .tabset-fade} -->
-
-<!-- #### Plausbility {.tabset .tabset-fade} -->
-
-<!-- ##### Overall -->
-
-<!-- ```{r} -->
-<!-- final_table -->
-<!-- ``` -->
-
-<!-- ```{r, results='asis'} -->
-<!-- result_fsl_pivot <- result_fsl_enum %>% -->
-<!--   mutate_all(., as.character) %>% -->
-<!--   tidyr::pivot_longer(-enumerator,names_to = "Criteria", -->
-<!--                values_to = "Score") %>% -->
-<!--   filter(stringr::str_starts(Criteria,"plaus_")) -->
-<!-- list_enum <- result_fsl_pivot$enumerator %>% unique -->
-<!-- list_flex_enum <- list() -->
-<!-- for (i in list_enum) { -->
-
-<!--   cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",5), collapse=""), " ", "<strong>",i,"</strong>")) -->
-<!--   overall_fsl_plaus_enum <- overall_fsl_plaus %>% -->
-<!--     left_join(result_fsl_pivot %>% filter(enumerator == i), by = c("flag_name"="Criteria"))%>% -->
-<!--     mutate_all(., ~ifelse(is.na(.),"NA",.)) %>% -->
-<!--     cbind(bind) %>% -->
-<!--     select(-enumerator) %>% -->
-<!--     left_join(result_fsl_pivot %>% -->
-<!--                 filter(enumerator == i) %>% -->
-<!--                 filter(Criteria %in% c("plaus_other_fsl", -->
-<!--                                        "plaus_lcsi", -->
-<!--                                        "plaus_hhs", -->
-<!--                                        "plaus_rcsi", -->
-<!--                                        "plaus_fcs")) %>% -->
-<!--               rename(indscore = "Score"), by = c("Indicator.Score"="Criteria")) %>% -->
-<!--     mutate(indscore = case_when(flag_name == "plaus_flag_severe_hhs"~paste0(indscore,"/10"), -->
-<!--                               TRUE ~paste0(indscore,"/20"))) %>% -->
-<!--     select(-c(Indicator.Score,enumerator)) -->
-
-<!--   fsl_enum <- flextable::flextable(overall_fsl_plaus_enum) -->
-
-<!--   final_table_fsl_enum <- create_table_fsl(fsl_enum) -->
-<!--   subch(final_table_fsl_enum) -->
-<!--   list_flex_enum <- append(list_flex_enum,final_table_fsl_enum) -->
-<!-- } -->
-
-<!-- ``` -->
-
-
-<!-- ```{r, results='asis'} -->
-<!-- flag_description <- readxl::read_excel("./../resources/flag_description.xlsx", sheet = "FSL") -->
-<!-- flags_fsl_columns <- names(raw.flag.fcs)[stringr::str_starts(names(raw.flag.fcs),"flag_")] -->
-<!-- overall_flag <- tibble() -->
-<!-- for(flag in flags_fsl_columns) { -->
-
-<!--   flag_overall <- raw.flag.fcs %>% -->
-<!--     select(enumerator, !!rlang::sym(flag)) %>% -->
-<!--     filter(!is.na(!!rlang::sym(flag))) %>% -->
-<!--     mutate(flag := flag) %>% -->
-<!--     group_by(flag) %>% -->
-<!--     summarise(num_samples = n(), -->
-<!--               flagged = sum(!!rlang::sym(flag))) %>% -->
-<!--     mutate(percentage_flaggged = paste0(round((flagged/num_samples)*100,2),"%")) %>% -->
-<!--     ungroup() -->
-<!--   if(nrow(flag_overall)>0){ -->
-<!--     overall_flag <- rbind(overall_flag,flag_overall) -->
-<!--   } -->
-<!-- } -->
-<!-- add_to_html.title("Overall Flag Table") -->
-<!-- subch(DT::datatable(overall_flag, -->
-<!--                   extensions = 'Buttons', options = list( -->
-<!--                     dom = 'Blfrtip', -->
-<!--                     buttons = c('copy', 'csv', 'excel', 'pdf'), -->
-<!--                     lengthMenu = list(c(50), -->
-<!--                                       c('All')), -->
-<!--                     paging = T))) -->
-
-<!-- for(flag in flags_fsl_columns) { -->
-<!--   flag_rational <- flag_description %>% -->
-<!--     filter(flag_name %in% flag) %>% -->
-<!--     pull(Rationale) -->
-<!--   flag_action <- flag_description %>% -->
-<!--     filter(flag_name %in% flag) %>% -->
-<!--     pull(Action) -->
-<!--   flag_by_enum <- raw.flag.fcs %>% -->
-<!--     select(enumerator, !!rlang::sym(flag)) %>% -->
-<!--     filter(!is.na(!!rlang::sym(flag))) %>% -->
-<!--     mutate(flag := flag) %>% -->
-<!--     group_by(flag,enumerator) %>% -->
-<!--     summarise(num_samples = n(), -->
-<!--               flagged = sum(!!rlang::sym(flag))) %>% -->
-<!--     mutate(percentage_flagged = paste0(round((flagged/num_samples)*100,2),"%")) %>% -->
-<!--     ungroup() %>% -->
-<!--     select(-1) -->
-<!--   if(nrow(flag_by_enum)>0){ -->
-<!--     add_to_html.title(flag) -->
-<!--     cat("\n") -->
-<!--     cat(paste("<em><strong>Rational</strong>: ",flag_rational,"</em>\n")) -->
-<!--     if(!is.null(flag_action)){ -->
-<!--       cat("\n") -->
-<!--       cat(paste("<em><strong>Action</strong>: ",flag_action,"</em>\n")) -->
-<!--     } -->
-<!--     subch(DT::datatable(flag_by_enum, -->
-<!--                   extensions = 'Buttons', options = list( -->
-<!--                     dom = 'Blfrtip', -->
-<!--                     buttons = c('copy', 'csv', 'excel', 'pdf'), -->
-<!--                     lengthMenu = list(c(50), -->
-<!--                                       c('All')), -->
-<!--                     paging = T))) -->
-<!--   } -->
-<!-- } -->
-
-<!-- ``` -->
+if(length(enumerator_column) == 1){
+  yes_no <- svDialogs::dlg_message(paste0("Is '", enumerator_column, "' the correct enumerator column?"), type = "yesno")$res
+  enumerator <- enumerator_column
+} else if (length(enumerator_column) > 1){
+  enumerator <- svDialogs::dlg_list(enumerator_column, title = "Enumerator Columns")$res
+} else if (length(enumerator_column) == 0 | yes_no == "no") {
+  enumerator <- svDialogs::dlg_input(message= "Enter the name of the Enumerator Column","enumerator")$res
+}
 
 
-<!-- ```{r, results='asis'} -->
-<!-- if(all(fcs_check_columns %in% names(raw.flag.fcs))) { -->
-<!--   cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",3), collapse=""), " ", "Plots {.tabset .tabset-fade}")) -->
-<!--   cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",4), collapse=""), " ", "FCS Ridge Overall Distribution Plot")) -->
-<!--   (plot_ridge_distribution_phu(raw.flag.fcs, numeric_cols = c("fsl_fcs_cereal", "fsl_fcs_dairy", "fsl_fcs_veg", "fsl_fcs_fruit", "fsl_fcs_legumes", "fsl_fcs_sugar", "fsl_fcs_oil"), -->
-<!--                          name_groups = "Food Groups", name_units = "Days")) -->
-<!-- } -->
-<!-- ``` -->
+result <- impactR4PHU::create_fsl_plaus(raw.flag.fcs,
+                                        fsl_fcs_cereal = fsl_fcs_cereal,
+                                        fsl_fcs_legumes = fsl_fcs_legumes,
+                                        fsl_fcs_dairy = fsl_fcs_dairy,
+                                        fsl_fcs_meat = fsl_fcs_meat, 
+                                        fsl_fcs_veg = fsl_fcs_veg,
+                                        fsl_fcs_fruit = fsl_fcs_fruit, 
+                                        fsl_fcs_oil = fsl_fcs_oil,
+                                        fsl_fcs_sugar = fsl_fcs_sugar, 
+                                        fsl_rcsi_lessquality = fsl_rcsi_lessquality,
+                                        fsl_rcsi_borrow = fsl_rcsi_borrow, 
+                                        fsl_rcsi_mealsize = fsl_rcsi_mealsize,
+                                        fsl_rcsi_mealadult = fsl_rcsi_mealadult, 
+                                        fsl_rcsi_mealnb = fsl_rcsi_mealnb)
+
+result_fsl_enum <- impactR4PHU::create_fsl_plaus(raw.flag.fcs,
+                                        fsl_fcs_cereal = "fsl_fcs_cereal",
+                                        fsl_fcs_legumes = "fsl_fcs_legumes",
+                                        fsl_fcs_dairy = "fsl_fcs_dairy",
+                                        fsl_fcs_meat = "fsl_fcs_meat", 
+                                        fsl_fcs_veg = "fsl_fcs_veg",
+                                        fsl_fcs_fruit = "fsl_fcs_fruit", 
+                                        fsl_fcs_oil = "fsl_fcs_oil",
+                                        fsl_fcs_sugar = "fsl_fcs_sugar", 
+                                        fsl_rcsi_lessquality = "fsl_rcsi_lessquality",
+                                        fsl_rcsi_borrow = "fsl_rcsi_borrow", 
+                                        fsl_rcsi_mealsize = "fsl_rcsi_mealsize",
+                                        fsl_rcsi_mealadult = "fsl_rcsi_mealadult", 
+                                        fsl_rcsi_mealnb = "fsl_rcsi_mealnb",
+                                        grouping = enumerator)
+result_pivot <- result %>%
+  mutate_all(., as.character) %>%
+  tidyr::pivot_longer(cols = everything(),names_to = "Criteria",
+               values_to = "Score") %>%
+  filter(stringr::str_starts(Criteria,"plaus_"))
+bind <- data.frame(`Indicator Score` = c("plaus_fcs","plaus_fcs","plaus_fcs","plaus_fcs","plaus_fcs","plaus_fcs",
+                                         "plaus_fcs","plaus_fcs","plaus_fcs","plaus_fcs","plaus_fcs","plaus_fcs",
+                                         "plaus_rcsi","plaus_rcsi","plaus_rcsi","plaus_rcsi","plaus_rcsi",
+                                         "plaus_rcsi","plaus_rcsi","plaus_rcsi","plaus_rcsi","plaus_rcsi",
+                                         "plaus_hhs","plaus_hhs",
+                                         "plaus_lcsi","plaus_lcsi","plaus_lcsi","plaus_lcsi","plaus_lcsi",
+                                         "plaus_lcsi","plaus_lcsi","plaus_lcsi","plaus_lcsi","plaus_lcsi",
+                                         "plaus_other_fsl","plaus_other_fsl","plaus_other_fsl",
+                                         "plaus_other_fsl","plaus_other_fsl","plaus_other_fsl",
+                                         "plaus_other_fsl","plaus_other_fsl","plaus_other_fsl",
+                                         "plaus_other_fsl","plaus_other_fsl","plaus_other_fsl",NA,NA))
+overall_fsl_plaus_overall <- overall_fsl_plaus%>%
+  left_join(result_pivot, by = c("flag_name"="Criteria")) %>%
+  mutate_all(., ~ifelse(is.na(.),"NA",.)) %>%
+  cbind(bind)%>%
+  left_join(result_pivot %>% filter(Criteria %in% c("plaus_other_fsl",
+                                                    "plaus_lcsi",
+                                                    "plaus_hhs",
+                                                    "plaus_rcsi",
+                                                    "plaus_fcs")) %>%
+              rename(indscore = "Score"), by = c("Indicator.Score"="Criteria")) %>%
+  mutate(indscore = case_when(flag_name == "plaus_flag_severe_hhs"~paste0(indscore,"/10"),
+                              TRUE ~paste0(indscore,"/20"))) %>%
+  select(-Indicator.Score)
+fsl <- flextable::flextable(overall_fsl_plaus_overall)
 
 
-<!-- ```{r, results='asis'} -->
-<!-- if(all(fcs_check_columns %in% names(raw.flag.fcs))) { -->
-<!--     cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",4), collapse=""), " ", "FCS Ridge by Enumerator Distribution Plot")) -->
-<!--   (plot_ridge_distribution_phu(raw.flag.fcs, numeric_cols = c("fsl_fcs_cereal", "fsl_fcs_dairy", "fsl_fcs_veg", "fsl_fcs_fruit", "fsl_fcs_legumes", "fsl_fcs_sugar", "fsl_fcs_oil"), -->
-<!--                          name_groups = "Food Groups", name_units = "Days", grouping = "enumerator")) -->
-<!-- } -->
-<!-- ``` -->
+final_table <- impactR4PHU::create_plaus_table_fsl(fsl)
 
-<!-- ```{r, results='asis'} -->
-<!-- if(all(rcsi_check_columns %in% names(raw.flag.fcs))) { -->
-<!--   cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",4), collapse=""), " ", "RCSI Ridge Overall Distribution Plot")) -->
-<!--   (plot_ridge_distribution_phu(raw.flag.fcs, numeric_cols = c("fsl_rcsi_lessquality", "fsl_rcsi_borrow", "fsl_rcsi_mealsize","fsl_rcsi_mealadult", "fsl_rcsi_mealnb"), -->
-<!--                          name_groups = "Food Coping Strategy", name_units = "Days")) -->
-<!-- } -->
-<!-- ``` -->
+```
 
-<!-- #### RCSI Ridge by Enumerator Distribution Plot -->
+### Data Quality FSL {.tabset .tabset-fade}
 
-<!-- ```{r, results='asis'} -->
-<!-- if(all(rcsi_check_columns %in% names(raw.flag.fcs))) { -->
-<!--   cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",4), collapse=""), " ", "RCSI Ridge by Enumerator Distribution Plot")) -->
-<!-- (plot_ridge_distribution_phu(raw.flag.fcs, numeric_cols = c("fsl_rcsi_lessquality", "fsl_rcsi_borrow", "fsl_rcsi_mealsize","fsl_rcsi_mealadult", "fsl_rcsi_mealnb"), -->
-<!--                          name_groups = "Food Coping Strategy", name_units = "Days", grouping = "enumerator")) -->
-<!-- } -->
-<!-- ``` -->
+#### Plausbility {.tabset .tabset-fade}
+
+##### Overall
+
+```{r}
+final_table
+```
+
+```{r, results='asis'}
+result_fsl_pivot <- result_fsl_enum %>%
+  mutate_all(., as.character) %>%
+  tidyr::pivot_longer(-enumerator,names_to = "Criteria",
+               values_to = "Score") %>%
+  filter(stringr::str_starts(Criteria,"plaus_"))
+list_enum <- result_fsl_pivot$enumerator %>% unique
+list_flex_enum <- list()
+for (i in list_enum) {
+
+  cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",5), collapse=""), " ", "<strong>",i,"</strong>"))
+  overall_fsl_plaus_enum <- overall_fsl_plaus %>%
+    left_join(result_fsl_pivot %>% filter(enumerator == i), by = c("flag_name"="Criteria"))%>%
+    mutate_all(., ~ifelse(is.na(.),"NA",.)) %>%
+    cbind(bind) %>%
+    select(-enumerator) %>%
+    left_join(result_fsl_pivot %>%
+                filter(enumerator == i) %>%
+                filter(Criteria %in% c("plaus_other_fsl",
+                                       "plaus_lcsi",
+                                       "plaus_hhs",
+                                       "plaus_rcsi",
+                                       "plaus_fcs")) %>%
+              rename(indscore = "Score"), by = c("Indicator.Score"="Criteria")) %>%
+    mutate(indscore = case_when(flag_name == "plaus_flag_severe_hhs"~paste0(indscore,"/10"),
+                              TRUE ~paste0(indscore,"/20"))) %>%
+    select(-c(Indicator.Score,enumerator))
+
+  fsl_enum <- flextable::flextable(overall_fsl_plaus_enum)
+
+  final_table_fsl_enum <- create_table_fsl(fsl_enum)
+  subch(final_table_fsl_enum)
+  list_flex_enum <- append(list_flex_enum,final_table_fsl_enum)
+}
+
+```
 
 
-<!-- ```{r} -->
-<!-- if(all(fcs_check_columns %in% names(raw.flag.fcs)) & -->
-<!--    all(rcsi_check_columns %in% names(raw.flag.fcs)) & -->
-<!--    all(hhs_check_columns %in% names(raw.flag.fcs))) { -->
-<!--   cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",4), collapse=""), " ", "FCS/RCSI/HHS Correlation Plot")) -->
-<!--   (plot_correlogram_phu(raw.flag.fcs, numeric_cols = c("fsl_fcs_score",  "fsl_rcsi_score",  "fsl_hhs_score"))) -->
-<!-- } -->
-<!-- ``` -->
+```{r, results='asis'}
+flag_description <- readxl::read_excel("./../resources/flag_description.xlsx", sheet = "FSL")
+flags_fsl_columns <- names(raw.flag.fcs)[stringr::str_starts(names(raw.flag.fcs),"flag_")]
+overall_flag <- tibble()
+for(flag in flags_fsl_columns) {
+
+  flag_overall <- raw.flag.fcs %>%
+    select(enumerator, !!rlang::sym(flag)) %>%
+    filter(!is.na(!!rlang::sym(flag))) %>%
+    mutate(flag := flag) %>%
+    group_by(flag) %>%
+    summarise(num_samples = n(),
+              flagged = sum(!!rlang::sym(flag))) %>%
+    mutate(percentage_flaggged = paste0(round((flagged/num_samples)*100,2),"%")) %>%
+    ungroup()
+  if(nrow(flag_overall)>0){
+    overall_flag <- rbind(overall_flag,flag_overall)
+  }
+}
+add_to_html.title("Overall Flag Table")
+subch(DT::datatable(overall_flag,
+                  extensions = 'Buttons', options = list(
+                    dom = 'Blfrtip',
+                    buttons = c('copy', 'csv', 'excel', 'pdf'),
+                    lengthMenu = list(c(50),
+                                      c('All')),
+                    paging = T)))
+
+for(flag in flags_fsl_columns) {
+  flag_rational <- flag_description %>%
+    filter(flag_name %in% flag) %>%
+    pull(Rationale)
+  flag_action <- flag_description %>%
+    filter(flag_name %in% flag) %>%
+    pull(Action)
+  flag_by_enum <- raw.flag.fcs %>%
+    select(enumerator, !!rlang::sym(flag)) %>%
+    filter(!is.na(!!rlang::sym(flag))) %>%
+    mutate(flag := flag) %>%
+    group_by(flag,enumerator) %>%
+    summarise(num_samples = n(),
+              flagged = sum(!!rlang::sym(flag))) %>%
+    mutate(percentage_flagged = paste0(round((flagged/num_samples)*100,2),"%")) %>%
+    ungroup() %>%
+    select(-1)
+  if(nrow(flag_by_enum)>0){
+    add_to_html.title(flag)
+    cat("\n")
+    cat(paste("<em><strong>Rational</strong>: ",flag_rational,"</em>\n"))
+    if(!is.null(flag_action)){
+      cat("\n")
+      cat(paste("<em><strong>Action</strong>: ",flag_action,"</em>\n"))
+    }
+    subch(DT::datatable(flag_by_enum,
+                  extensions = 'Buttons', options = list(
+                    dom = 'Blfrtip',
+                    buttons = c('copy', 'csv', 'excel', 'pdf'),
+                    lengthMenu = list(c(50),
+                                      c('All')),
+                    paging = T)))
+  }
+}
+
+```
+
+
+```{r, results='asis'}
+if(all(fcs_check_columns %in% names(raw.flag.fcs))) {
+  cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",3), collapse=""), " ", "Plots {.tabset .tabset-fade}"))
+  cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",4), collapse=""), " ", "FCS Ridge Overall Distribution Plot"))
+  (plot_ridge_distribution_phu(raw.flag.fcs, numeric_cols = c("fsl_fcs_cereal", "fsl_fcs_dairy", "fsl_fcs_veg", "fsl_fcs_fruit", "fsl_fcs_legumes", "fsl_fcs_sugar", "fsl_fcs_oil"),
+                         name_groups = "Food Groups", name_units = "Days"))
+}
+```
+
+
+```{r, results='asis'}
+if(all(fcs_check_columns %in% names(raw.flag.fcs))) {
+    cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",4), collapse=""), " ", "FCS Ridge by Enumerator Distribution Plot"))
+  (plot_ridge_distribution_phu(raw.flag.fcs, numeric_cols = c("fsl_fcs_cereal", "fsl_fcs_dairy", "fsl_fcs_veg", "fsl_fcs_fruit", "fsl_fcs_legumes", "fsl_fcs_sugar", "fsl_fcs_oil"),
+                         name_groups = "Food Groups", name_units = "Days", grouping = "enumerator"))
+}
+```
+
+```{r, results='asis'}
+if(all(rcsi_check_columns %in% names(raw.flag.fcs))) {
+  cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",4), collapse=""), " ", "RCSI Ridge Overall Distribution Plot"))
+  (plot_ridge_distribution_phu(raw.flag.fcs, numeric_cols = c("fsl_rcsi_lessquality", "fsl_rcsi_borrow", "fsl_rcsi_mealsize","fsl_rcsi_mealadult", "fsl_rcsi_mealnb"),
+                         name_groups = "Food Coping Strategy", name_units = "Days"))
+}
+```
+
+#### RCSI Ridge by Enumerator Distribution Plot
+
+```{r, results='asis'}
+if(all(rcsi_check_columns %in% names(raw.flag.fcs))) {
+  cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",4), collapse=""), " ", "RCSI Ridge by Enumerator Distribution Plot"))
+(plot_ridge_distribution_phu(raw.flag.fcs, numeric_cols = c("fsl_rcsi_lessquality", "fsl_rcsi_borrow", "fsl_rcsi_mealsize","fsl_rcsi_mealadult", "fsl_rcsi_mealnb"),
+                         name_groups = "Food Coping Strategy", name_units = "Days", grouping = "enumerator"))
+}
+```
+
+
+```{r}
+if(all(fcs_check_columns %in% names(raw.flag.fcs)) &
+   all(rcsi_check_columns %in% names(raw.flag.fcs)) &
+   all(hhs_check_columns %in% names(raw.flag.fcs))) {
+  cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",4), collapse=""), " ", "FCS/RCSI/HHS Correlation Plot"))
+  (plot_correlogram_phu(raw.flag.fcs, numeric_cols = c("fsl_fcs_score",  "fsl_rcsi_score",  "fsl_hhs_score")))
+}
+```
