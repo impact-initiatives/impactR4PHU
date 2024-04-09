@@ -7,8 +7,8 @@
 plot_ridge_distribution(
   .dataset,
   numeric_cols = NULL,
-  name_groups = "Groups",
-  name_units = "Units",
+  name_groups = NULL,
+  name_units = NULL,
   grouping = NULL,
   file_path = NULL,
   wdth = 5,

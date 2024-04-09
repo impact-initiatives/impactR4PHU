@@ -21,11 +21,12 @@
 #' }
 
 plot_ridge_distribution <- function (.dataset, numeric_cols = NULL,
-                                     name_groups = "Groups", name_units = "Units", grouping = NULL,
+                                     name_groups = NULL, name_units = NULL, grouping = NULL,
                                      file_path = NULL, wdth = 5, hght = 5, title_name = NULL)
 {
   a <- 0
-  if (!is.null(grouping)) {
+
+  if (is.null(grouping)) {
     .dataset <- .dataset %>% dplyr::mutate(group = "All")
     grouping <- "group"
     a <- 1
