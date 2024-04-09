@@ -267,7 +267,7 @@ create_fsl_plaus <- function(.dataset,
                                      p5 = ifelse(is.na(fsl_fc_phase), NA,
                                                  ifelse(fsl_fc_phase == "Phase 5 FC", 1, 0))) %>%
       dplyr::group_by(group) %>%
-      dplyr::summarise(prop_fc_flags = sum(flag_fsl_fc_cell, na.rm = TRUE)/sum(!is.na(fsl_fc_cell), na.rm = TRUE),
+      dplyr::summarise(prop_fc_flags = sum(flag_fc_cell, na.rm = TRUE)/sum(!is.na(fsl_fc_cell), na.rm = TRUE),
                        fews_p1 = round(sum(p1, na.rm = TRUE)/sum(!is.na(fsl_fc_cell)), 2),
                        fews_p2 = round(sum(p2, na.rm = TRUE)/sum(!is.na(fsl_fc_cell)), 2),
                        fews_p3 = round(sum(p3, na.rm = TRUE)/sum(!is.na(fsl_fc_cell)), 2),
