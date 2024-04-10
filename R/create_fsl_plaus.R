@@ -233,7 +233,7 @@ create_fsl_plaus <- function(.dataset,
     }
   }
 
-  if (all(c("fsl_fcs_score", "fsl_hhs_score", "fsl_hdds_score",
+  if (any(c("fsl_fcs_score", "fsl_hhs_score", "fsl_hdds_score",
             "fsl_rcsi_score", "flag_lcsi_coherence") %in% names(.dataset))) {
     nms <- .dataset %>% dplyr::select(dplyr::starts_with("flag")) %>%
       names()
