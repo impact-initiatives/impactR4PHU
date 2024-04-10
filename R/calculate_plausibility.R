@@ -3,6 +3,7 @@
 #' @param .dataset the output of create_x_plaus
 #'
 #' @return dataframe with plausibility columns calculated
+#' @export
 #'
 #' @examples
 #' \dontrun{calculate_plausibility(df)}
