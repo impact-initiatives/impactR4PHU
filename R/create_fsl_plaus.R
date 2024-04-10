@@ -282,7 +282,7 @@ create_fsl_plaus <- function(.dataset,
       dplyr::select(c(1, n, dplyr::everything()))
   }
 
-  results <- calculate_plausibility(.dataset = results)
+  results <- impactR4PHU::calculate_plausibility(.dataset = results)
   a <- c("n", "fews_p1", "fews_p2", "fews_p3", "fews_p4",
          "fews_p5", "flag_severe_hhs", "flag_lcsi_severity",
          "plaus_fcs", "plaus_rcsi", "plaus_hhs", "plaus_lcsi",
