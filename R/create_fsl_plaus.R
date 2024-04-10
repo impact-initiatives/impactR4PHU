@@ -129,108 +129,108 @@ create_fsl_plaus <- function(.dataset,
                        sd_hdds = round(stats::sd(fsl_hdds_score, na.rm = TRUE), 2))
     if (!exists("results")) {
       results <- results2
-    } else {
+    }else {
       results <- merge(results, results2)
     }
   }
   if (all(c("fsl_fcs_score", "fsl_rcsi_score") %in% names(.dataset))) {
-      results2 <- .dataset %>% dplyr::group_by(group) %>%
+    results2 <- .dataset %>% dplyr::group_by(group) %>%
         dplyr::summarise(corr.fcs_rcsi = round(as.numeric(stats::cor.test(fsl_fcs_score, fsl_rcsi_score)[4]), 2),
                          corr.fcs_rcsi.pvalue = as.numeric(stats::cor.test(fsl_fcs_score, fsl_rcsi_score)[3]))
-      if (!exists("results")) {
-        results <- results2
-      }else {
-        results <- merge(results, results2)
-      }
+    if (!exists("results")) {
+      results <- results2
+    }else {
+      results <- merge(results, results2)
+    }
   } else {
-      results2 <- .dataset %>% dplyr::group_by(group) %>%
+    results2 <- .dataset %>% dplyr::group_by(group) %>%
         dplyr::summarise(corr.fcs_rcsi = NA,
                          corr.fcs_rcsi.pvalue = NA)
-      if (!exists("results")) {
-        results <- results2
-      }else {
-        results <- merge(results, results2)
-      }
+    if (!exists("results")) {
+      results <- results2
+    }else {
+      results <- merge(results, results2)
+    }
   }
 
   if (all(c("fsl_fcs_score", "fsl_hhs_score") %in% names(.dataset))) {
-      results2 <- .dataset %>% dplyr::group_by(group) %>%
+    results2 <- .dataset %>% dplyr::group_by(group) %>%
         dplyr::summarise(corr.fcs_hhs = round(as.numeric(stats::cor.test(fsl_fcs_score, fsl_hhs_score)[4]), 2),
                          corr.fcs_hhs.pvalue = round(as.numeric(stats::cor.test(fsl_fcs_score, fsl_hhs_score)[3]), 6))
-      if (!exists("results")) {
-        results <- results2
-      }else {
-        results <- merge(results, results2)
-      }
+    if (!exists("results")) {
+      results <- results2
+    }else {
+      results <- merge(results, results2)
+    }
   } else {
-      results2 <- .dataset %>% dplyr::group_by(group) %>%
+    results2 <- .dataset %>% dplyr::group_by(group) %>%
         dplyr::summarise(corr.fcs_hhs = NA,
                          corr.fcs_hhs.pvalue = NA)
-      if (!exists("results")) {
-        results <- results2
-      }else {
-        results <- merge(results, results2)
-      }
+    if (!exists("results")) {
+      results <- results2
+    }else {
+      results <- merge(results, results2)
+    }
   }
 
   if (all(c("fsl_fcs_score", "fsl_hdds_score") %in% names(.dataset))) {
-      results2 <- .dataset %>% dplyr::group_by(group) %>%
+    results2 <- .dataset %>% dplyr::group_by(group) %>%
         dplyr::summarise(corr.fcs_hdds = round(as.numeric(stats::cor.test(fsl_fcs_score, fsl_hdds_score)[4]), 2),
                          corr.fcs_hdds.pvalue = round(as.numeric(stats::cor.test(fsl_fcs_score, fsl_hdds_score)[3]), 3))
-      if (!exists("results")) {
-        results <- results2
-      } else {
-        results <- merge(results, results2)
-      }
-    } else {
-      results2 <- .dataset %>% dplyr::group_by(group) %>%
-        dplyr::summarise(corr.fcs_hdds = NA,
-                         corr.fcs_hdds.pvalue = NA)
-      if (!exists("results")) {
-        results <- results2
-      } else {
-        results <- merge(results, results2)
-      }
+    if (!exists("results")) {
+      results <- results2
+    }else {
+      results <- merge(results, results2)
     }
+  } else {
+    results2 <- .dataset %>% dplyr::group_by(group) %>%
+      dplyr::summarise(corr.fcs_hdds = NA,
+                       corr.fcs_hdds.pvalue = NA)
+    if (!exists("results")) {
+      results <- results2
+    }else {
+      results <- merge(results, results2)
+    }
+  }
 
   if (all(c("fsl_hdds_score", "fsl_rcsi_score") %in% names(.dataset))) {
-      results2 <- .dataset %>% dplyr::group_by(group) %>%
+    results2 <- .dataset %>% dplyr::group_by(group) %>%
         dplyr::summarise(corr.hdds_rcsi = round(as.numeric(stats::cor.test(fsl_hdds_score, fsl_rcsi_score)[4]), 2),
                          corr.hdds_rcsi.pvalue = round(as.numeric(stats::cor.test(fsl_hdds_score, fsl_rcsi_score)[3]), 3))
-      if (!exists("results")) {
-        results <- results2
-      } else {
-        results <- merge(results, results2)
-      }
+    if (!exists("results")) {
+      results <- results2
+    }else {
+      results <- merge(results, results2)
+    }
   } else {
-      results2 <- .dataset %>% dplyr::group_by(group) %>%
+    results2 <- .dataset %>% dplyr::group_by(group) %>%
         dplyr::summarise(corr.hdds_rcsi = NA,
                          corr.hdds_rcsi.pvalue = NA)
-      if (!exists("results")) {
-        results <- results2
-      } else {
-        results <- merge(results, results2)
-      }
+    if (!exists("results")) {
+      results <- results2
+    }else {
+      results <- merge(results, results2)
+    }
   }
 
   if (all(c("fsl_hhs_score", "fsl_rcsi_score") %in% names(.dataset))) {
-      results2 <- .dataset %>% dplyr::group_by(group) %>%
+    results2 <- .dataset %>% dplyr::group_by(group) %>%
         dplyr::summarise(corr.hhs_rcsi = round(as.numeric(stats::cor.test(fsl_hhs_score, fsl_rcsi_score)[4]), 2),
                          corr.hhs_rcsi.pvalue = round(as.numeric(stats::cor.test(fsl_hhs_score, fsl_rcsi_score)[3]), 3))
-      if (!exists("results")) {
-        results <- results2
-      } else {
-        results <- merge(results, results2)
-      }
+    if (!exists("results")) {
+      results <- results2
+    }else {
+      results <- merge(results, results2)
+    }
   } else {
-      results2 <- .dataset %>% dplyr::group_by(group) %>%
+    results2 <- .dataset %>% dplyr::group_by(group) %>%
         dplyr::summarise(corr.hhs_rcsi = NA,
                          corr.hhs_rcsi.pvalue = NA)
-      if (!exists("results")) {
-        results <- results2
-      } else {
-        results <- merge(results, results2)
-      }
+    if (!exists("results")) {
+      results <- results2
+    }else {
+      results <- merge(results, results2)
+    }
   }
 
   if (all(c("fsl_fcs_score", "fsl_hhs_score", "fsl_hdds_score",
@@ -275,7 +275,7 @@ create_fsl_plaus <- function(.dataset,
                        fews_p5 = round(sum(p5, na.rm = TRUE)/sum(!is.na(fsl_fc_cell)), 2))
     if (!exists("results")) {
       results <- results2
-    } else {
+    }else {
       results <- merge(results, results2)
     }
     results <- results %>%
