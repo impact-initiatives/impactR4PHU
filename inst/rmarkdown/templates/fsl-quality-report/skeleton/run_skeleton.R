@@ -2,7 +2,7 @@ setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 rm(list = ls())
 chooseCRANmirror(ind = 1)
 utils::install.packages("rmarkdown")
-utils::install.packages("htmltools", )
+utils::install.packages("htmltools")
 options(renv.consent = TRUE)
 strings <- c(
   out_date = stringr::str_sub(stringr::str_remove_all(Sys.Date(), '-'), 3)
