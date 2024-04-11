@@ -4,6 +4,7 @@ utils::install.packages("renv")
 options(renv.consent = TRUE)
 renv::restore(prompt = F)
 source("src/utils.R")
+library(tidyverse)
 strings <- c(
   out_date = stringr::str_sub(stringr::str_remove_all(Sys.Date(), '-'), 3)
 )
