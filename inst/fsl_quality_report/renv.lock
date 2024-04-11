@@ -4,11 +4,28 @@
     "Repositories": [
       {
         "Name": "CRAN",
-        "URL": "https://cloud.r-project.org"
+        "URL": "https://packagemanager.posit.co/cran/latest"
       }
     ]
   },
   "Packages": {
+    "DT": {
+      "Package": "DT",
+      "Version": "0.33",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "crosstalk",
+        "htmltools",
+        "htmlwidgets",
+        "httpuv",
+        "jquerylib",
+        "jsonlite",
+        "magrittr",
+        "promises"
+      ],
+      "Hash": "64ff3427f559ce3f2597a4fe13255cb6"
+    },
     "GGally": {
       "Package": "GGally",
       "Version": "2.2.1",
@@ -226,6 +243,18 @@
       ],
       "Hash": "c35768291560ce302c0a6589f92e837d"
     },
+    "cellranger": {
+      "Package": "cellranger",
+      "Version": "1.1.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "rematch",
+        "tibble"
+      ],
+      "Hash": "f61dbaec772ccd2e17705c1e872e9e7c"
+    },
     "cli": {
       "Package": "cli",
       "Version": "3.6.2",
@@ -289,6 +318,19 @@
         "utils"
       ],
       "Hash": "e8a1e41acf02548751f45c718d55aa6a"
+    },
+    "crosstalk": {
+      "Package": "crosstalk",
+      "Version": "1.2.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R6",
+        "htmltools",
+        "jsonlite",
+        "lazyeval"
+      ],
+      "Hash": "ab12c7b080a57475248a30f4db6298c0"
     },
     "crul": {
       "Package": "crul",
@@ -698,6 +740,21 @@
       ],
       "Hash": "81d371a9cc60640e74e4ab6ac46dcedc"
     },
+    "htmlwidgets": {
+      "Package": "htmlwidgets",
+      "Version": "1.6.4",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "grDevices",
+        "htmltools",
+        "jsonlite",
+        "knitr",
+        "rmarkdown",
+        "yaml"
+      ],
+      "Hash": "04291cc45198225444a397606810ac37"
+    },
     "httpcode": {
       "Package": "httpcode",
       "Version": "0.3.0",
@@ -719,6 +776,33 @@
         "utils"
       ],
       "Hash": "16abeb167dbf511f8cc0552efaf05bab"
+    },
+    "impactR4PHU": {
+      "Package": "impactR4PHU",
+      "Version": "0.1.0",
+      "Source": "GitHub",
+      "RemoteType": "github",
+      "RemoteHost": "api.github.com",
+      "RemoteRepo": "impactR4PHU",
+      "RemoteUsername": "impact-initiatives",
+      "RemoteRef": "HEAD",
+      "RemoteSha": "ef67e89ad432210770ec94ef7b4a3d32ef579357",
+      "Requirements": [
+        "GGally",
+        "R",
+        "dplyr",
+        "flextable",
+        "ggplot2",
+        "ggridges",
+        "magrittr",
+        "rlang",
+        "stats",
+        "stringr",
+        "tidyr",
+        "writexl",
+        "zscorer"
+      ],
+      "Hash": "4b344dacda00da3e409e46b2dcdec51c"
     },
     "isoband": {
       "Package": "isoband",
@@ -820,6 +904,16 @@
         "utils"
       ],
       "Hash": "7c5e89f04e72d6611c77451f6331a091"
+    },
+    "lazyeval": {
+      "Package": "lazyeval",
+      "Version": "0.2.2",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R"
+      ],
+      "Hash": "d908914ae53b04d4c0c0fd72ecc35370"
     },
     "lifecycle": {
       "Package": "lifecycle",
@@ -935,6 +1029,23 @@
         "askpass"
       ],
       "Hash": "2a0dc8c6adfb6f032e4d4af82d258ab5"
+    },
+    "openxlsx": {
+      "Package": "openxlsx",
+      "Version": "4.2.5.2",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "Rcpp",
+        "grDevices",
+        "methods",
+        "stats",
+        "stringi",
+        "utils",
+        "zip"
+      ],
+      "Hash": "c03b4c18d42da881fb8e15a085c2b9d6"
     },
     "patchwork": {
       "Package": "patchwork",
@@ -1091,6 +1202,28 @@
       ],
       "Hash": "9de96463d2117f6ac49980577939dfb3"
     },
+    "readxl": {
+      "Package": "readxl",
+      "Version": "1.4.3",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "cellranger",
+        "cpp11",
+        "progress",
+        "tibble",
+        "utils"
+      ],
+      "Hash": "8cf9c239b96df1bbb133b74aef77ad0a"
+    },
+    "rematch": {
+      "Package": "rematch",
+      "Version": "2.0.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "cbff1b666c6fa6d21202f07e2318d4f1"
+    },
     "renv": {
       "Package": "renv",
       "Version": "1.0.3",
@@ -1134,6 +1267,13 @@
         "yaml"
       ],
       "Hash": "9b148e7f95d33aac01f31282d49e4f44"
+    },
+    "rstudioapi": {
+      "Package": "rstudioapi",
+      "Version": "0.15.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "5564500e25cffad9e22244ced1379887"
     },
     "sass": {
       "Package": "sass",
@@ -1241,6 +1381,30 @@
         "vctrs"
       ],
       "Hash": "960e2ae9e09656611e0b8214ad543207"
+    },
+    "svDialogs": {
+      "Package": "svDialogs",
+      "Version": "1.1.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "methods",
+        "rstudioapi",
+        "svGUI",
+        "utils"
+      ],
+      "Hash": "07afbba06f2e31d5b23f48c8430ad674"
+    },
+    "svGUI": {
+      "Package": "svGUI",
+      "Version": "1.0.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R"
+      ],
+      "Hash": "9fbe58db2d45cb3ce6ff47b2e1217b40"
     },
     "sys": {
       "Package": "sys",
