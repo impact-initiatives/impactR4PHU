@@ -74,6 +74,7 @@ check_fsl_flags(
   value_idp = "idp",
   grouping = NULL,
   tool.survey = NULL,
+  language = "English",
   uuid = "uuid"
 )
 }
@@ -224,6 +225,8 @@ By default, "residency_status"}
 \item{grouping}{the name of the variable that indicates the grouping variable - usually "enumerator"}
 
 \item{tool.survey}{This is the tool.survey dataset. By default NULL}
+
+\item{language}{This is the language of the label:: in the tool. By default English}
 
 \item{uuid}{uuid variable}
 }

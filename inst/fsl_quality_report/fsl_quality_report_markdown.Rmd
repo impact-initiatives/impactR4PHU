@@ -20,8 +20,6 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE)
 options(scipen = 999)
-tcltk::tcl("option", "add", "*Listbox.font", "courier 10")
-# menu(df.padded.text,graphics=T)
 ```
 
 ```{r logo, echo=FALSE}
@@ -31,7 +29,6 @@ htmltools::img(src = knitr::image_uri("Logo_Reach_RGB_1.png"),
 ```
 
 ```{r, include=FALSE, eval=TRUE}
-source("tabular_analysis_utils.R")
 path.raw.main <- svDialogs::dlg_open(multiple = F, title = "Please select your data excel file.")$res
 path.tool <- svDialogs::dlg_open(multiple = F, title = "Please select your Kobo tool file.")$res
 main.sheets <- readxl::excel_sheets(path.raw.main)
@@ -39,6 +36,7 @@ path.sheet.with.fsl <- tcltk::tk_select.list(main.sheets, title = "FSL indicator
 raw.main <- readxl::read_excel(path.raw.main, path.sheet.with.fsl)
 tool.survey <- readxl::read_excel(path.tool, 1)
 tool.choices <- readxl::read_excel(path.tool, 2)
+language <- tcltk::tk_select.list(grepl("label"),names(tool.survey), title = "Label column to choose", multiple = F)
 FSL_indicators <- tcltk::tk_select.list(c("FCS","rCSI","HHS","LCSI","HDDS"), title = "FSL indicators", multiple = T)
 ```
 
@@ -311,11 +309,11 @@ if ("HHS" %in% FSL_indicators){
     svDialogs::dlg_message("Please check if the HHS columns selected are correct and available in the dataset")
     stop("Please check if the HHS columns selected are correct and available in the dataset")
   } else{
-    yes_answer <- tcltk::tk_select.list(pull(raw.main[,hhs_check_columns]) %>% unique, title = "Yes Value")
-    no_answer <- tcltk::tk_select.list(pull(raw.main[,hhs_check_columns]) %>% unique, title = "No Value")
-    rarely_answer <- tcltk::tk_select.list(pull(raw.main[,hhs_check_columns_freq]) %>% unique, title = "Rarely Value")
-    sometimes_answer <- tcltk::tk_select.list(pull(raw.main[,hhs_check_columns_freq]) %>% unique, title = "Sometimes Value")
-    often_answer <- tcltk::tk_select.list(pull(raw.main[,hhs_check_columns_freq]) %>% unique, title = "Often Value")
+    yes_answer <- tcltk::tk_select.list(dplyr::pull(raw.main[,hhs_check_columns]) %>% unique, title = "Yes Value")
+    no_answer <- tcltk::tk_select.list(dplyr::pull(raw.main[,hhs_check_columns]) %>% unique, title = "No Value")
+    rarely_answer <- tcltk::tk_select.list(dplyr::pull(raw.main[,hhs_check_columns_freq]) %>% unique, title = "Rarely Value")
+    sometimes_answer <- tcltk::tk_select.list(dplyr::pull(raw.main[,hhs_check_columns_freq]) %>% unique, title = "Sometimes Value")
+    often_answer <- tcltk::tk_select.list(dplyr::pull(raw.main[,hhs_check_columns_freq]) %>% unique, title = "Often Value")
     raw.main <- raw.main %>%
       impactR4PHU::add_hhs(fsl_hhs_nofoodhh = fsl_hhs_nofoodhh,
                            fsl_hhs_nofoodhh_freq = fsl_hhs_nofoodhh_freq,
@@ -447,10 +445,10 @@ if ("LCSI" %in% FSL_indicators){
     svDialogs::dlg_message("Please check if the LCSI columns selected are correct and available in the dataset")
     stop("Please check if the LCSI columns selected are correct and available in the dataset")
   } else{
-    yes_val <- tcltk::tk_select.list(pull(raw.main[,lcsi_check_columns]) %>% unique, title = "Yes Value")
-    no_val <- tcltk::tk_select.list(pull(raw.main[,lcsi_check_columns]) %>% unique, title = "No Value")
-    exhausted_val <- tcltk::tk_select.list(pull(raw.main[,lcsi_check_columns]) %>% unique, title = "Exhausted Value")
-    not_applicable_val <- tcltk::tk_select.list(pull(raw.main[,lcsi_check_columns]) %>% unique, title = "Not Applicable Value")
+    yes_val <- tcltk::tk_select.list(dplyr::pull(raw.main[,lcsi_check_columns]) %>% unique, title = "Yes Value")
+    no_val <- tcltk::tk_select.list(dplyr::pull(raw.main[,lcsi_check_columns]) %>% unique, title = "No Value")
+    exhausted_val <- tcltk::tk_select.list(dplyr::pull(raw.main[,lcsi_check_columns]) %>% unique, title = "Exhausted Value")
+    not_applicable_val <- tcltk::tk_select.list(dplyr::pull(raw.main[,lcsi_check_columns]) %>% unique, title = "Not Applicable Value")
     raw.main <- raw.main %>%
       impactR4PHU::add_lcsi(fsl_lcsi_stress1 = fsl_lcsi_stress1,
                             fsl_lcsi_stress2 = fsl_lcsi_stress2,
@@ -609,8 +607,8 @@ if ("HDDS" %in% FSL_indicators){
     svDialogs::dlg_message("Please check if the HDDS columns selected are correct and available in the dataset")
     stop("Please check if the HDDS columns selected are correct and available in the dataset")
   } else {
-    yes_val <- tcltk::tk_select.list(pull(raw.main[,hdds_check_columns]) %>% unique, title = "Yes Value")
-    no_val <- tcltk::tk_select.list(pull(raw.main[,hdds_check_columns]) %>% unique, title = "No Value")
+    yes_val <- tcltk::tk_select.list(dplyr::pull(raw.main[,hdds_check_columns]) %>% unique, title = "Yes Value")
+    no_val <- tcltk::tk_select.list(dplyr::pull(raw.main[,hdds_check_columns]) %>% unique, title = "No Value")
     raw.main <- raw.main %>%
       
       impactR4PHU::add_hdds(fsl_hdds_cereals = fsl_hdds_cereals,
@@ -745,14 +743,15 @@ raw.flag.fcs <- raw.main %>%
                                fsl_hdds_condiments = fsl_hdds_condiments,
                                num_children = num_children,
                                income_types = income_types,
-                               tool.survey = tool.survey)
+                               tool.survey = tool.survey,
+                               language = language)
 ```
 
 ```{r, include = FALSE}
 
 ## Read the Plausibility excel file
 overall_fsl_plaus <- openxlsx::read.xlsx("overall_plaus.xlsx",fillMergedCells = TRUE, sheet = "FSL") %>%
-  distinct()
+  dplyr::distinct()
 
 ## Detect Enumerator column
 enumerator_column <- names(raw.flag.fcs)[grepl("enum|team",names(raw.flag.fcs))]
@@ -798,7 +797,7 @@ result_fsl_enum <- impactR4PHU::create_fsl_plaus(raw.flag.fcs,
                                         fsl_rcsi_mealnb = "fsl_rcsi_mealnb",
                                         grouping = enumerator)
 result_pivot <- result %>%
-  mutate_all(., as.character) %>%
+  dplyr::mutate_all(., as.character) %>%
   tidyr::pivot_longer(cols = everything(),names_to = "Criteria",
                values_to = "Score") %>%
   filter(stringr::str_starts(Criteria,"plaus_"))
@@ -814,18 +813,18 @@ bind <- data.frame(`Indicator Score` = c("plaus_fcs","plaus_fcs","plaus_fcs","pl
                                          "plaus_other_fsl","plaus_other_fsl","plaus_other_fsl",
                                          "plaus_other_fsl","plaus_other_fsl","plaus_other_fsl",NA,NA))
 overall_fsl_plaus_overall <- overall_fsl_plaus%>%
-  left_join(result_pivot, by = c("flag_name"="Criteria")) %>%
-  mutate_all(., ~ifelse(is.na(.),"NA",.)) %>%
+  dplyr::left_join(result_pivot, by = c("flag_name"="Criteria")) %>%
+  dplyr::mutate_all(., ~ifelse(is.na(.),"NA",.)) %>%
   cbind(bind)%>%
-  left_join(result_pivot %>% filter(Criteria %in% c("plaus_other_fsl",
+  dplyr::left_join(result_pivot %>% filter(Criteria %in% c("plaus_other_fsl",
                                                     "plaus_lcsi",
                                                     "plaus_hhs",
                                                     "plaus_rcsi",
                                                     "plaus_fcs")) %>%
               rename(indscore = "Score"), by = c("Indicator.Score"="Criteria")) %>%
-  mutate(indscore = case_when(flag_name == "plaus_flag_severe_hhs"~paste0(indscore,"/10"),
+  dplyr::mutate(indscore = case_when(flag_name == "plaus_flag_severe_hhs"~paste0(indscore,"/10"),
                               TRUE ~paste0(indscore,"/20"))) %>%
-  select(-Indicator.Score)
+  dplyr::select(-Indicator.Score)
 fsl <- flextable::flextable(overall_fsl_plaus_overall)
 
 
@@ -845,7 +844,7 @@ final_table
 
 ```{r, results='asis'}
 result_fsl_pivot <- result_fsl_enum %>%
-  mutate_all(., as.character) %>%
+  dplyr::mutate_all(., as.character) %>%
   tidyr::pivot_longer(-group,names_to = "Criteria",
                values_to = "Score") %>%
   filter(stringr::str_starts(Criteria,"plaus_"))
@@ -855,21 +854,21 @@ for (i in list_enum) {
 
   cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",5), collapse=""), " ", "<strong>",i,"</strong>"))
   overall_fsl_plaus_enum <- overall_fsl_plaus %>%
-    left_join(result_fsl_pivot %>% filter(group == i), by = c("flag_name"="Criteria"))%>%
-    mutate_all(., ~ifelse(is.na(.),"NA",.)) %>%
+    dplyr::left_join(result_fsl_pivot %>% filter(group == i), by = c("flag_name"="Criteria"))%>%
+    dplyr::mutate_all(., ~ifelse(is.na(.),"NA",.)) %>%
     cbind(bind) %>%
-    select(-group) %>%
-    left_join(result_fsl_pivot %>%
+    dplyr::select(-group) %>%
+    dplyr::left_join(result_fsl_pivot %>%
                 filter(group == i) %>%
                 filter(Criteria %in% c("plaus_other_fsl",
                                        "plaus_lcsi",
                                        "plaus_hhs",
                                        "plaus_rcsi",
                                        "plaus_fcs")) %>%
-              rename(indscore = "Score"), by = c("Indicator.Score"="Criteria")) %>%
-    mutate(indscore = case_when(flag_name == "plaus_flag_severe_hhs"~paste0(indscore,"/10"),
+              dplyr::rename(indscore = "Score"), by = c("Indicator.Score"="Criteria")) %>%
+    dplyr::mutate(indscore = dplyr::case_when(flag_name == "plaus_flag_severe_hhs"~paste0(indscore,"/10"),
                               TRUE ~paste0(indscore,"/20"))) %>%
-    select(-c(Indicator.Score,group))
+    dplyr::select(-c(Indicator.Score,group))
 
   fsl_enum <- flextable::flextable(overall_fsl_plaus_enum)
 
@@ -888,14 +887,14 @@ overall_flag <- tibble()
 for(flag in flags_fsl_columns) {
 
   flag_overall <- raw.flag.fcs %>%
-    select(group, !!rlang::sym(flag)) %>%
+    dplyr::select(group, !!rlang::sym(flag)) %>%
     filter(!is.na(!!rlang::sym(flag))) %>%
-    mutate(flag := flag) %>%
-    group_by(flag) %>%
-    summarise(num_samples = n(),
+    dplyr::mutate(flag := flag) %>%
+    dplyr::group_by(flag) %>%
+    dplyr::summarise(num_samples = n(),
               flagged = sum(!!rlang::sym(flag))) %>%
-    mutate(percentage_flaggged = paste0(round((flagged/num_samples)*100,2),"%")) %>%
-    ungroup()
+    dplyr::mutate(percentage_flaggged = paste0(round((flagged/num_samples)*100,2),"%")) %>%
+    dplyr::ungroup()
   if(nrow(flag_overall)>0){
     overall_flag <- rbind(overall_flag,flag_overall)
   }
@@ -912,20 +911,20 @@ subch(DT::datatable(overall_flag,
 for(flag in flags_fsl_columns) {
   flag_rational <- flag_description %>%
     filter(flag_name %in% flag) %>%
-    pull(Rationale)
+    dplyr::pull(Rationale)
   flag_action <- flag_description %>%
     filter(flag_name %in% flag) %>%
-    pull(Action)
+    dplyr::pull(Action)
   flag_by_enum <- raw.flag.fcs %>%
-    select(group, !!rlang::sym(flag)) %>%
+    dplyr::select(group, !!rlang::sym(flag)) %>%
     filter(!is.na(!!rlang::sym(flag))) %>%
-    mutate(flag := flag) %>%
-    group_by(flag,group) %>%
-    summarise(num_samples = n(),
+    dplyr::mutate(flag := flag) %>%
+    dplyr::group_by(flag,group) %>%
+    dplyr::summarise(num_samples = n(),
               flagged = sum(!!rlang::sym(flag))) %>%
-    mutate(percentage_flagged = paste0(round((flagged/num_samples)*100,2),"%")) %>%
-    ungroup() %>%
-    select(-1)
+    dplyr::mutate(percentage_flagged = paste0(round((flagged/num_samples)*100,2),"%")) %>%
+    dplyr::ungroup() %>%
+    dplyr::select(-1)
   if(nrow(flag_by_enum)>0){
     add_to_html.title(flag)
     cat("\n")
