@@ -74,7 +74,7 @@ check_fsl_flags(
   value_idp = "idp",
   grouping = NULL,
   tool.survey = NULL,
-  language = "English",
+  label_colname = "label::English",
   uuid = "uuid"
 )
 }
@@ -226,7 +226,7 @@ By default, "residency_status"}
 
 \item{tool.survey}{This is the tool.survey dataset. By default NULL}
 
-\item{language}{This is the language of the label:: in the tool. By default English}
+\item{label_colname}{This is the label column in the tool survey. By default label::English}
 
 \item{uuid}{uuid variable}
 }

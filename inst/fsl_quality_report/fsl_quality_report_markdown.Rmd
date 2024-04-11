@@ -23,7 +23,7 @@ options(scipen = 999)
 ```
 
 ```{r logo, echo=FALSE}
-htmltools::img(src = knitr::image_uri("Logo_Reach_RGB_1.png"),
+htmltools::img(src = knitr::image_uri("resources/Logo_Reach_RGB_1.png"),
                alt = "REACH logo",
                style = 'position:absolute; top:0; right:0; padding:0; margin:20; width:250px')
 ```
@@ -34,9 +34,9 @@ path.tool <- svDialogs::dlg_open(multiple = F, title = "Please select your Kobo 
 main.sheets <- readxl::excel_sheets(path.raw.main)
 path.sheet.with.fsl <- tcltk::tk_select.list(main.sheets, title = "FSL indicators sheet", multiple = F)
 raw.main <- readxl::read_excel(path.raw.main, path.sheet.with.fsl)
-tool.survey <- readxl::read_excel(path.tool, 1)
-tool.choices <- readxl::read_excel(path.tool, 2)
-language <- tcltk::tk_select.list(grepl("label"),names(tool.survey), title = "Label column to choose", multiple = F)
+tool.survey <- readxl::read_excel(path.tool, "survey")
+tool.choices <- readxl::read_excel(path.tool, "choices")
+label_colname <- tcltk::tk_select.list(names(tool.survey)[grepl("label",names(tool.survey))], title = "Label column to choose", multiple = F)
 FSL_indicators <- tcltk::tk_select.list(c("FCS","rCSI","HHS","LCSI","HDDS"), title = "FSL indicators", multiple = T)
 ```
 
@@ -71,7 +71,7 @@ if ("FCS" %in% FSL_indicators){
   fsl_fcs_cereal <- svDialogs::dlg_input(message= "Enter the name of the fsl_fcs_cereal","fsl_fcs_cereal")$res
 }
 
-  fsl_fcs_legumes <- names(raw.main)[grepl("legume|pulse",names(raw.main))]
+  fsl_fcs_legumes <- names(raw.main)[grepl("legume|pulse|bean|nuts",names(raw.main))]
   if(length(fsl_fcs_legumes) == 1){
   yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_fcs_legumes, "' the correct fsl_fcs_legumes column?"), type = "yesno")$res
   fsl_fcs_legumes <- fsl_fcs_legumes
@@ -80,6 +80,7 @@ if ("FCS" %in% FSL_indicators){
 } else if (length(fsl_fcs_legumes) == 0 | yes_no == "no") {
   fsl_fcs_legumes <- svDialogs::dlg_input(message= "Enter the name of the fsl_fcs_legumes","fsl_fcs_legumes")$res
 }
+  
   fsl_fcs_veg <- names(raw.main)[grepl("veg",names(raw.main))]
   if(length(fsl_fcs_veg) == 1){
   yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_fcs_veg, "' the correct fsl_fcs_veg column?"), type = "yesno")$res
@@ -130,7 +131,7 @@ if ("FCS" %in% FSL_indicators){
   yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_fcs_oil, "' the correct fsl_fcs_oil column?"), type = "yesno")$res
   fsl_fcs_oil <- fsl_fcs_oil
 } else if (length(fsl_fcs_oil) > 1){
-  fsl_fcs_oil <- tcltk::tk_select.list(fsl_fcs_oil, title = "FCS Sugar column")
+  fsl_fcs_oil <- tcltk::tk_select.list(fsl_fcs_oil, title = "FCS Oil column")
 } else if (length(fsl_fcs_oil) == 0 | yes_no == "no") {
   fsl_fcs_oil <- svDialogs::dlg_input(message= "Enter the name of the fsl_fcs_oil","fsl_fcs_oil")$res
 }
@@ -189,7 +190,7 @@ if ("rCSI" %in% FSL_indicators){
 } else if (length(fsl_rcsi_borrow) == 0 | yes_no == "no") {
   fsl_rcsi_borrow <- svDialogs::dlg_input(message= "Enter the name of the fsl_rcsi_borrow","fsl_rcsi_borrow")$res
 }
-  fsl_rcsi_mealsize <- names(raw.main)[grepl("mealsize",names(raw.main))]
+  fsl_rcsi_mealsize <- names(raw.main)[grepl("mealsize|limit|portion",names(raw.main))]
   if(length(fsl_rcsi_mealsize) == 1){
   yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_rcsi_mealsize, "' the correct fsl_rcsi_mealsize column?"), type = "yesno")$res
   fsl_rcsi_mealsize <- fsl_rcsi_mealsize
@@ -198,7 +199,7 @@ if ("rCSI" %in% FSL_indicators){
 } else if (length(fsl_rcsi_mealsize) == 0 | yes_no == "no") {
   fsl_rcsi_mealsize <- svDialogs::dlg_input(message= "Enter the name of the fsl_rcsi_mealsize","fsl_rcsi_mealsize")$res
 }
-  fsl_rcsi_mealadult <- names(raw.main)[grepl("mealadult",names(raw.main))]
+  fsl_rcsi_mealadult <- names(raw.main)[grepl("mealadult|restrict",names(raw.main))]
   if(length(fsl_rcsi_mealadult) == 1){
   yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_rcsi_mealadult, "' the correct fsl_rcsi_mealadult column?"), type = "yesno")$res
   fsl_rcsi_mealadult <- fsl_rcsi_mealadult
@@ -207,7 +208,7 @@ if ("rCSI" %in% FSL_indicators){
 } else if (length(fsl_rcsi_mealadult) == 0 | yes_no == "no") {
   fsl_rcsi_mealadult <- svDialogs::dlg_input(message= "Enter the name of the fsl_rcsi_mealadult","fsl_rcsi_mealadult")$res
 }
-  fsl_rcsi_mealnb <- names(raw.main)[grepl("mealnb",names(raw.main))]
+  fsl_rcsi_mealnb <- names(raw.main)[grepl("mealnb|reduce|meals",names(raw.main))]
   if(length(fsl_rcsi_mealnb) == 1){
   yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_rcsi_mealnb, "' the correct fsl_rcsi_mealnb column?"), type = "yesno")$res
   fsl_rcsi_mealnb <- fsl_rcsi_mealnb
@@ -242,7 +243,7 @@ if ("rCSI" %in% FSL_indicators){
 }
 
 if ("HHS" %in% FSL_indicators){
-  fsl_hhs_nofoodhh <- names(raw.main)[grepl("nofoodhh",names(raw.main))]
+  fsl_hhs_nofoodhh <- names(raw.main)[grepl("nofood",names(raw.main))]
   if(length(fsl_hhs_nofoodhh) == 1){
   yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_hhs_nofoodhh, "' the correct fsl_hhs_nofoodhh column?"), type = "yesno")$res
   fsl_hhs_nofoodhh <- fsl_hhs_nofoodhh
@@ -251,7 +252,7 @@ if ("HHS" %in% FSL_indicators){
 } else if (length(fsl_hhs_nofoodhh) == 0 | yes_no == "no") {
   fsl_hhs_nofoodhh <- svDialogs::dlg_input(message= "Enter the name of the fsl_hhs_nofoodhh","fsl_hhs_nofoodhh")$res
 }
-  fsl_hhs_nofoodhh_freq <- names(raw.main)[grepl("nofoodhh_freq",names(raw.main))]
+  fsl_hhs_nofoodhh_freq <- names(raw.main)[grepl("nofood",names(raw.main))]
   if(length(fsl_hhs_nofoodhh_freq) == 1){
   yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_hhs_nofoodhh_freq, "' the correct fsl_hhs_nofoodhh_freq column?"), type = "yesno")$res
   fsl_hhs_nofoodhh_freq <- fsl_hhs_nofoodhh_freq
@@ -269,7 +270,7 @@ if ("HHS" %in% FSL_indicators){
 } else if (length(fsl_hhs_sleephungry) == 0 | yes_no == "no") {
   fsl_hhs_sleephungry <- svDialogs::dlg_input(message= "Enter the name of the fsl_hhs_sleephungry","fsl_hhs_sleephungry")$res
 }
-  fsl_hhs_sleephungry_freq <- names(raw.main)[grepl("sleephungry_freq",names(raw.main))]
+  fsl_hhs_sleephungry_freq <- names(raw.main)[grepl("sleephungry",names(raw.main))]
   if(length(fsl_hhs_sleephungry_freq) == 1){
   yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_hhs_sleephungry_freq, "' the correct fsl_hhs_sleephungry_freq column?"), type = "yesno")$res
   fsl_hhs_sleephungry_freq <- fsl_hhs_sleephungry_freq
@@ -278,7 +279,7 @@ if ("HHS" %in% FSL_indicators){
 } else if (length(fsl_hhs_sleephungry_freq) == 0 | yes_no == "no") {
   fsl_hhs_sleephungry_freq <- svDialogs::dlg_input(message= "Enter the name of the fsl_hhs_sleephungry_freq","fsl_hhs_sleephungry_freq")$res
 }
-  fsl_hhs_alldaynight <- names(raw.main)[grepl("alldaynight",names(raw.main))]
+  fsl_hhs_alldaynight <- names(raw.main)[grepl("alldaynight|daynoteating",names(raw.main))]
   if(length(fsl_hhs_alldaynight) == 1){
   yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_hhs_alldaynight, "' the correct fsl_hhs_alldaynight column?"), type = "yesno")$res
   fsl_hhs_alldaynight <- fsl_hhs_alldaynight
@@ -287,7 +288,7 @@ if ("HHS" %in% FSL_indicators){
 } else if (length(fsl_hhs_alldaynight) == 0 | yes_no == "no") {
   fsl_hhs_alldaynight <- svDialogs::dlg_input(message= "Enter the name of the fsl_hhs_alldaynight","fsl_hhs_alldaynight")$res
 }
-  fsl_hhs_alldaynight_freq <- names(raw.main)[grepl("alldaynight_freq",names(raw.main))]
+  fsl_hhs_alldaynight_freq <- names(raw.main)[grepl("alldaynight|daynoteating",names(raw.main))]
   if(length(fsl_hhs_alldaynight_freq) == 1){
   yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_hhs_alldaynight_freq, "' the correct fsl_hhs_alldaynight_freq column?"), type = "yesno")$res
   fsl_hhs_alldaynight_freq <- fsl_hhs_alldaynight_freq
@@ -744,13 +745,13 @@ raw.flag.fcs <- raw.main %>%
                                num_children = num_children,
                                income_types = income_types,
                                tool.survey = tool.survey,
-                               language = language)
+                               label_colname = label_colname)
 ```
 
 ```{r, include = FALSE}
 
 ## Read the Plausibility excel file
-overall_fsl_plaus <- openxlsx::read.xlsx("overall_plaus.xlsx",fillMergedCells = TRUE, sheet = "FSL") %>%
+overall_fsl_plaus <- openxlsx::read.xlsx("resources/overall_plaus.xlsx",fillMergedCells = TRUE, sheet = "FSL") %>%
   dplyr::distinct()
 
 ## Detect Enumerator column
@@ -881,7 +882,7 @@ for (i in list_enum) {
 
 
 ```{r, results='asis'}
-flag_description <- readxl::read_excel("flag_description.xlsx", sheet = "FSL")
+flag_description <- readxl::read_excel("resources/flag_description.xlsx", sheet = "FSL")
 flags_fsl_columns <- names(raw.flag.fcs)[stringr::str_starts(names(raw.flag.fcs),"flag_")]
 overall_flag <- tibble()
 for(flag in flags_fsl_columns) {

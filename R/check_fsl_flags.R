@@ -79,7 +79,7 @@
 #' @param value_idp the name of the choice value representing the idp residency status. By default, "idp"
 #' @param grouping the name of the variable that indicates the grouping variable - usually "enumerator"
 #' @param tool.survey This is the tool.survey dataset. By default NULL
-#' @param language This is the language of the label:: in the tool. By default English
+#' @param label_colname This is the label column in the tool survey. By default label::English
 #' @param uuid uuid variable
 #'
 #' @return a dataframe that includes all the logical flags related to food security and livelihoods.
@@ -246,7 +246,7 @@ check_fsl_flags <- function(.dataset,
                            value_idp = "idp",
                            grouping = NULL,
                            tool.survey = NULL,
-                           language = "English",
+                           label_colname = "label::English",
                            uuid = "uuid") {
 
   options(warn = -1)
@@ -391,20 +391,20 @@ check_fsl_flags <- function(.dataset,
     suppressWarnings(
       agric <- lcs_variables[which(grepl("agriculture|crop|crops|farm",get.label(lcs_variables,
                                                                                  tool.survey = tool.survey,
-                                                                                 language = language)))]
+                                                                                 label_colname = label_colname)))]
     )
 
     suppressWarnings(
       livest <- lcs_variables[which(grepl("livestock|livestocks|animal",get.label(lcs_variables,
                                                                                   tool.survey = tool.survey,
-                                                                                  language = language)))]
+                                                                                  label_colname = label_colname)))]
 
     )
 
     suppressWarnings(
       displ <- lcs_variables[which(grepl("displaced|migration|migrated",get.label(lcs_variables,
                                                                                   tool.survey = tool.survey,
-                                                                                  language = language)))]
+                                                                                  label_colname = label_colname)))]
     )
 
 
