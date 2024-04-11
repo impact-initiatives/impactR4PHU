@@ -4,12 +4,14 @@
 \alias{get.label}
 \title{Find the label of a variable}
 \usage{
-get.label(variable = NULL, tool.survey = NULL)
+get.label(variable = NULL, tool.survey = NULL, language = "English")
 }
 \arguments{
 \item{variable}{This is the name of the header from raw data. By default NULL}
 
 \item{tool.survey}{This is the tool.survey dataset. By default NULL}
+
+\item{language}{This is the language of the label:: in the tool. By default English}
 }
 \value{
 return label will be the one for the base question itself

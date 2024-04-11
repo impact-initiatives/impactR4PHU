@@ -2,6 +2,7 @@
 #'
 #' @param variable This is the name of the header from raw data. By default NULL
 #' @param tool.survey This is the tool.survey dataset. By default NULL
+#' @param language This is the language of the label:: in the tool. By default English
 #'
 #' @return return label will be the one for the base question itself
 #'    (e.g. if variable == "water_source", the result is the label of "What are
@@ -13,7 +14,7 @@
 #' }
 
 
-get.label <- function(variable = NULL, tool.survey = NULL){
+get.label <- function(variable = NULL, tool.survey = NULL, language = "English"){
 
   if(is.null(variable)) stop("Variable is missing from function")
 
@@ -27,7 +28,7 @@ get.label <- function(variable = NULL, tool.survey = NULL){
     stop("tool.survey is empty")
   }
 
-  label_colname <- load.label_colname(tool.survey)
+  label_colname <- load.label_colname(tool.survey, language = language)
   not_in_tool <- variable[!variable %in% tool.survey$name]
   if(length(not_in_tool) > 0){
     warning(paste("Variables not found in tool.survey:", paste0(not_in_tool, collapse = ", ")))

@@ -1,3 +1,5 @@
+^renv$
+^renv\.lock$
 ^impactR4PHU\.Rproj$
 ^\.Rproj\.user$
 ^\.github$
