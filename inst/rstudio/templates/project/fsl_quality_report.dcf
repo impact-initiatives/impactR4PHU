@@ -1,3 +1,3 @@
-Binding: create_fsl_quality_report
+Binding: create_fsl_quality_report_template
 Title: FSL Quality Report
 OpenFiles: run_fsl_quality_report.R
