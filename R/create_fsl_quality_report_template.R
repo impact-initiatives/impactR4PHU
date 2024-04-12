@@ -7,7 +7,7 @@
 #'
 #' @examples
 #' \dontrun{
-#' create_analysis_review_template("path/to/folder")
+#' create_fsl_quality_report_template("path/to/folder")
 #' }
 create_fsl_quality_report_template <- function(folder_path, ...) {
 
