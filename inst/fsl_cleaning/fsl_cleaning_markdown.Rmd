@@ -34,10 +34,23 @@ path.tool <- svDialogs::dlg_open(multiple = F, title = "Please select your Kobo 
 main.sheets <- readxl::excel_sheets(path.raw.main)
 path.sheet.with.fsl <- tcltk::tk_select.list(main.sheets, title = "FSL indicators sheet", multiple = F)
 raw.main <- readxl::read_excel(path.raw.main, path.sheet.with.fsl)
-tool.survey <- readxl::read_excel(path.tool, "survey")
-tool.choices <- readxl::read_excel(path.tool, "choices")
-label_colname <- tcltk::tk_select.list(names(tool.survey)[grepl("label",names(tool.survey))], title = "Label column to choose", multiple = F)
+label_colname <- tcltk::tk_select.list(names(readxl::read_excel(path.tool,"survey"))[grepl("label",names(readxl::read_excel(path.tool,"survey")))], title = "Label column to choose", multiple = F)
+tool.survey <- load.tool.survey(path.tool)
+tool.choices <- load.tool.choices(path.tool)
 FSL_indicators <- tcltk::tk_select.list(c("FCS","rCSI","HHS","LCSI","HDDS"), title = "FSL indicators", multiple = T)
+
+# ------------------------------------------------------------------------------
+## Detect Enumerator column
+enum_colname <- names(raw.main)[grepl("enum|team",names(raw.main))]
+
+if(length(enum_colname) == 1){
+  yes_no <- svDialogs::dlg_message(paste0("Is '", enum_colname, "' the correct enumerator column?"), type = "yesno")$res
+  enum_colname <- enum_colname
+} else if (length(enum_colname) > 1){
+  enum_colname <- tcltk::tk_select.list(enum_colname, title = "Enumerator Columns")
+} else if (length(enum_colname) == 0 | yes_no == "no") {
+  enum_colname <- svDialogs::dlg_input(message= "Enter the name of the Enumerator Column","enumerator")$res
+}
 ```
 
 # {.tabset .tabset-fade}
@@ -48,17 +61,20 @@ FSL_indicators <- tcltk::tk_select.list(c("FCS","rCSI","HHS","LCSI","HDDS"), tit
 
 ```{r, results='asis'}
   cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",3), collapse=""), " ", "What is this tool?"))
-  cat('\nThe FSL Data Quality and Plausibility Report serves as a crucial tool for assessing the reliability and accuracy of the data collection of FSL indicators across different assessments. This comprehensive analysis is designed to identify and address potential issues within the data, ensuring that field teams are being informed on potential issues detected in the data collection.\n\nThe report provides a detailed examination of the datasets, employing a variety of metrics and methodologies to evaluate data quality and plausibility. This includes checks for completeness, consistency, and accuracy of the data collected. This report aims to uncover any discrepancies, outliers, or anomalies that may suggest data collection, entry errors, or underlying issues that could impact the integrity of the findings.</p>')
+  cat('\nThe FSL Data Cleaning Template serves as a crucial tool for assessing the data collection of FSL indicators across different assessments. This comprehensive tool is designed to identify and address potential issues within the data, ensuring that field teams are being followed up on potential issues detected in the data collection.\n\nThe report provides a detailed examination of the datasets, employing a variety of metrics and methodologies to evaluate data quality. This report aims to uncover any discrepancies, outliers, or anomalies that may suggest data collection, entry errors, or underlying issues that could impact the integrity of the findings.</p>')
   cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",3), collapse=""), " ", "What is in this tool?")) 
   cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",4), collapse=""), " ", "FSL SECTION"))
-  cat('\nThis section includes:\n\n- Overall Plausibility Report / By Enumerator\n- All the flags related to Food Security and Livelihoods (details shown for each flag in the section)\n- Plots showing the distribution of the data.')
-
+  cat('\nThis section includes two sections:\n\n- A first section covering all potential logical checks that can be directly cleaned. It will also produce a file called cleaning_logbook.xlsx in the output/ folder to use as cleaning log.\n- A second section covering all the other logical checks that requires follow up with the field team.')
+  cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",4), collapse=""), " ", "Direct Checks"))
+  cat('\n-All FCS columns are 0. FCS Score is equal to 0. All values are changed to NA.\n-All FCS columns are 7. All values are changed to NA.\n-All LCSI columns are not_applicable. All values are changed to NA.\n-The LCSI strategy related to Displacement/Migration but HH is not a displaced group. Value of LCSI changed to NA.\n-The LCSI strategy related to Agriculture but HH do not have income type related to agriculture. Value of LCSI changed to NA.\n-The LCSI strategy related to Livestock but HH do not have income type related to livestock. Value of LCSI changed to NA.')
+  
+    cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",4), collapse=""), " ", "Follow-up Checks"))
+  cat('\n-Check 1: rCSI Score is high while protein consumption is also reported as frequent.\n-Check 2:HHs report using crisis or emergency strategies but not stress strategies or Emergency and no crisis.\n-Check 3:HH that would have an acceptable FCS score and a high rCSI score.')
+  
   cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",3), collapse=""), " ", "What to do next?"))
-  cat('\nPlease check each flag and the <strong>ACTION</strong> related to it and act accordingly.\n\nAnother output will be associated to this HTML, the Excel file of the flags that were fired and requires follow-up with the field team. Please check the README tab in the excel file. This file will again be generated with the full data during the cleaning of the dataset. So please do use this file during data collection and relate to it in the final one to be filled.')
+  cat('\nPlease check the files in the output/ folder. The cleaning_logbook.xlsx already can contain some of the directly cleaned data. The FSL_followup_request.xlsm file represent the checks that needs to be followed up with the field team. Please follow the instruction in the READ_ME tab to know how to fill the file.\n\nAfter filling the file, you can merge the [uuid/variable/old.value/new.value/issue] from the filled file with the cleaning_logbook.xlsx and add them to your cleaning scripts.')
   cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",3), collapse=""), " ", "Feedback"))
   cat('\nFeedback on improvements to this product can be done through reaching out to:\n\n-abraham.azar@impact-initiatives.org \n\n-impact.geneva.phu@impact-initiatives.org')
-  
-  
 
 ```
 
@@ -850,10 +866,16 @@ if("flag_lcsi_liv_livestock" %in% names(raw.flag.fcs)){
   cleaning.log.checks.direct <- bind_rows(cleaning.log.checks.direct, cl_lcsi_livest)
 }
 
+writexl::write_xlsx(cleaning.log.checks.direct, "output/cleaning_logbook.xlsx")
 ```
 
 ```{r}
-DT::datatable(cleaning.log.checks.direct)
+if(nrow(cleaning.log.checks.direct)>0){
+  cat("The below table shows the data that was directly cleaned.")
+  DT::datatable(cleaning.log.checks.direct)
+} else {
+  cat("No data were directly cleaned and logged.")
+}
 ```
 
 ```{r, include = FALSE}
@@ -865,7 +887,7 @@ if("flag_protein_rcsi" %in% names(raw.flag.fcs)){
   check_protein_rcsi <- raw.flag.fcs %>% 
     select(uuid,enum_colname, flag_protein_rcsi)%>% 
     filter(flag_protein_rcsi == 1) %>% 
-    left_join(raw.flag %>% select(uuid, fsl_rcsi_score, fsl_fcs_meat, fsl_fcs_dairy))
+    left_join(raw.flag.fcs %>% select(uuid, fsl_rcsi_score, fsl_fcs_meat, fsl_fcs_dairy))
   
   if(nrow(check_protein_rcsi)>0){
     checks_followups <- rbind(checks_followups,
@@ -879,7 +901,7 @@ if("flag_lcsi_coherence" %in% names(raw.flag.fcs)){
   check_lcsi_coherence <- raw.flag.fcs %>% 
     select(uuid,enum_colname, flag_lcsi_coherence)%>% 
     filter(flag_lcsi_coherence == 1)%>% 
-    left_join(raw.flag %>% select(uuid, 
+    left_join(raw.flag.fcs %>% select(uuid, 
                                   fsl_lcsi_emergency, fsl_lcsi_stress, fsl_lcsi_crisis,
                                   fsl_lcsi_stress1,fsl_lcsi_stress2,fsl_lcsi_stress3,fsl_lcsi_stress4,
                                   fsl_lcsi_crisis1,fsl_lcsi_crisis2,fsl_lcsi_crisis3,
@@ -905,7 +927,7 @@ if("flag_fcsrcsi_box" %in% names(raw.flag.fcs)) {
   check_fcsrcsi_box <- raw.flag.fcs %>% 
     select(uuid,enum_colname, flag_fcsrcsi_box)%>% 
     filter(flag_fcsrcsi_box == 1)%>% 
-    left_join(raw.flag %>% select(uuid, fcs_flag_columns, rcsi_flag_columns))
+    left_join(raw.flag.fcs %>% select(uuid, fcs_flag_columns, rcsi_flag_columns))
   
   if(nrow(check_fcsrcsi_box)>0){
     checks_followups <- rbind(checks_followups,
@@ -922,5 +944,10 @@ cat("###########################################################################
 ```
 
 ```{r}
-DT::datatable(checks_followups)
+if(nrow(checks_followups)>0){
+  cat("The below table shows the data that needs follow up with the field.")
+  DT::datatable(checks_followups)
+} else {
+  cat("No Logical checks were detected in the dataset.")
+}
 ```
