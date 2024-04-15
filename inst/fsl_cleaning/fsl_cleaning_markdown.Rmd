@@ -789,7 +789,6 @@ if("fsl_fcs_score" %in% names(raw.flag.fcs)) {
 }
 
 ### FCS score is 7. 
-
 fcs_columns <- names(raw.flag.fcs)[which(stringr::str_detect(names(raw.flag.fcs),"fsl_fcs_"))]
 if("fsl_fcs_score" %in% names(raw.flag.fcs)) {
   check <- raw.flag.fcs %>% 
@@ -869,6 +868,13 @@ if("flag_lcsi_liv_livestock" %in% names(raw.flag.fcs)){
 writexl::write_xlsx(cleaning.log.checks.direct, "output/cleaning_logbook.xlsx")
 ```
 
+<h5>Number of detected entries with all FCS component are 0:<strong> `r nrow(cl_fcs_all_0)`</strong></h5>
+<h5>Number of detected entries with all FCS component are 7:<strong> `r nrow(cl_fcs_all_7)`</strong></h5>
+<h5>Number of detected entries with all LCSI are Not Applicable:<strong> `r nrow(cl_lcsi_all_na)`</strong></h5>
+<h5>Number of detected entries with LCSI strategy related to displacement but HH not IDPs:<strong> `r nrow(cl_lcsi_displ)`</strong></h5>
+<h5>Number of detected entries with LCSI strategy related to agriculture but HH do not have income from agriculture:<strong> `r nrow(cl_lcsi_agric)`</strong></h5>
+<h5>Number of detected entries with LCSI strategy related to livestock but HH do not have income from livestock::<strong> `r nrow(cl_lcsi_livest)`</strong></h5>
+
 ```{r}
 if(nrow(cleaning.log.checks.direct)>0){
   cat("The below table shows the data that was directly cleaned.")
@@ -943,6 +949,10 @@ cat("Direct logical checks are flagged and a file is created for follow up in \n
 cat("#############################################################################################\n")
 ```
 
+<h5>Number of detected entries with rCSI Score is high while protein consumption is also reported as frequent:<strong> `r nrow(checks_followups %>% filter(check == 1))`</strong></h5>
+<h5>Number of detected entries with HHs report using crisis or emergency strategies but not stress strategies or Emergency and no crisis:<strong> `r nrow(checks_followups %>% filter(check == 2))`</strong></h5>
+<h5>Number of detected entries with HH that would have an acceptable FCS score and a high rCSI score:<strong> `r nrow(checks_followups %>% filter(check == 3))`</strong></h5>
+
 ```{r}
 if(nrow(checks_followups)>0){
   cat("The below table shows the data that needs follow up with the field.")
@@ -951,3 +961,5 @@ if(nrow(checks_followups)>0){
   cat("No Logical checks were detected in the dataset.")
 }
 ```
+
+
