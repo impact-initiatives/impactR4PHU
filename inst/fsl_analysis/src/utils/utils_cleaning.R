@@ -95,16 +95,16 @@ save.other.requests <- function(df, wb_name, use_template = F){
 }
 
 save.deletion.requests <- function(df, wb_name, use_template = F){
-
+  
   if(use_template) wb <- openxlsx::loadWorkbook("resources/deletion_requests_template.xlsm")
   else wb <- openxlsx::createWorkbook()
   openxlsx::addWorksheet(wb, "Sheet2", zoom = 90)
   openxlsx::writeData(wb = wb, x = df, sheet = "Sheet2", startRow = 1,
             headerStyle = openxlsx::createStyle(textDecoration="bold", border = "Bottom", fontName = "Arial"))
-
+  
   openxlsx::setColWidths(wb, "Sheet2", cols = 1, widths = 5)
   openxlsx::setColWidths(wb, "Sheet2", cols = 2:ncol(df), widths = "auto")
-
+  
   openxlsx::addStyle(wb, "Sheet2", style = style.col.green, rows = 1:(nrow(df)+1), cols = ncol(df)-2, stack = T)
   openxlsx::addStyle(wb, "Sheet2", style = style.col.green, rows = 1:(nrow(df)+1), cols = ncol(df)-1, stack = T)
   openxlsx::addStyle(wb, "Sheet2", style.col.green.bold, rows = 1, cols = ncol(df)-2, stack = T)
@@ -113,72 +113,72 @@ save.deletion.requests <- function(df, wb_name, use_template = F){
   openxlsx::addWorksheet(wb, "Sheet3", visible = F)
   openxlsx::writeData(wb, "Sheet3", x = c("Remove","Keep","Change"))
   ## add roster loop_indexes
-  dl_uuids_roster <- df %>%
-    filter(variable == "num_hh" & stringr::str_starts(reason, "hh_roster")) %>%
+  dl_uuids_roster <- df %>% 
+    filter(variable == "num_hh" & stringr::str_starts(reason, "hh_roster")) %>% 
     pull(uuid)
-
-  uuid_roster_loops <- raw.hh_roster %>%
-    filter(uuid %in% dl_uuids_roster) %>%
+  
+  uuid_roster_loops <- raw.hh_roster %>% 
+    filter(uuid %in% dl_uuids_roster) %>% 
     dplyr::select(uuid, loop_index)
-
+  
   openxlsx::addWorksheet(wb, "Sheet4", visible = F)
   openxlsx::writeData(wb, "Sheet4",x = uuid_roster_loops)
   ## add health loop_indexes
-  dl_uuids_health <- df %>%
-    filter(variable == "num_hh" & stringr::str_starts(reason, "ind_health")) %>%
+  dl_uuids_health <- df %>% 
+    filter(variable == "num_hh" & stringr::str_starts(reason, "ind_health")) %>% 
     pull(uuid)
-  uuid_health_loops <- raw.ind_health %>%
-    filter(uuid %in% dl_uuids_health) %>%
+  uuid_health_loops <- raw.ind_health %>% 
+    filter(uuid %in% dl_uuids_health) %>% 
     dplyr::select(uuid, loop_index)
   openxlsx::addWorksheet(wb, "Sheet5", visible = F)
   openxlsx::writeData(wb, "Sheet5",x = uuid_health_loops)
-
+  
   if(!is.null(raw.water_count_loop)){
     ## add water loop_indexes
-    dl_uuids_water <- df %>%
-      filter(variable == "num_containers") %>%
+    dl_uuids_water <- df %>% 
+      filter(variable == "num_containers") %>% 
       pull(uuid)
-    uuid_water_loops <- raw.water_count_loop %>%
-      filter(uuid %in% dl_uuids_water) %>%
+    uuid_water_loops <- raw.water_count_loop %>% 
+      filter(uuid %in% dl_uuids_water) %>% 
       dplyr::select(uuid, loop_index)
     openxlsx::addWorksheet(wb, "Sheet6", visible = F)
     openxlsx::writeData(wb, "Sheet6",x = uuid_water_loops)
   }
-
+  
   ## add child loop_indexes
-  dl_uuids_child <- df %>%
-    filter(variable == "num_hh" & stringr::str_starts(reason, "child")) %>%
+  dl_uuids_child <- df %>% 
+    filter(variable == "num_hh" & stringr::str_starts(reason, "child")) %>% 
     pull(uuid)
-  uuid_child_loops <- raw.child_nutrition %>%
-    filter(uuid %in% dl_uuids_child) %>%
+  uuid_child_loops <- raw.child_nutrition %>% 
+    filter(uuid %in% dl_uuids_child) %>% 
     dplyr::select(uuid, loop_index)
   openxlsx::addWorksheet(wb, "Sheet7", visible = F)
   openxlsx::writeData(wb, "Sheet7",x = uuid_child_loops)
-
+  
   if(!is.null(raw.women)){
     ## add water loop_indexes
-    dl_uuids_women <- df %>%
-      filter(variable == "num_hh" & stringr::str_starts(reason, "women")) %>%
+    dl_uuids_women <- df %>% 
+      filter(variable == "num_hh" & stringr::str_starts(reason, "women")) %>% 
       pull(uuid)
-    uuid_women_loops <- raw.women %>%
-      filter(uuid %in% dl_uuids_women) %>%
+    uuid_women_loops <- raw.women %>% 
+      filter(uuid %in% dl_uuids_women) %>% 
       dplyr::select(uuid, loop_index)
     openxlsx::addWorksheet(wb, "Sheet8", visible = F)
     openxlsx::writeData(wb, "Sheet8",x = uuid_women_loops)
   }
-
+  
   if(!is.null(raw.died_member)){
     ## add died loop_indexes
-    dl_uuids_died <- df %>%
-      filter(variable == "num_died") %>%
+    dl_uuids_died <- df %>% 
+      filter(variable == "num_died") %>% 
       pull(uuid)
-    uuid_died_loops <- raw.died_member %>%
-      filter(uuid %in% dl_uuids_died) %>%
+    uuid_died_loops <- raw.died_member %>% 
+      filter(uuid %in% dl_uuids_died) %>% 
       dplyr::select(uuid, loop_index)
     openxlsx::addWorksheet(wb, "Sheet9", visible = F)
     openxlsx::writeData(wb, "Sheet9",x = uuid_died_loops)
   }
-
+  
   for (i in 1:nrow(df)){
     if(!is.na(df$variable[i]) & df$variable[i]  == "num_died"){
       uuid <- df$uuid[i]
@@ -223,7 +223,7 @@ save.deletion.requests <- function(df, wb_name, use_template = F){
       openxlsx::dataValidation(wb, "Sheet2", cols = ncol(df)-1, rows = 1 + i, type = "list", value = validate)
     }
   }
-
+  
   ##Adding data validation
   for (i in 1:nrow(df)){
     validate <- paste0("'Sheet3'!$A1:$A3")
@@ -231,7 +231,7 @@ save.deletion.requests <- function(df, wb_name, use_template = F){
   }
   filename <- paste0(dir.requests, wb_name, ".xlsm")
   openxlsx::saveWorkbook(wb, filename, overwrite=TRUE)
-
+  
 }
 
 
@@ -239,14 +239,14 @@ save.trans.requests <- function(df, wb_name, blue_cols = NULL, use_template = F)
 
     if(use_template) wb <- openxlsx::loadWorkbook("resources/trans_requests_template.xlsx")
     else wb <- openxlsx::createWorkbook()
-
+    
     # remove the useless "EXISTING" column, and the word 'other':
     if(length(df %>% select(starts_with("EXISTING")) %>% names) > 0){
       df <- df %>% select(-starts_with("EXISTING"))
       colnames(df) <- gsub("other ", "", colnames(df))
     }
     df <- df %>% select(-starts_with("ref")) %>% select(-starts_with("choices"))
-
+    
     openxlsx::addWorksheet(wb, "Sheet2")
     openxlsx::writeData(wb = wb, x = df, sheet = "Sheet2", startRow = 1)
 
@@ -284,7 +284,7 @@ save.trans.requests <- function(df, wb_name, blue_cols = NULL, use_template = F)
 save.outlier.responses <- function(df,wb_name, use_template = F){
   if(use_template) wb <- openxlsx::loadWorkbook("resources/outliers_requests_template.xlsx")
   else wb <- openxlsx::createWorkbook()
-
+  
   style.col.green <- openxlsx::createStyle(fgFill="#E5FFCC", border="TopBottomLeftRight", borderColour="#000000",
                                  valign="top", wrapText=T)
   style.col.green.first <- openxlsx::createStyle(textDecoration="bold", fgFill="#E5FFCC", valign="top",
@@ -404,7 +404,7 @@ create.follow.up.requests <- function(checks.df,loop_data = NULL, wb_name, use_t
     # save follow-up requests
     if(use_template) wb <- openxlsx::loadWorkbook("resources/logical_requests_template.xlsm")
     else wb <- openxlsx::createWorkbook()
-
+    
     openxlsx::addWorksheet(wb, "Follow-up", zoom = 90)
     openxlsx::writeData(wb = wb, x = cl, sheet = "Follow-up", startRow = 1)
 
@@ -441,20 +441,20 @@ create.follow.up.requests <- function(checks.df,loop_data = NULL, wb_name, use_t
         } else random.color=""
       }
     }
-    new_tool <- tool.choices %>%
-      group_by(list_name) %>%
-      summarise(name = list(c(name, NA)), .groups = 'keep') %>%
-      tidyr::unnest(name) %>%
+    new_tool <- tool.choices %>% 
+      group_by(list_name) %>% 
+      summarise(name = list(c(name, NA)), .groups = 'keep') %>% 
+      tidyr::unnest(name) %>% 
       ungroup()
     openxlsx::addWorksheet(wb, "Sheet3", visible = F)
     openxlsx::writeData(wb, "Sheet3",x = new_tool)
-
+    
     if(!is.null(loop_data)){
-      cl_uuids <- cl %>%
-        filter(variable == "num_died") %>%
+      cl_uuids <- cl %>% 
+        filter(variable == "num_died") %>% 
         pull(uuid)
-      uuid_died_loops <- loop_data %>%
-        filter(uuid %in% cl_uuids) %>%
+      uuid_died_loops <- loop_data %>% 
+        filter(uuid %in% cl_uuids) %>% 
         dplyr::select(uuid, loop_index)
       openxlsx::addWorksheet(wb, "Sheet4", visible = F)
       openxlsx::writeData(wb, "Sheet4",x = uuid_died_loops)
@@ -468,7 +468,7 @@ create.follow.up.requests <- function(checks.df,loop_data = NULL, wb_name, use_t
         }
       }
     }
-
+    
     ##Adding data validation
     for (i in 1:nrow(cl)){
       if(stringr::str_detect(cl$variable[i],"/")) next
@@ -481,7 +481,7 @@ create.follow.up.requests <- function(checks.df,loop_data = NULL, wb_name, use_t
         openxlsx::dataValidation(wb, "Follow-up", cols = ncol(cl)-3, rows = 1 + i, type = "list", value = validate)
       }
     }
-    filename <- paste0("output/", wb_name)
+    filename <- paste0("output/checking/requests/", wb_name)
     openxlsx::saveWorkbook(wb, filename, overwrite = TRUE)
 }
 
@@ -505,10 +505,10 @@ create.follow.up.requests.data.quality <- function(checks.df,loop_data = NULL, w
   # save follow-up requests
   if(use_template) wb <- openxlsx::loadWorkbook("./../resources/daily_requests.xlsx")
   else wb <- openxlsx::createWorkbook()
-
+  
   openxlsx::addWorksheet(wb, "Follow-up", zoom = 90)
   openxlsx::writeData(wb = wb, x = cl, sheet = "Follow-up", startRow = 1)
-
+  
   openxlsx::addStyle(wb, "Follow-up", style = style.col.green, rows = 1:(nrow(cl)+1), cols=which(colnames(cl)=="explanation"))
   openxlsx::addStyle(wb, "Follow-up", style = style.col.green, rows = 1:(nrow(cl)+1), cols=which(colnames(cl)=="loops_to_remove"))
   openxlsx::addStyle(wb, "Follow-up", style = style.col.green, rows = 1:(nrow(cl)+1), cols=which(colnames(cl)=="invalid"))
@@ -517,16 +517,16 @@ create.follow.up.requests.data.quality <- function(checks.df,loop_data = NULL, w
   openxlsx::addStyle(wb, "Follow-up", style = style.col.green.first, rows = 1, cols=which(colnames(cl)=="loops_to_remove"))
   openxlsx::addStyle(wb, "Follow-up", style = style.col.green.first, rows = 1, cols=which(colnames(cl)=="new.value"))
   openxlsx::addStyle(wb, "Follow-up", style = style.col.green.first, rows = 1, cols=which(colnames(cl)=="invalid"))
-
-
+  
+  
   openxlsx::setColWidths(wb, "Follow-up", cols=1:ncol(cl), widths="auto")
   # openxlsx::setColWidths(wb, "Follow-up", cols=ncol(cl)-1, widths=50)
-
+  
   openxlsx::setColWidths(wb, "Follow-up", cols=which(colnames(cl)=="issue"), widths=50)
   openxlsx::addStyle(wb, "Follow-up", style = openxlsx::createStyle(wrapText=T), rows = 1:(nrow(cl)+1), cols=which(colnames(cl)=="issue"))
-
+  
   openxlsx::addStyle(wb, "Follow-up", style = col.style, rows = 1, cols=1:ncol(cl))
-
+  
   col.id <- which(colnames(cl)=="old.value")
   if(nrow(cl) > 0){
     random.color <- ""
@@ -542,20 +542,20 @@ create.follow.up.requests.data.quality <- function(checks.df,loop_data = NULL, w
       } else random.color=""
     }
   }
-  new_tool <- tool.choices %>%
-    dplyr::group_by(list_name) %>%
-    dplyr::summarise(name = list(c(name, NA)), .groups = 'keep') %>%
-    tidyr::unnest(name) %>%
+  new_tool <- tool.choices %>% 
+    dplyr::group_by(list_name) %>% 
+    dplyr::summarise(name = list(c(name, NA)), .groups = 'keep') %>% 
+    tidyr::unnest(name) %>% 
     dplyr::ungroup()
   openxlsx::addWorksheet(wb, "Sheet3", visible = F)
   openxlsx::writeData(wb, "Sheet3",x = new_tool)
-
+  
   if(!is.null(loop_data)){
-    cl_uuids <- cl %>%
-      filter(variable == "num_died") %>%
+    cl_uuids <- cl %>% 
+      filter(variable == "num_died") %>% 
       pull(uuid)
-    uuid_died_loops <- loop_data %>%
-      filter(uuid %in% cl_uuids) %>%
+    uuid_died_loops <- loop_data %>% 
+      filter(uuid %in% cl_uuids) %>% 
       dplyr::select(uuid, loop_index)
     openxlsx::addWorksheet(wb, "Sheet4", visible = F)
     openxlsx::writeData(wb, "Sheet4",x = uuid_died_loops)
@@ -569,7 +569,7 @@ create.follow.up.requests.data.quality <- function(checks.df,loop_data = NULL, w
       }
     }
   }
-
+  
   ##Adding data validation
   for (i in 1:nrow(cl)){
     type <- get.type(cl$variable[i])
@@ -604,10 +604,10 @@ create.follow.up.requests.daily <- function(checks.df,loop_data = NULL, wb_name,
   # save follow-up requests
   if(use_template) wb <- openxlsx::loadWorkbook("resources/logical_requests_template.xlsm")
   else wb <- openxlsx::createWorkbook()
-
+  
   openxlsx::addWorksheet(wb, "Follow-up", zoom = 90)
   openxlsx::writeData(wb = wb, x = cl, sheet = "Follow-up", startRow = 1)
-
+  
   openxlsx::addStyle(wb, "Follow-up", style = style.col.green, rows = 1:(nrow(cl)+1), cols=which(colnames(cl)=="explanation"))
   openxlsx::addStyle(wb, "Follow-up", style = style.col.green, rows = 1:(nrow(cl)+1), cols=which(colnames(cl)=="loops_to_remove"))
   openxlsx::addStyle(wb, "Follow-up", style = style.col.green, rows = 1:(nrow(cl)+1), cols=which(colnames(cl)=="invalid"))
@@ -616,16 +616,16 @@ create.follow.up.requests.daily <- function(checks.df,loop_data = NULL, wb_name,
   openxlsx::addStyle(wb, "Follow-up", style = style.col.green.first, rows = 1, cols=which(colnames(cl)=="loops_to_remove"))
   openxlsx::addStyle(wb, "Follow-up", style = style.col.green.first, rows = 1, cols=which(colnames(cl)=="new.value"))
   openxlsx::addStyle(wb, "Follow-up", style = style.col.green.first, rows = 1, cols=which(colnames(cl)=="invalid"))
-
-
+  
+  
   openxlsx::setColWidths(wb, "Follow-up", cols=1:ncol(cl), widths="auto")
   # openxlsx::setColWidths(wb, "Follow-up", cols=ncol(cl)-1, widths=50)
-
+  
   openxlsx::setColWidths(wb, "Follow-up", cols=which(colnames(cl)=="issue"), widths=50)
   openxlsx::addStyle(wb, "Follow-up", style = openxlsx::createStyle(wrapText=T), rows = 1:(nrow(cl)+1), cols=which(colnames(cl)=="issue"))
-
+  
   openxlsx::addStyle(wb, "Follow-up", style = col.style, rows = 1, cols=1:ncol(cl))
-
+  
   col.id <- which(colnames(cl)=="old.value")
   if(nrow(cl) > 0){
     random.color <- ""
@@ -641,20 +641,20 @@ create.follow.up.requests.daily <- function(checks.df,loop_data = NULL, wb_name,
       } else random.color=""
     }
   }
-  new_tool <- tool.choices %>%
-    dplyr::group_by(list_name) %>%
-    dplyr::summarise(name = list(c(name, NA)), .groups = 'keep') %>%
-    tidyr::unnest(name) %>%
+  new_tool <- tool.choices %>% 
+    dplyr::group_by(list_name) %>% 
+    dplyr::summarise(name = list(c(name, NA)), .groups = 'keep') %>% 
+    tidyr::unnest(name) %>% 
     dplyr::ungroup()
   openxlsx::addWorksheet(wb, "Sheet3", visible = F)
   openxlsx::writeData(wb, "Sheet3",x = new_tool)
-
+  
   if(!is.null(loop_data)){
-    cl_uuids <- cl %>%
-      filter(variable == "num_died") %>%
+    cl_uuids <- cl %>% 
+      filter(variable == "num_died") %>% 
       pull(uuid)
-    uuid_died_loops <- loop_data %>%
-      filter(uuid %in% cl_uuids) %>%
+    uuid_died_loops <- loop_data %>% 
+      filter(uuid %in% cl_uuids) %>% 
       dplyr::select(uuid, loop_index)
     openxlsx::addWorksheet(wb, "Sheet4", visible = F)
     openxlsx::writeData(wb, "Sheet4",x = uuid_died_loops)
@@ -668,7 +668,7 @@ create.follow.up.requests.daily <- function(checks.df,loop_data = NULL, wb_name,
       }
     }
   }
-
+  
   ##Adding data validation
   for (i in 1:nrow(cl)){
     type <- get.type(cl$variable[i])
@@ -701,7 +701,7 @@ load.requests <- function(dir, filename.pattern, sheet=NULL, validate=FALSE){
   #'
   #' @param sheet Optional parameter passed to `readxl::read_xlsx`, defaults to NULL (first sheet of an Excel workbook)
   #' @param validate Should the file be validated (make sure that only one of TEI columns is filled.)
-  #'
+  #' 
   file.type = stringr::str_squish(stringr::str_replace_all(filename.pattern, "[^a-zA-Z]+"," "))
   filenames <- list.files(dir, recursive=FALSE, full.names=TRUE, ignore.case = TRUE,
                           pattern=paste0(dataset.name.short,"_",filename.pattern))
@@ -832,9 +832,9 @@ recode.set.NA.if <- function(data, variables, code, issue, ignore_case = T){
     #'  variables = c("question1", "question2"),
     #'   code = "999", issue = "explanation")`
     #'
-
+    
   # TODO filter variables to only include those in data (and produce warnings)
-
+  
     clog <- tibble()
     for(variable in variables){
         if(ignore_case) data1 <- data %>% filter(stringr::str_to_lower(!!sym(variable)) %in% stringr::str_to_lower(code))
@@ -927,12 +927,12 @@ recode.multiple.set.NA <- function(data, variable, issue){
                 cl_choices <- rbind(cl_choices, cl)
                 # remove text from text other response
                 if(stringr::str_ends(col, "/other")){
-                    cl_other_text <- df %>% filter(!is.na(!!sym(paste0(variable, "_other")))) %>%
+                    cl_other_text <- df %>% filter(!is.na(!!sym(paste0(variable, "_other")))) %>% 
                       mutate(variable = paste0(variable, "_other"), old.value = !!sym(paste0(variable, "_other")),
                       new.value = NA, issue = issue) %>%
                       select(any_of(CL_COLS))
-
-                    cl_choices <- rbind(cl_choices, cl_other_text)
+                    
+                    cl_choices <- rbind(cl_choices, cl_other_text) 
                 }
             }
         }
@@ -1028,7 +1028,7 @@ recode.multiple.add.choices <- function(data, variable, choices, issue){
 
 recode.multiple.add.choice <- function(data, variable, choice, issue){
   #' [obsolete] use `recode.multiple.add.choices` instead
-
+  
   choice_column <- paste0(variable,"/",choice)
   if(!choice_column %in% colnames(data)) stop(paste("Column",choice_column,"not present in data!"))
   # filter out cases that already have choice selected
@@ -1331,14 +1331,14 @@ create.deletion.log <- function(data, col_enum, reason){
   #' @param col_enum Name of the column which contains the enumerator's id.
   #' @param reason This is a string describing the reason for removing a survey from data.
   #' @returns A dataframe containing a deletion log with columns `uuid`, `col_enum`, `reason`, OR an empty dataframe if `data` has 0 rows.
-
+  
   if(nrow(data) > 0){
     # if it's a loop, then include the loop_index in the deletion log
     if("loop_index" %in% colnames(data))
       data <- data %>% select(uuid, loop_index, any_of(col_enum))
     else
       data <- data %>% select(uuid, any_of(col_enum))
-
+    
     return(data %>% mutate(reason=reason))
   }else return(data.frame())
 }
@@ -1391,7 +1391,7 @@ find.responses <- function(data, questions.db, values_to="response.uk", is.loop 
     } else {
     responses.j <- responses %>%
         left_join(questions.db, by=c("question.name"="name")) %>% dplyr::rename(name="question.name") %>%
-        left_join(select(data, uuid), by="uuid")
+        left_join(select(data, uuid), by="uuid") 
     # relevant_colnames <- relevant_colnames[!relevant_colnames %in% c("loop_index")]
     }
   return(responses.j)
@@ -1411,7 +1411,7 @@ translate.responses <- function(responses, values_from = "response.uk", language
   #' @param values_from Name of the column from `responses` which shall be translated.
   #' @param language_codes Character vector of two-letter language codes. The input vector will be translated from both of these languages.
   #' @param target_lang Input vector will be translated into this language.
-  #' @param threshold Input threshold to interrupt the user if the number of characters is exceeding 200,000 by default.
+  #' @param threshold Input threshold to interrupt the user if the number of characters is exceeding 200,000 by default. 
   #' @returns The same dataframe as `responses`, but with a new column, containing the translation.
   #' The column will be named according to the given source and target languages. By default, the output will be stored in column named 'response.en.from.uk'
   info_df <- data.frame()
@@ -1424,7 +1424,7 @@ translate.responses <- function(responses, values_from = "response.uk", language
 
   # extract unique responses from the source dataframe
   responses <- responses %>% mutate(resp_lower = stringr::str_to_lower(!!sym(values_from)))
-
+   
   input_vec <- responses %>% distinct(resp_lower) %>% pull(resp_lower)
   # cleaning up html leftovers:
   input_vec <- gsub("&#39;", "'", input_vec)
@@ -1443,7 +1443,7 @@ translate.responses <- function(responses, values_from = "response.uk", language
       for (code in language_codes) {
         col_name <- paste0("response.",target_lang, ".from.",code)
         # relevant_colnames <- append(relevant_colnames, col_name)  # this line may be bugged??
-
+        
         temp_resp <- tibble(input_vec)
         temp_resp[[col_name]] <- NA
         temp_resp <-  temp_resp[sample(1:nrow(temp_resp)),]
@@ -1477,7 +1477,7 @@ translate.responses <- function(responses, values_from = "response.uk", language
             info_df$status <- "error"
           }else{
             temp_resp_batch[[col_name]] <- gsub("&#39;", "'", result_vec)
-            if(length(result_vec) == length(temp_resp_batch$input_vec)){
+            if(length(result_vec) == length(temp_resp_batch$input_vec)){ 
               info_df$status <- "success"
               # bind the translated and source dfs
               temp_resp_whole <- rbind(temp_resp_whole,temp_resp_batch)
@@ -1492,7 +1492,7 @@ translate.responses <- function(responses, values_from = "response.uk", language
         } else{
           svDialogs::msgBox("translate.responses: finished - SUCCESS")
         }
-        responses <- responses %>% left_join(temp_resp_whole, by = c("resp_lower" = "input_vec"))
+        responses <- responses %>% left_join(temp_resp_whole, by = c("resp_lower" = "input_vec")) 
       }
     }else{
       warning("Nothing to be translated")
@@ -1542,15 +1542,15 @@ what.country <- function(id){
 
 pull.raw <- function(uuids = NA, loop_indexes = NA){
     #' Pull records from `raw.main` with the given uuids or loop_index.
-    #'
+    #' 
     #' Either `uuids` or `loop_indexes` must be provided. If pulling by uuid, the dataframe used is `raw.main`.
     #' Otherwise, all of the loop_indexes must belong to the same loop (so all must start with the same string "loop#"),
     #' and the data is pulled from dataframe `raw.loop1`, or `raw.loop2`, etc...
-    #'
+    #' 
     #' @note If both uuids and loop_indexes are provided, only loop indexes will be used! (data is not filtered by the provided uuids)
-    #'
-    #' @param uuids Character vector of
-    #' @param loop_indexes Character vector of
+    #' 
+    #' @param uuids Character vector of 
+    #' @param loop_indexes Character vector of 
     #' @returns Dataframe: raw.main, or raw.loop1 or raw.loop2, depending on the provided arguments.
 
     if(all(is.na(loop_indexes))) {
