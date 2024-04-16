@@ -10,14 +10,14 @@ options(scipen = 999)
 options(dplyr.summarise.inform = FALSE)
 
 # ------------------------------------------------------------------------------
-
+label_colname <- tcltk::tk_select.list(names(readxl::read_excel(strings['path.tool'],"survey"))[grepl("label",names(readxl::read_excel(strings['path.tool'],"survey")))], title = "Label column to choose", multiple = F)
 
 ##  LOAD TOOL  -----------------------------------------------------------------
 
-cat("\n> Loading Kobo tool from", path.tool, "...\n")
+cat("\n> Loading Kobo tool from", strings['path.tool'], "...\n")
 
-tool.survey <- load.tool.survey(path.tool)
-tool.choices <- load.tool.choices(path.tool)
+tool.survey <- load.tool.survey(strings['path.tool'])
+tool.choices <- load.tool.choices(strings['path.tool'])
 
 # ensure tool.choices has unique labels:
 labels_groups <- tool.choices %>% select(-name) %>% distinct() %>%
@@ -36,17 +36,17 @@ tool.survey <-  tool.survey %>%
 
 ##  LOAD DATA -------------------------------------------------------------------
 
-cat("\n> Loading data for analysis from", filename.data, "...\n")
-sheet_names <- readxl::excel_sheets(filename.data)
+cat("\n> Loading data for analysis from", strings['filename.data'], "...\n")
+sheet_names <- readxl::excel_sheets(strings['filename.data'])
 sheet_names[1] <- paste(sheet_names[1], "(main)")
 cat("> Found the following datasheets:", paste(sheet_names, collapse = ", "), "\n")
 
 # the first sheet is always named "main"!!!
 sheet_names[1] <- "main"
-data.list <- list("main" = readxl::read_excel(filename.data, sheet=1, col_types = "text"))
+data.list <- list("main" = readxl::read_excel(strings['filename.data'], sheet=1, col_types = "text"))
 
 for(sheet in sheet_names[-1])
-  data.list[[sheet]] <- readxl::read_excel(filename.data, sheet=sheet, col_types = "text")
+  data.list[[sheet]] <- readxl::read_excel(strings['filename.data'], sheet=sheet, col_types = "text")
 
 # check for mismatch between datasheet names in tool.survey and in data:
 tool_datasheets <- tool.survey %>% distinct(datasheet) %>% filter(!is.na(.)) %>% pull
@@ -98,9 +98,19 @@ cat("\n> ...Done.\n")
 
 ##  LOAD and check DAF  --------------------------------------------------------
 
-cat("\n> Loading Tabular DAF from", strings['filename.daf.tabular'], "...\n")
-daf <- readxl::read_excel(strings['filename.daf.tabular'], col_types = "text") %>%
-  filter(!is.na(variable))
+cat("\n> Creating a DAF...\n")
+
+fsl_daf_variable <- tcltk::tk_select.list(tool.survey %>%
+                                            filter(q.type %in% c("decimal","integer",
+                                                                 "select_one","select_multiple")) %>%
+                                            pull(name),
+                                          title = "FSL variables (not FCS/HHS/LCSI/rCSI/HDDS",
+                                          multiple = T)
+
+daf <- data.frame(variable = fsl_daf_variable) %>%
+  dplyr::mutate(section = "FSL_Part1",
+                label = get.label(variable))
+
 
 cat("\n> Checking your DAF...\n")
 

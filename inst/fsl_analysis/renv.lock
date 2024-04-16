@@ -4,7 +4,7 @@
     "Repositories": [
       {
         "Name": "CRAN",
-        "URL": "https://packagemanager.posit.co/cran/latest"
+        "URL": "https://cran.rstudio.com"
       }
     ]
   },
@@ -172,6 +172,13 @@
       ],
       "Hash": "f81f7764a3c3e310b1d40e1a8acee19e"
     },
+    "SnowballC": {
+      "Package": "SnowballC",
+      "Version": "0.7.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "46da3912f69e3e6258a033802c4af32e"
+    },
     "V8": {
       "Package": "V8",
       "Version": "4.4.2",
@@ -194,6 +201,16 @@
         "sys"
       ],
       "Hash": "cad6cf7f1d5f6e906700b9d3e718c796"
+    },
+    "assertthat": {
+      "Package": "assertthat",
+      "Version": "0.2.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "tools"
+      ],
+      "Hash": "50c838a310445e954bc13f26f26a6ecf"
     },
     "backports": {
       "Package": "backports",
@@ -414,6 +431,28 @@
       "Repository": "CRAN",
       "Hash": "5d8225445acb167abf7797de48b2ee3c"
     },
+    "composr": {
+      "Package": "composr",
+      "Version": "0.1.1",
+      "Source": "GitHub",
+      "RemoteType": "github",
+      "RemoteHost": "api.github.com",
+      "RemoteUsername": "mabafaba",
+      "RemoteRepo": "composr",
+      "RemoteRef": "master",
+      "RemoteSha": "253c4b97798246956952117bf2324956180e3d33",
+      "Remotes": "mabafaba/koboquest",
+      "Requirements": [
+        "assertthat",
+        "crayon",
+        "dplyr",
+        "glue",
+        "koboquest",
+        "magrittr",
+        "tibble"
+      ],
+      "Hash": "52a541f8852945a8b5e23e9332b72495"
+    },
     "conflicted": {
       "Package": "conflicted",
       "Version": "1.2.0",
@@ -525,6 +564,20 @@
         "withr"
       ],
       "Hash": "59351f28a81f0742720b85363c4fdd61"
+    },
+    "deeplr": {
+      "Package": "deeplr",
+      "Version": "2.0.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "httr",
+        "purrr",
+        "tibble",
+        "tokenizers",
+        "utf8"
+      ],
+      "Hash": "28f9b0df9adcd428a9b336a343752cb9"
     },
     "digest": {
       "Package": "digest",
@@ -1128,6 +1181,26 @@
         "yaml"
       ],
       "Hash": "6e008ab1d696a5283c79765fa7b56b47"
+    },
+    "koboquest": {
+      "Package": "koboquest",
+      "Version": "1.0.1",
+      "Source": "GitHub",
+      "RemoteType": "github",
+      "RemoteHost": "api.github.com",
+      "RemoteUsername": "mabafaba",
+      "RemoteRepo": "koboquest",
+      "RemoteRef": "master",
+      "RemoteSha": "bf67c7dfd6369c779cfe944034c7626164d79480",
+      "Requirements": [
+        "data.table",
+        "dplyr",
+        "magrittr",
+        "stringi",
+        "stringr",
+        "utils"
+      ],
+      "Hash": "8dbdb74166b1a00642792af9c470bdf1"
     },
     "labeling": {
       "Package": "labeling",
@@ -2070,6 +2143,19 @@
         "xfun"
       ],
       "Hash": "be7a76845222ad20adb761f462eed3ea"
+    },
+    "tokenizers": {
+      "Package": "tokenizers",
+      "Version": "0.3.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "Rcpp",
+        "SnowballC",
+        "stringi"
+      ],
+      "Hash": "76d35ebfaaf291e08c15696c9f2ec96d"
     },
     "translateR": {
       "Package": "translateR",

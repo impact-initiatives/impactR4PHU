@@ -1,14 +1,14 @@
 # find & fix choices that contain forbidden characters in name:
 bugged_choice_regex <- "[/'’?]"
 
-bugged_choices <- tool.choices %>% filter(stringr::str_detect(name, bugged_choice_regex)) %>%  
+bugged_choices <- tool.choices %>% filter(stringr::str_detect(name, bugged_choice_regex)) %>%
   left_join(tool.survey %>% select(q.type, list_name, datasheet)) %>% distinct()
 
 bugged_cols <- tool.survey %>% filter(list_name %in% bugged_choices$list_name) %>%
   select(name, q.type, datasheet, list_name)
 
 if(nrow(bugged_cols) > 0){
-  tool.choices <- tool.choices %>% 
+  tool.choices <- tool.choices %>%
     mutate(name = stringr::str_replace_all(name, bugged_choice_regex, "_"))
   # fix select_one choices:
   bugged_s_one <- bugged_cols %>% filter(q.type == "select_one")
@@ -50,6 +50,6 @@ if(nrow(bugged_vars) > 0){
 
 # for(sheet in names(data.list)){
 #   cnames <- colnames(data.list[[sheet]])
-#   colnames(data.list[[sheet]]) <- ifelse(stringr::str_detect(cnames, "/"), 
+#   colnames(data.list[[sheet]]) <- ifelse(stringr::str_detect(cnames, "/"),
 #                                          stringr::str_sub(cnames, 0, stringr::str_locate(cnames, "/") + 50), cnames)
 # }

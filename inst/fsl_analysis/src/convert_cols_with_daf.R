@@ -12,7 +12,7 @@ for(sheet in names(data.list)){
   for(r in 1:nrow(dafp)){
     entry <- load_entry(dafp[r,])
     col <- entry$variable
-    
+
     if(!all(is.na(entry$disaggregate.variables))){
       for(disagg.var in entry$disaggregate.variables){
         if(!disagg.var %in% colnames(data.list[[sheet]])){
@@ -28,16 +28,39 @@ for(sheet in names(data.list)){
         data.list[[sheet]][[disagg.var]] <- as.character(data.list[[sheet]][[disagg.var]])  # as character, not factor!
       }
     }
-    
+
     if(col %in% converted) next
     cat("\nConverting column:",col," ...")
-    
+
     if(entry$func == "select_multiple"){
-      # not converting to label here. instead just replace "/" with "___" and convert to numeric
-      choice_cols <- colnames(data.list[[sheet]])[colnames(data.list[[sheet]]) %>% stringr::str_starts(paste0(col, "/"))]
-      data.list[[sheet]] <- data.list[[sheet]] %>%
-        mutate(across(all_of(choice_cols), as.numeric)) %>%
-        rename_with(~stringr::str_replace(., "/", "___"), choice_cols)
+      if(strings['sel_mul_sep'] == "/"){
+        # not converting to label here. instead just replace "/" with "___" and convert to numeric
+        choice_cols <- colnames(data.list[[sheet]])[colnames(data.list[[sheet]]) %>% stringr::str_starts(paste0(col, "/"))]
+        data.list[[sheet]] <- data.list[[sheet]] %>%
+          mutate(across(all_of(choice_cols), as.numeric)) %>%
+          rename_with(~stringr::str_replace(., "/", "___"), choice_cols)
+      } else if (strings['sel_mul_sep'] == "_"){
+        # not converting to label here. instead just replace "/" with "___" and convert to numeric
+        choice_cols <- colnames(data.list[[sheet]])[colnames(data.list[[sheet]]) %>% stringr::str_starts(paste0(col, "_"))]
+        data.list[[sheet]] <- data.list[[sheet]] %>%
+          mutate(across(all_of(choice_cols), as.numeric))
+        choice_cols_repl <- stringr::str_remove(choice_cols,paste0(col,"_"))
+        for (i in choice_cols_repl){
+          data.list[[sheet]] <- data.list[[sheet]] %>%
+            rename(!!rlang::sym(paste0(col,"__",i)) := paste0(col,"_",i))
+        }
+      } else if (strings['sel_mul_sep'] == "."){
+        # not converting to label here. instead just replace "/" with "___" and convert to numeric
+        choice_cols <- colnames(data.list[[sheet]])[colnames(data.list[[sheet]]) %>% stringr::str_starts(paste0(col, "."))]
+        data.list[[sheet]] <- data.list[[sheet]] %>%
+          mutate(across(all_of(choice_cols), as.numeric)) %>%
+          rename_with(~stringr::str_replace(., ".", "___"), choice_cols)
+      } else if (strings['sel_mul_sep'] == "__"){
+        # not converting to label here. instead just replace "/" with "___" and convert to numeric
+        choice_cols <- colnames(data.list[[sheet]])[colnames(data.list[[sheet]]) %>% stringr::str_starts(paste0(col, "__"))]
+        data.list[[sheet]] <- data.list[[sheet]] %>%
+          mutate(across(all_of(choice_cols), as.numeric))
+      }
       if(!entry$omit_na){
         # change NAs from all other choice columns to 0
         data.list[[sheet]] <- data.list[[sheet]] %>%
@@ -57,12 +80,12 @@ for(sheet in names(data.list)){
           conv_vec <- data.list[[sheet]][[col]]
         }else{
           if(!entry$list_name %in% tool.choices$list_name) stop(paste("list",entry$list_name, "not found in tool.choices!"))
-          
+
           res <- data.frame(name = unlist(data.list[[sheet]][[col]])) %>%
             left_join(dplyr::select(tool.choices, name, list_name, label_colname) %>% filter(list_name == entry$list_name),
                       by = "name", na_matches = "never")
           if(nrow(res) == 0) stop("All choices not in the list!")
-          
+
           conv_vec <- pull(res, label_colname)
         }
         if(entry$omit_na) {
@@ -77,8 +100,8 @@ for(sheet in names(data.list)){
     ## Deal with disaggregated change to Label
     if(is.na(entry$disaggregate.variables)){
     } else {
-     disag.col <- entry$disaggregate.variables
-      type.disag.col <- tool.survey %>% 
+      disag.col <- entry$disaggregate.variables
+      type.disag.col <- tool.survey %>%
         filter(name == disag.col) %>% pull(q.type)
       list_name_disag <- tool.survey %>%
         filter(name == disag.col) %>% pull(list_name)
@@ -94,12 +117,12 @@ for(sheet in names(data.list)){
             conv_vec <- data.list[[sheet]][[disag.col]]
           }else{
             if(!list_name_disag %in% tool.choices$list_name) stop(paste("list",list_name_disag, "not found in tool.choices!"))
-            
+
             res <- data.frame(name = unlist(data.list[[sheet]][[disag.col]])) %>%
               left_join(dplyr::select(tool.choices, name, list_name, label_colname) %>% filter(list_name == list_name_disag),
                         by = "name", na_matches = "never")
             if(nrow(res) == 0) stop("All choices not in the list!")
-            
+
             conv_vec <- pull(res, label_colname)
           }
           if(entry$omit_na) {
@@ -110,10 +133,10 @@ for(sheet in names(data.list)){
           rm(conv_vec, choice_names, not_in_choices)
         }
         else if(type.disag.col %in% c("mean", "median", "integer", "numeric","decimal")) data.list[[sheet]][[disag.col]] <- as.numeric(data.list[[sheet]][[disag.col]])
-        }
       }
-    converted <- append(converted, col)
     }
+    converted <- append(converted, col)
+  }
   cat("... done.\n")
   rm(dafp)
 }

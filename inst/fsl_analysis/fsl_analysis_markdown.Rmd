@@ -16,12 +16,6 @@ output: html_document
 </style>
 
 
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE)
-options(scipen = 999)
-```
-
 ```{r logo, echo=FALSE}
 htmltools::img(src = knitr::image_uri("resources/Logo_Reach_RGB_1.png"),
                alt = "REACH logo",
@@ -79,7 +73,7 @@ htmltools::img(src = knitr::image_uri("resources/Logo_Reach_RGB_1.png"),
   rm(missing_sheets)
 
  # CONVERT!
-  source("./../src/convert_cols_with_daf.R")
+  source("src/convert_cols_with_daf.R")
 
 
   ## SRVYR DESIGNS
@@ -205,47 +199,52 @@ for (i in sections){
 ## FSL_Part2
 
 ```{r, results='asis'}
-if(all(hdds_check_columns %in% names(main))) {
-  cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",3), collapse=""), " ", "<strong>HDDS Groups</strong>"))
-  subch(DT::datatable(hdds_table))
-  cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",3), collapse=""), " ", "<strong>HDDS Category</strong>"))
-  subch(DT::datatable(hdds_cat_table))
-  cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",3), collapse=""), " ", "<strong>HDDS Score</strong>"))
-  subch(DT::datatable(hdds_score_table))
+if ("HDDS" %in% FSL_indicators){
+  if(all(hdds_check_columns %in% names(main))) {
+    cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",3), collapse=""), " ", "<strong>HDDS Groups</strong>"))
+    subch(DT::datatable(hdds_table))
+    cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",3), collapse=""), " ", "<strong>HDDS Category</strong>"))
+    subch(DT::datatable(hdds_cat_table))
+    cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",3), collapse=""), " ", "<strong>HDDS Score</strong>"))
+    subch(DT::datatable(hdds_score_table))
+  }
 }
-
-if(all(hhs_check_columns %in% names(main))) {
-  cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",3), collapse=""), " ", "<strong>HHS Groups</strong>"))
-  subch(DT::datatable(hhs_table))
-  cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",3), collapse=""), " ", "<strong>HHS Category</strong>"))
-  subch(DT::datatable(hhs_cat_table))
+if ("HHS" %in% FSL_indicators){
+  if(all(hhs_check_columns %in% names(main))) {
+    cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",3), collapse=""), " ", "<strong>HHS Groups</strong>"))
+    subch(DT::datatable(hhs_table))
+    cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",3), collapse=""), " ", "<strong>HHS Category</strong>"))
+    subch(DT::datatable(hhs_cat_table))
+  }
 }
-
-if(all(fcs_check_columns %in% names(main))) {
-  cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",3), collapse=""), " ", "<strong>FCS Groups</strong>"))
-  subch(DT::datatable(fcs_table))
-  cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",3), collapse=""), " ", "<strong>FCS Category</strong>"))
-  subch(DT::datatable(fcs_cat_table))
-  cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",3), collapse=""), " ", "<strong>FCS Score</strong>"))
-  subch(DT::datatable(fcs_score_table))
+if ("FCS" %in% FSL_indicators){
+  if(all(fcs_check_columns %in% names(main))) {
+    cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",3), collapse=""), " ", "<strong>FCS Groups</strong>"))
+    subch(DT::datatable(fcs_table))
+    cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",3), collapse=""), " ", "<strong>FCS Category</strong>"))
+    subch(DT::datatable(fcs_cat_table))
+    cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",3), collapse=""), " ", "<strong>FCS Score</strong>"))
+    subch(DT::datatable(fcs_score_table))
+  }
 }
-
-if(all(rcsi_check_columns %in% names(main))) {
-  cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",3), collapse=""), " ", "<strong>RCSI Groups</strong>"))
-  subch(DT::datatable(rcsi_table))
-  cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",3), collapse=""), " ", "<strong>RCSI Category</strong>"))
-  subch(DT::datatable(rcsi_cat_table))
-  cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",3), collapse=""), " ", "<strong>RCSI Score</strong>"))
-  subch(DT::datatable(rcsi_score_table))
+if ("rCSI" %in% FSL_indicators){
+  if(all(rcsi_check_columns %in% names(main))) {
+    cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",3), collapse=""), " ", "<strong>RCSI Groups</strong>"))
+    subch(DT::datatable(rcsi_table))
+    cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",3), collapse=""), " ", "<strong>RCSI Category</strong>"))
+    subch(DT::datatable(rcsi_cat_table))
+    cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",3), collapse=""), " ", "<strong>RCSI Score</strong>"))
+    subch(DT::datatable(rcsi_score_table))
+  }
 }
-
-if(all(lcsi_check_columns %in% names(main))) {
-  cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",3), collapse=""), " ", "<strong>LCSI Groups</strong>"))
-  subch(DT::datatable(lcsi_table))
-  cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",3), collapse=""), " ", "<strong>LCSI Category</strong>"))
-  subch(DT::datatable(lcsi_cat_table))  
+if ("LCSI" %in% FSL_indicators){
+  if(all(lcsi_check_columns %in% names(main))) {
+    cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",3), collapse=""), " ", "<strong>LCSI Groups</strong>"))
+    subch(DT::datatable(lcsi_table))
+    cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",3), collapse=""), " ", "<strong>LCSI Category</strong>"))
+    subch(DT::datatable(lcsi_cat_table))  
+  }
 }
-
 if(all(fcm_check_1_columns %in% names(main)) |
    all(fcm_check_2_columns %in% names(main)) |
    all(fcm_check_3_columns %in% names(main)) |
