@@ -73,7 +73,6 @@
 #' @param iycf_6d_num the name of the variable that indicates how many times the child
 #' had yogurt drink yesterday. By default "iycf_6d_num"
 #' @param yes_value the value of the choice "yes" to all the liquid/food categories
-#' @param grouping the name of the variable that indicates the grouping variable - usually "enumerator"
 #' @param uuid uuid variable
 #'
 #' @return a dataframe that includes all the added flags related to iycf.
@@ -129,7 +128,6 @@ check_iycf_flags <- function(.dataset,
                              iycf_6c_num = "iycf_6c_num",
                              iycf_6d_num = "iycf_6d_num",
                              yes_value = "yes",
-                             grouping = NULL,
                              uuid = "uuid") {
   options(warn = -1)
   ## Throw an error if a dataset wasn't provided as a first argument
@@ -139,12 +137,6 @@ check_iycf_flags <- function(.dataset,
 
   if (nrow(.dataset) == 0) {
     stop("Dataset is empty")
-  }
-
-  if (is.null(grouping)) {
-    .dataset <- .dataset %>% dplyr::mutate(group = "All")
-  } else {
-    .dataset <- .dataset %>% dplyr::mutate(group = !!rlang::sym(grouping))
   }
 
   if(!age_months %in% names(.dataset)) stop("Missing age_months column in dataset")

@@ -51,57 +51,18 @@ testthat::test_that("check data_container_loop is null", {
   ))
 })
 
-######### Happy Path #########
 
-testthat::test_that("check column group added if missing grouping", {
+###### Happy Path #######
+
+testthat::test_that("Happy Path", {
   load(testthat::test_path("testdata", "test_df.rda"))
   load(testthat::test_path("testdata", "test_df_wash.rda"))
-  actual <- "All"
-  expected_output <- check_wash_flags(
-    .dataset = test_df,
-    data_container_loop = test_df_wash,
-    grouping =NULL) %>%
-    pull(group) %>% unique()
-  testthat::expect_equal(actual, expected_output)
+  load(testthat::test_path("testdata", "test_df_wash_calc.rda"))
+  actual <- check_wash_flags(test_df,test_df_wash)
+  expected <- test_df_wash_calc
+  testthat::expect_equal(actual,expected)
 })
 
-
-testthat::test_that("check column group added if called with a variable", {
-  load(testthat::test_path("testdata", "test_df.rda"))
-  load(testthat::test_path("testdata", "test_df_wash.rda"))
-  actual <- c("1","5","2","3","4")
-  expected_output <- check_wash_flags(
-    .dataset = test_df,
-    data_container_loop = test_df_wash,
-    grouping = "enumerator") %>%
-    pull(group) %>% unique()
-  testthat::expect_equal(actual, expected_output)
-})
-
-
-testthat::test_that("check column group added if missing grouping", {
-  load(testthat::test_path("testdata", "test_df.rda"))
-  load(testthat::test_path("testdata", "test_df_wash.rda"))
-  actual <- c("1","5","2","3","4")
-  expected_output <- check_wash_flags(
-    .dataset = test_df,
-    data_container_loop = test_df_wash,
-    grouping = "enumerator") %>%
-    pull(group) %>% unique()
-  testthat::expect_equal(actual, expected_output)
-})
-
-testthat::test_that("check column group added if missing grouping", {
-  load(testthat::test_path("testdata", "test_df.rda"))
-  load(testthat::test_path("testdata", "test_df_wash.rda"))
-  actual <- c("1","5","2","3","4")
-  expected_output <- check_wash_flags(
-    .dataset = test_df,
-    data_container_loop = test_df_wash,
-    grouping = "enumerator") %>%
-    pull(group) %>% unique()
-  testthat::expect_equal(actual, expected_output)
-})
 
 
 

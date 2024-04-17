@@ -9,7 +9,6 @@
 #' By default including (shelter,nfi,health,education,debt,others)
 #' @param num_period_months the number of months that cover the infrequent expenditure variables.
 #' By default: 6
-#' @param grouping the name of the variable that indicates the grouping variable - usually "enumerator"
 #' @param uuid uuid variable
 #'
 #' @return a dataframe that includes all the logical flags related to health
@@ -41,7 +40,6 @@ check_health_flags <- function(.dataset,
                                                          "cm_expenditure_infrequent_debt",
                                                          "cm_expenditure_infrequent_other"),
                                num_period_months = 6,
-                               grouping = NULL,
                                uuid = "uuid") {
   options(warn = -1)
   ## Throw an error if a dataset wasn't provided as a first argument
@@ -56,23 +54,13 @@ check_health_flags <- function(.dataset,
 
   if (!uuid %in% names(.dataset)) stop("uuid argument incorrect, or not available in the dataset")
 
-  if (is.null(grouping)) {
-    .dataset <- .dataset %>% dplyr::mutate(group = "All")
-  } else {
-    .dataset <- .dataset %>% dplyr::mutate(group = !!rlang::sym(grouping))
-  }
-
-  ## initiate the return output
-  results <- .dataset %>%
-    dplyr::select(uuid, group)
-
   ## Health Expenditures
   if(!health_expenditure_col %in% names(.dataset)) {
     warning("Missing Health Expenditure Column")
   } else {
     if(!all(monthly_expenditures %in% names(.dataset))){
       warning("Missing Frequent Expenditure Columns")
-      results2 <- .dataset %>%
+      .dataset <- .dataset %>%
         dplyr::mutate_at(dplyr::vars(health_expenditure_col), as.numeric) %>%
         dplyr::mutate(month_exp = rowSums(dplyr::across(periodic_expenditures), na.rm = T) / as.numeric(num_period_months),
                       health_exp = ifelse(is.na(!!rlang::sym(health_expenditure_col)),0,
@@ -81,15 +69,9 @@ check_health_flags <- function(.dataset,
                                                health_exp / month_exp),
                       flag_severe_health_exp =  ifelse(is.na(prop_health_exp), NA,
                                                   ifelse(prop_health_exp >= 0.10 & prop_health_exp <=0.25, 1, 0)),
-                      flag_catastrophic_health_exp =  ifelse(is.na(prop_health_exp), NA, ifelse(prop_health_exp > 0.25, 1, 0))) %>%
-        dplyr::select(flag_severe_health_exp,flag_catastrophic_health_exp)
-      if(!exists("results")){
-        results <- results2
-      } else {
-        results <- cbind(results,results2)
-      }
+                      flag_catastrophic_health_exp =  ifelse(is.na(prop_health_exp), NA, ifelse(prop_health_exp > 0.25, 1, 0)))
     } else {
-      results2 <- .dataset %>%
+      .dataset <- .dataset %>%
         dplyr::mutate_at(dplyr::vars(health_expenditure_col), as.numeric) %>%
         dplyr::mutate_at(dplyr::vars(periodic_expenditures), as.numeric) %>%
         dplyr::mutate(month_exp_1 = rowSums(dplyr::across(periodic_expenditures), na.rm = T) / as.numeric(num_period_months),
@@ -101,20 +83,13 @@ check_health_flags <- function(.dataset,
                                                health_exp / month_exp),
                       flag_severe_health_exp =  ifelse(is.na(prop_health_exp), NA,
                                                   ifelse(prop_health_exp >= 0.10 & prop_health_exp <=0.25, 1, 0)),
-                      flag_catastrophic_health_exp =  ifelse(is.na(prop_health_exp), NA, ifelse(prop_health_exp > 0.25, 1, 0))) %>%
-        dplyr::select(flag_severe_health_exp,flag_catastrophic_health_exp)
-
-      if(!exists("results")){
-        results <- results2
-      } else {
-        results <- cbind(results,results2)
-      }
+                      flag_catastrophic_health_exp =  ifelse(is.na(prop_health_exp), NA, ifelse(prop_health_exp > 0.25, 1, 0)))
     }
   }
 
   ## WASHINTON GROUP QUESTIONS
   #### TO ADD
   options(warn = 0)
-  return(results)
+  return(.dataset)
 }
 

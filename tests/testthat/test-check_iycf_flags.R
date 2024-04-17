@@ -264,8 +264,7 @@ testthat::test_that("Check for missing columns", {
     .dataset = add_iycf(.dataset = test_df_iycf,
                         uuid = "_submission__uuid",
                         age_months = "child_age_months_2")  %>%
-      dplyr::select(-iycf_6d_num),
-    grouping = "enum_iycf"
+      dplyr::select(-iycf_6d_num)
   ))
 
 })

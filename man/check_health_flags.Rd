@@ -17,7 +17,6 @@ check_health_flags(
     "cm_expenditure_infrequent_education", "cm_expenditure_infrequent_debt",
     "cm_expenditure_infrequent_other"),
   num_period_months = 6,
-  grouping = NULL,
   uuid = "uuid"
 )
 }
@@ -35,8 +34,6 @@ By default including (shelter,nfi,health,education,debt,others)}
 
 \item{num_period_months}{the number of months that cover the infrequent expenditure variables.
 By default: 6}
-
-\item{grouping}{the name of the variable that indicates the grouping variable - usually "enumerator"}
 
 \item{uuid}{uuid variable}
 }

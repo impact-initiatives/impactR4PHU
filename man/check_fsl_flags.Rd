@@ -72,7 +72,6 @@ check_fsl_flags(
   sell_anim_prod = "sell_anim_prod",
   residency_status = "residency_status",
   value_idp = "idp",
-  grouping = NULL,
   tool.survey = NULL,
   label_colname = "label::English",
   uuid = "uuid"
@@ -222,8 +221,6 @@ By default, "residency_status"}
 
 \item{value_idp}{the name of the choice value representing the idp residency status. By default, "idp"}
 
-\item{grouping}{the name of the variable that indicates the grouping variable - usually "enumerator"}
-
 \item{tool.survey}{This is the tool.survey dataset. By default NULL}
 
 \item{label_colname}{This is the label column in the tool survey. By default label::English}
@@ -327,5 +324,5 @@ df <- data.frame(
   uuid= c("31d0cfb8-21d7-414b4f-94999f-04a15ce39d78","205d37b1-5a6f-44484d-b3b1ba-4eafbdc50873")
   )
 
-check_fsl_flags(.dataset = df, grouping = "enumerator", tool.survey = tool.survey)
+check_fsl_flags(.dataset = df, tool.survey = tool.survey)
 }

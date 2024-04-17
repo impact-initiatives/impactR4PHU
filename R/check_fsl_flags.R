@@ -77,7 +77,6 @@
 #' @param residency_status the name of the variable that indicates the residency status of HH,
 #'  By default, "residency_status"
 #' @param value_idp the name of the choice value representing the idp residency status. By default, "idp"
-#' @param grouping the name of the variable that indicates the grouping variable - usually "enumerator"
 #' @param tool.survey This is the tool.survey dataset. By default NULL
 #' @param label_colname This is the label column in the tool survey. By default label::English
 #' @param uuid uuid variable
@@ -176,7 +175,7 @@
 #'   uuid= c("31d0cfb8-21d7-414b4f-94999f-04a15ce39d78","205d37b1-5a6f-44484d-b3b1ba-4eafbdc50873")
 #'   )
 #'
-#' check_fsl_flags(.dataset = df, grouping = "enumerator", tool.survey = tool.survey)
+#' check_fsl_flags(.dataset = df, tool.survey = tool.survey)
 
 check_fsl_flags <- function(.dataset,
                            fsl_fcs_cereal = "fsl_fcs_cereal",
@@ -244,7 +243,6 @@ check_fsl_flags <- function(.dataset,
                            sell_anim_prod = "sell_anim_prod",
                            residency_status = "residency_status",
                            value_idp = "idp",
-                           grouping = NULL,
                            tool.survey = NULL,
                            label_colname = "label::English",
                            uuid = "uuid") {
@@ -272,13 +270,6 @@ check_fsl_flags <- function(.dataset,
   }
 
   if (!uuid %in% names(.dataset)) stop("uuid argument incorrect, or not available in the dataset")
-
-  if (is.null(grouping)) {
-    .dataset <- .dataset %>% dplyr::mutate(group = "All")
-  } else {
-    .dataset <- .dataset %>% dplyr::mutate(group = !!rlang::sym(grouping))
-  }
-
 
   # combine all fcs_columns together
   fcs_flag_columns <- c(fsl_fcs_cereal,fsl_fcs_legumes,fsl_fcs_dairy,fsl_fcs_meat,

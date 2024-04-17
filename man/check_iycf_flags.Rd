@@ -41,7 +41,6 @@ check_iycf_flags(
   iycf_6c_num = "iycf_6c_num",
   iycf_6d_num = "iycf_6d_num",
   yes_value = "yes",
-  grouping = NULL,
   uuid = "uuid"
 )
 }
@@ -154,8 +153,6 @@ had milk from animal yesterday. By default "iycf_6c_num"}
 had yogurt drink yesterday. By default "iycf_6d_num"}
 
 \item{yes_value}{the value of the choice "yes" to all the liquid/food categories}
-
-\item{grouping}{the name of the variable that indicates the grouping variable - usually "enumerator"}
 
 \item{uuid}{uuid variable}
 }
