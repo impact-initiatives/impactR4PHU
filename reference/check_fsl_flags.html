@@ -110,7 +110,6 @@
 <span>  sell_anim_prod <span class="op">=</span> <span class="st">"sell_anim_prod"</span>,</span>
 <span>  residency_status <span class="op">=</span> <span class="st">"residency_status"</span>,</span>
 <span>  value_idp <span class="op">=</span> <span class="st">"idp"</span>,</span>
-<span>  grouping <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  tool.survey <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  label_colname <span class="op">=</span> <span class="st">"label::English"</span>,</span>
 <span>  uuid <span class="op">=</span> <span class="st">"uuid"</span></span>
@@ -394,10 +393,6 @@ By default, "residency_status"</p></dd>
 <dd><p>the name of the choice value representing the idp residency status. By default, "idp"</p></dd>
 
 
-<dt>grouping</dt>
-<dd><p>the name of the variable that indicates the grouping variable - usually "enumerator"</p></dd>
-
-
 <dt>tool.survey</dt>
 <dd><p>This is the tool.survey dataset. By default NULL</p></dd>
 
@@ -509,13 +504,13 @@ This includes:
 <span class="r-in"><span>  uuid<span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"31d0cfb8-21d7-414b4f-94999f-04a15ce39d78"</span>,<span class="st">"205d37b1-5a6f-44484d-b3b1ba-4eafbdc50873"</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">check_fsl_flags</span><span class="op">(</span>.dataset <span class="op">=</span> <span class="va">df</span>, grouping <span class="op">=</span> <span class="st">"enumerator"</span>, tool.survey <span class="op">=</span> <span class="va">tool.survey</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 2 × 89</span></span>
+<span class="r-in"><span><span class="fu">check_fsl_flags</span><span class="op">(</span>.dataset <span class="op">=</span> <span class="va">df</span>, tool.survey <span class="op">=</span> <span class="va">tool.survey</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 2 × 88</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   fsl_fcs_cereal fsl_fcs_legumes fsl_fcs_dairy fsl_fcs_meat fsl_fcs_veg</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span>              1               3             1            2           5</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span>              4               3             6            3           4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 84 more variables: fsl_fcs_fruit &lt;dbl&gt;, fsl_fcs_oil &lt;dbl&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 83 more variables: fsl_fcs_fruit &lt;dbl&gt;, fsl_fcs_oil &lt;dbl&gt;,</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   fsl_fcs_sugar &lt;dbl&gt;, fsl_rcsi_lessquality &lt;dbl&gt;, fsl_rcsi_borrow &lt;dbl&gt;,</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   fsl_rcsi_mealsize &lt;dbl&gt;, fsl_rcsi_mealadult &lt;dbl&gt;, fsl_rcsi_mealnb &lt;dbl&gt;,</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   fsl_hhs_nofoodhh &lt;chr&gt;, fsl_hhs_nofoodhh_freq &lt;chr&gt;,</span></span>

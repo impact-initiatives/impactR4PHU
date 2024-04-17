@@ -52,7 +52,6 @@
 <span>  wash_water_collect_time <span class="op">=</span> <span class="st">"wash_water_collect_time"</span>,</span>
 <span>  value_on_premise <span class="op">=</span> <span class="st">"on_premise"</span>,</span>
 <span>  num_hh <span class="op">=</span> <span class="st">"num_hh"</span>,</span>
-<span>  grouping <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  uuid <span class="op">=</span> <span class="st">"uuid"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -96,10 +95,6 @@ the amount per liter (ex: choicex_20l)</p></dd>
 <dd><p>the name of the variable that indicates the number of people per HH</p></dd>
 
 
-<dt>grouping</dt>
-<dd><p>the name of the variable that indicates the grouping variable - usually "enumerator"</p></dd>
-
-
 <dt>uuid</dt>
 <dd><p>uuid variable</p></dd>
 
@@ -140,19 +135,18 @@ If loop containers available:
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">check_wash_flags</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  .dataset <span class="op">=</span> <span class="va">df</span>,</span></span>
-<span class="r-in"><span>  data_container_loop <span class="op">=</span> <span class="va">df_containers</span>,</span></span>
-<span class="r-in"><span>  grouping <span class="op">=</span> <span class="st">"enumerator"</span></span></span>
+<span class="r-in"><span>  data_container_loop <span class="op">=</span> <span class="va">df_containers</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Joining with `by = join_by(uuid)`</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     uuid group wash_water_collect_time wash_num_containers</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1 uuid_1     1              on_premise                   2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2 uuid_2     2             num_minutes                   3</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   litre_per_day_per_person litre_z_score flag_sd_litre flag_low_litre</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1                    16.00     0.7071068             0              0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2                    11.25    -0.7071068             0              0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   flag_high_litre flag_high_container flag_no_container</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1               0                   0                 0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2               0                   0                 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   num_hh wash_num_containers enumerator wash_water_collect_time   uuid</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1      3                   2          1              on_premise uuid_1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2      4                   3          2             num_minutes uuid_2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   litre_per_day_per_hh litre_per_day_per_person litre_z_score flag_sd_litre</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1                   48                    16.00     0.7071068             0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2                   45                    11.25    -0.7071068             0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   flag_low_litre flag_high_litre flag_high_container flag_no_container</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1              0               0                   0                 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2              0               0                   0                 0</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
