@@ -7,7 +7,6 @@
 #' By default it is nut_edema_confirm
 #' @param value_edema_confirm the value of the choice "yes" of the nut_edema_confirm indicator
 #' By default it is "yes"
-#' @param grouping the name of the variable that indicates the grouping variable - usually "enumerator"
 #' @param uuid uuid variable
 #' @param loop_index unique identifier for each individual in the child nutrition loop.
 #' By default, loop_index
@@ -37,7 +36,6 @@ check_anthro_flags <- function(.dataset,
                             nut_muac_cm = "nut_muac_cm",
                             edema_confirm = "nut_edema_confirm",
                             value_edema_confirm = "yes",
-                            grouping = NULL,
                             uuid = "uuid",
                             loop_index = NULL) {
 
@@ -50,12 +48,6 @@ check_anthro_flags <- function(.dataset,
   ## Throw an error if the dataset is empty
   if (nrow(.dataset) == 0) {
     stop("Dataset is empty")
-  }
-
-  if (is.null(grouping)) {
-    .dataset <- .dataset %>% dplyr::mutate(group = "All")
-  } else {
-    .dataset <- .dataset %>% dplyr::mutate(group = !!rlang::sym(grouping))
   }
 
   if (is.null(loop_index)) {

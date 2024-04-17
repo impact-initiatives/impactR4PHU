@@ -9,7 +9,6 @@ check_anthro_flags(
   nut_muac_cm = "nut_muac_cm",
   edema_confirm = "nut_edema_confirm",
   value_edema_confirm = "yes",
-  grouping = NULL,
   uuid = "uuid",
   loop_index = NULL
 )
@@ -25,8 +24,6 @@ By default it is nut_edema_confirm}
 
 \item{value_edema_confirm}{the value of the choice "yes" of the nut_edema_confirm indicator
 By default it is "yes"}
-
-\item{grouping}{the name of the variable that indicates the grouping variable - usually "enumerator"}
 
 \item{uuid}{uuid variable}
 

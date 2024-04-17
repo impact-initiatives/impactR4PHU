@@ -10,7 +10,6 @@
 #' @param wash_water_collect_time the name of the variable that indicates if water on premise
 #' @param value_on_premise the value of the choice indicating the water is collected on premise
 #' @param num_hh the name of the variable that indicates the number of people per HH
-#' @param grouping the name of the variable that indicates the grouping variable - usually "enumerator"
 #' @param uuid uuid variable
 #'
 #' @return a dataframe that includes all the logical flags related to WASH
@@ -44,8 +43,7 @@
 #'
 #' check_wash_flags(
 #'   .dataset = df,
-#'   data_container_loop = df_containers,
-#'   grouping = "enumerator"
+#'   data_container_loop = df_containers
 #' )
 
 check_wash_flags <- function(.dataset,
@@ -57,7 +55,6 @@ check_wash_flags <- function(.dataset,
                              wash_water_collect_time = "wash_water_collect_time",
                              value_on_premise = "on_premise",
                              num_hh = "num_hh",
-                             grouping = NULL,
                              uuid = "uuid") {
 
   options(warn = -1)
@@ -88,14 +85,6 @@ check_wash_flags <- function(.dataset,
 
   if (!uuid %in% names(.dataset)) stop("uuid argument incorrect, or not available in the dataset")
 
-  if (is.null(grouping)) {
-    .dataset <- .dataset %>% dplyr::mutate(group = "All")
-  } else {
-    .dataset <- .dataset %>% dplyr::mutate(group = !!rlang::sym(grouping))
-  }
-
-  results <- .dataset %>%
-    dplyr::select(uuid, group)
 
   if(!is.null(data_container_loop)){
     ## calculate liters per person per day
@@ -108,21 +97,21 @@ check_wash_flags <- function(.dataset,
       dplyr::group_by(uuid) %>%
       dplyr::summarise(litre_per_day_per_hh = sum(litre_per_day))
 
-    results2 <- .dataset %>%
+    .dataset <- .dataset %>%
       dplyr::left_join(calculate_data_container_loop) %>%
       dplyr::mutate(litre_per_day_per_person = litre_per_day_per_hh / as.numeric(!!rlang::sym(num_hh)))
 
     ## FLAGS (Litres per person per day)
-    mean_litre_dataset <-  mean(results2$litre_per_day_per_person, na.rm = T)
-    sd_litre_dataset <- stats::sd(results2$litre_per_day_per_person, na.rm = T)
+    mean_litre_dataset <-  mean(.dataset$litre_per_day_per_person, na.rm = T)
+    sd_litre_dataset <- stats::sd(.dataset$litre_per_day_per_person, na.rm = T)
 
-    results2 <- results2 %>%
+    .dataset <- .dataset %>%
       dplyr::mutate(litre_z_score = (litre_per_day_per_person - mean_litre_dataset) / sd_litre_dataset)
 
-    mean_litre_zscore <- mean(results2$litre_z_score, na.rm = T)
+    mean_litre_zscore <- mean(.dataset$litre_z_score, na.rm = T)
 
 
-    results2 <- results2 %>%
+    .dataset <- .dataset %>%
       dplyr::mutate(flag_sd_litre = ifelse(is.na(litre_z_score), NA,
                                            ifelse(litre_z_score < mean_litre_zscore - 3 | litre_z_score > mean_litre_zscore + 3, 1, 0)),
                     flag_low_litre = ifelse(is.na(litre_per_day_per_person), NA,
@@ -133,19 +122,11 @@ check_wash_flags <- function(.dataset,
                                                  ifelse(as.numeric(!!rlang::sym(num_containers)) > 20, 1, 0)),
                     flag_no_container = dplyr::case_when(is.na(!!rlang::sym(wash_water_collect_time)) & is.na(!!rlang::sym(num_containers)) ~ NA,
                                                          !!rlang::sym(wash_water_collect_time) != value_on_premise & !!rlang::sym(num_containers) == "0" ~ 1,
-                                                         TRUE ~ 0)) %>%
-      dplyr::select(wash_water_collect_time,num_containers,litre_per_day_per_person,
-                    litre_z_score,flag_sd_litre,flag_low_litre,
-                    flag_high_litre,flag_high_container,flag_no_container)
+                                                         TRUE ~ 0))
 
-    if(!exists("results")){
-      results <- results2
-    } else {
-      results <- cbind(results,results2)
-    }
   } else {
     warning("No Container loop to check WASH flags.")
   }
   options(warn = 0)
-  return(results)
+  return(.dataset)
 }

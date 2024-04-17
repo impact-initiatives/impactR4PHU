@@ -49,15 +49,3 @@ testthat::test_that("Check loop_index in the dataset", {
     loop_index = "loop_index"))
 })
 
-
-testthat::test_that("check column group added if missing grouping", {
-  load(testthat::test_path("testdata", "test_df_nut.rda"))
-  actual <- "All"
-  expected_output <- test_df_nut %>%
-    add_muac() %>%
-    add_mfaz()%>%
-    check_anthro_flags(grouping =NULL) %>%
-    pull(group) %>% unique()
-  testthat::expect_equal(actual, expected_output)
-})
-

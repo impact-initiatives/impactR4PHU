@@ -75,8 +75,7 @@ testthat::test_that("Check for missing columns", {
 
   testthat::expect_warning(check_health_flags(
     .dataset = test_df_MSNA %>%
-      dplyr::select(-cm_expenditure_infrequent_health),
-    grouping = "enum_gender"
+      dplyr::select(-cm_expenditure_infrequent_health)
   ))
 })
 
@@ -106,7 +105,7 @@ testthat::test_that("Check correct output", {
     .dataset = df1,
     num_period_months = 1
   ) %>%
-    select(starts_with("flag_"))
+    select(starts_with("flag_")) %>% as.data.frame()
   expected_output <- data.frame(
     flag_severe_health_exp = c(0,0,0,0,0),
     flag_catastrophic_health_exp = c(0,0,0,0,0)

@@ -14,7 +14,6 @@ check_wash_flags(
   wash_water_collect_time = "wash_water_collect_time",
   value_on_premise = "on_premise",
   num_hh = "num_hh",
-  grouping = NULL,
   uuid = "uuid"
 )
 }
@@ -37,8 +36,6 @@ the amount per liter (ex: choicex_20l)}
 \item{value_on_premise}{the value of the choice indicating the water is collected on premise}
 
 \item{num_hh}{the name of the variable that indicates the number of people per HH}
-
-\item{grouping}{the name of the variable that indicates the grouping variable - usually "enumerator"}
 
 \item{uuid}{uuid variable}
 }
@@ -76,7 +73,6 @@ df_containers <- data.frame(
 
 check_wash_flags(
   .dataset = df,
-  data_container_loop = df_containers,
-  grouping = "enumerator"
+  data_container_loop = df_containers
 )
 }
