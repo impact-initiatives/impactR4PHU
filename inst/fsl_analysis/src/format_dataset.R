@@ -17,77 +17,99 @@ if(!file.exists("inputs/environment.Rdata")) {
     fsl_fcs_cereal <- names(main)[grepl("cereal",names(main))]
     if(length(fsl_fcs_cereal) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_fcs_cereal, "' the correct fcs_cereal column?"), type = "yesno")$res
-      fsl_fcs_cereal <- fsl_fcs_cereal
+      if(yes_no == "no"){
+        fsl_fcs_cereal <- svDialogs::dlg_input(message= "Enter the name of the fsl_fcs_cereal","fsl_fcs_cereal")$res
+      }
     } else if (length(fsl_fcs_cereal) > 1){
       fsl_fcs_cereal <- tcltk::tk_select.list(fsl_fcs_cereal, title = "FCS Cereal column")
-    } else if (length(fsl_fcs_cereal) == 0 | yes_no == "no") {
+    } else if (length(fsl_fcs_cereal) == 0) {
       fsl_fcs_cereal <- svDialogs::dlg_input(message= "Enter the name of the fsl_fcs_cereal","fsl_fcs_cereal")$res
     }
 
     fsl_fcs_legumes <- names(main)[grepl("legume|pulse|bean|nuts",names(main))]
     if(length(fsl_fcs_legumes) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_fcs_legumes, "' the correct fsl_fcs_legumes column?"), type = "yesno")$res
-      fsl_fcs_legumes <- fsl_fcs_legumes
+      if (yes_no == "no") {
+        fsl_fcs_legumes <- svDialogs::dlg_input(message= "Enter the name of the fsl_fcs_legumes","fsl_fcs_legumes")$res
+      }
     } else if (length(fsl_fcs_legumes) > 1){
       fsl_fcs_legumes <- tcltk::tk_select.list(fsl_fcs_legumes, title = "FCS Legumes/Pulses column")
-    } else if (length(fsl_fcs_legumes) == 0 | yes_no == "no") {
+    } else if (length(fsl_fcs_legumes) == 0) {
       fsl_fcs_legumes <- svDialogs::dlg_input(message= "Enter the name of the fsl_fcs_legumes","fsl_fcs_legumes")$res
     }
 
     fsl_fcs_veg <- names(main)[grepl("veg",names(main))]
     if(length(fsl_fcs_veg) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_fcs_veg, "' the correct fsl_fcs_veg column?"), type = "yesno")$res
-      fsl_fcs_veg <- fsl_fcs_veg
+      if (yes_no == "no") {
+        fsl_fcs_veg <- svDialogs::dlg_input(message= "Enter the name of the fsl_fcs_veg","fsl_fcs_veg")$res
+      }
     } else if (length(fsl_fcs_veg) > 1){
       fsl_fcs_veg <- tcltk::tk_select.list(fsl_fcs_veg, title = "FCS Vegetables column")
-    } else if (length(fsl_fcs_veg) == 0 | yes_no == "no") {
+    } else if (length(fsl_fcs_veg) == 0) {
       fsl_fcs_veg <- svDialogs::dlg_input(message= "Enter the name of the fsl_fcs_veg","fsl_fcs_veg")$res
     }
+
     fsl_fcs_fruit <- names(main)[grepl("fruit",names(main))]
     if(length(fsl_fcs_fruit) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_fcs_fruit, "' the correct fsl_fcs_fruit column?"), type = "yesno")$res
-      fsl_fcs_fruit <- fsl_fcs_fruit
+      if (yes_no == "no") {
+        fsl_fcs_fruit <- svDialogs::dlg_input(message= "Enter the name of the fsl_fcs_fruit","fsl_fcs_fruit")$res
+      }
     } else if (length(fsl_fcs_fruit) > 1){
       fsl_fcs_fruit <- tcltk::tk_select.list(fsl_fcs_fruit, title = "FCS Fruits column")
-    } else if (length(fsl_fcs_fruit) == 0 | yes_no == "no") {
+    } else if (length(fsl_fcs_fruit) == 0) {
       fsl_fcs_fruit <- svDialogs::dlg_input(message= "Enter the name of the fsl_fcs_fruit","fsl_fcs_fruit")$res
     }
+
     fsl_fcs_meat <- names(main)[grepl("meat",names(main))]
     if(length(fsl_fcs_meat) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_fcs_meat, "' the correct fsl_fcs_meat column?"), type = "yesno")$res
-      fsl_fcs_meat <- fsl_fcs_meat
+      if (yes_no == "no") {
+        fsl_fcs_meat <- svDialogs::dlg_input(message= "Enter the name of the fsl_fcs_meat","fsl_fcs_meat")$res
+      }
     } else if (length(fsl_fcs_meat) > 1){
       fsl_fcs_meat <- tcltk::tk_select.list(fsl_fcs_meat, title = "FCS Meat column")
-    } else if (length(fsl_fcs_meat) == 0 | yes_no == "no") {
+    } else if (length(fsl_fcs_meat) == 0) {
       fsl_fcs_meat <- svDialogs::dlg_input(message= "Enter the name of the fsl_fcs_meat","fsl_fcs_meat")$res
     }
+
     fsl_fcs_dairy <- names(main)[grepl("dairy|milk",names(main))]
     if(length(fsl_fcs_dairy) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_fcs_dairy, "' the correct fsl_fcs_dairy column?"), type = "yesno")$res
-      fsl_fcs_dairy <- fsl_fcs_dairy
+      if (yes_no == "no") {
+        fsl_fcs_dairy <- svDialogs::dlg_input(message= "Enter the name of the fsl_fcs_dairy","fsl_fcs_dairy")$res
+      }
     } else if (length(fsl_fcs_dairy) > 1){
       fsl_fcs_dairy <- tcltk::tk_select.list(fsl_fcs_dairy, title = "FCS Dairy/Milk column")
-    } else if (length(fsl_fcs_dairy) == 0 | yes_no == "no") {
+    } else if (length(fsl_fcs_dairy) == 0) {
       fsl_fcs_dairy <- svDialogs::dlg_input(message= "Enter the name of the fsl_fcs_dairy","fsl_fcs_dairy")$res
     }
+
     fsl_fcs_sugar <- names(main)[grepl("sugar",names(main))]
     if(length(fsl_fcs_sugar) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_fcs_sugar, "' the correct fsl_fcs_sugar column?"), type = "yesno")$res
-      fsl_fcs_sugar <- fsl_fcs_sugar
+      if (yes_no == "no") {
+        fsl_fcs_sugar <- svDialogs::dlg_input(message= "Enter the name of the fsl_fcs_sugar","fsl_fcs_sugar")$res
+      }
     } else if (length(fsl_fcs_sugar) > 1){
       fsl_fcs_sugar <- tcltk::tk_select.list(fsl_fcs_sugar, title = "FCS Sugar column")
-    } else if (length(fsl_fcs_sugar) == 0 | yes_no == "no") {
+    } else if (length(fsl_fcs_sugar) == 0) {
       fsl_fcs_sugar <- svDialogs::dlg_input(message= "Enter the name of the fsl_fcs_sugar","fsl_fcs_sugar")$res
     }
+
     fsl_fcs_oil <- names(main)[grepl("oil",names(main))]
     if(length(fsl_fcs_oil) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_fcs_oil, "' the correct fsl_fcs_oil column?"), type = "yesno")$res
-      fsl_fcs_oil <- fsl_fcs_oil
+      if (yes_no == "no") {
+        fsl_fcs_oil <- svDialogs::dlg_input(message= "Enter the name of the fsl_fcs_oil","fsl_fcs_oil")$res
+      }
     } else if (length(fsl_fcs_oil) > 1){
       fsl_fcs_oil <- tcltk::tk_select.list(fsl_fcs_oil, title = "FCS Oil column")
-    } else if (length(fsl_fcs_oil) == 0 | yes_no == "no") {
+    } else if (length(fsl_fcs_oil) == 0) {
       fsl_fcs_oil <- svDialogs::dlg_input(message= "Enter the name of the fsl_fcs_oil","fsl_fcs_oil")$res
     }
+
     fcs_check_columns <- c(fsl_fcs_cereal,
                            fsl_fcs_legumes,
                            fsl_fcs_veg,
@@ -150,46 +172,60 @@ if(!file.exists("inputs/environment.Rdata")) {
     fsl_rcsi_lessquality <- names(main)[grepl("less|quality|lessquality",names(main))]
     if(length(fsl_rcsi_lessquality) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_rcsi_lessquality, "' the correct fsl_rcsi_lessquality column?"), type = "yesno")$res
-      fsl_rcsi_lessquality <- fsl_rcsi_lessquality
+      if (yes_no == "no") {
+        fsl_rcsi_lessquality <- svDialogs::dlg_input(message= "Enter the name of the fsl_rcsi_lessquality","fsl_rcsi_lessquality")$res
+      }
     } else if (length(fsl_rcsi_lessquality) > 1){
       fsl_rcsi_lessquality <- tcltk::tk_select.list(fsl_rcsi_lessquality, title = "rCSI Less Quality column")
-    } else if (length(fsl_rcsi_lessquality) == 0 | yes_no == "no") {
+    } else if (length(fsl_rcsi_lessquality) == 0) {
       fsl_rcsi_lessquality <- svDialogs::dlg_input(message= "Enter the name of the fsl_rcsi_lessquality","fsl_rcsi_lessquality")$res
     }
+
     fsl_rcsi_borrow <- names(main)[grepl("borrow",names(main))]
     if(length(fsl_rcsi_borrow) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_rcsi_borrow, "' the correct fsl_rcsi_borrow column?"), type = "yesno")$res
-      fsl_rcsi_borrow <- fsl_rcsi_borrow
+      if (yes_no == "no") {
+        fsl_rcsi_borrow <- svDialogs::dlg_input(message= "Enter the name of the fsl_rcsi_borrow","fsl_rcsi_borrow")$res
+      }
     } else if (length(fsl_rcsi_borrow) > 1){
       fsl_rcsi_borrow <- tcltk::tk_select.list(fsl_rcsi_borrow, title = "rCSI Borrow column")
-    } else if (length(fsl_rcsi_borrow) == 0 | yes_no == "no") {
+    } else if (length(fsl_rcsi_borrow) == 0) {
       fsl_rcsi_borrow <- svDialogs::dlg_input(message= "Enter the name of the fsl_rcsi_borrow","fsl_rcsi_borrow")$res
     }
+
     fsl_rcsi_mealsize <- names(main)[grepl("mealsize|limit|portion",names(main))]
     if(length(fsl_rcsi_mealsize) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_rcsi_mealsize, "' the correct fsl_rcsi_mealsize column?"), type = "yesno")$res
-      fsl_rcsi_mealsize <- fsl_rcsi_mealsize
+      if (yes_no == "no") {
+        fsl_rcsi_mealsize <- svDialogs::dlg_input(message= "Enter the name of the fsl_rcsi_mealsize","fsl_rcsi_mealsize")$res
+      }
     } else if (length(fsl_rcsi_mealsize) > 1){
       fsl_rcsi_mealsize <- tcltk::tk_select.list(fsl_rcsi_mealsize, title = "rCSI Meal Size column")
-    } else if (length(fsl_rcsi_mealsize) == 0 | yes_no == "no") {
+    } else if (length(fsl_rcsi_mealsize) == 0) {
       fsl_rcsi_mealsize <- svDialogs::dlg_input(message= "Enter the name of the fsl_rcsi_mealsize","fsl_rcsi_mealsize")$res
     }
+
     fsl_rcsi_mealadult <- names(main)[grepl("mealadult|restrict",names(main))]
     if(length(fsl_rcsi_mealadult) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_rcsi_mealadult, "' the correct fsl_rcsi_mealadult column?"), type = "yesno")$res
-      fsl_rcsi_mealadult <- fsl_rcsi_mealadult
+      if (yes_no == "no") {
+        fsl_rcsi_mealadult <- svDialogs::dlg_input(message= "Enter the name of the fsl_rcsi_mealadult","fsl_rcsi_mealadult")$res
+      }
     } else if (length(fsl_rcsi_mealadult) > 1){
       fsl_rcsi_mealadult <- tcltk::tk_select.list(fsl_rcsi_mealadult, title = "rCSI Meal Adult column")
-    } else if (length(fsl_rcsi_mealadult) == 0 | yes_no == "no") {
+    } else if (length(fsl_rcsi_mealadult) == 0) {
       fsl_rcsi_mealadult <- svDialogs::dlg_input(message= "Enter the name of the fsl_rcsi_mealadult","fsl_rcsi_mealadult")$res
     }
+
     fsl_rcsi_mealnb <- names(main)[grepl("mealnb|reduce|meals",names(main))]
     if(length(fsl_rcsi_mealnb) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_rcsi_mealnb, "' the correct fsl_rcsi_mealnb column?"), type = "yesno")$res
-      fsl_rcsi_mealnb <- fsl_rcsi_mealnb
+      if (yes_no == "no") {
+        fsl_rcsi_mealnb <- svDialogs::dlg_input(message= "Enter the name of the fsl_rcsi_mealnb","fsl_rcsi_mealnb")$res
+      }
     } else if (length(fsl_rcsi_mealnb) > 1){
       fsl_rcsi_mealnb <- tcltk::tk_select.list(fsl_rcsi_mealnb, title = "rCSI Meal Number column")
-    } else if (length(fsl_rcsi_mealnb) == 0 | yes_no == "no") {
+    } else if (length(fsl_rcsi_mealnb) == 0) {
       fsl_rcsi_mealnb <- svDialogs::dlg_input(message= "Enter the name of the fsl_rcsi_mealnb","fsl_rcsi_mealnb")$res
     }
 
@@ -238,55 +274,72 @@ if(!file.exists("inputs/environment.Rdata")) {
     fsl_hhs_nofoodhh <- names(main)[grepl("nofood",names(main))]
     if(length(fsl_hhs_nofoodhh) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_hhs_nofoodhh, "' the correct fsl_hhs_nofoodhh column?"), type = "yesno")$res
-      fsl_hhs_nofoodhh <- fsl_hhs_nofoodhh
+      if (yes_no == "no") {
+        fsl_hhs_nofoodhh <- svDialogs::dlg_input(message= "Enter the name of the fsl_hhs_nofoodhh","fsl_hhs_nofoodhh")$res
+      }
     } else if (length(fsl_hhs_nofoodhh) > 1){
       fsl_hhs_nofoodhh <- tcltk::tk_select.list(fsl_hhs_nofoodhh, title = "HHS No Food HH column")
-    } else if (length(fsl_hhs_nofoodhh) == 0 | yes_no == "no") {
+    } else if (length(fsl_hhs_nofoodhh) == 0) {
       fsl_hhs_nofoodhh <- svDialogs::dlg_input(message= "Enter the name of the fsl_hhs_nofoodhh","fsl_hhs_nofoodhh")$res
     }
+
     fsl_hhs_nofoodhh_freq <- names(main)[grepl("nofood",names(main))]
     if(length(fsl_hhs_nofoodhh_freq) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_hhs_nofoodhh_freq, "' the correct fsl_hhs_nofoodhh_freq column?"), type = "yesno")$res
-      fsl_hhs_nofoodhh_freq <- fsl_hhs_nofoodhh_freq
+      if (yes_no == "no") {
+        fsl_hhs_nofoodhh_freq <- svDialogs::dlg_input(message= "Enter the name of the fsl_hhs_nofoodhh_freq","fsl_hhs_nofoodhh_freq")$res
+      }
     } else if (length(fsl_hhs_nofoodhh_freq) > 1){
       fsl_hhs_nofoodhh_freq <- tcltk::tk_select.list(fsl_hhs_nofoodhh_freq, title = "HHS No Food HH Freq column")
-    } else if (length(fsl_hhs_nofoodhh_freq) == 0 | yes_no == "no") {
+    } else if (length(fsl_hhs_nofoodhh_freq) == 0) {
       fsl_hhs_nofoodhh_freq <- svDialogs::dlg_input(message= "Enter the name of the fsl_hhs_nofoodhh_freq","fsl_hhs_nofoodhh_freq")$res
     }
+
     fsl_hhs_sleephungry <- names(main)[grepl("sleephungry",names(main))]
     if(length(fsl_hhs_sleephungry) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_hhs_sleephungry, "' the correct fsl_hhs_sleephungry column?"), type = "yesno")$res
-      fsl_hhs_sleephungry <- fsl_hhs_sleephungry
+      if (yes_no == "no") {
+        fsl_hhs_sleephungry <- svDialogs::dlg_input(message= "Enter the name of the fsl_hhs_sleephungry","fsl_hhs_sleephungry")$res
+      }
     } else if (length(fsl_hhs_sleephungry) > 1){
       fsl_hhs_sleephungry <- tcltk::tk_select.list(fsl_hhs_sleephungry, title = "HHS Sleep Hungry column")
-    } else if (length(fsl_hhs_sleephungry) == 0 | yes_no == "no") {
+    } else if (length(fsl_hhs_sleephungry) == 0) {
       fsl_hhs_sleephungry <- svDialogs::dlg_input(message= "Enter the name of the fsl_hhs_sleephungry","fsl_hhs_sleephungry")$res
     }
+
     fsl_hhs_sleephungry_freq <- names(main)[grepl("sleephungry",names(main))]
     if(length(fsl_hhs_sleephungry_freq) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_hhs_sleephungry_freq, "' the correct fsl_hhs_sleephungry_freq column?"), type = "yesno")$res
-      fsl_hhs_sleephungry_freq <- fsl_hhs_sleephungry_freq
+      if (yes_no == "no") {
+        fsl_hhs_sleephungry_freq <- svDialogs::dlg_input(message= "Enter the name of the fsl_hhs_sleephungry_freq","fsl_hhs_sleephungry_freq")$res
+      }
     } else if (length(fsl_hhs_sleephungry_freq) > 1){
       fsl_hhs_sleephungry_freq <- tcltk::tk_select.list(fsl_hhs_sleephungry_freq, title = "HHS Sleep Hungry Freq column")
-    } else if (length(fsl_hhs_sleephungry_freq) == 0 | yes_no == "no") {
+    } else if (length(fsl_hhs_sleephungry_freq) == 0) {
       fsl_hhs_sleephungry_freq <- svDialogs::dlg_input(message= "Enter the name of the fsl_hhs_sleephungry_freq","fsl_hhs_sleephungry_freq")$res
     }
+
     fsl_hhs_alldaynight <- names(main)[grepl("alldaynight|daynoteating",names(main))]
     if(length(fsl_hhs_alldaynight) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_hhs_alldaynight, "' the correct fsl_hhs_alldaynight column?"), type = "yesno")$res
-      fsl_hhs_alldaynight <- fsl_hhs_alldaynight
+      if (yes_no == "no") {
+        fsl_hhs_alldaynight <- svDialogs::dlg_input(message= "Enter the name of the fsl_hhs_alldaynight","fsl_hhs_alldaynight")$res
+      }
     } else if (length(fsl_hhs_alldaynight) > 1){
       fsl_hhs_alldaynight <- tcltk::tk_select.list(fsl_hhs_alldaynight, title = "HHS All Day Night column")
-    } else if (length(fsl_hhs_alldaynight) == 0 | yes_no == "no") {
+    } else if (length(fsl_hhs_alldaynight) == 0) {
       fsl_hhs_alldaynight <- svDialogs::dlg_input(message= "Enter the name of the fsl_hhs_alldaynight","fsl_hhs_alldaynight")$res
     }
+
     fsl_hhs_alldaynight_freq <- names(main)[grepl("alldaynight|daynoteating",names(main))]
     if(length(fsl_hhs_alldaynight_freq) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_hhs_alldaynight_freq, "' the correct fsl_hhs_alldaynight_freq column?"), type = "yesno")$res
-      fsl_hhs_alldaynight_freq <- fsl_hhs_alldaynight_freq
+      if (yes_no == "no") {
+        fsl_hhs_alldaynight_freq <- svDialogs::dlg_input(message= "Enter the name of the fsl_hhs_alldaynight_freq","fsl_hhs_alldaynight_freq")$res
+      }
     } else if (length(fsl_hhs_alldaynight_freq) > 1){
       fsl_hhs_alldaynight_freq <- tcltk::tk_select.list(fsl_hhs_alldaynight_freq, title = "HHS all Day Night Freq column")
-    } else if (length(fsl_hhs_alldaynight_freq) == 0 | yes_no == "no") {
+    } else if (length(fsl_hhs_alldaynight_freq) == 0) {
       fsl_hhs_alldaynight_freq <- svDialogs::dlg_input(message= "Enter the name of the fsl_hhs_alldaynight_freq","fsl_hhs_alldaynight_freq")$res
     }
 
@@ -357,99 +410,119 @@ if(!file.exists("inputs/environment.Rdata")) {
     fsl_lcsi_stress1 <- names(main)[grepl("stress|stress1",names(main))]
     if(length(fsl_lcsi_stress1) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_lcsi_stress1, "' the correct fsl_lcsi_stress1 column?"), type = "yesno")$res
-      fsl_lcsi_stress1 <- fsl_lcsi_stress1
+      if (yes_no == "no") {
+        fsl_lcsi_stress1 <- svDialogs::dlg_input(message= "Enter the name of the fsl_lcsi_stress1","fsl_lcsi_stress1")$res
+      }
     } else if (length(fsl_lcsi_stress1) > 1){
       fsl_lcsi_stress1 <- tcltk::tk_select.list(fsl_lcsi_stress1, title = "LCSI Stress 1 column")
-    } else if (length(fsl_lcsi_stress1) == 0 | yes_no == "no") {
+    } else if (length(fsl_lcsi_stress1) == 0) {
       fsl_lcsi_stress1 <- svDialogs::dlg_input(message= "Enter the name of the fsl_lcsi_stress1","fsl_lcsi_stress1")$res
     }
     fsl_lcsi_stress2 <- names(main)[grepl("stress|stress2",names(main))]
     if(length(fsl_lcsi_stress2) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_lcsi_stress2, "' the correct fsl_lcsi_stress2 column?"), type = "yesno")$res
-      fsl_lcsi_stress2 <- fsl_lcsi_stress2
+      if (yes_no == "no") {
+        fsl_lcsi_stress2 <- svDialogs::dlg_input(message= "Enter the name of the fsl_lcsi_stress2","fsl_lcsi_stress2")$res
+      }
     } else if (length(fsl_lcsi_stress2) > 1){
       fsl_lcsi_stress2 <- tcltk::tk_select.list(fsl_lcsi_stress2, title = "LCSI Stress 2 column")
-    } else if (length(fsl_lcsi_stress2) == 0 | yes_no == "no") {
+    } else if (length(fsl_lcsi_stress2) == 0) {
       fsl_lcsi_stress2 <- svDialogs::dlg_input(message= "Enter the name of the fsl_lcsi_stress2","fsl_lcsi_stress2")$res
     }
 
     fsl_lcsi_stress3 <- names(main)[grepl("stress|stress3",names(main))]
     if(length(fsl_lcsi_stress3) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_lcsi_stress3, "' the correct fsl_lcsi_stress3 column?"), type = "yesno")$res
-      fsl_lcsi_stress3 <- fsl_lcsi_stress3
+      if (yes_no == "no") {
+        fsl_lcsi_stress3 <- svDialogs::dlg_input(message= "Enter the name of the fsl_lcsi_stress3","fsl_lcsi_stress3")$res
+      }
     } else if (length(fsl_lcsi_stress3) > 1){
       fsl_lcsi_stress3 <- tcltk::tk_select.list(fsl_lcsi_stress3, title = "LCSI Stress 3 column")
-    } else if (length(fsl_lcsi_stress3) == 0 | yes_no == "no") {
+    } else if (length(fsl_lcsi_stress3) == 0) {
       fsl_lcsi_stress3 <- svDialogs::dlg_input(message= "Enter the name of the fsl_lcsi_stress3","fsl_lcsi_stress3")$res
     }
 
     fsl_lcsi_stress4 <- names(main)[grepl("stress|stress4",names(main))]
     if(length(fsl_lcsi_stress4) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_lcsi_stress4, "' the correct fsl_lcsi_stress4 column?"), type = "yesno")$res
-      fsl_lcsi_stress4 <- fsl_lcsi_stress4
+      if (yes_no == "no") {
+        fsl_lcsi_stress4 <- svDialogs::dlg_input(message= "Enter the name of the fsl_lcsi_stress4","fsl_lcsi_stress4")$res
+      }
     } else if (length(fsl_lcsi_stress4) > 1){
       fsl_lcsi_stress4 <- tcltk::tk_select.list(fsl_lcsi_stress4, title = "LCSI Stress 4 column")
-    } else if (length(fsl_lcsi_stress4) == 0 | yes_no == "no") {
+    } else if (length(fsl_lcsi_stress4) == 0) {
       fsl_lcsi_stress4 <- svDialogs::dlg_input(message= "Enter the name of the fsl_lcsi_stress4","fsl_lcsi_stress4")$res
     }
 
     fsl_lcsi_crisis1 <- names(main)[grepl("crisis|crisis1",names(main))]
     if(length(fsl_lcsi_crisis1) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_lcsi_crisis1, "' the correct fsl_lcsi_crisis1 column?"), type = "yesno")$res
-      fsl_lcsi_crisis1 <- fsl_lcsi_crisis1
+      if (yes_no == "no") {
+        fsl_lcsi_crisis1 <- svDialogs::dlg_input(message= "Enter the name of the fsl_lcsi_crisis1","fsl_lcsi_crisis1")$res
+      }
     } else if (length(fsl_lcsi_crisis1) > 1){
       fsl_lcsi_crisis1 <- tcltk::tk_select.list(fsl_lcsi_crisis1, title = "LCSI Crisis 1 column")
-    } else if (length(fsl_lcsi_crisis1) == 0 | yes_no == "no") {
+    } else if (length(fsl_lcsi_crisis1) == 0) {
       fsl_lcsi_crisis1 <- svDialogs::dlg_input(message= "Enter the name of the fsl_lcsi_crisis1","fsl_lcsi_crisis1")$res
     }
 
     fsl_lcsi_crisis2 <- names(main)[grepl("crisis|crisis2",names(main))]
     if(length(fsl_lcsi_crisis2) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_lcsi_crisis2, "' the correct fsl_lcsi_crisis2 column?"), type = "yesno")$res
-      fsl_lcsi_crisis2 <- fsl_lcsi_crisis2
+      if (yes_no == "no") {
+        fsl_lcsi_crisis2 <- svDialogs::dlg_input(message= "Enter the name of the fsl_lcsi_crisis2","fsl_lcsi_crisis2")$res
+      }
     } else if (length(fsl_lcsi_crisis2) > 1){
       fsl_lcsi_crisis2 <- tcltk::tk_select.list(fsl_lcsi_crisis2, title = "LCSI Crisis 2 column")
-    } else if (length(fsl_lcsi_crisis2) == 0 | yes_no == "no") {
+    } else if (length(fsl_lcsi_crisis2) == 0) {
       fsl_lcsi_crisis2 <- svDialogs::dlg_input(message= "Enter the name of the fsl_lcsi_crisis2","fsl_lcsi_crisis2")$res
     }
 
     fsl_lcsi_crisis3 <- names(main)[grepl("crisis|crisis3",names(main))]
     if(length(fsl_lcsi_crisis3) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_lcsi_crisis3, "' the correct fsl_lcsi_crisis3 column?"), type = "yesno")$res
-      fsl_lcsi_crisis3 <- fsl_lcsi_crisis3
+      if (yes_no == "no") {
+        fsl_lcsi_crisis3 <- svDialogs::dlg_input(message= "Enter the name of the fsl_lcsi_crisis3","fsl_lcsi_crisis3")$res
+      }
     } else if (length(fsl_lcsi_crisis3) > 1){
       fsl_lcsi_crisis3 <- tcltk::tk_select.list(fsl_lcsi_crisis3, title = "LCSI Crisis 3 column")
-    } else if (length(fsl_lcsi_crisis3) == 0 | yes_no == "no") {
+    } else if (length(fsl_lcsi_crisis3) == 0) {
       fsl_lcsi_crisis3 <- svDialogs::dlg_input(message= "Enter the name of the fsl_lcsi_crisis3","fsl_lcsi_crisis3")$res
     }
 
     fsl_lcsi_emergency1 <- names(main)[grepl("emergency|emergency1",names(main))]
     if(length(fsl_lcsi_emergency1) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_lcsi_emergency1, "' the correct fsl_lcsi_emergency1 column?"), type = "yesno")$res
-      fsl_lcsi_emergency1 <- fsl_lcsi_emergency1
+      if (yes_no == "no") {
+        fsl_lcsi_emergency1 <- svDialogs::dlg_input(message= "Enter the name of the fsl_lcsi_emergency1","fsl_lcsi_emergency1")$res
+      }
     } else if (length(fsl_lcsi_emergency1) > 1){
       fsl_lcsi_emergency1 <- tcltk::tk_select.list(fsl_lcsi_emergency1, title = "LCSI Emergency 1 column")
-    } else if (length(fsl_lcsi_emergency1) == 0 | yes_no == "no") {
+    } else if (length(fsl_lcsi_emergency1) == 0) {
       fsl_lcsi_emergency1 <- svDialogs::dlg_input(message= "Enter the name of the fsl_lcsi_emergency1","fsl_lcsi_emergency1")$res
     }
 
     fsl_lcsi_emergency2 <- names(main)[grepl("emergency|emergency2",names(main))]
     if(length(fsl_lcsi_emergency2) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_lcsi_emergency2, "' the correct fsl_lcsi_emergency2 column?"), type = "yesno")$res
-      fsl_lcsi_emergency2 <- fsl_lcsi_emergency2
+      if (yes_no == "no") {
+        fsl_lcsi_emergency2 <- svDialogs::dlg_input(message= "Enter the name of the fsl_lcsi_emergency2","fsl_lcsi_emergency2")$res
+      }
     } else if (length(fsl_lcsi_emergency2) > 1){
       fsl_lcsi_emergency2 <- tcltk::tk_select.list(fsl_lcsi_emergency2, title = "LCSI Emergency 2 column")
-    } else if (length(fsl_lcsi_emergency2) == 0 | yes_no == "no") {
+    } else if (length(fsl_lcsi_emergency2) == 0) {
       fsl_lcsi_emergency2 <- svDialogs::dlg_input(message= "Enter the name of the fsl_lcsi_emergency2","fsl_lcsi_emergency2")$res
     }
 
     fsl_lcsi_emergency3 <- names(main)[grepl("emergency|emergency3",names(main))]
     if(length(fsl_lcsi_emergency3) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_lcsi_emergency3, "' the correct fsl_lcsi_emergency3 column?"), type = "yesno")$res
-      fsl_lcsi_emergency3 <- fsl_lcsi_emergency3
+      if (yes_no == "no") {
+        fsl_lcsi_emergency3 <- svDialogs::dlg_input(message= "Enter the name of the fsl_lcsi_emergency3","fsl_lcsi_emergency3")$res
+      }
     } else if (length(fsl_lcsi_emergency3) > 1){
       fsl_lcsi_emergency3 <- tcltk::tk_select.list(fsl_lcsi_emergency3, title = "LCSI Emergency 3 column")
-    } else if (length(fsl_lcsi_emergency3) == 0 | yes_no == "no") {
+    } else if (length(fsl_lcsi_emergency3) == 0) {
       fsl_lcsi_emergency3 <- svDialogs::dlg_input(message= "Enter the name of the fsl_lcsi_emergency3","fsl_lcsi_emergency3")$res
     }
 
@@ -522,120 +595,144 @@ if(!file.exists("inputs/environment.Rdata")) {
     fsl_hdds_cereals <- names(main)[grepl("cereal",names(main))]
     if(length(fsl_hdds_cereals) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_hdds_cereals, "' the correct fsl_hdds_cereals column?"), type = "yesno")$res
-      fsl_hdds_cereals <- fsl_hdds_cereals
+      if (yes_no == "no") {
+        fsl_hdds_cereals <- svDialogs::dlg_input(message= "Enter the name of the fsl_hdds_cereals","fsl_hdds_cereals")$res
+      }
     } else if (length(fsl_hdds_cereals) > 1){
       fsl_hdds_cereals <- tcltk::tk_select.list(fsl_hdds_cereals, title = "HDDS Cereals column")
-    } else if (length(fsl_hdds_cereals) == 0 | yes_no == "no") {
+    } else if (length(fsl_hdds_cereals) == 0) {
       fsl_hdds_cereals <- svDialogs::dlg_input(message= "Enter the name of the fsl_hdds_cereals","fsl_hdds_cereals")$res
     }
 
     fsl_hdds_tubers <- names(main)[grepl("tubers",names(main))]
     if(length(fsl_hdds_tubers) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_hdds_tubers, "' the correct fsl_hdds_tubers column?"), type = "yesno")$res
-      fsl_hdds_tubers <- fsl_hdds_tubers
+      if (yes_no == "no") {
+        fsl_hdds_tubers <- svDialogs::dlg_input(message= "Enter the name of the fsl_hdds_tubers","fsl_hdds_tubers")$res
+      }
     } else if (length(fsl_hdds_tubers) > 1){
       fsl_hdds_tubers <- tcltk::tk_select.list(fsl_hdds_tubers, title = "HDDS Tubers column")
-    } else if (length(fsl_hdds_tubers) == 0 | yes_no == "no") {
+    } else if (length(fsl_hdds_tubers) == 0) {
       fsl_hdds_tubers <- svDialogs::dlg_input(message= "Enter the name of the fsl_hdds_tubers","fsl_hdds_tubers")$res
     }
 
     fsl_hdds_veg <- names(main)[grepl("veg",names(main))]
     if(length(fsl_hdds_veg) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_hdds_veg, "' the correct fsl_hdds_veg column?"), type = "yesno")$res
-      fsl_hdds_veg <- fsl_hdds_veg
+      if (yes_no == "no") {
+        fsl_hdds_veg <- svDialogs::dlg_input(message= "Enter the name of the fsl_hdds_veg","fsl_hdds_veg")$res
+      }
     } else if (length(fsl_hdds_veg) > 1){
       fsl_hdds_veg <- tcltk::tk_select.list(fsl_hdds_veg, title = "HDDS Vegetables column")
-    } else if (length(fsl_hdds_veg) == 0 | yes_no == "no") {
+    } else if (length(fsl_hdds_veg) == 0) {
       fsl_hdds_veg <- svDialogs::dlg_input(message= "Enter the name of the fsl_hdds_veg","fsl_hdds_veg")$res
     }
 
     fsl_hdds_fruit <- names(main)[grepl("fruit",names(main))]
     if(length(fsl_hdds_fruit) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_hdds_fruit, "' the correct fsl_hdds_fruit column?"), type = "yesno")$res
-      fsl_hdds_fruit <- fsl_hdds_fruit
+      if (yes_no == "no") {
+        fsl_hdds_fruit <- svDialogs::dlg_input(message= "Enter the name of the fsl_hdds_fruit","fsl_hdds_fruit")$res
+      }
     } else if (length(fsl_hdds_fruit) > 1){
       fsl_hdds_fruit <- tcltk::tk_select.list(fsl_hdds_fruit, title = "HDDS Fruits column")
-    } else if (length(fsl_hdds_fruit) == 0 | yes_no == "no") {
+    } else if (length(fsl_hdds_fruit) == 0) {
       fsl_hdds_fruit <- svDialogs::dlg_input(message= "Enter the name of the fsl_hdds_fruit","fsl_hdds_fruit")$res
     }
 
     fsl_hdds_meat <- names(main)[grepl("meat",names(main))]
     if(length(fsl_hdds_meat) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_hdds_meat, "' the correct fsl_hdds_meat column?"), type = "yesno")$res
-      fsl_hdds_meat <- fsl_hdds_meat
+      if (yes_no == "no") {
+        fsl_hdds_meat <- svDialogs::dlg_input(message= "Enter the name of the fsl_hdds_meat","fsl_hdds_meat")$res
+      }
     } else if (length(fsl_hdds_meat) > 1){
       fsl_hdds_meat <- tcltk::tk_select.list(fsl_hdds_meat, title = "HDDS Meat column")
-    } else if (length(fsl_hdds_meat) == 0 | yes_no == "no") {
+    } else if (length(fsl_hdds_meat) == 0) {
       fsl_hdds_meat <- svDialogs::dlg_input(message= "Enter the name of the fsl_hdds_meat","fsl_hdds_meat")$res
     }
 
     fsl_hdds_eggs <- names(main)[grepl("egg",names(main))]
     if(length(fsl_hdds_eggs) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_hdds_eggs, "' the correct fsl_hdds_eggs column?"), type = "yesno")$res
-      fsl_hdds_eggs <- fsl_hdds_eggs
+      if (yes_no == "no") {
+        fsl_hdds_eggs <- svDialogs::dlg_input(message= "Enter the name of the fsl_hdds_eggs","fsl_hdds_eggs")$res
+      }
     } else if (length(fsl_hdds_eggs) > 1){
       fsl_hdds_eggs <- tcltk::tk_select.list(fsl_hdds_eggs, title = "HDDS Eggs column")
-    } else if (length(fsl_hdds_eggs) == 0 | yes_no == "no") {
+    } else if (length(fsl_hdds_eggs) == 0) {
       fsl_hdds_eggs <- svDialogs::dlg_input(message= "Enter the name of the fsl_hdds_eggs","fsl_hdds_eggs")$res
     }
 
     fsl_hdds_fish <- names(main)[grepl("fish",names(main))]
     if(length(fsl_hdds_fish) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_hdds_fish, "' the correct fsl_hdds_fish column?"), type = "yesno")$res
-      fsl_hdds_fish <- fsl_hdds_fish
+      if (yes_no == "no") {
+        fsl_hdds_fish <- svDialogs::dlg_input(message= "Enter the name of the fsl_hdds_fish","fsl_hdds_fish")$res
+      }
     } else if (length(fsl_hdds_fish) > 1){
       fsl_hdds_fish <- tcltk::tk_select.list(fsl_hdds_fish, title = "HDDS Fish column")
-    } else if (length(fsl_hdds_fish) == 0 | yes_no == "no") {
+    } else if (length(fsl_hdds_fish) == 0) {
       fsl_hdds_fish <- svDialogs::dlg_input(message= "Enter the name of the fsl_hdds_fish","fsl_hdds_fish")$res
     }
 
     fsl_hdds_legumes <- names(main)[grepl("legume|pulse",names(main))]
     if(length(fsl_hdds_legumes) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_hdds_legumes, "' the correct fsl_hdds_legumes column?"), type = "yesno")$res
-      fsl_hdds_legumes <- fsl_hdds_legumes
+      if (yes_no == "no") {
+        fsl_hdds_legumes <- svDialogs::dlg_input(message= "Enter the name of the fsl_hdds_legumes","fsl_hdds_legumes")$res
+      }
     } else if (length(fsl_hdds_legumes) > 1){
       fsl_hdds_legumes <- tcltk::tk_select.list(fsl_hdds_legumes, title = "HDDS Legumes/Pulses column")
-    } else if (length(fsl_hdds_legumes) == 0 | yes_no == "no") {
+    } else if (length(fsl_hdds_legumes) == 0) {
       fsl_hdds_legumes <- svDialogs::dlg_input(message= "Enter the name of the fsl_hdds_legumes","fsl_hdds_legumes")$res
     }
 
     fsl_hdds_dairy <- names(main)[grepl("milk|dairy",names(main))]
     if(length(fsl_hdds_dairy) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_hdds_dairy, "' the correct fsl_hdds_dairy column?"), type = "yesno")$res
-      fsl_hdds_dairy <- fsl_hdds_dairy
+      if (yes_no == "no") {
+        fsl_hdds_dairy <- svDialogs::dlg_input(message= "Enter the name of the fsl_hdds_dairy","fsl_hdds_dairy")$res
+      }
     } else if (length(fsl_hdds_dairy) > 1){
       fsl_hdds_dairy <- tcltk::tk_select.list(fsl_hdds_dairy, title = "HDDS Dairy/Milk column")
-    } else if (length(fsl_hdds_dairy) == 0 | yes_no == "no") {
+    } else if (length(fsl_hdds_dairy) == 0) {
       fsl_hdds_dairy <- svDialogs::dlg_input(message= "Enter the name of the fsl_hdds_dairy","fsl_hdds_dairy")$res
     }
 
     fsl_hdds_oil <- names(main)[grepl("oil",names(main))]
     if(length(fsl_hdds_oil) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_hdds_oil, "' the correct fsl_hdds_oil column?"), type = "yesno")$res
-      fsl_hdds_oil <- fsl_hdds_oil
+      if (yes_no == "no") {
+        fsl_hdds_oil <- svDialogs::dlg_input(message= "Enter the name of the fsl_hdds_oil","fsl_hdds_oil")$res
+      }
     } else if (length(fsl_hdds_oil) > 1){
       fsl_hdds_oil <- tcltk::tk_select.list(fsl_hdds_oil, title = "HDDS Oil column")
-    } else if (length(fsl_hdds_oil) == 0 | yes_no == "no") {
+    } else if (length(fsl_hdds_oil) == 0) {
       fsl_hdds_oil <- svDialogs::dlg_input(message= "Enter the name of the fsl_hdds_oil","fsl_hdds_oil")$res
     }
 
     fsl_hdds_sugar <- names(main)[grepl("sugar",names(main))]
     if(length(fsl_hdds_sugar) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_hdds_sugar, "' the correct fsl_hdds_sugar column?"), type = "yesno")$res
-      fsl_hdds_sugar <- fsl_hdds_sugar
+      if (yes_no == "no") {
+        fsl_hdds_sugar <- svDialogs::dlg_input(message= "Enter the name of the fsl_hdds_sugar","fsl_hdds_sugar")$res
+      }
     } else if (length(fsl_hdds_sugar) > 1){
       fsl_hdds_sugar <- tcltk::tk_select.list(fsl_hdds_sugar, title = "HDDS Sugar column")
-    } else if (length(fsl_hdds_sugar) == 0 | yes_no == "no") {
+    } else if (length(fsl_hdds_sugar) == 0) {
       fsl_hdds_sugar <- svDialogs::dlg_input(message= "Enter the name of the fsl_hdds_sugar","fsl_hdds_sugar")$res
     }
 
     fsl_hdds_condiments <- names(main)[grepl("condiment",names(main))]
     if(length(fsl_hdds_condiments) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_hdds_condiments, "' the correct fsl_hdds_condiments column?"), type = "yesno")$res
-      fsl_hdds_condiments <- fsl_hdds_condiments
+      if (yes_no == "no") {
+        fsl_hdds_condiments <- svDialogs::dlg_input(message= "Enter the name of the fsl_hdds_condiments","fsl_hdds_condiments")$res
+      }
     } else if (length(fsl_hdds_condiments) > 1){
       fsl_hdds_condiments <- tcltk::tk_select.list(fsl_hdds_condiments, title = "HDDS Condiments column")
-    } else if (length(fsl_hdds_condiments) == 0 | yes_no == "no") {
+    } else if (length(fsl_hdds_condiments) == 0) {
       fsl_hdds_condiments <- svDialogs::dlg_input(message= "Enter the name of the fsl_hdds_condiments","fsl_hdds_condiments")$res
     }
 
