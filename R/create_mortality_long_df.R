@@ -1,51 +1,99 @@
-reformat_mortality <- function(df) {
- if("sex" %in% names(df)){
-   sex_codes <- unique(df$sex)
-   ideal_codes <- c("1", "2")
-   sex_recodes <- c("1", "2", "NA")
-
-   if(length(setdiff(sex_codes, ideal_codes))==0) {
-     print("Good - Sex coded as 1/2 for male/female")
-   } else {
-     for(i in 1:length(sex_codes)) {
-       a <- svDialogs::dlg_input(message= paste0("\n RE-FORMATTING VARIABLE : SEX \n How is '",sex_codes[[i]], "' coded? Please input either\n '1' for male, \n '2' for 'female' or \n 'NA' for missing. " ))$res
-       while(length(setdiff(a, sex_recodes))==1) {
-         a <- svDialogs::dlg_input(message= paste0("\n RE-FORMATTING VARIABLE : SEX \n Invalid input. ", "How is '", sex_codes[[i]], "' coded? Please input either\n '1' for male, \n '2' for 'female' or \n 'NA' for missing. "))$res
-       }
-       if(!is.na(sex_codes[[i]])){
-         if(a == "NA") {df <- df %>% dplyr::mutate(sex = ifelse(.data$sex == sex_codes[[i]], NA, .data$sex))
-         } else {df <- df %>% dplyr::mutate(sex = ifelse(.data$sex == sex_codes[[i]], a, .data$sex))}
-       }
-     }
-   }
- }
-
-  if(c("date_dc") %in% names(df)) {
-
-    date_recodes <- c("mdy", "dmy", "ymd", "ydm")
-    unique_dates <- df %>% dplyr::filter(!is.na(.data$date_dc)) %>% dplyr::select(.data$date_dc) %>% t %>% c %>% unique
-    a <- svDialogs::dlg_input(message= paste0("Example of Date of Data collection values: ", if(length(unique_dates)>0) {unique_dates[[1]]}, " ", if(length(unique_dates)>1) {unique_dates[[2]]}, " ",if(length(unique_dates)>2) {unique_dates[[3]]},
-                                              "\n RE-FORMATTING VARIABLE : DATE OF DATA COLLECTION \n What is the date format for the DATE OF DATA COLLECTION column? Please input : \n 'mdy' for months-day-year, \n 'dmy' for day-months-year \n 'ymd' for year-month-day \n 'ydm' for year-day-month."))$res
-    while(length(setdiff(a, date_recodes))==1) {
-      a <- svDialogs::dlg_input(message= paste0("Invalid input. \n ", "\n RE-FORMATTING VARIABLE : DATE OF DATA COLLECTION \n How is DATE OF DATA COLLECTION formatted? Please input : \n  'mdy' for months-day-year, \n 'dmy' for day-months-year \n 'ymd' for year-month-day \n 'ydm' for year-day-month."))$res
-    }
-
-
-    if(is.character(df$date_dc)) {df <- df %>% dplyr::mutate(date_dc = ifelse(.data$date_dc == "", NA, .data$date_dc))}
-
-    df <- df %>%
-      dplyr::mutate(date_dc_date = lubridate::parse_date_time(.data$date_dc, orders = a)) %>%
-      dplyr::mutate(date_dc_month = lubridate::month(.data$date_dc_date),
-                    date_dc_day = lubridate::day(.data$date_dc_date),
-                    date_dc_year = lubridate::year(.data$date_dc_date)) %>%
-      dplyr::mutate(date_dc_char = paste(.data$date_dc_month, .data$date_dc_day, .data$date_dc_year, sep = "/"),
-                    date_dc_char = ifelse(is.na(.data$date_dc_char), NA, ifelse(.data$date_dc_char == "NA/NA/NA", NA, .data$date_dc_char)))
-
-  }
-
-  ### TO CONTINUE HERE
-}
-
+#' create_mortality_long_df
+#'
+#' @param df_main Main Dataset
+#' @param date_dc the name of the variable that indicates the date of data collection
+#' By default: "today"
+#' @param date_recall_event the name of the variable that indicates the recall date
+#' By default: "recall_date"
+#' @param enumerator the name of the variable that indicates the enumerator
+#' By default: NULL
+#' @param cluster the name of the variable that indicates the cluster
+#' By default: NULL
+#' @param admin1 the name of the variable that indicates the admin 1
+#' By default: NULL
+#' @param admin2 the name of the variable that indicates the admin 2
+#' By default: NULL
+#' @param uuid_main the name of the variable that indicates the unique uuid
+#' By default: NULL
+#' @param df_roster Roster Dataset
+#' @param sex_roster the name of the variable that indicates the sex of the individuals
+#' By default: "sex_roster"
+#' @param age_roster the name of the variable that indicates the age by year of the individuals
+#' By default: "calc_final_age_years"
+#' @param joined_roster the name of the variable that indicates if the individuals joined the HH
+#' By default: "joined"
+#' @param birth_roster the name of the variable that indicates if the individuals joined the HH
+#' By default: "joined"
+#' @param birthdate_roster the name of the variable that indicates if the date of birth of child
+#' under 6. By default: "final_ind_dob"
+#' @param joined_date_roster the name of the variable that indicates if the date individuals
+#' joined the HH. By default: "final_date_join"
+#' @param uuid_roster the name of the variable that indicates the unique uuid of HH
+#' By default: NULL
+#' @param df_left Left Dataset
+#' @param sex_left the name of the variable that indicates the sex of the individuals
+#' By default: "sex_left"
+#' @param age_left the name of the variable that indicates the age by year of the individuals
+#' By default: "calc_final_age_years_left"
+#' @param birth_left the name of the variable that indicates if any of the leavers were born.
+#' By default: "ind_born_left"
+#' @param joined_left the name of the variable that indicates if any of the leavers joined
+#' the HH. By default: "left_present"
+#' @param joined_date_left the name of the variable that indicates the date the leavers
+#' joined the HH. By default: "final_date_join_left"
+#' @param left_date_left the name of the variable that indicates the date the leavers
+#' left the HH. By default: "final_date_left"
+#' @param birthdate_left the name of the variable that indicates the date the leavers
+#' were born. By default: "final_ind_dob_left"
+#' @param uuid_left the name of the variable that indicates the unique uuid of HH
+#' By default: NULL
+#' @param df_died Death Dataset
+#' @param sex_died the name of the variable that indicates the sex of the individuals
+#' By default: "sex_died"
+#' @param age_died the name of the variable that indicates the age by year of the individuals
+#' By default: "calc_final_age_years_died"
+#' @param birth_died the name of the variable that indicates if any of the death were born.
+#' By default: "ind_born_died"
+#' @param joined_died the name of the variable that indicates if any of the death joined
+#' the HH. By default: "died_present"
+#' @param death_cause the name of the variable that indicates the cause of death
+#' By default: "cause_death"
+#' @param death_location the name of the variable that indicates the location of death
+#' By default: "location_death"
+#' @param date_death the name of the variable that indicates the date of death
+#' By default: "final_date_death"
+#' @param joined_date_died the name of the variable that indicates the date death joiners
+#' joined the HH, By default: "date_join_final_death"
+#' @param birthdate_died the name of the variable that indicates the date of birth of the
+#' death individuals. By default: "dob_died"
+#' @param uuid_died the name of the variable that indicates the unique uuid of HH
+#' By default: NULL
+#'
+#' @return return a long reformated dataframe including all roster/left/death individuals
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#'   create_mortality_long_df(df_main,date_dc = "today",
+#'   date_recall_event = "recall_date",
+#'   enumerator = "enumerator",cluster = "cluster",
+#'   admin1 = "admin1",admin2 = "admin2",
+#'   uuid_main = "uuid", df_roster,sex_roster = "sex_roster",
+#'   age_roster = "calc_final_age_years",
+#'   joined_roster = "joined",birth_roster = "ind_born",
+#'   birthdate_roster = "final_ind_dob",
+#'   joined_date_roster = "final_date_join",
+#'   uuid_roster = "_submission__uuid", df_left,sex_left = "sex_left",
+#'   age_left = "calc_final_age_years_left",birth_left = "ind_born_left",
+#'   joined_left = "left_present",joined_date_left = "final_date_join_left",
+#'   left_date_left = "final_date_left",birthdate_left = "final_ind_dob_left",
+#'   uuid_left = "_submission__uuid", df_died,sex_died = "sex_died",
+#'   age_died = "calc_final_age_years_died",
+#'   birth_died = "ind_born_died",joined_died = "died_present",
+#'   death_cause = "cause_death", death_location = "location_death",
+#'   date_death = "final_date_death", joined_date_died = "date_join_final_death",
+#'   birthdate_died = "dob_died",uuid_died = "_submission__uuid")
+#' }
 
 create_mortality_long_df <- function(df_main,date_dc = "today",date_recall_event = "recall_date",
                                      enumerator = NULL,cluster = NULL,admin1 = NULL,admin2 = NULL,
@@ -54,7 +102,7 @@ create_mortality_long_df <- function(df_main,date_dc = "today",date_recall_event
                                      joined_date_roster = "final_date_join", uuid_roster = NULL, df_left,sex_left = "sex_left",
                                      age_left = "calc_final_age_years_left",birth_left = "ind_born_left",
                                      joined_left = "left_present",joined_date_left = "final_date_join_left",
-                                     left_date_left = "date_left_exact",birthdate_left = "final_ind_dob_left",
+                                     left_date_left = "final_date_left",birthdate_left = "final_ind_dob_left",
                                      uuid_left = NULL, df_died,sex_died = "sex_died",age_died = "calc_final_age_years_died",
                                      birth_died = "ind_born_died",joined_died = "died_present",death_cause = "cause_death",
                                      death_location = "location_death",date_death = "final_date_death",
@@ -322,7 +370,7 @@ create_mortality_long_df <- function(df_main,date_dc = "today",date_recall_event
   df_mortality <- dplyr::bind_rows(df_roster, df_left)
   df_mortality <- dplyr::bind_rows(df_mortality, df_died)
 
-  # df_mortality <- healthyr::reformat_mortality_current_census(df_mortality)
+  df_mortality <- reformat_mortality(df_mortality)
 
   # calculating person time
 
@@ -401,21 +449,14 @@ create_mortality_long_df <- function(df_main,date_dc = "today",date_recall_event
                                            "20-24", "25-29", "30-34", "35-39","40-44", "45-49", "50-54", "55-59",
                                            "60-64", "65-69", "70-74", "75-79", "80-84", "85+"))
 
-  df_mortality <- healthyr::flag_mortality_issues(df = df_mortality)
-
   # create unique id
-
   df_mortality <- df_mortality %>%
     dplyr::group_by(hh_id) %>%
     dplyr::mutate(individual_id = dplyr::row_number()) %>%
-    ungroup() %>%
+    dplyr::ungroup() %>%
     dplyr::mutate(id = paste0(hh_id, "_", individual_id), individual_id = NULL) %>%
     dplyr::select(id, dplyr::everything())
 
-  # df_mortality <- df_mortality %>% dplyr::mutate()
-
-  # Saving the new dataframe to a xlsx, if specified
-  if(!is.null(file_path)) {writexl::write_xlsx(df_mortality, file_path)}
 
   return(df_mortality)
 
