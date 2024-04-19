@@ -106,7 +106,8 @@ create_mortality_long_df <- function(df_main,date_dc = "today", date_recall_even
                                      uuid_left = NULL, df_died,sex_died = "sex_died",age_died = "calc_final_age_years_died",
                                      birth_died = "ind_born_died",joined_died = "died_present",death_cause = "cause_death",
                                      death_location = "location_death",date_death = "final_date_death",
-                                     joined_date_died = "date_join_final_death",birthdate_died = "dob_died",uuid_died = NULL) {
+                                     joined_date_died = "date_join_final_death",birthdate_died = "dob_died",
+                                     uuid_died = NULL) {
 
   options(warn = -1)
 
@@ -485,7 +486,6 @@ create_mortality_long_df <- function(df_main,date_dc = "today", date_recall_even
         under_5_pt = ifelse(is.na(under_5), NA, ifelse(under_5 == 1, person_time, NA)))
 
   }
-
 
   df_mortality <- df_mortality %>%
     dplyr::mutate(
