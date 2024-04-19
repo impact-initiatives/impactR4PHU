@@ -95,7 +95,7 @@
 #'   birthdate_died = "dob_died",uuid_died = "_submission__uuid")
 #' }
 
-create_mortality_long_df <- function(df_main,date_dc = "today",date_recall_event = "recall_date",
+create_mortality_long_df <- function(df_main,date_dc = "today", date_recall_event = "recall_date",
                                      enumerator = NULL,cluster = NULL,admin1 = NULL,admin2 = NULL,
                                      uuid_main = NULL,df_roster,sex_roster = "sex_roster",age_roster = "calc_final_age_years",
                                      joined_roster = "joined",birth_roster = "ind_born",birthdate_roster = "final_ind_dob",
@@ -237,20 +237,20 @@ create_mortality_long_df <- function(df_main,date_dc = "today",date_recall_event
 
   if(length(intersect(date_vars, colnames(df_roster))) > 0 | length(intersect(date_vars, colnames(df_left))) > 0 | length(intersect(date_vars, colnames(df_died))) > 0) {
 
-    if("date_death" %in% names(df_roster)) {df_roster <- df_roster %>% dplyr::mutate(date_death = NA)}
-    if("date_join" %in% names(df_roster)) {df_roster <- df_roster %>% dplyr::mutate(date_join = NA)}
-    if("date_left" %in% names(df_roster)) {df_roster <- df_roster %>% dplyr::mutate(date_left = NA)}
-    if("date_birth" %in% names(df_roster)) {df_roster <- df_roster %>% dplyr::mutate(date_birth = NA)}
+    if(!"date_death" %in% names(df_roster)) {df_roster <- df_roster %>% dplyr::mutate(date_death = NA)}
+    if(!"date_join" %in% names(df_roster)) {df_roster <- df_roster %>% dplyr::mutate(date_join = NA)}
+    if(!"date_left" %in% names(df_roster)) {df_roster <- df_roster %>% dplyr::mutate(date_left = NA)}
+    if(!"date_birth" %in% names(df_roster)) {df_roster <- df_roster %>% dplyr::mutate(date_birth = NA)}
 
-    if("date_death" %in% names(df_left)) {df_left <- df_left %>% dplyr::mutate(date_death = NA)}
-    if("date_join" %in% names(df_left)) {df_left <- df_left %>% dplyr::mutate(date_join = NA)}
-    if("date_left" %in% names(df_left)) {df_left <- df_left %>% dplyr::mutate(date_left = NA)}
-    if("date_birth" %in% names(df_left)) {df_left <- df_left %>% dplyr::mutate(date_birth = NA)}
+    if(!"date_death" %in% names(df_left)) {df_left <- df_left %>% dplyr::mutate(date_death = NA)}
+    if(!"date_join" %in% names(df_left)) {df_left <- df_left %>% dplyr::mutate(date_join = NA)}
+    if(!"date_left" %in% names(df_left)) {df_left <- df_left %>% dplyr::mutate(date_left = NA)}
+    if(!"date_birth" %in% names(df_left)) {df_left <- df_left %>% dplyr::mutate(date_birth = NA)}
 
-    if("date_death" %in% names(df_died)) {df_died <- df_died %>% dplyr::mutate(date_death = NA)}
-    if("date_join" %in% names(df_died)) {df_died <- df_died %>% dplyr::mutate(date_join = NA)}
-    if("date_left" %in% names(df_died)) {df_died <- df_died %>% dplyr::mutate(date_left = NA)}
-    if("date_birth" %in% names(df_died)) {df_died <- df_died %>% dplyr::mutate(date_birth = NA)}
+    if(!"date_death" %in% names(df_died)) {df_died <- df_died %>% dplyr::mutate(date_death = NA)}
+    if(!"date_join" %in% names(df_died)) {df_died <- df_died %>% dplyr::mutate(date_join = NA)}
+    if(!"date_left" %in% names(df_died)) {df_died <- df_died %>% dplyr::mutate(date_left = NA)}
+    if(!"date_birth" %in% names(df_died)) {df_died <- df_died %>% dplyr::mutate(date_birth = NA)}
 
     df_roster[date_vars] <- lapply(df_roster[date_vars], as.character)
     df_left[date_vars] <- lapply(df_left[date_vars], as.character)
@@ -268,7 +268,7 @@ create_mortality_long_df <- function(df_main,date_dc = "today",date_recall_event
   if(all(req_died %in% names(df_died))) {print("Sex, Age, Births, Cause and Location of Death available for Deceased people.")} else {stop("Missing minimum information (SEX, AGE, Births, Cause of Death, Location of Death) for death roster. Please check input.")}
 
   # Adding missing columns to current roster data
-  if(all(additional_cols %in% names(df_roster))) {
+  if(!all(additional_cols %in% names(df_roster))) {
 
     cols_to_add <- setdiff(additional_cols, colnames(df_roster))
 
@@ -282,7 +282,7 @@ create_mortality_long_df <- function(df_main,date_dc = "today",date_recall_event
 
 
   # Adding missing columns to left roster data
-  if(all(additional_cols %in% names(df_left)))  {
+  if(!all(additional_cols %in% names(df_left)))  {
 
     cols_to_add <- setdiff(additional_cols, colnames(df_left))
 
@@ -296,7 +296,7 @@ create_mortality_long_df <- function(df_main,date_dc = "today",date_recall_event
 
 
   # Adding missing columns to died roster data
-  if(all(additional_cols %in% names(df_died)))  {
+  if(!all(additional_cols %in% names(df_died)))  {
 
     cols_to_add <- setdiff(additional_cols, colnames(df_died))
 
@@ -312,9 +312,9 @@ create_mortality_long_df <- function(df_main,date_dc = "today",date_recall_event
      all(date_vars %in% names(df_left)) |
      all(date_vars %in% names(df_died))) {
 
-    if(is.null(admin1_roster)) {
+    if(is.null(admin1)) {
 
-      if(is.null(admin2_roster)) {
+      if(is.null(admin2)) {
 
         col_order <- c("date_dc", "date_recall", "enumerator", "cluster", "uuid", "sex", "age_years", "join", "date_join", "left", "date_left", "birth", "date_birth", "death", "date_death", "death_cause", "death_location")
       } else {
@@ -324,7 +324,7 @@ create_mortality_long_df <- function(df_main,date_dc = "today",date_recall_event
 
     } else {
 
-      if(is.null(admin2_roster)) {
+      if(is.null(admin2)) {
         col_order <- c("date_dc", "date_recall", "enumerator", "admin1", "cluster", "uuid", "sex", "age_years", "join", "date_join", "left", "date_left", "birth", "date_birth", "death", "date_death", "death_cause", "death_location")
 
       } else {
@@ -336,9 +336,9 @@ create_mortality_long_df <- function(df_main,date_dc = "today",date_recall_event
 
   } else {
 
-    if(is.null(admin1_roster)) {
+    if(is.null(admin1)) {
 
-      if(is.null(admin2_roster)) {
+      if(is.null(admin2)) {
 
         col_order <- c("date_dc", "date_recall", "enumerator", "cluster", "uuid", "sex", "age_years", "join", "left", "birth", "death", "death_cause", "death_location")
       } else {
@@ -348,7 +348,7 @@ create_mortality_long_df <- function(df_main,date_dc = "today",date_recall_event
 
     } else {
 
-      if(is.null(admin2_roster)) {
+      if(is.null(admin2)) {
         col_order <- c("date_dc", "date_recall", "enumerator", "admin1", "cluster", "uuid", "sex", "age_years", "join", "left", "birth", "death", "death_cause", "death_location")
 
       } else {
@@ -377,42 +377,99 @@ create_mortality_long_df <- function(df_main,date_dc = "today",date_recall_event
   if(length(setdiff(c(date_vars), colnames(df_mortality))) != 4) {
 
     # print("I AM INSIDE THE DATE MORTALITY PART")
+    df_mortality <- df_mortality %>% dplyr::mutate(age_years = as.numeric(age_years),
+                                                   join = ifelse(date_recall_date - date_join_date > 0, NA, join),
+                                                   left = ifelse(date_left_date - date_dc_date >= 0, NA, left),
+                                                   birth = ifelse(date_recall_date - date_birth_date > 0, NA, birth),
+                                                   death = ifelse(date_death_date - date_dc_date >= 0, NA, death),
+                                                   person_time_new = case_when(is.na(date_join_date)&
+                                                                                 is.na(date_left_date)&
+                                                                                 (is.na(date_birth_date)|
+                                                                                    !is.na(date_birth_date) & lubridate::year(date_birth_date)<as.numeric(date_dc_year))&
+                                                                                 is.na(date_death_date) ~ as.numeric(lubridate::days(date_dc_date-date_recall_date))/86400,
+                                                                               (!is.na(date_join_date) & date_join_date < date_recall_date)&
+                                                                                 is.na(date_left_date) &
+                                                                                 is.na(date_death_date) ~ as.numeric(lubridate::days(date_dc_date-date_recall_date))/86400,
+                                                                               (!is.na(date_join_date) & date_join_date >= date_recall_date)&
+                                                                                 is.na(date_left_date) &
+                                                                                 is.na(date_death_date) ~ as.numeric(lubridate::days(date_dc_date-date_join_date))/86400,
 
+                                                                               (!is.na(date_join_date) & date_join_date < date_recall_date)&
+                                                                                 (!is.na(date_left_date) & date_left_date >=date_dc_date)& #chaged >=
+                                                                                 is.na(date_death_date) ~ as.numeric(lubridate::days(date_dc_date-date_recall_date))/86400,
+
+                                                                               (!is.na(date_join_date) & date_join_date >= date_recall_date)&
+                                                                                 (!is.na(date_left_date) & date_left_date >=date_dc_date)& #chaged >=
+                                                                                 is.na(date_death_date) ~ as.numeric(lubridate::days(date_dc_date-date_join_date))/86400,
+
+                                                                               (!is.na(date_join_date) & date_join_date < date_recall_date)&
+                                                                                 (!is.na(date_left_date) & date_left_date <date_dc_date)&
+                                                                                 is.na(date_death_date) ~ as.numeric(lubridate::days(date_left_date-date_recall_date))/86400,
+                                                                               (!is.na(date_join_date) & date_join_date >= date_recall_date)&
+                                                                                 (!is.na(date_left_date) & date_left_date <date_dc_date)&
+                                                                                 is.na(date_death_date) ~ as.numeric(lubridate::days(date_left_date-date_join_date))/86400,
+
+                                                                               (!is.na(date_join_date) & date_join_date >= date_recall_date)&
+                                                                                 is.na(date_left_date)&
+                                                                                 (!is.na(date_death_date)& date_death_date > date_dc_date) ~ as.numeric(lubridate::days(date_dc_date-date_join_date))/86400,
+                                                                               (!is.na(date_join_date) & date_join_date < date_recall_date)&
+                                                                                 is.na(date_left_date)&
+                                                                                 (!is.na(date_death_date)& date_death_date > date_dc_date) ~ as.numeric(lubridate::days(date_dc_date-date_recall_date))/86400,
+                                                                               (!is.na(date_join_date) & date_join_date < date_recall_date)&
+                                                                                 is.na(date_left_date)&
+                                                                                 (!is.na(date_death_date)& date_death_date <= date_dc_date) ~ as.numeric(lubridate::days(date_death_date-date_recall_date))/86400,
+                                                                               (!is.na(date_join_date) & date_join_date >= date_recall_date)&
+                                                                                 is.na(date_left_date)&
+                                                                                 (!is.na(date_death_date)& date_death_date <= date_dc_date) ~ as.numeric(lubridate::days(date_death_date-date_join_date))/86400,
+                                                                               is.na(date_join_date) &
+                                                                                 (!is.na(date_left_date)& date_left_date > date_dc_date)&
+                                                                                 (is.na(date_birth_date)|lubridate::year(date_birth_date)<as.numeric(date_dc_year))~ as.numeric(lubridate::days(date_dc_date-date_recall_date))/86400,
+                                                                               is.na(date_join_date) &
+                                                                                 (!is.na(date_left_date)& date_left_date <= date_dc_date)&
+                                                                                 (is.na(date_birth_date)|lubridate::year(date_birth_date)<as.numeric(date_dc_year))~ as.numeric(lubridate::days(date_left_date-date_recall_date))/86400,
+                                                                               is.na(date_join_date) &
+                                                                                 is.na(date_death_date) &
+                                                                                 (!is.na(date_left_date)&date_left_date<=date_dc_date)&
+                                                                                 (!is.na(date_birth_date)&lubridate::year(date_birth_date)==as.numeric(date_dc_year)& date_birth_date < date_recall_date)~ as.numeric(lubridate::days(date_left_date-date_recall_date))/86400,
+                                                                               is.na(date_join_date) &
+                                                                                 is.na(date_death_date) &
+                                                                                 (!is.na(date_left_date)&date_left_date<=date_dc_date)&
+                                                                                 (!is.na(date_birth_date)&lubridate::year(date_birth_date)==as.numeric(date_dc_year)& date_birth_date >= date_recall_date)~ as.numeric(lubridate::days(date_left_date-date_birth_date))/86400,
+                                                                               is.na(date_join_date) &
+                                                                                 is.na(date_death_date) &
+                                                                                 (!is.na(date_left_date) & date_left_date > date_dc_date)&
+                                                                                 (!is.na(date_birth_date) & lubridate::year(date_birth_date)==as.numeric(date_dc_year) & date_birth_date >= date_recall_date)~ as.numeric(lubridate::days(date_dc_date-date_birth_date))/86400,
+                                                                               is.na(date_join_date) &
+                                                                                 is.na(date_death_date) &
+                                                                                 (!is.na(date_left_date) & date_left_date > date_dc_date)&
+                                                                                 (!is.na(date_birth_date) & lubridate::year(date_birth_date)==as.numeric(date_dc_year)& date_birth_date < date_recall_date) ~ as.numeric(lubridate::days(date_dc_date-date_recall_date))/86400,
+                                                                               (!is.na(date_birth_date) & lubridate::year(date_birth_date)==as.numeric(date_dc_year) & date_birth_date < date_recall_date)&
+                                                                                 is.na(date_death_date) ~ as.numeric(lubridate::days(date_dc_date-date_recall_date))/86400,
+                                                                               (!is.na(date_birth_date) & lubridate::year(date_birth_date)==as.numeric(date_dc_year) & date_birth_date < date_recall_date)&
+                                                                                 is.na(date_death_date) ~ as.numeric(lubridate::days(date_dc_date-date_recall_date))/86400,
+                                                                               (!is.na(date_birth_date) & lubridate::year(date_birth_date)==as.numeric(date_dc_year) & date_birth_date >= date_recall_date)&
+                                                                                 is.na(date_death_date) ~ as.numeric(lubridate::days(date_dc_date-date_birth_date))/86400,
+                                                                               (!is.na(date_birth_date) & lubridate::year(date_birth_date)==as.numeric(date_dc_year)& date_birth_date < date_recall_date)&
+                                                                                 (!is.na(date_death_date) & date_death_date > date_dc_date) ~ as.numeric(lubridate::days(date_dc_date-date_recall_date))/86400,
+                                                                               (!is.na(date_birth_date) & lubridate::year(date_birth_date)==as.numeric(date_dc_year)& date_birth_date >= date_recall_date)&
+                                                                                 (!is.na(date_death_date) & date_death_date > date_dc_date) ~ as.numeric(lubridate::days(date_dc_date-date_birth_date))/86400,
+                                                                               (!is.na(date_birth_date) & lubridate::year(date_birth_date)==as.numeric(date_dc_year)& date_birth_date >= date_recall_date)&
+                                                                                 (!is.na(date_death_date) & date_death_date <= date_dc_date) ~ as.numeric(lubridate::days(date_death_date-date_birth_date))/86400,
+                                                                               (!is.na(date_birth_date) & lubridate::year(date_birth_date)==as.numeric(date_dc_year)& date_birth_date < date_recall_date)&
+                                                                                 (!is.na(date_death_date) & date_death_date <= date_dc_date) ~ as.numeric(lubridate::days(date_death_date-date_recall_date))/86400,
+
+                                                                               is.na(date_join_date)&
+                                                                                 is.na(date_left_date)&
+                                                                                 (!is.na(date_death_date) & date_death_date > date_dc_date) ~as.numeric(lubridate::days(date_dc_date-date_recall_date))/86400,
+                                                                               (!is.na(date_death_date) & date_death_date <= date_dc_date) ~as.numeric(lubridate::days(date_death_date-date_recall_date))/86400,
+                                                                               TRUE ~ NA))
     df_mortality <- df_mortality %>%
-      dplyr::mutate(
-        age_years = as.numeric(age_years),
-        # default person time calculations
-        person_time = as.numeric(date_dc_date - date_recall_date),
+      dplyr::mutate(under_5 = ifelse(is.na(age_years), NA, ifelse(as.numeric(age_years) < 5, 1, NA)),
+                    under_5_pt = ifelse(is.na(under_5), NA,
+                                        ifelse(under_5 == 1, person_time, NA)))
 
-        person_time = ifelse(is.na(date_join_date), person_time,
-                             ifelse(!is.na(date_death_date) & !is.na(death) & !is.na(join), as.numeric(date_death_date - date_join_date),
-                                    ifelse(!is.na(date_left_date) & !is.na(left) & !is.na(join), as.numeric(date_left_date - date_join_date),
-                                           ifelse(!is.na(join), as.numeric(date_dc_date - date_join_date), person_time)))),
 
-        # leaver person time calculations - join_left situaiton taken care above, so it defaults to person_time here
-        person_time = ifelse(is.na(date_left_date), person_time,
-                             ifelse(!is.na(date_join_date) & !is.na(join), person_time,
-                                    ifelse(!is.na(left), as.numeric(date_left_date - date_recall_date), person_time))),
 
-        # # birth person time calculations
-        person_time = ifelse(is.na(date_birth_date), person_time,
-                             ifelse( date_birth_date < date_recall_date, person_time,
-                                     ifelse(!is.na(date_death_date)  & !is.na(death) & !is.na(birth), as.numeric(date_death_date - date_birth_date),
-                                            ifelse(!is.na(date_left_date) & !is.na(left) & !is.na(birth), as.numeric(date_left_date - date_birth_date),
-                                                   ifelse(!is.na(birth), as.numeric(date_dc_date - date_birth_date), person_time))))),
-        #
-        # # death person time calculations
-        person_time = ifelse(is.na(date_death_date), person_time,
-                             ifelse(!is.na(date_join_date) & !is.na(join), person_time,
-                                    ifelse(!is.na(date_birth_date) & !is.na(birth), person_time,
-                                           ifelse(!is.na(death), as.numeric(date_death_date - date_recall_date), person_time))))  ,
-
-      )
-
-    df_mortality <- df_mortality %>%
-      dplyr::mutate(
-        under_5 = ifelse(is.na(age_years), NA, ifelse(as.numeric(age_years) < 5, 1, NA)),
-        under_5_pt = ifelse(is.na(under_5), NA, ifelse(under_5 == 1, person_time, NA)))
 
   } else {
 
@@ -451,10 +508,10 @@ create_mortality_long_df <- function(df_main,date_dc = "today",date_recall_event
 
   # create unique id
   df_mortality <- df_mortality %>%
-    dplyr::group_by(hh_id) %>%
+    dplyr::group_by(uuid) %>%
     dplyr::mutate(individual_id = dplyr::row_number()) %>%
     dplyr::ungroup() %>%
-    dplyr::mutate(id = paste0(hh_id, "_", individual_id), individual_id = NULL) %>%
+    dplyr::mutate(id = paste0(uuid, "_", individual_id), individual_id = NULL) %>%
     dplyr::select(id, dplyr::everything())
 
 
