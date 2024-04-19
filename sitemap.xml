@@ -79,6 +79,9 @@
     <loc>https://impact-initiatives.github.io/impactR4PHU/reference/create_fsl_quality_report_template.html</loc>
   </url>
   <url>
+    <loc>https://impact-initiatives.github.io/impactR4PHU/reference/create_mortality_long_df.html</loc>
+  </url>
+  <url>
     <loc>https://impact-initiatives.github.io/impactR4PHU/reference/create_plaus_table_fsl.html</loc>
   </url>
   <url>
@@ -134,5 +137,8 @@
   </url>
   <url>
     <loc>https://impact-initiatives.github.io/impactR4PHU/reference/plot_ridge_distribution.html</loc>
+  </url>
+  <url>
+    <loc>https://impact-initiatives.github.io/impactR4PHU/reference/reformat_mortality.html</loc>
   </url>
 </urlset>
