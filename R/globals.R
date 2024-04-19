@@ -72,5 +72,20 @@ globalVariables(unique(c(
   "fsl_fcs_score","n","fsl_fc_phase","flag_fsl_fc_cell","fsl_fc_cell",
   "p1","p2","p3","p4","p5",
   # get.label:
-  "name"
+  "name",
+  # create_mortality_long_df
+  "uuid","admin1_roster","admin2_roster","age_years",
+  "date_dc_date","date_recall_date","date_join_date","person_time",
+  "date_death_date","death","join","date_left_date",
+  "left","date_birth_date","birth","under_5",
+  "hh_id","individual_id","id",
+  #reformat_mortality
+  "date_dc","date_dc_date","date_dc_month","date_dc_day","date_dc_year",
+  "date_dc_char","date_recall","date_recall_date","date_recall_month","date_recall_day",
+  "date_recall_year","date_join","date_join_date","date_join_month","date_join_day",
+  "date_join_year","date_left","date_left_date","date_left_month",
+  "date_left_day","date_left_year","date_birth","date_birth_date","date_birth_month",
+  "date_birth_day","date_birth_year","date_death","date_death_date",
+  "date_death_month","date_death_day","date_death_year",
+  "death_cause","death_cause_smart","death_location","death_location_smart"
 )))
