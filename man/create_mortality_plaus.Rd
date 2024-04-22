@@ -20,15 +20,19 @@ create_mortality_plaus(
 \arguments{
 \item{df_mortality}{output dataframe long mortality from create_mortality_long_df}
 
-\item{exp_sex_ratio}{## to continue here}
+\item{exp_sex_ratio}{expected sex ratio in the population of male:female
+By default: 1:1}
 
-\item{exp_ratio_0_4}{## to continue here}
+\item{exp_ratio_0_4}{expected age ratio of <5years to >5years in the population
+By default: 0.2:0.8}
 
-\item{exp_ratio_2_5}{## to continue here}
+\item{exp_ratio_2_5}{expected age ratio of children 0-<2 years to children 2-<5years in the population
+By default: 0.4118:0.5882}
 
-\item{exp_ratio_5_10}{## to continue here}
+\item{exp_ratio_5_10}{expected age ratio of children 0-<5 years to children 5-<10years in the population
+By default: 0.5238:0.4762}
 
-\item{exp_hh_size}{## to continue here}
+\item{exp_hh_size}{expected hh size in the population. By default: 5}
 
 \item{grouping}{the name of the variable that indicates the grouping variable - usually "enumerator"}
 
@@ -41,13 +45,13 @@ returns a dataframe of all the variables calculated.}
 of the results.}
 }
 \value{
-## to continue here
+a dataframe with all mortality related plausibility columns
 }
 \description{
 create_mortality_plaus
 }
 \examples{
 \dontrun{
-create_mortality_plaus(df_mortality)
+  create_mortality_plaus(df_mortality)
 }
 }

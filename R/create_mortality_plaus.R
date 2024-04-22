@@ -1,11 +1,15 @@
 #' create_mortality_plaus
 #'
 #' @param df_mortality output dataframe long mortality from create_mortality_long_df
-#' @param exp_sex_ratio ## to continue here
-#' @param exp_ratio_0_4 ## to continue here
-#' @param exp_ratio_2_5 ## to continue here
-#' @param exp_ratio_5_10 ## to continue here
-#' @param exp_hh_size ## to continue here
+#' @param exp_sex_ratio expected sex ratio in the population of male:female
+#' By default: 1:1
+#' @param exp_ratio_0_4 expected age ratio of <5years to >5years in the population
+#' By default: 0.2:0.8
+#' @param exp_ratio_2_5 expected age ratio of children 0-<2 years to children 2-<5years in the population
+#' By default: 0.4118:0.5882
+#' @param exp_ratio_5_10 expected age ratio of children 0-<5 years to children 5-<10years in the population
+#' By default: 0.5238:0.4762
+#' @param exp_hh_size expected hh size in the population. By default: 5
 #' @param grouping the name of the variable that indicates the grouping variable - usually "enumerator"
 #' @param uuid uuid variable
 #' @param short_report Inputs a boolean value TRUE or FALSE to return just key variables. If FALSE,
@@ -13,12 +17,12 @@
 #' @param file_path Inputs an optional character value specifying the file location to save a copy
 #' of the results.
 #'
-#' @return ## to continue here
-#' @export ## to continue here
+#' @return a dataframe with all mortality related plausibility columns
+#' @export
 #'
 #' @examples
 #' \dontrun{
-#' create_mortality_plaus(df_mortality)
+#'   create_mortality_plaus(df_mortality)
 #' }
 create_mortality_plaus <- function(df_mortality,
                                    exp_sex_ratio = NULL,
@@ -32,7 +36,18 @@ create_mortality_plaus <- function(df_mortality,
                                    file_path = NULL) {
   options(warn=-1)
 
-  if(!all(c("sex", "age_years", "join", "left", "birth", "death", "date_dc", "date_recall") %in% names(df))) {
+  ## Throw an error if a dataset wasn't provided as a first argument
+  if (!is.data.frame(df_mortality)) {
+    stop("First argument should be a dataset")
+  }
+
+  if (!uuid %in% names(df_mortality)) stop("uuid argument incorrect, or not available in the dataset")
+
+  ## Throw an error if the dataset is empty
+  if (nrow(df_mortality) == 0) {
+    stop("Dataset is empty")
+  }
+  if(!all(c("sex", "age_years", "join", "left", "birth", "death", "date_dc", "date_recall") %in% names(df_mortality))) {
     stop("It does not appear that the dataset has been formatted yet by the create_mortality_long_df function,\n as it is missing at least one of the column names of sex, age_years, join, left, birth, death, date_dc, date_recall. Please standardize the data before using this function.")
   }
 
@@ -84,7 +99,7 @@ create_mortality_plaus <- function(df_mortality,
   }
 
   if(!is.null(exp_ratio_5_10)) {
-    if(!is.numeric(exp_ratio_5_10) & length(exp_ratio_5_10)==1) {stop("Invalid input for exp_ratio_5_10 Please put a single numeric value for the expected age ratio of children 0-<2 years to children 2-<5years in the population...or leave blank to assume a 0-<5 years to 5-<10years ratio of 1.1 (that is, ~52% of individuals are <5 years of age out of under-10 children).")}
+    if(!is.numeric(exp_ratio_5_10) & length(exp_ratio_5_10)==1) {stop("Invalid input for exp_ratio_5_10 Please put a single numeric value for the expected age ratio of children 0-<5 years to children 5-<10years in the population...or leave blank to assume a 0-<5 years to 5-<10years ratio of 1.1 (that is, ~52% of individuals are <5 years of age out of under-10 children).")}
 
     tot <- 100*exp_ratio_5_10 + 100
     left <- (100*exp_ratio_5_10) / tot
@@ -97,7 +112,7 @@ create_mortality_plaus <- function(df_mortality,
   }
 
   if(!is.null(exp_hh_size)) {
-    if(!is.numeric(exp_hh_size) & length(exp_hh_size)==1) {stop("Invalid input for exp_hh_size Please put a single numeric value for the expected age ratio of children 0-<2 years to children 2-<5years in the population...or leave blank to assume a 0-<5 years to 5-<10years ratio of 1.1 (that is, ~52% of individuals are <5 years of age out of under-10 children).")}
+    if(!is.numeric(exp_hh_size) & length(exp_hh_size)==1) {stop("Invalid input for exp_hh_size Please put a single numeric value for the expected hh size in the population...or leave blank to assume a 5 average HH size.")}
 
     expected_hh_size <- exp_hh_size
 
@@ -162,10 +177,12 @@ create_mortality_plaus <- function(df_mortality,
     dplyr::summarise(hh_size = sum(!is.na(sex), na.rm = TRUE),
                      total_under5 = sum(!is.na(under_5), na.rm = TRUE),
                      num_deaths = sum(!is.na(death), na.rm = TRUE),
-                     total_flag_deaths = sum(flag_deaths, na.rm = TRUE)) %>%
+                     total_flag_deaths = sum(flag_multiple_death, na.rm = TRUE),
+                     total_flag_cause_deaths = sum(flag_cause_death, na.rm = TRUE)) %>%
     dplyr::mutate(is_hh = ifelse(is.na(uuid), NA, 1),
                   is_hh_under5 = ifelse(is.na(uuid), NA, ifelse(total_under5 > 0, 1, 0)),
-                  is_hh_flag_deaths = ifelse(is.na(uuid), NA, ifelse(total_flag_deaths > 0, 1, 0))) %>%
+                  is_hh_flag_deaths = ifelse(is.na(uuid), NA, ifelse(total_flag_deaths > 0, 1, 0)),
+                  is_hh_flag_cause_deaths = ifelse(is.na(uuid), NA, ifelse(total_flag_cause_deaths > 0, 1, 0))) %>%
     dplyr::group_by(!!rlang::sym(grouping)) %>%
     dplyr::summarise(mean_hh_size = mean(hh_size, na.rm = TRUE),
                      mean_hh_size.pvalue = round(as.numeric(stats::t.test(x = hh_size, mu = expected_hh_size, alternative = "two.sided")[3]),2),
@@ -173,7 +190,8 @@ create_mortality_plaus <- function(df_mortality,
                      mean_deaths_per_hh = mean(num_deaths, na.rm = TRUE),
                      n_hh = sum(is_hh, na.rm = TRUE),
                      n_hh_under_5 = sum(is_hh_under5, na.rm = TRUE),
-                     n_hh_flag_deaths = sum(is_hh_flag_deaths, na.rm = TRUE)
+                     n_hh_flag_deaths = sum(is_hh_flag_deaths, na.rm = TRUE),
+                     n_hh_flag_cause_deaths = sum(is_hh_flag_deaths, na.rm = TRUE)
     ) %>%
     dplyr::mutate(prop_hh_under5 = round((n_hh_under_5 / n_hh),2),
                   prop_hh_flag_deaths = round((n_hh_flag_deaths / n_hh), 2))
@@ -181,6 +199,7 @@ create_mortality_plaus <- function(df_mortality,
   df4 <- merge(df3, df2, all.x = TRUE)
 
 
+  df4 <- impactR4PHU::calculate_plausibility(df4)
 
   df4 <- df4 %>%
     dplyr::select(c(1, cdr, cdr_ci, u5dr, u5dr_ci, deaths, deaths_under5, mean_deaths_per_hh,
@@ -188,19 +207,20 @@ create_mortality_plaus <- function(df_mortality,
                     mean_hh_size.pvalue, total_persontime, total_under5, mean_num_under5, total_under5_persontime,
                     n_hh, n_hh_under_5, sex_ratio, sex_ratio.pvalue, age_ratio_0_5,
                     age_ratio_0_5.pvalue, age_ratio_2_5, age_ratio_2_5.pvalue, age_ratio_5_10, age_ratio_5_10.pvalue,
-                    joins, prop_join_people, lefts, prop_left_people, births))
+                    joins, prop_join_people, lefts, prop_left_people, births,
+                    dplyr::starts_with("plaus_"),dplyr::starts_with("mort_plaus_")))
 
-  df4 <- impactR4PHU::calculate_plausibility(df4)
 
   if(short_report == TRUE) {
 
     df4 <- df4 %>%
       dplyr::select(1,cdr_ci,u5dr_ci,deaths, deaths_under5, prop_hh_flag_deaths,
                     sex_ratio.pvalue, age_ratio_0_5.pvalue,prop_join_people,prop_left_people,
-                    mort_plaus_score, mort_plaus_cat)
+                    dplyr::starts_with("plaus_"), mort_plaus_score, mort_plaus_cat)
   }
   # Saving the new dataframe to a xlsx, if specified
   if(!is.null(file_path)) {writexl::write_xlsx(df4, file_path)}
   options(warn=0)
+
   return(df4)
 }

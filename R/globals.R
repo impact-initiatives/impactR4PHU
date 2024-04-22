@@ -87,5 +87,16 @@ globalVariables(unique(c(
   "date_left_day","date_left_year","date_birth","date_birth_date","date_birth_month",
   "date_birth_day","date_birth_year","date_death","date_death_date",
   "date_death_month","date_death_day","date_death_year",
-  "death_cause","death_cause_smart","death_location","death_location_smart"
+  "death_cause","death_cause_smart","death_location","death_location_smart",
+  #check_mortality_flags
+  "cause_death","under_5_pt","join_under5","left_under5",
+  "birth_under5","death_under5","age_0to5","age_5plus","age_0to2",
+  "age_2to5","age_5to10","deaths","total_persontime","cdr_se",
+  "deaths_under5","total_under5_persontime","u5dr","u5dr_se","cdr_lower_ci",
+  "cdr_upper_ci","u5dr_lower_ci","u5dr_upper_ci","joins","total_people",
+  "lefts","cdr_ci","u5dr_ci","flag_multiple_death","flag_cause_death",
+  "total_under5","total_flag_deaths","total_flag_cause_deaths","hh_size","num_deaths",
+  "is_hh","is_hh_under5","is_hh_flag_deaths","n_hh_under_5","n_hh",
+  "n_hh_flag_deaths","mean_deaths_per_hh","mean_hh_size","mean_num_under5","sex_ratio",
+  "age_ratio_0_5","age_ratio_2_5","age_ratio_5_10","births","mort_plaus_cat"
 )))
