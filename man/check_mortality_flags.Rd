@@ -6,7 +6,6 @@
 \usage{
 check_mortality_flags(
   df_mortality,
-  cause_death = "cause_death",
   cause_death_f = c("post_partum", "during_pregnancy", "during_delivery")
 )
 }

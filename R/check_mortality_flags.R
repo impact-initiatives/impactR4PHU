@@ -16,7 +16,6 @@
 #' }
 
 check_mortality_flags <- function(df_mortality,
-                                  cause_death = "cause_death",
                                   cause_death_f = c("post_partum","during_pregnancy","during_delivery")){
   options(warn = -1)
   if (!"uuid" %in% names(df_mortality)) stop("uuid argument incorrect, or not available in the df Mortality")
