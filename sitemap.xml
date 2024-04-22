@@ -64,6 +64,9 @@
     <loc>https://impact-initiatives.github.io/impactR4PHU/reference/check_iycf_flags.html</loc>
   </url>
   <url>
+    <loc>https://impact-initiatives.github.io/impactR4PHU/reference/check_mortality_flags.html</loc>
+  </url>
+  <url>
     <loc>https://impact-initiatives.github.io/impactR4PHU/reference/check_wash_flags.html</loc>
   </url>
   <url>
@@ -80,6 +83,9 @@
   </url>
   <url>
     <loc>https://impact-initiatives.github.io/impactR4PHU/reference/create_mortality_long_df.html</loc>
+  </url>
+  <url>
+    <loc>https://impact-initiatives.github.io/impactR4PHU/reference/create_mortality_plaus.html</loc>
   </url>
   <url>
     <loc>https://impact-initiatives.github.io/impactR4PHU/reference/create_plaus_table_fsl.html</loc>
