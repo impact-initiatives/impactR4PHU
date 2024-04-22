@@ -1,0 +1,871 @@
+---
+title: "Mortality Data quality and plausibility Report"
+subtitle: "`r Sys.Date()`"
+output: html_document
+---
+
+<style>
+.tocify-subheader {
+  font-size: 0.7em;
+}
+.tocify-item {
+  font-size: 0.85em;
+  padding-left: 25px;
+  text-indent: 0;
+}
+</style>
+
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE)
+options(scipen = 999)
+```
+
+```{r logo, echo=FALSE}
+htmltools::img(src = knitr::image_uri("resources/Logo_Reach_RGB_1.png"),
+               alt = "REACH logo",
+               style = 'position:absolute; top:0; right:0; padding:0; margin:20; width:250px')
+```
+
+```{r, include=FALSE, eval=TRUE}
+path.raw <- svDialogs::dlg_open(multiple = F, title = "Please select your data excel file.")$res
+path.tool <- svDialogs::dlg_open(multiple = F, title = "Please select your Kobo tool file.")$res
+main.sheets <- readxl::excel_sheets(path.raw)
+path.sheet.with.main <- tcltk::tk_select.list(main.sheets, title = "Main Sheet", multiple = F)
+path.sheet.with.roster <- tcltk::tk_select.list(main.sheets, title = "HH Roster Sheet", multiple = F)
+path.sheet.with.leavers <- tcltk::tk_select.list(main.sheets, title = "Left Members Sheet", multiple = F)
+path.sheet.with.death <- tcltk::tk_select.list(main.sheets, title = "Died Members sheet", multiple = F)
+raw.main <- readxl::read_excel(path.raw, path.sheet.with.main)
+raw.hh_roster <- readxl::read_excel(path.raw, path.sheet.with.roster)
+raw.left_member <- readxl::read_excel(path.raw, path.sheet.with.leavers)
+raw.died_member <- readxl::read_excel(path.raw, path.sheet.with.death)
+tool.survey <- readxl::read_excel(path.tool, "survey")
+tool.choices <- readxl::read_excel(path.tool, "choices")
+label_colname <- tcltk::tk_select.list(names(tool.survey)[grepl("label",names(tool.survey))], title = "Label column to choose", multiple = F)
+if(file.exists("inputs/environment.Rdata")) {
+  load("inputs/environment.Rdata")
+}
+```
+
+# {.tabset .tabset-fade}
+
+## Introduction
+
+```{r, results='asis'}
+  cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",3), collapse=""), " ", "What is this tool?"))
+  cat('\nThe Mortality Data Quality and Plausibility Report serves as a crucial tool for assessing the reliability and accuracy of the data collection of Mortality indicators across different assessments. This comprehensive analysis is designed to identify and address potential issues within the data, ensuring that field teams are being informed on potential issues detected in the data collection.\n\nThe report provides a detailed examination of the datasets, employing a variety of metrics and methodologies to evaluate data quality and plausibility. This includes checks for completeness, consistency, and accuracy of the data collected. This report aims to uncover any discrepancies, outliers, or anomalies that may suggest data collection, entry errors, or underlying issues that could impact the integrity of the findings.</p>')
+  cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",3), collapse=""), " ", "What is in this tool?")) 
+  cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",4), collapse=""), " ", "Demographic SECTION"))
+  cat('\nThis section includes:\n\n- Age Distribution of the HH Roster Individuals\n- Number of deaths.\n- Number of joiners.\n- Number of leavers.')
+  cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",4), collapse=""), " ", "Mortality SECTION"))
+  cat('\nThis section includes:\n\n- Overall Plausibility Report / By Enumerator\n- All the flags related to Mortality (details shown for each flag in the section)\n- Plots showing the crude, under 5, and birth rates.')
+
+  cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",3), collapse=""), " ", "What to do next?"))
+  cat('\nPlease check each flag and the <strong>ACTION</strong> related to it and act accordingly.\n\nAnother output will be associated to this HTML, the Excel file of the flags that were fired and requires follow-up with the field team. Please check the README tab in the excel file. This file will again be generated with the full data during the cleaning of the dataset. So please do use this file during data collection and relate to it in the final one to be filled.')
+  cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",3), collapse=""), " ", "Feedback"))
+  cat('\nFeedback on improvements to this product can be done through reaching out to:\n\n-abraham.azar@impact-initiatives.org \n\n-impact.geneva.phu@impact-initiatives.org')
+```
+
+## Mortality {.tabset .tabset-fade}
+
+```{r, echo=FALSE, warning=FALSE,include=FALSE}
+
+
+if(!file.exists("inputs/environment.Rdata")) {
+  ################################################################################
+  ## Detect date of data collection column
+  date_dc <- names(raw.main)[grepl("today",names(raw.main))]
+  if(length(date_dc) == 1){
+    yes_no <- svDialogs::dlg_message(paste0("Is '", date_dc, "' the correct date of data collection column?"), type = "yesno")$res
+    if(yes_no == "no"){
+      date_dc <- svDialogs::dlg_input(message= "Enter the name of the date of data collection column","date_dc")$res
+    }
+  } else if (length(date_dc) > 1){
+    date_dc <- tcltk::tk_select.list(date_dc, title = "Date of data collection column")
+  } else if (length(date_dc) == 0) {
+    date_dc <- svDialogs::dlg_input(message= "Enter the name of the date of data collection column","date_dc")$res
+  }
+  
+  ## Detect Recall date column
+  date_recall_event <- names(raw.main)[grepl("recall",names(raw.main))]
+  if(length(date_recall_event) == 1){
+    yes_no <- svDialogs::dlg_message(paste0("Is '", date_recall_event, "' the correct recall date column?"), type = "yesno")$res
+    if(yes_no == "no"){
+      date_recall_event <- svDialogs::dlg_input(message= "Enter the name of the recall date column","date_recall_event")$res
+    }
+  } else if (length(date_recall_event) > 1){
+    date_recall_event <- tcltk::tk_select.list(date_recall_event, title = "Recall date column")
+  } else if (length(date_recall_event) == 0) {
+    date_recall_event <- svDialogs::dlg_input(message= "Enter the name of the recall date column","date_recall_event")$res
+  }
+  
+  ## Detect Enumerator column
+  enumerator <- names(raw.main)[grepl("enum|team",names(raw.main))]
+  
+  if(length(enumerator) == 1){
+    yes_no <- svDialogs::dlg_message(paste0("Is '", enumerator, "' the correct enumerator column?"), type = "yesno")$res
+    if(yes_no == "no"){
+      enumerator <- svDialogs::dlg_input(message= "Enter the name of the Enumerator Column","enumerator")$res
+    }
+  } else if (length(enumerator) > 1){
+    enumerator <- tcltk::tk_select.list(enumerator, title = "Enumerator Column")
+  } else if (length(enumerator) == 0) {
+    enumerator <- svDialogs::dlg_input(message= "Enter the name of the Enumerator Column","enumerator")$res
+  }
+  
+  ## Detect Admin1 column
+  admin1 <- names(raw.main)[grepl("admin",names(raw.main))]
+  
+  if(length(admin1) == 1){
+    yes_no <- svDialogs::dlg_message(paste0("Is '", admin1, "' the correct admin1 column?"), type = "yesno")$res
+    if(yes_no == "no"){
+      admin1 <- svDialogs::dlg_input(message= "Enter the name of the Admin 1 Column","admin1")$res
+    }
+  } else if (length(admin1) > 1){
+    admin1 <- tcltk::tk_select.list(admin1, title = "Admin 1 Column")
+  } else if (length(admin1) == 0) {
+    admin1 <- svDialogs::dlg_input(message= "Enter the name of the Admin 1 Column","admin1")$res
+  }
+  
+  ## Detect Admin1 column
+  admin2 <- names(raw.main)[grepl("admin",names(raw.main))]
+  
+  if(length(admin2) == 1){
+    yes_no <- svDialogs::dlg_message(paste0("Is '", admin2, "' the correct admin2 column?"), type = "yesno")$res
+    if(yes_no == "no"){
+      admin2 <- svDialogs::dlg_input(message= "Enter the name of the Admin 2 Column","admin2")$res
+    }
+  } else if (length(admin2) > 1){
+    admin2 <- tcltk::tk_select.list(admin2, title = "Admin 2 Column")
+  } else if (length(admin2) == 0) {
+    admin2 <- svDialogs::dlg_input(message= "Enter the name of the Admin 2 Column","admin2")$res
+  }
+  
+  ## Detect Cluster column
+  cluster <- names(raw.main)[grepl("cluster",names(raw.main))]
+  
+  if(length(cluster) == 1){
+    yes_no <- svDialogs::dlg_message(paste0("Is '", cluster, "' the correct cluster column?"), type = "yesno")$res
+    if(yes_no == "no"){
+      cluster <- svDialogs::dlg_input(message= "Enter the name of the Cluster Column","cluster")$res
+    }
+  } else if (length(cluster) > 1){
+    cluster <- tcltk::tk_select.list(cluster, title = "Cluster Column")
+  } else if (length(cluster) == 0) {
+    cluster <- svDialogs::dlg_input(message= "Enter the name of the Cluster Column","cluster")$res
+  }
+  
+  ## Detect uuid_main column
+  uuid_main <- names(raw.main)[grepl("uuid",names(raw.main))]
+  
+  if(length(uuid_main) == 1){
+    yes_no <- svDialogs::dlg_message(paste0("Is '", uuid_main, "' the correct HH UUID column in main data?"), type = "yesno")$res
+    if(yes_no == "no"){
+      uuid_main <- svDialogs::dlg_input(message= "Enter the name of the HH UUID Column in main data","uuid_main")$res
+    }
+  } else if (length(uuid_main) > 1){
+    uuid_main <- tcltk::tk_select.list(uuid_main, title = "HH UUID Column")
+  } else if (length(uuid_main) == 0) {
+    uuid_main <- svDialogs::dlg_input(message= "Enter the name of the HH UUID Column in main data","uuid_main")$res
+  }
+  
+  ## Detect uuid_roster column
+  uuid_roster <- names(raw.hh_roster)[grepl("uuid",names(raw.hh_roster))]
+  
+  if(length(uuid_roster) == 1){
+    yes_no <- svDialogs::dlg_message(paste0("Is '", uuid_roster, "' the correct HH UUID column in roster data?"), type = "yesno")$res
+    if(yes_no == "no"){
+      uuid_roster <- svDialogs::dlg_input(message= "Enter the name of the HH UUID Column in roster data","uuid_roster")$res
+    }
+  } else if (length(uuid_roster) > 1){
+    uuid_roster <- tcltk::tk_select.list(uuid_roster, title = "HH UUID Column")
+  } else if (length(uuid_roster) == 0) {
+    uuid_roster <- svDialogs::dlg_input(message= "Enter the name of the HH UUID Column in roster data","uuid_roster")$res
+  }
+  
+  ## Detect sex_roster column
+  sex_roster <- names(raw.hh_roster)[grepl("sex",names(raw.hh_roster))]
+  
+  if(length(sex_roster) == 1){
+    yes_no <- svDialogs::dlg_message(paste0("Is '", sex_roster, "' the correct sex roster column?"), type = "yesno")$res
+    if(yes_no == "no"){
+      sex_roster <- svDialogs::dlg_input(message= "Enter the name of the sex roster column","sex_roster")$res
+    }
+  } else if (length(sex_roster) > 1){
+    sex_roster <- tcltk::tk_select.list(sex_roster, title = "Sex Column")
+  } else if (length(sex_roster) == 0) {
+    sex_roster <- svDialogs::dlg_input(message= "Enter the name of the sex roster column","sex_roster")$res
+  }
+  
+  ## Detect age_roster column
+  age_roster <- names(raw.hh_roster)[grepl("final",names(raw.hh_roster))]
+  
+  if(length(age_roster) == 1){
+    yes_no <- svDialogs::dlg_message(paste0("Is '", age_roster, "' the correct age roster column?"), type = "yesno")$res
+    if(yes_no == "no"){
+      age_roster <- svDialogs::dlg_input(message= "Enter the name of the age roster column","age_roster")$res
+    }
+  } else if (length(age_roster) > 1){
+    age_roster <- tcltk::tk_select.list(age_roster, title = "Age Column")
+  } else if (length(age_roster) == 0) {
+    age_roster <- svDialogs::dlg_input(message= "Enter the name of the age roster column","age_roster")$res
+  }
+  
+  ## Detect joined_roster column
+  joined_roster <- names(raw.hh_roster)[grepl("join",names(raw.hh_roster))]
+  
+  if(length(joined_roster) == 1){
+    yes_no <- svDialogs::dlg_message(paste0("Is '", joined_roster, "' the correct joined roster column?"), type = "yesno")$res
+    if(yes_no == "no"){
+      joined_roster <- svDialogs::dlg_input(message= "Enter the name of the joined roster column","joined_roster")$res
+    }
+  } else if (length(joined_roster) > 1){
+    joined_roster <- tcltk::tk_select.list(joined_roster, title = "Joined Column")
+  } else if (length(joined_roster) == 0) {
+    joined_roster <- svDialogs::dlg_input(message= "Enter the name of the joined roster column","joined_roster")$res
+  }
+  
+  ## Detect joined_date_roster column
+  joined_date_roster <- names(raw.hh_roster)[grepl("final",names(raw.hh_roster))]
+  
+  if(length(joined_date_roster) == 1){
+    yes_no <- svDialogs::dlg_message(paste0("Is '", joined_date_roster, "' the correct joined date roster column?"), type = "yesno")$res
+    if(yes_no == "no"){
+      joined_date_roster <- svDialogs::dlg_input(message= "Enter the name of the joined date roster column","joined_date_roster")$res
+    }
+  } else if (length(joined_date_roster) > 1){
+    joined_date_roster <- tcltk::tk_select.list(joined_date_roster, title = "Joined Date Column")
+  } else if (length(joined_date_roster) == 0) {
+    joined_date_roster <- svDialogs::dlg_input(message= "Enter the name of the joined date roster column","joined_date_roster")$res
+  }
+  
+  ## Detect birth_roster column
+  birth_roster <- names(raw.hh_roster)[grepl("born",names(raw.hh_roster))]
+  
+  if(length(birth_roster) == 1){
+    yes_no <- svDialogs::dlg_message(paste0("Is '", birth_roster, "' the correct birth roster column?"), type = "yesno")$res
+    if(yes_no == "no"){
+      birth_roster <- svDialogs::dlg_input(message= "Enter the name of the birth roster column","birth_roster")$res
+    }
+  } else if (length(birth_roster) > 1){
+    birth_roster <- tcltk::tk_select.list(birth_roster, title = "Birth Column")
+  } else if (length(birth_roster) == 0) {
+    birth_roster <- svDialogs::dlg_input(message= "Enter the name of the birth roster column","birth_roster")$res
+  }
+  
+  ## Detect birthdate_roster column
+  birthdate_roster <- names(raw.hh_roster)[grepl("dob",names(raw.hh_roster))]
+  
+  if(length(birthdate_roster) == 1){
+    yes_no <- svDialogs::dlg_message(paste0("Is '", birthdate_roster, "' the correct birth date roster column?"), type = "yesno")$res
+    if(yes_no == "no"){
+      birthdate_roster <- svDialogs::dlg_input(message= "Enter the name of the birth date roster column","birthdate_roster")$res
+    }
+  } else if (length(birthdate_roster) > 1){
+    birthdate_roster <- tcltk::tk_select.list(birthdate_roster, title = "Birth date Column")
+  } else if (length(birthdate_roster) == 0) {
+    birthdate_roster <- svDialogs::dlg_input(message= "Enter the name of the birth date roster column","birthdate_roster")$res
+  }
+  
+  ## Detect uuid_left column
+  uuid_left <- names(raw.left_member)[grepl("uuid",names(raw.left_member))]
+  
+  if(length(uuid_left) == 1){
+    yes_no <- svDialogs::dlg_message(paste0("Is '", uuid_left, "' the correct HH UUID column in left data?"), type = "yesno")$res
+    if(yes_no == "no"){
+      uuid_left <- svDialogs::dlg_input(message= "Enter the name of the HH UUID column in left data","uuid_left")$res
+    }
+  } else if (length(uuid_left) > 1){
+    uuid_left <- tcltk::tk_select.list(uuid_left, title = "HH UUID Column")
+  } else if (length(uuid_left) == 0) {
+    uuid_left <- svDialogs::dlg_input(message= "Enter the name of the HH UUID column in left data","uuid_left")$res
+  }
+  
+  ## Detect sex_left column
+  sex_left <- names(raw.left_member)[grepl("sex",names(raw.left_member))]
+  
+  if(length(sex_left) == 1){
+    yes_no <- svDialogs::dlg_message(paste0("Is '", sex_left, "' the correct sex left column?"), type = "yesno")$res
+    if(yes_no == "no"){
+      sex_left <- svDialogs::dlg_input(message= "Enter the name of the sex left column","sex_left")$res
+    }
+  } else if (length(sex_left) > 1){
+    sex_left <- tcltk::tk_select.list(sex_left, title = "sex date Column")
+  } else if (length(sex_left) == 0) {
+    sex_left <- svDialogs::dlg_input(message= "Enter the name of the sex left column","sex_left")$res
+  }
+  
+  ## Detect age_left column
+  age_left <- names(raw.left_member)[grepl("final",names(raw.left_member))]
+  
+  if(length(age_left) == 1){
+    yes_no <- svDialogs::dlg_message(paste0("Is '", age_left, "' the correct age left column?"), type = "yesno")$res
+    if(yes_no == "no"){
+      age_left <- svDialogs::dlg_input(message= "Enter the name of the age left column","age_left")$res
+    }
+  } else if (length(age_left) > 1){
+    age_left <- tcltk::tk_select.list(age_left, title = "age date Column")
+  } else if (length(age_left) == 0) {
+    age_left <- svDialogs::dlg_input(message= "Enter the name of the age left column","age_left")$res
+  }
+  
+  ## Detect birth_left column
+  birth_left <- names(raw.left_member)[grepl("born",names(raw.left_member))]
+  
+  if(length(birth_left) == 1){
+    yes_no <- svDialogs::dlg_message(paste0("Is '", birth_left, "' the correct birth column?"), type = "yesno")$res
+    if(yes_no == "no"){
+      birth_left <- svDialogs::dlg_input(message= "Enter the name of the birth column","birth_left")$res
+    }
+  } else if (length(birth_left) > 1){
+    birth_left <- tcltk::tk_select.list(birth_left, title = "Birth date Column")
+  } else if (length(birth_left) == 0) {
+    birth_left <- svDialogs::dlg_input(message= "Enter the name of the birth column","birth_left")$res
+  }
+  
+  ## Detect birthdate_left column
+  birthdate_left <- names(raw.left_member)[grepl("dob",names(raw.left_member))]
+  
+  if(length(birthdate_left) == 1){
+    yes_no <- svDialogs::dlg_message(paste0("Is '", birthdate_left, "' the correct birth date column?"), type = "yesno")$res
+    if(yes_no == "no"){
+      birthdate_left <- svDialogs::dlg_input(message= "Enter the name of the birth date column","birthdate_left")$res
+    }
+  } else if (length(birthdate_left) > 1){
+    birthdate_left <- tcltk::tk_select.list(birthdate_left, title = "Birth date Column")
+  } else if (length(birthdate_left) == 0) {
+    birthdate_left <- svDialogs::dlg_input(message= "Enter the name of the birth date column","birthdate_left")$res
+  }
+  
+  ## Detect joined_left column
+  joined_left <- names(raw.left_member)[grepl("present",names(raw.left_member))]
+  
+  if(length(joined_left) == 1){
+    yes_no <- svDialogs::dlg_message(paste0("Is '", joined_left, "' the correct joined column in left data?"), type = "yesno")$res
+    if(yes_no == "no"){
+      joined_left <- svDialogs::dlg_input(message= "Enter the name of the joined column in left data","joined_left")$res
+    }
+  } else if (length(joined_left) > 1){
+    joined_left <- tcltk::tk_select.list(joined_left, title = "Joined Column")
+  } else if (length(joined_left) == 0) {
+    joined_left <- svDialogs::dlg_input(message= "Enter the name of the joined column in left data","joined_left")$res
+  }
+  
+  ## Detect joined_date_left column
+  joined_date_left <- names(raw.left_member)[grepl("final",names(raw.left_member))]
+  
+  if(length(joined_date_left) == 1){
+    yes_no <- svDialogs::dlg_message(paste0("Is '", joined_date_left, "' the correct joined date column in left data?"), type = "yesno")$res
+    if(yes_no == "no"){
+      joined_date_left <- svDialogs::dlg_input(message= "Enter the name of the joined date column in left data","joined_date_left")$res
+    }
+  } else if (length(joined_date_left) > 1){
+    joined_date_left <- tcltk::tk_select.list(joined_date_left, title = "Joined date Column")
+  } else if (length(joined_date_left) == 0) {
+    joined_date_left <- svDialogs::dlg_input(message= "Enter the name of the joined date column in left data","joined_date_left")$res
+  }
+  
+  ## Detect left_date_left column
+  left_date_left <- names(raw.left_member)[grepl("final",names(raw.left_member))]
+  
+  if(length(left_date_left) == 1){
+    yes_no <- svDialogs::dlg_message(paste0("Is '", left_date_left, "' the correct left date column?"), type = "yesno")$res
+    if(yes_no == "no"){
+      left_date_left <- svDialogs::dlg_input(message= "Enter the name of the left date column","left_date_left")$res
+    }
+  } else if (length(left_date_left) > 1){
+    left_date_left <- tcltk::tk_select.list(left_date_left, title = "Left date Column")
+  } else if (length(left_date_left) == 0) {
+    left_date_left <- svDialogs::dlg_input(message= "Enter the name of the left date column","left_date_left")$res
+  }
+  
+  ## Detect uuid_died column
+  uuid_died <- names(raw.died_member)[grepl("uuid",names(raw.died_member))]
+  
+  if(length(uuid_died) == 1){
+    yes_no <- svDialogs::dlg_message(paste0("Is '", uuid_died, "' the correct HH UUID column in died data?"), type = "yesno")$res
+    if(yes_no == "no"){
+      uuid_died <- svDialogs::dlg_input(message= "Enter the name of the HH UUID column in died data","uuid_died")$res
+    }
+  } else if (length(uuid_died) > 1){
+    uuid_died <- tcltk::tk_select.list(uuid_died, title = "HH UUID Column")
+  } else if (length(uuid_died) == 0) {
+    uuid_died <- svDialogs::dlg_input(message= "Enter the name of the HH UUID column in died data","uuid_died")$res
+  }
+  
+  ## Detect sex_died column
+  sex_died <- names(raw.died_member)[grepl("sex",names(raw.died_member))]
+  
+  if(length(sex_died) == 1){
+    yes_no <- svDialogs::dlg_message(paste0("Is '", sex_died, "' the correct sex died column?"), type = "yesno")$res
+    if(yes_no == "no"){
+      sex_died <- svDialogs::dlg_input(message= "Enter the name of the sex died column","sex_died")$res
+    }
+  } else if (length(sex_died) > 1){
+    sex_died <- tcltk::tk_select.list(sex_died, title = "Sex date Column")
+  } else if (length(sex_died) == 0) {
+    sex_died <- svDialogs::dlg_input(message= "Enter the name of the sex died column","sex_died")$res
+  }
+  
+  ## Detect age_died column
+  age_died <- names(raw.died_member)[grepl("final",names(raw.died_member))]
+  
+  if(length(age_died) == 1){
+    yes_no <- svDialogs::dlg_message(paste0("Is '", age_died, "' the correct age died column?"), type = "yesno")$res
+    if(yes_no == "no"){
+      age_died <- svDialogs::dlg_input(message= "Enter the name of the age died column","age_died")$res
+    }
+  } else if (length(age_died) > 1){
+    age_died <- tcltk::tk_select.list(age_died, title = "Age date Column")
+  } else if (length(age_died) == 0) {
+    age_died <- svDialogs::dlg_input(message= "Enter the name of the age died column","age_died")$res
+  }
+  
+  ## Detect birth_died column
+  birth_died <- names(raw.died_member)[grepl("born",names(raw.died_member))]
+  
+  if(length(birth_died) == 1){
+    yes_no <- svDialogs::dlg_message(paste0("Is '", birth_died, "' the correct birth column?"), type = "yesno")$res
+    if(yes_no == "no"){
+      birth_died <- svDialogs::dlg_input(message= "Enter the name of the birth column","birth_died")$res
+    }
+  } else if (length(birth_died) > 1){
+    birth_died <- tcltk::tk_select.list(birth_died, title = "Birth Column")
+  } else if (length(birth_died) == 0) {
+    birth_died <- svDialogs::dlg_input(message= "Enter the name of the birth column","birth_died")$res
+  }
+  
+  ## Detect birthdate_died column
+  birthdate_died <- names(raw.died_member)[grepl("dob",names(raw.died_member))]
+  
+  if(length(birthdate_died) == 1){
+    yes_no <- svDialogs::dlg_message(paste0("Is '", birthdate_died, "' the correct birth date column?"), type = "yesno")$res
+    if(yes_no == "no"){
+      birthdate_died <- svDialogs::dlg_input(message= "Enter the name of the birth date column","birthdate_died")$res
+    }
+  } else if (length(birthdate_died) > 1){
+    birthdate_died <- tcltk::tk_select.list(birthdate_died, title = "Birth date Column")
+  } else if (length(birthdate_died) == 0) {
+    birthdate_died <- svDialogs::dlg_input(message= "Enter the name of the birth date column","birthdate_died")$res
+  }
+  
+  
+  ## Detect joined_died column
+  joined_died <- names(raw.died_member)[grepl("present",names(raw.died_member))]
+  
+  if(length(joined_died) == 1){
+    yes_no <- svDialogs::dlg_message(paste0("Is '", joined_died, "' the correct joined column in died data?"), type = "yesno")$res
+    if(yes_no == "no"){
+      joined_died <- svDialogs::dlg_input(message= "Enter the name of the joined column in died data","joined_died")$res
+    }
+  } else if (length(joined_died) > 1){
+    joined_died <- tcltk::tk_select.list(joined_died, title = "Joined Column")
+  } else if (length(joined_died) == 0) {
+    joined_died <- svDialogs::dlg_input(message= "Enter the name of the joined column in died data","joined_died")$res
+  }
+  
+  ## Detect joined_date_died column
+  joined_date_died <- names(raw.died_member)[grepl("final",names(raw.died_member))]
+  
+  if(length(joined_date_died) == 1){
+    yes_no <- svDialogs::dlg_message(paste0("Is '", joined_date_died, "' the correct joined date column in died data?"), type = "yesno")$res
+    if(yes_no == "no"){
+      joined_date_died <- svDialogs::dlg_input(message= "Enter the name of the joined date column in died data","joined_date_died")$res
+    }
+  } else if (length(joined_date_died) > 1){
+    joined_date_died <- tcltk::tk_select.list(joined_date_died, title = "Joined date Column")
+  } else if (length(joined_date_died) == 0) {
+    joined_date_died <- svDialogs::dlg_input(message= "Enter the name of the joined date column in died data","joined_date_died")$res
+  }
+  
+  ## Detect date_death column
+  date_death <- names(raw.died_member)[grepl("final",names(raw.died_member))]
+  
+  if(length(date_death) == 1){
+    yes_no <- svDialogs::dlg_message(paste0("Is '", date_death, "' the correct death date column in died data?"), type = "yesno")$res
+    if(yes_no == "no"){
+      date_death <- svDialogs::dlg_input(message= "Enter the name of the death date column in died data","date_death")$res
+    }
+  } else if (length(date_death) > 1){
+    date_death <- tcltk::tk_select.list(date_death, title = "Death date Column")
+  } else if (length(date_death) == 0) {
+    date_death <- svDialogs::dlg_input(message= "Enter the name of the death date column in died data","date_death")$res
+  }
+  
+  ## Detect death_cause column
+  death_cause <- names(raw.died_member)[grepl("final",names(raw.died_member))]
+  
+  if(length(death_cause) == 1){
+    yes_no <- svDialogs::dlg_message(paste0("Is '", death_cause, "' the correct cause of death column?"), type = "yesno")$res
+    if(yes_no == "no"){
+      death_cause <- svDialogs::dlg_input(message= "Enter the name of the cause of death column","death_cause")$res
+    }
+  } else if (length(death_cause) > 1){
+    death_cause <- tcltk::tk_select.list(death_cause, title = "Cause of Death Column")
+  } else if (length(death_cause) == 0) {
+    death_cause <- svDialogs::dlg_input(message= "Enter the name of the cause of death column","death_cause")$res
+  }
+  
+  ## Detect death_location column
+  death_location <- names(raw.died_member)[grepl("final",names(raw.died_member))]
+  
+  if(length(death_location) == 1){
+    yes_no <- svDialogs::dlg_message(paste0("Is '", death_location, "' the correct location of death column?"), type = "yesno")$res
+    if(yes_no == "no"){
+      death_location <- svDialogs::dlg_input(message= "Enter the name of the location of death column","death_location")$res
+    }
+  } else if (length(death_location) > 1){
+    death_location <- tcltk::tk_select.list(death_location, title = "Location of Death Column")
+  } else if (length(death_location) == 0) {
+    death_location <- svDialogs::dlg_input(message= "Enter the name of the location of death column","death_location")$res
+  }
+  
+  
+  
+  raw.main <- raw.main %>% 
+    dplyr::mutate(!!rlang::sym(date_dc) := ifelse(is.na(!!rlang::sym(date_dc)), NA,
+                                                  ifelse(nchar(!!rlang::sym(date_dc)) == 5,
+                                                         lubridate::as_date(as.numeric(!!rlang::sym(date_dc)), origin = "1899-12-30"),
+                                                         stringr::str_sub(string = start, start = 1, end = 10))),
+                  !!rlang::sym(date_recall_event) := ifelse(is.na(!!rlang::sym(date_recall_event)), NA,
+                                                  ifelse(nchar(!!rlang::sym(date_recall_event)) == 5,
+                                                         lubridate::as_date(as.numeric(!!rlang::sym(date_recall_event)), origin = "1899-12-30"),
+                                                         stringr::str_sub(string = start, start = 1, end = 10))))
+  
+  raw.hh_roster <- raw.hh_roster %>% 
+    dplyr::mutate(age_years = NULL,
+                  !!rlang::sym(final_ind_dob) := ifelse(is.na(!!rlang::sym(final_ind_dob)), NA,
+                                                  ifelse(nchar(!!rlang::sym(final_ind_dob)) == 5,
+                                                         lubridate::as_date(as.numeric(!!rlang::sym(final_ind_dob)), origin = "1899-12-30"),
+                                                         stringr::str_sub(string = start, start = 1, end = 10))),
+                  !!rlang::sym(final_date_join) := ifelse(is.na(!!rlang::sym(final_date_join)), NA,
+                                                  ifelse(nchar(!!rlang::sym(final_date_join)) == 5,
+                                                         lubridate::as_date(as.numeric(!!rlang::sym(final_date_join)), origin = "1899-12-30"),
+                                                         stringr::str_sub(string = start, start = 1, end = 10))))
+  
+  raw.left_member <- raw.left_member %>%
+    dplyr::mutate(!!rlang::sym(final_ind_dob_left) := ifelse(is.na(!!rlang::sym(final_ind_dob_left)), NA,
+                                                  ifelse(nchar(!!rlang::sym(final_ind_dob_left)) == 5,
+                                                         lubridate::as_date(as.numeric(!!rlang::sym(final_ind_dob_left)), origin = "1899-12-30"),
+                                                         stringr::str_sub(string = start, start = 1, end = 10))),
+                  !!rlang::sym(final_date_join_left) := ifelse(is.na(!!rlang::sym(final_date_join_left)), NA,
+                                                  ifelse(nchar(!!rlang::sym(final_date_join_left)) == 5,
+                                                         lubridate::as_date(as.numeric(!!rlang::sym(final_date_join_left)), origin = "1899-12-30"),
+                                                         stringr::str_sub(string = start, start = 1, end = 10))),
+                  !!rlang::sym(final_date_left) := ifelse(is.na(!!rlang::sym(final_date_left)), NA,
+                                                  ifelse(nchar(!!rlang::sym(final_date_left)) == 5,
+                                                         lubridate::as_date(as.numeric(!!rlang::sym(final_date_left)), origin = "1899-12-30"),
+                                                         stringr::str_sub(string = start, start = 1, end = 10))))
+  
+  
+  raw.died_member <- raw.died_member %>%
+    dplyr::mutate(!!rlang::sym(dob_died) := ifelse(is.na(!!rlang::sym(dob_died)), NA,
+                                                  ifelse(nchar(!!rlang::sym(dob_died)) == 5,
+                                                         lubridate::as_date(as.numeric(!!rlang::sym(dob_died)), origin = "1899-12-30"),
+                                                         stringr::str_sub(string = start, start = 1, end = 10))),
+                  !!rlang::sym(final_date_death) := ifelse(is.na(!!rlang::sym(final_date_death)), NA,
+                                                  ifelse(nchar(!!rlang::sym(final_date_death)) == 5,
+                                                         lubridate::as_date(as.numeric(!!rlang::sym(final_date_death)), origin = "1899-12-30"),
+                                                         stringr::str_sub(string = start, start = 1, end = 10))),
+                  !!rlang::sym(date_join_final_death) := ifelse(is.na(!!rlang::sym(date_join_final_death)), NA,
+                                                  ifelse(nchar(!!rlang::sym(date_join_final_death)) == 5,
+                                                         lubridate::as_date(as.numeric(!!rlang::sym(date_join_final_death)), origin = "1899-12-30"),
+                                                         stringr::str_sub(string = start, start = 1, end = 10))))
+  
+  df_mortality_long <- impactR4PHU::create_mortality_long_df(df_main = raw.main,
+                                                             date_dc = date_dc,
+                                                             date_recall_event = date_recall_event,
+                                                             enumerator = enumerator,
+                                                             admin1 = admin1,
+                                                             admin2 = admin2,
+                                                             cluster = cluster,
+                                                             uuid_main = uuid_main,
+                                                             df_roster = raw.hh_roster,
+                                                             uuid_roster = uuid_roster,
+                                                             sex_roster = sex_roster,
+                                                             age_roster = age_roster,
+                                                             joined_roster = joined_roster,
+                                                             joined_date_roster = joined_date_roster,
+                                                             birth_roster = birth_roster,
+                                                             birthdate_roster = birthdate_roster,
+                                                             df_left = raw.left_member,
+                                                             uuid_left = uuid_left,
+                                                             sex_left = sex_left,
+                                                             age_left = age_left,
+                                                             birth_left = birth_left,
+                                                             birthdate_left = birthdate_left,
+                                                             joined_left = joined_left,
+                                                             joined_date_left = joined_date_left,
+                                                             left_date_left = left_date_left,
+                                                             df_died = raw.died_member,
+                                                             uuid_died = uuid_died,
+                                                             sex_died = sex_died,
+                                                             age_died = age_died,
+                                                             birth_died = birth_died,
+                                                             birthdate_died = birthdate_died,
+                                                             joined_died = joined_died,
+                                                             joined_date_died = joined_date_died,
+                                                             date_death = date_death,
+                                                             death_cause = death_cause,
+                                                             death_location = death_location)
+} else {
+  df_mortality_long <- impactR4PHU::create_mortality_long_df(df_main = raw.main,
+                                                           date_dc = date_dc,
+                                                           date_recall_event = date_recall_event,
+                                                           enumerator = enumerator,
+                                                           admin1 = admin1,
+                                                           admin2 = admin2,
+                                                           cluster = cluster,
+                                                           uuid_main = uuid_main,
+                                                           df_roster = raw.hh_roster,
+                                                           uuid_roster = uuid_roster,
+                                                           sex_roster = sex_roster,
+                                                           age_roster = age_roster,
+                                                           joined_roster = joined_roster,
+                                                           joined_date_roster = joined_date_roster,
+                                                           birth_roster = birth_roster,
+                                                           birthdate_roster = birthdate_roster,
+                                                           df_left = raw.left_member,
+                                                           uuid_left = uuid_left,
+                                                           sex_left = sex_left,
+                                                           age_left = age_left,
+                                                           birth_left = birth_left,
+                                                           birthdate_left = birthdate_left,
+                                                           joined_left = joined_left,
+                                                           joined_date_left = joined_date_left,
+                                                           left_date_left = left_date_left,
+                                                           df_died = raw.died_member,
+                                                           uuid_died = uuid_died,
+                                                           sex_died = sex_died,
+                                                           age_died = age_died,
+                                                           birth_died = birth_died,
+                                                           birthdate_died = birthdate_died,
+                                                           joined_died = joined_died,
+                                                           joined_date_died = joined_date_died,
+                                                           date_death = date_death,
+                                                           death_cause = death_cause,
+                                                           death_location = death_location)
+}
+if(!file.exists("inputs/environment.Rdata")) {
+  cause_death_f <- tcltk::tk_select.list(dplyr::pull(df_mortality_long[,death_cause]) %>% unique, title = "Cause Death related to Women")
+  flag_mortality <- impactR4PHU::check_mortality_flags(df_mortality = df_mortality_long,
+                                                     cause_death_f = cause_death_f)
+} else {
+  flag_mortality <- impactR4PHU::check_mortality_flags(df_mortality = df_mortality_long,
+                                                     cause_death_f = cause_death_f)
+}
+
+if(!file.exists("inputs/environment.Rdata")) {
+  # exp_sex_ratio
+  yes_no <- svDialogs::dlg_message(paste0("Apply a 1:1 male to female ratio. No to provide your ratios."), type = "yesno")$res
+  if(yes_no == "no"){
+    right <- as.numeric(svDialogs::dlg_input(message= "Enter the male ratio",1)$res)
+    left <- as.numeric(svDialogs::dlg_input(message= "Enter the female ratio",1)$res)
+    exp_sex_ratio <- c(male,female)
+  } else {
+    exp_sex_ratio <- NULL
+  }
+  # exp_ratio_0_4
+  yes_no <- svDialogs::dlg_message(paste0("Apply a 1:4 <5 years to >5 years ratio ratio. No to provide your ratios."), type = "yesno")$res
+  if(yes_no == "no"){
+    right <- as.numeric(svDialogs::dlg_input(message= "Enter the <5 years ratio",1)$res)
+    left <- as.numeric(svDialogs::dlg_input(message= "Enter the >5 years ratio",4)$res)
+    exp_ratio_0_4 <- c(right,left)
+  } else {
+    exp_ratio_0_4 <- NULL
+  }
+  # exp_ratio_2_5
+  yes_no <- svDialogs::dlg_message(paste0("Apply a ~41% of individuals are <2 years of age of all children <5 years. No to provide your ratios."), type = "yesno")$res
+  if(yes_no == "no"){
+    right <- as.numeric(svDialogs::dlg_input(message= "Enter the <2 years ratio",7)$res)
+    left <- as.numeric(svDialogs::dlg_input(message= "Enter the <5 years ratio",10)$res)
+    exp_ratio_2_5 <- c(right,left)
+  } else {
+    exp_ratio_2_5 <- NULL
+  }
+  # exp_ratio_5_10
+  yes_no <- svDialogs::dlg_message(paste0("Apply a ~52% of individuals are <5 years of age out of under-10 children. No to provide your ratios."), type = "yesno")$res
+  if(yes_no == "no"){
+    right <- as.numeric(svDialogs::dlg_input(message= "Enter the <2 years ratio",11)$res)
+    left <- as.numeric(svDialogs::dlg_input(message= "Enter the <5 years ratio",10)$res)
+    exp_ratio_5_10 <- c(right,left)
+  } else {
+    exp_ratio_5_10 <- NULL
+  }
+  # exp_hh_size
+  yes_no <- svDialogs::dlg_message(paste0("Apply a ~52% of individuals are <5 years of age out of under-10 children. No to provide your ratios."), type = "yesno")$res
+  if(yes_no == "no"){
+    exp_hh_size <- as.numeric(svDialogs::dlg_input(message= "Enter the HH size",5)$res)
+  } else {
+    exp_hh_size <- NULL
+  }
+}
+
+list_of_var <- c("date_dc","date_recall_event","enumerator","admin1","admin2","cluster",
+                 "uuid_main","uuid_roster","sex_roster","age_roster","joined_roster","joined_date_roster",
+                 "birth_roster","birthdate_roster","uuid_left","sex_left","age_left","birth_left",
+                 "birthdate_left","joined_left","joined_date_left","left_date_left","uuid_died",
+                 "sex_died","age_died","birth_died","birthdate_died","joined_died",
+                 "joined_date_died","date_death","death_cause","death_location","cause_death_f",
+                 "exp_sex_ratio","exp_ratio_0_4","exp_ratio_2_5","exp_ratio_5_10","exp_hh_size")
+
+if(!file.exists("inputs/environment.Rdata")){
+  save(list = list_of_var, file = "inputs/environment.Rdata")
+}
+```
+
+```{r, include = FALSE}
+## Read the Plausibility excel file
+overall_mort_plaus <- openxlsx::read.xlsx("resources/overall_plaus.xlsx",fillMergedCells = TRUE, sheet = "FSL") %>%
+  dplyr::distinct()
+
+
+
+results_mort <- impactR4PHU::create_mortality_plaus(df_mortality = flag_mortality,
+                                                    exp_sex_ratio = exp_sex_ratio,
+                                                    exp_ratio_0_4 = exp_ratio_0_4,
+                                                    exp_ratio_2_5 = exp_ratio_2_5,
+                                                    exp_ratio_5_10 = exp_ratio_5_10,
+                                                    exp_hh_size = exp_hh_size)
+  
+results_mort_enum <- create_mortality_quality_report_phu(df_mortality = flag_mortality,
+                                                         exp_sex_ratio = exp_sex_ratio,
+                                                         exp_ratio_0_4 = exp_ratio_0_4,
+                                                         exp_ratio_2_5 = exp_ratio_2_5,
+                                                         exp_ratio_5_10 = exp_ratio_5_10,
+                                                         exp_hh_size = exp_hh_size,
+                                                         grouping = enumerator)
+
+result_mort_pivot <- result %>%
+  dplyr::mutate_all(., as.character) %>%
+  tidyr::pivot_longer(cols = everything(),names_to = "Criteria",
+               values_to = "Score") %>%
+  filter(stringr::str_starts(Criteria,"plaus_"))
+
+result_mort_pivot <- results_mort %>% 
+  mutate_all(., as.character) %>% 
+  tidyr::pivot_longer(cols = everything(),names_to = "Criteria",
+               values_to = "Score") %>% 
+  filter(stringr::str_starts(Criteria,"plaus_"))
+
+overall_mort_plaus_overall <- overall_mort_plaus%>% 
+  dplyr::left_join(result_mort_pivot, by = c("flag_name"="Criteria")) %>% 
+  dplyr::mutate_all(., ~ifelse(is.na(.),"NA",.)) 
+
+mort <- flextable::flextable(overall_mort_plaus_overall)
+  
+final_table <- impactR4PHU::create_plaus_table_nut_mort(mort)
+
+```
+
+### Data Quality Mortality {.tabset .tabset-fade}
+
+#### Plausbility {.tabset .tabset-fade}
+
+##### Overall
+
+```{r}
+final_table
+```
+
+```{r, results='asis'}
+result_mort_pivot_enum <- results_mort_enum %>% 
+    mutate_all(., as.character) %>% 
+    tidyr::pivot_longer(-enumerator,names_to = "Criteria",
+                 values_to = "Score") %>% 
+    filter(stringr::str_starts(Criteria,"plaus_"))
+
+list_enum <- results_mort_enum$enumerator %>% unique
+list_flex_enum <- list()
+for (i in list_enum) {
+  cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",5), collapse=""), " ", "<strong>",i,"</strong>"))
+  overall_mort_plaus_enum <- overall_mort_plaus %>% 
+    left_join(result_mort_pivot_enum %>% filter(enumerator == i), by = c("flag_name"="Criteria")) %>% 
+    mutate_all(., ~ifelse(is.na(.),"NA",.)) %>% 
+    select(-enumerator)
+
+  mort <- flextable::flextable(overall_mort_plaus_enum)
+
+  final_table_mort_enum <- create_table_nut(mort)
+  subch(final_table_mort_enum)
+  list_flex_enum <- append(list_flex_enum,final_table_mort_enum)
+}
+```
+
+
+```{r, results='asis'}
+flag_description <- readxl::read_excel("resources/flag_description.xlsx", sheet = "MORT")
+
+cause_join <- raw.mort.flags$ratios %>% 
+  group_by(uuid) %>% 
+  summarise(flag_cause_death = sum(flag_cause_death, na.rm = T)) %>% 
+  dplyr::mutate(flag_cause_death = ifelse(flag_cause_death>0,1,0))
+raw.flag.mort <- raw.mort.flags$crude %>% 
+  dplyr::left_join(select(cause_join, c(uuid, flag_cause_death)), by ="uuid")
+
+flags_mort_columns <- names(raw.flag.mort)[stringr::str_starts(names(raw.flag.mort),"flag_")]
+
+overall_flag <- tibble()
+
+for(flag in flags_mort_columns) {
+  flag_overall <- raw.flag.mort %>%
+    select(enumerator, !!rlang::sym(flag)) %>%
+    filter(!is.na(!!rlang::sym(flag))) %>%
+    mutate(flag := flag) %>%
+    group_by(flag) %>%
+    summarise(num_samples = n(),
+              flagged = sum(!!rlang::sym(flag))) %>%
+    mutate(percentage_flaggged = paste0(round((flagged/num_samples)*100,2),"%")) %>%
+    ungroup()
+  if(nrow(flag_overall)>0){
+    overall_flag <- rbind(overall_flag,flag_overall)
+  }
+}
+add_to_html.title("Overall Flag Table")
+subch(DT::datatable(overall_flag,
+                  extensions = 'Buttons', options = list(
+                    dom = 'Blfrtip',
+                    buttons = c('copy', 'csv', 'excel', 'pdf'),
+                    lengthMenu = list(c(50),
+                                      c('All')),
+                    paging = T)))
+
+for(flag in flags_mort_columns) {
+  flag_rational <- flag_description %>%
+    filter(flag_name %in% flag) %>%
+    pull(Rationale)
+  flag_action <- flag_description %>%
+    filter(flag_name %in% flag) %>%
+    pull(Action)
+  flag_by_enum <- raw.flag.mort %>%
+    select(enumerator, !!rlang::sym(flag)) %>%
+    filter(!is.na(!!rlang::sym(flag))) %>%
+    mutate(flag := flag) %>%
+    group_by(flag,enumerator) %>%
+    summarise(num_samples = n(),
+              flagged = sum(!!rlang::sym(flag))) %>%
+    mutate(percentage_flagged = paste0(round((flagged/num_samples)*100,2),"%")) %>%
+    ungroup() %>%
+    select(-1)
+  if(nrow(flag_by_enum)>0){
+    add_to_html.title(flag)
+    cat("\n")
+    cat(paste("<em><strong>Rational</strong>: ",flag_rational,"</em>\n"))
+    if(!is.null(flag_action)){
+      cat("\n")
+      cat(paste("<em><strong>Action</strong>: ",flag_action,"</em>\n"))
+    }
+    subch(DT::datatable(flag_by_enum,
+                  extensions = 'Buttons', options = list(
+                    dom = 'Blfrtip',
+                    buttons = c('copy', 'csv', 'excel', 'pdf'),
+                    lengthMenu = list(c(50),
+                                      c('All')),
+                    paging = T)))
+  }
+}
+
+```
+
+
