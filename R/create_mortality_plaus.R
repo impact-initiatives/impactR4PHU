@@ -208,7 +208,9 @@ create_mortality_plaus <- function(df_mortality,
                     n_hh, n_hh_under_5, sex_ratio, sex_ratio.pvalue, age_ratio_0_5,
                     age_ratio_0_5.pvalue, age_ratio_2_5, age_ratio_2_5.pvalue, age_ratio_5_10, age_ratio_5_10.pvalue,
                     joins, prop_join_people, lefts, prop_left_people, births,
-                    dplyr::starts_with("plaus_"),dplyr::starts_with("mort_plaus_")))
+                    plaus_cdr,  plaus_prop_hh_flag_deaths, plaus_sex_ratio,
+                    plaus_age_ratio_0_5, plaus_age_ratio_2_5, plaus_age_ratio_5_10,
+                    mort_plaus_score, mort_plaus_cat))
 
 
   if(short_report == TRUE) {
@@ -216,7 +218,9 @@ create_mortality_plaus <- function(df_mortality,
     df4 <- df4 %>%
       dplyr::select(1,cdr_ci,u5dr_ci,deaths, deaths_under5, prop_hh_flag_deaths,
                     sex_ratio.pvalue, age_ratio_0_5.pvalue,prop_join_people,prop_left_people,
-                    dplyr::starts_with("plaus_"), mort_plaus_score, mort_plaus_cat)
+                    plaus_cdr,  plaus_prop_hh_flag_deaths, plaus_sex_ratio,
+                    plaus_age_ratio_0_5, plaus_age_ratio_2_5, plaus_age_ratio_5_10,
+                    mort_plaus_score, mort_plaus_cat)
   }
   # Saving the new dataframe to a xlsx, if specified
   if(!is.null(file_path)) {writexl::write_xlsx(df4, file_path)}
