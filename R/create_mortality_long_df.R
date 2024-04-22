@@ -383,7 +383,7 @@ create_mortality_long_df <- function(df_main,date_dc = "today", date_recall_even
                                                    left = ifelse(date_left_date - date_dc_date >= 0, NA, left),
                                                    birth = ifelse(date_recall_date - date_birth_date > 0, NA, birth),
                                                    death = ifelse(date_death_date - date_dc_date >= 0, NA, death),
-                                                   person_time_new = case_when(is.na(date_join_date)&
+                                                   person_time = case_when(is.na(date_join_date)&
                                                                                  is.na(date_left_date)&
                                                                                  (is.na(date_birth_date)|
                                                                                     !is.na(date_birth_date) & lubridate::year(date_birth_date)<as.numeric(date_dc_year))&
