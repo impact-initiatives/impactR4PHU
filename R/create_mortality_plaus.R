@@ -128,7 +128,7 @@ create_mortality_plaus <- function(df_mortality,
   # summarizing individual level indicators
 
   df2 <- df_mortality %>%
-    dplyr::group_by(!!rlang::sym(grouping)) %>%
+    dplyr::group_by(group) %>%
     dplyr::summarize(total_people = sum(!is.na(person_time), na.rm = TRUE),
                      total_persontime = sum(person_time, na.rm = TRUE),
                      avg.persontime = mean(person_time, na.rm = TRUE),
@@ -173,7 +173,7 @@ create_mortality_plaus <- function(df_mortality,
   # of households
 
   df3 <- df_mortality %>%
-    dplyr::group_by(!!rlang::sym(grouping), uuid) %>%
+    dplyr::group_by(group, uuid) %>%
     dplyr::summarise(hh_size = sum(!is.na(sex), na.rm = TRUE),
                      total_under5 = sum(!is.na(under_5), na.rm = TRUE),
                      num_deaths = sum(!is.na(death), na.rm = TRUE),
@@ -183,7 +183,7 @@ create_mortality_plaus <- function(df_mortality,
                   is_hh_under5 = ifelse(is.na(uuid), NA, ifelse(total_under5 > 0, 1, 0)),
                   is_hh_flag_deaths = ifelse(is.na(uuid), NA, ifelse(total_flag_deaths > 0, 1, 0)),
                   is_hh_flag_cause_deaths = ifelse(is.na(uuid), NA, ifelse(total_flag_cause_deaths > 0, 1, 0))) %>%
-    dplyr::group_by(!!rlang::sym(grouping)) %>%
+    dplyr::group_by(group) %>%
     dplyr::summarise(mean_hh_size = mean(hh_size, na.rm = TRUE),
                      mean_hh_size.pvalue = round(as.numeric(stats::t.test(x = hh_size, mu = expected_hh_size, alternative = "two.sided")[3]),2),
                      mean_num_under5 = mean(total_under5, na.rm = TRUE),
