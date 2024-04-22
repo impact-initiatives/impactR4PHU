@@ -27,7 +27,7 @@ check_mortality_flags <- function(df_mortality,
   df_mortality <- merge(df_mortality, hh_summary, by = "uuid", all.x = TRUE)
 
   df_mortality <- df_mortality %>%
-    dplyr::mutate(flag_cause_death = ifelse(sex == 1 & cause_death %in% cause_death_f,1,0))
+    dplyr::mutate(flag_cause_death = ifelse(sex == 1 & death_cause %in% cause_death_f,1,0))
 
   options(warn = 0)
   return(df_mortality)
