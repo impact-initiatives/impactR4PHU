@@ -65,8 +65,8 @@ calculate_plausibility <- function(.dataset){
     print(setdiff(anthro_plaus_vars, names(.dataset)))
   }
   mort_plaus_vars <- c("plaus_cdr", "plaus_prop_hh_flag_deaths",
-                       "plaus_sex_ratio.pvalue", "plaus_age_ratio_0_5.pvalue",
-                       "plaus_age_ratio_2_5.pvalue", "plaus_age_ratio_5_10.pvalue")
+                       "plaus_sex_ratio", "plaus_age_ratio_0_5",
+                       "plaus_age_ratio_2_5", "plaus_age_ratio_5_10")
   if (c("cdr") %in% names(.dataset)) {
     .dataset <- .dataset %>% dplyr::mutate(plaus_cdr = ifelse(cdr < 1, 0,
                                                   ifelse(cdr < 2, 5,
