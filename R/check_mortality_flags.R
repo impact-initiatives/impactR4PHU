@@ -16,6 +16,7 @@
 #' }
 
 check_mortality_flags <- function(df_mortality,
+                                  cause_death = "cause_death",
                                   cause_death_f = c("post_partum","during_pregnancy","during_delivery")){
   options(warn = -1)
   if (!"uuid" %in% names(df_mortality)) stop("uuid argument incorrect, or not available in the df Mortality")
@@ -27,7 +28,7 @@ check_mortality_flags <- function(df_mortality,
   df_mortality <- merge(df_mortality, hh_summary, by = "uuid", all.x = TRUE)
 
   df_mortality <- df_mortality %>%
-    dplyr::mutate(flag_cause_death = ifelse(sex == 1 & cause_death %in% cause_death_f,1,0))
+    dplyr::mutate(flag_cause_death = ifelse(sex == 1 & death_cause %in% cause_death_f,1,0))
 
   options(warn = 0)
   return(df_mortality)
