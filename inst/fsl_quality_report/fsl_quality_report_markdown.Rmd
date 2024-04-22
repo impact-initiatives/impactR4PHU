@@ -919,14 +919,14 @@ if(!file.exists("inputs/environment.Rdata")) {
   ## Detect Enumerator column
   enumerator <- names(raw.flag.fcs)[grepl("enum|team",names(raw.flag.fcs))]
   
-  if(length(enumerator_column) == 1){
-    yes_no <- svDialogs::dlg_message(paste0("Is '", enumerator_column, "' the correct enumerator column?"), type = "yesno")$res
+  if(length(enumerator) == 1){
+    yes_no <- svDialogs::dlg_message(paste0("Is '", enumerator, "' the correct enumerator column?"), type = "yesno")$res
     if(yes_no == "no"){
       enumerator <- svDialogs::dlg_input(message= "Enter the name of the Enumerator Column","enumerator")$res
     }
-  } else if (length(enumerator_column) > 1){
-    enumerator <- tcltk::tk_select.list(enumerator_column, title = "Enumerator Columns")
-  } else if (length(enumerator_column) == 0) {
+  } else if (length(enumerator) > 1){
+    enumerator <- tcltk::tk_select.list(enumerator, title = "Enumerator Columns")
+  } else if (length(enumerator) == 0) {
     enumerator <- svDialogs::dlg_input(message= "Enter the name of the Enumerator Column","enumerator")$res
   }
 }
