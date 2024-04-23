@@ -666,7 +666,10 @@ if(!file.exists("inputs/environment.Rdata")) {
   } else {
     exp_hh_size <- NULL
   }
+  
+  population_estimation <- as.numeric(svDialogs::dlg_input(message= "Enter the total population of the study area",10000)$res)
 }
+
 
 list_of_var <- c("date_dc","date_recall_event","enumerator","admin1","admin2","cluster",
                  "uuid_main","uuid_roster","sex_roster","age_roster","joined_roster","joined_date_roster",
@@ -676,7 +679,7 @@ list_of_var <- c("date_dc","date_recall_event","enumerator","admin1","admin2","c
                  "joined_date_died","date_death","death_cause","death_location","cause_death_f",
                  "exp_sex_ratio","exp_ratio_0_4","exp_ratio_2_5","exp_ratio_5_10","exp_hh_size",
                  "df_mortality_long","flag_mortality", "label_colname","path.sheet.with.main",
-                 "path.sheet.with.roster","path.sheet.with.leavers","path.sheet.with.death")
+                 "path.sheet.with.roster","path.sheet.with.leavers","path.sheet.with.death","population_estimation")
 
 if(!file.exists("inputs/environment.Rdata")){
   save(list = list_of_var, file = "inputs/environment.Rdata")
@@ -723,6 +726,68 @@ final_table <- impactR4PHU::create_plaus_table_nut_mort(mort)
 ```
 
 ### Demographics
+
+#### Age pyramid in years disaggregated by gender 
+
+```{r}
+impactR4PHU::plot_age_pyramid(df_mortality_long %>% 
+                                filter(is.na(left),
+                                       is.na(death)))
+```
+
+#### 2.	Age pyramid in years disaggregated by gender per enumerator
+
+```{r}
+list_enum <- df_mortality_long[[enumerator]]%>% unique
+list_flex_enum <- list()
+for (i in list_enum) {
+  cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",5), collapse=""), " ", "<strong>Enumerator: ",i,"</strong>"))
+  impactR4PHU::plot_age_pyramid(df_mortality_long %>% 
+                                  filter(is.na(left),
+                                         is.na(death),
+                                         !!rlang::sym(enumerator) == i))
+}
+
+```
+
+#### Histogram of age in years 
+
+```{r}
+impactR4PHU::plot_age_distribution(df_mortality_long %>% 
+                                     filter(is.na(left),
+                                            is.na(death)),
+                                   year_or_month = "year",
+                                   max_age = 10)
+```
+
+#### Histogram of age in years per enumerator
+
+```{r, fig.height=8}
+impactR4PHU::plot_age_distribution(df_mortality_long %>% 
+                                     filter(is.na(left),
+                                            is.na(death)),
+                                   year_or_month = "year",
+                                   max_age = 10,
+                                   by_group = enumerator)
+```
+
+#### Histogram of age in months 
+
+```{r}
+impactR4PHU::plot_age_distribution(raw.hh_roster,
+                                   year_or_month = "month",
+                                   breaks = 1)
+```
+
+#### Histogram of age in months per enumerator
+
+```{r, fig.height=8}
+impactR4PHU::plot_age_distribution(raw.hh_roster %>% 
+                                     dplyr::left_join(select(raw.main, c(uuid_main, enumerator))),
+                                   year_or_month = "month",
+                                   by_group = enumerator,
+                                   breaks = 1)
+```
 
 
 ### Data Quality Mortality {.tabset .tabset-fade}
@@ -835,4 +900,92 @@ for(flag in flags_mort_columns) {
 
 ```
 
+### Results
+
+#### Number of Death/Joiners/Leavers & Person Time per Enumerator
+
+```{r, results='asis'}
+table_djl_enum <- df_mortality_long %>% 
+  dplyr::group_by(!!rlang::sym(enumerator)) %>% 
+  dplyr::summarise(Leavers = sum(as.numeric(left), na.rm = T),
+                   Joiners = sum(as.numeric(join), na.rm = T),
+                   Death = sum(as.numeric(death), na.rm = T),
+                   `Death Under 5` = sum(as.numeric(under_5), na.rm = T),
+                   `Person Time` = sum(as.numeric(person_time), na.rm = T),
+                   `Person Time Under 5` = sum(as.numeric(under_5_pt), na.rm = T))
+
+total <- table_djl_enum %>% 
+  dplyr::group_by() %>% 
+  dplyr::summarise(Leavers = sum(as.numeric(Leavers), na.rm = T),
+                   Joiners = sum(as.numeric(Joiners), na.rm = T),
+                   Death = sum(as.numeric(Death), na.rm = T),
+                   `Death Under 5` = sum(as.numeric(`Death Under 5`), na.rm = T),
+                   `Person Time` = sum(as.numeric(`Person Time`), na.rm = T),
+                   `Person Time Under 5` = sum(as.numeric(`Person Time Under 5`), na.rm = T)) %>% 
+  dplyr::mutate(enumerator = "Total") %>% 
+  dplyr::relocate(enumerator, .before = 1)
+
+table_djl_enum <- bind_rows(table_djl_enum, total)
+subch(table_djl_enum)
+```
+```{r}
+if(as.numeric(population_estimation) > 10000){
+  res <- srvyr::as_survey_design(df_mortality_long)
+} else {
+  res <- srvyr::as_survey_design(df_mortality_long %>% 
+                                   dplyr::mutate(fpc = nrow(raw.hh_roster)/as.numeric(population_estimation)),
+                                 fpc = fpc)
+}
+ 
+crude <- res %>%
+  srvyr::summarise(x = srvyr::survey_ratio(numerator = death * 10000,
+                                           denominator = person_time,
+                                           vartype = "ci",
+                                           deff = "replace")) %>% 
+  dplyr::mutate_all(.,~round(.,2)) %>%
+  dplyr::mutate(variable = "cmr")
+  
+  
+under5 <- res %>%
+  srvyr::summarise(x = srvyr::survey_ratio(numerator = under_5 * 10000,
+                                           denominator = under_5_pt,
+                                           vartype = "ci",
+                                           deff = "replace")) %>% 
+  dplyr::mutate_all(.,~round(.,2)) %>%
+  dplyr::mutate(variable = "u5mr")
+
+results.summary <- rbind(crude,under5) %>% 
+  dplyr::select(-x_deff) %>% 
+  dplyr::rename(`point.est` = "x",
+         `95%lci` = "x_low",
+         `95%uci` = "x_upp") %>% 
+  dplyr::relocate(variable, .before = 1)
+```
+
+```{r, results='asis'}
+cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",3), collapse=""), " ", "<strong>Crude & UNDER 5 Overall</strong>"))
+DT::datatable(results.summary)
+```
+
+```{r, include=FALSE}
+plot_results.summary <- ggplot2::ggplot(results.summary %>% 
+                                               mutate(variable = case_when(variable == "cmr"~"Crude",
+                                                                           variable == "u5mr"~"Under 5")), ggplot2::aes(x = variable)) +
+  ggplot2::geom_hline(yintercept=1, linetype='dotted', color = 'black', size =1)+
+  ggplot2::geom_hline(yintercept=2, linetype='dotted', color = 'red', size =1)+
+  ggplot2::geom_errorbar(ggplot2::aes(ymin =`95%lci`, ymax = `95%uci`, width = 0.2, color = "red"))+
+  ggplot2::geom_text(ggplot2::aes(x = variable, y = `95%lci`, label = `95%lci`, vjust = 1.5, color = "red", fontface = "bold"), size = 3)+
+  ggplot2::geom_text(ggplot2::aes(x = variable, y = `95%uci`, label = `95%uci`, vjust = -0.5, color = "red", fontface = "bold"), size = 3)+
+  ggplot2::geom_point(ggplot2::aes(y = point.est), color = "blue")+
+  ggplot2::geom_text(ggplot2::aes(x = variable, y = point.est, label = point.est, hjust = -0.5), size = 3, color = "blue", fontface = "bold")+
+  ggplot2::scale_y_continuous(limits=c(0, under5$x_upp))+
+  ggplot2::theme(legend.position = "none", axis.title.y = ggplot2::element_blank())+
+  ggplot2::xlab("Overall HH Survey")+ 
+  ggplot2::labs(caption = c("Black Dotted Line: Crude Threshold (WHO)", "Red Dotted Line: Under 5 Threshold (WHO)")) + 
+  ggplot2::theme(plot.caption = ggplot2::element_text(hjust = c(0.2,0.8),color = c("black","red")))
+```
+
+```{r}
+plot_results.summary
+```
 
