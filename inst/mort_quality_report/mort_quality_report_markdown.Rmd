@@ -29,23 +29,25 @@ htmltools::img(src = knitr::image_uri("resources/Logo_Reach_RGB_1.png"),
 ```
 
 ```{r, include=FALSE, eval=TRUE}
+if(file.exists("inputs/environment.Rdata")) {
+  load("inputs/environment.Rdata")
+}
 path.raw <- svDialogs::dlg_open(multiple = F, title = "Please select your data excel file.")$res
 path.tool <- svDialogs::dlg_open(multiple = F, title = "Please select your Kobo tool file.")$res
+tool.survey <- readxl::read_excel(path.tool, "survey")
+tool.choices <- readxl::read_excel(path.tool, "choices")
 main.sheets <- readxl::excel_sheets(path.raw)
-path.sheet.with.main <- tcltk::tk_select.list(main.sheets, title = "Main Sheet", multiple = F)
-path.sheet.with.roster <- tcltk::tk_select.list(main.sheets, title = "HH Roster Sheet", multiple = F)
-path.sheet.with.leavers <- tcltk::tk_select.list(main.sheets, title = "Left Members Sheet", multiple = F)
-path.sheet.with.death <- tcltk::tk_select.list(main.sheets, title = "Died Members sheet", multiple = F)
+if(!file.exists("inputs/environment.Rdata")){
+  path.sheet.with.main <- tcltk::tk_select.list(main.sheets, title = "Main Sheet", multiple = F)
+  path.sheet.with.roster <- tcltk::tk_select.list(main.sheets, title = "HH Roster Sheet", multiple = F)
+  path.sheet.with.leavers <- tcltk::tk_select.list(main.sheets, title = "Left Members Sheet", multiple = F)
+  path.sheet.with.death <- tcltk::tk_select.list(main.sheets, title = "Died Members sheet", multiple = F)
+  label_colname <- tcltk::tk_select.list(names(tool.survey)[grepl("label",names(tool.survey))], title = "Label column to choose", multiple = F)
+}
 raw.main <- readxl::read_excel(path.raw, path.sheet.with.main)
 raw.hh_roster <- readxl::read_excel(path.raw, path.sheet.with.roster)
 raw.left_member <- readxl::read_excel(path.raw, path.sheet.with.leavers)
 raw.died_member <- readxl::read_excel(path.raw, path.sheet.with.death)
-tool.survey <- readxl::read_excel(path.tool, "survey")
-tool.choices <- readxl::read_excel(path.tool, "choices")
-label_colname <- tcltk::tk_select.list(names(tool.survey)[grepl("label",names(tool.survey))], title = "Label column to choose", multiple = F)
-if(file.exists("inputs/environment.Rdata")) {
-  load("inputs/environment.Rdata")
-}
 ```
 
 # {.tabset .tabset-fade}
@@ -673,7 +675,8 @@ list_of_var <- c("date_dc","date_recall_event","enumerator","admin1","admin2","c
                  "sex_died","age_died","birth_died","birthdate_died","joined_died",
                  "joined_date_died","date_death","death_cause","death_location","cause_death_f",
                  "exp_sex_ratio","exp_ratio_0_4","exp_ratio_2_5","exp_ratio_5_10","exp_hh_size",
-                 "df_mortality_long","flag_mortality")
+                 "df_mortality_long","flag_mortality", "label_colname","path.sheet.with.main",
+                 "path.sheet.with.roster","path.sheet.with.leavers","path.sheet.with.death")
 
 if(!file.exists("inputs/environment.Rdata")){
   save(list = list_of_var, file = "inputs/environment.Rdata")
@@ -708,13 +711,8 @@ result_mort_pivot <- results_mort %>%
                values_to = "Score") %>%
   filter(stringr::str_starts(Criteria,"plaus_"))
 
-result_mort_pivot_enum <- results_mort_enum %>% 
-  mutate_all(., as.character) %>% 
-  tidyr::pivot_longer(cols = everything(),names_to = "Criteria",
-               values_to = "Score") %>% 
-  filter(stringr::str_starts(Criteria,"plaus_"))
 
-overall_mort_plaus_overall <- overall_mort_plaus%>% 
+overall_mort_plaus_overall <- overall_mort_plaus %>% 
   dplyr::left_join(result_mort_pivot, by = c("flag_name"="Criteria")) %>% 
   dplyr::mutate_all(., ~ifelse(is.na(.),"NA",.)) 
 
@@ -724,9 +722,12 @@ final_table <- impactR4PHU::create_plaus_table_nut_mort(mort)
 
 ```
 
+### Demographics
+
+
 ### Data Quality Mortality {.tabset .tabset-fade}
 
-#### Plausbility {.tabset .tabset-fade}
+#### Plausibility {.tabset .tabset-fade}
 
 ##### Overall
 
@@ -736,23 +737,23 @@ final_table
 
 ```{r, results='asis'}
 result_mort_pivot_enum <- results_mort_enum %>% 
-    mutate_all(., as.character) %>% 
-    tidyr::pivot_longer(-enumerator,names_to = "Criteria",
+    dplyr::mutate_all(., as.character) %>% 
+    tidyr::pivot_longer(-group,names_to = "Criteria",
                  values_to = "Score") %>% 
     filter(stringr::str_starts(Criteria,"plaus_"))
 
-list_enum <- results_mort_enum$enumerator %>% unique
+list_enum <- results_mort_enum$group %>% unique
 list_flex_enum <- list()
 for (i in list_enum) {
   cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",5), collapse=""), " ", "<strong>",i,"</strong>"))
   overall_mort_plaus_enum <- overall_mort_plaus %>% 
-    left_join(result_mort_pivot_enum %>% filter(enumerator == i), by = c("flag_name"="Criteria")) %>% 
-    mutate_all(., ~ifelse(is.na(.),"NA",.)) %>% 
-    select(-enumerator)
+    dplyr::left_join(result_mort_pivot_enum %>% filter(group == i), by = c("flag_name"="Criteria")) %>% 
+    dplyr::mutate_all(., ~ifelse(is.na(.),"NA",.)) %>% 
+    dplyr::select(-group)
 
   mort <- flextable::flextable(overall_mort_plaus_enum)
 
-  final_table_mort_enum <- create_table_nut(mort)
+  final_table_mort_enum <- impactR4PHU::create_plaus_table_nut_mort(mort)
   subch(final_table_mort_enum)
   list_flex_enum <- append(list_flex_enum,final_table_mort_enum)
 }
@@ -762,12 +763,13 @@ for (i in list_enum) {
 ```{r, results='asis'}
 flag_description <- readxl::read_excel("resources/flag_description.xlsx", sheet = "MORT")
 
-cause_join <- raw.mort.flags$ratios %>% 
-  group_by(uuid) %>% 
-  summarise(flag_cause_death = sum(flag_cause_death, na.rm = T)) %>% 
-  dplyr::mutate(flag_cause_death = ifelse(flag_cause_death>0,1,0))
-raw.flag.mort <- raw.mort.flags$crude %>% 
-  dplyr::left_join(select(cause_join, c(uuid, flag_cause_death)), by ="uuid")
+raw.flag.mort <- flag_mortality %>% 
+  dplyr::group_by(uuid,enumerator) %>% 
+  dplyr::summarise(flag_cause_death = sum(flag_cause_death, na.rm = T),
+                   flag_multiple_death = sum(flag_multiple_death, na.rm = T))
+
+# raw.flag.mort <- flag_mortality %>% 
+#   dplyr::left_join(select(cause_join, c(uuid, flag_cause_death)), by ="uuid")
 
 flags_mort_columns <- names(raw.flag.mort)[stringr::str_starts(names(raw.flag.mort),"flag_")]
 
@@ -775,14 +777,14 @@ overall_flag <- tibble()
 
 for(flag in flags_mort_columns) {
   flag_overall <- raw.flag.mort %>%
-    select(enumerator, !!rlang::sym(flag)) %>%
+    dplyr::select(enumerator, !!rlang::sym(flag)) %>%
     filter(!is.na(!!rlang::sym(flag))) %>%
-    mutate(flag := flag) %>%
-    group_by(flag) %>%
-    summarise(num_samples = n(),
+    dplyr::mutate(flag := flag) %>%
+    dplyr::group_by(flag) %>%
+    dplyr::summarise(num_samples = n(),
               flagged = sum(!!rlang::sym(flag))) %>%
-    mutate(percentage_flaggged = paste0(round((flagged/num_samples)*100,2),"%")) %>%
-    ungroup()
+    dplyr::mutate(percentage_flaggged = paste0(round((flagged/num_samples)*100,2),"%")) %>%
+    dplyr::ungroup()
   if(nrow(flag_overall)>0){
     overall_flag <- rbind(overall_flag,flag_overall)
   }
@@ -799,20 +801,20 @@ subch(DT::datatable(overall_flag,
 for(flag in flags_mort_columns) {
   flag_rational <- flag_description %>%
     filter(flag_name %in% flag) %>%
-    pull(Rationale)
+    dplyr::pull(Rationale)
   flag_action <- flag_description %>%
     filter(flag_name %in% flag) %>%
-    pull(Action)
+    dplyr::pull(Action)
   flag_by_enum <- raw.flag.mort %>%
-    select(enumerator, !!rlang::sym(flag)) %>%
+    dplyr::select(enumerator, !!rlang::sym(flag)) %>%
     filter(!is.na(!!rlang::sym(flag))) %>%
-    mutate(flag := flag) %>%
-    group_by(flag,enumerator) %>%
-    summarise(num_samples = n(),
+    dplyr::mutate(flag := flag) %>%
+    dplyr::group_by(flag,enumerator) %>%
+    dplyr::summarise(num_samples = n(),
               flagged = sum(!!rlang::sym(flag))) %>%
-    mutate(percentage_flagged = paste0(round((flagged/num_samples)*100,2),"%")) %>%
-    ungroup() %>%
-    select(-1)
+    dplyr::mutate(percentage_flagged = paste0(round((flagged/num_samples)*100,2),"%")) %>%
+    dplyr::ungroup() %>%
+    dplyr::select(-1)
   if(nrow(flag_by_enum)>0){
     add_to_html.title(flag)
     cat("\n")
