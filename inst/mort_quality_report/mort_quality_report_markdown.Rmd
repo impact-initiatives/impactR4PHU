@@ -682,7 +682,7 @@ if(!file.exists("inputs/environment.Rdata")){
 
 ```{r, include = FALSE}
 ## Read the Plausibility excel file
-overall_mort_plaus <- openxlsx::read.xlsx("resources/overall_plaus.xlsx",fillMergedCells = TRUE, sheet = "FSL") %>%
+overall_mort_plaus <- openxlsx::read.xlsx("resources/overall_plaus.xlsx",fillMergedCells = TRUE, sheet = "MORT") %>%
   dplyr::distinct()
 
 
@@ -694,7 +694,7 @@ results_mort <- impactR4PHU::create_mortality_plaus(df_mortality = flag_mortalit
                                                     exp_ratio_5_10 = exp_ratio_5_10,
                                                     exp_hh_size = exp_hh_size)
   
-results_mort_enum <- create_mortality_quality_report_phu(df_mortality = flag_mortality,
+results_mort_enum <- impactR4PHU::create_mortality_plaus(df_mortality = flag_mortality,
                                                          exp_sex_ratio = exp_sex_ratio,
                                                          exp_ratio_0_4 = exp_ratio_0_4,
                                                          exp_ratio_2_5 = exp_ratio_2_5,
@@ -702,13 +702,13 @@ results_mort_enum <- create_mortality_quality_report_phu(df_mortality = flag_mor
                                                          exp_hh_size = exp_hh_size,
                                                          grouping = enumerator)
 
-result_mort_pivot <- result %>%
+result_mort_pivot <- results_mort %>%
   dplyr::mutate_all(., as.character) %>%
   tidyr::pivot_longer(cols = everything(),names_to = "Criteria",
                values_to = "Score") %>%
   filter(stringr::str_starts(Criteria,"plaus_"))
 
-result_mort_pivot <- results_mort %>% 
+result_mort_pivot_enum <- results_mort_enum %>% 
   mutate_all(., as.character) %>% 
   tidyr::pivot_longer(cols = everything(),names_to = "Criteria",
                values_to = "Score") %>% 
