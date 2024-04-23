@@ -61,9 +61,9 @@ globalVariables(unique(c(
   "sd_muac_mm","plaus_sd_muac_mm","plaus_n_children_muac","plaus_ageratio","plaus_sexratio",
   "plaus_perc_mfaz_children","plaus_dps_muac","plaus_anthro_score","cdr","prop_hh_flag_deaths",
   "age_ratio_0_5.pvalue","age_ratio_2_5.pvalue","age_ratio_5_10.pvalue","mean_hh_size.pvalue","prop_join_people",
-  "prop_left_people","poisson_pvalues.deaths","plaus_cdr","plaus_prop_hh_flag_deaths","plaus_sex_ratio",
-  "plaus_age_ratio_0_5","plaus_age_ratio_2_5","plaus_age_ratio_5_10","plaus_mean_hh_size.pvalue",
-  "plaus_prop_joiners","plaus_prop_leavers","plaus_poisson_pvalues.deaths","mort_plaus_score","plaus_flag_lcsi_liv_agriculture",
+  "prop_left_people","poisson_pvalues.deaths","plaus_cdr","plaus_hh_multiple_death","plaus_sex_ratio",
+  "plaus_age0to4_5plus_ratio","plaus_age0to1_2to4_ratio","plaus_age0to4_5to10_ratio","plaus_mean_hh_size.pvalue",
+  "plaus_prop_joiners","plaus_prop_leavers","plaus_poisson_pvalues.deaths","plaus_mort_score","plaus_flag_lcsi_liv_agriculture",
   "plaus_flag_lcsi_liv_livestock","corr.fcs_rcsi","corr.fcs_rcsi.pvalue","corr.fcs_hhs","corr.fcs_hhs.pvalue",
   "corr.hhs_rcsi","corr.hhs_rcsi.pvalue","prop_fc_flags","mad_ratio.pvalue","prop_flag_high_mdd_low_mmf",
   "age_ratio_under6m_6to23m.pvalue","sd_mdd","prop_iycf_caregiver","plaus_prop_iycf_caregiver","plaus_sdd_mdd",
@@ -98,5 +98,5 @@ globalVariables(unique(c(
   "total_under5","total_flag_deaths","total_flag_cause_deaths","hh_size","num_deaths",
   "is_hh","is_hh_under5","is_hh_flag_deaths","n_hh_under_5","n_hh",
   "n_hh_flag_deaths","mean_deaths_per_hh","mean_hh_size","mean_num_under5","sex_ratio",
-  "age_ratio_0_5","age_ratio_2_5","age_ratio_5_10","births","mort_plaus_cat"
+  "age_ratio_0_5","age_ratio_2_5","age_ratio_5_10","births","plaus_mort_cat"
 )))

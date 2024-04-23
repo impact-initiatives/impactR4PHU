@@ -494,7 +494,7 @@ if(!file.exists("inputs/environment.Rdata")) {
   }
   
   ## Detect death_cause column
-  death_cause <- names(raw.died_member)[grepl("final",names(raw.died_member))]
+  death_cause <- names(raw.died_member)[grepl("cause",names(raw.died_member))]
   
   if(length(death_cause) == 1){
     yes_no <- svDialogs::dlg_message(paste0("Is '", death_cause, "' the correct cause of death column?"), type = "yesno")$res
@@ -508,7 +508,7 @@ if(!file.exists("inputs/environment.Rdata")) {
   }
   
   ## Detect death_location column
-  death_location <- names(raw.died_member)[grepl("final",names(raw.died_member))]
+  death_location <- names(raw.died_member)[grepl("location",names(raw.died_member))]
   
   if(length(death_location) == 1){
     yes_no <- svDialogs::dlg_message(paste0("Is '", death_location, "' the correct location of death column?"), type = "yesno")$res
@@ -527,51 +527,51 @@ if(!file.exists("inputs/environment.Rdata")) {
     dplyr::mutate(!!rlang::sym(date_dc) := ifelse(is.na(!!rlang::sym(date_dc)), NA,
                                                   ifelse(nchar(!!rlang::sym(date_dc)) == 5,
                                                          lubridate::as_date(as.numeric(!!rlang::sym(date_dc)), origin = "1899-12-30"),
-                                                         stringr::str_sub(string = start, start = 1, end = 10))),
+                                                         stringr::str_sub(string = !!rlang::sym(date_dc), start = 1, end = 10))),
                   !!rlang::sym(date_recall_event) := ifelse(is.na(!!rlang::sym(date_recall_event)), NA,
                                                   ifelse(nchar(!!rlang::sym(date_recall_event)) == 5,
                                                          lubridate::as_date(as.numeric(!!rlang::sym(date_recall_event)), origin = "1899-12-30"),
-                                                         stringr::str_sub(string = start, start = 1, end = 10))))
+                                                         stringr::str_sub(string = !!rlang::sym(date_recall_event), start = 1, end = 10))))
   
   raw.hh_roster <- raw.hh_roster %>% 
     dplyr::mutate(age_years = NULL,
-                  !!rlang::sym(final_ind_dob) := ifelse(is.na(!!rlang::sym(final_ind_dob)), NA,
-                                                  ifelse(nchar(!!rlang::sym(final_ind_dob)) == 5,
-                                                         lubridate::as_date(as.numeric(!!rlang::sym(final_ind_dob)), origin = "1899-12-30"),
-                                                         stringr::str_sub(string = start, start = 1, end = 10))),
-                  !!rlang::sym(final_date_join) := ifelse(is.na(!!rlang::sym(final_date_join)), NA,
-                                                  ifelse(nchar(!!rlang::sym(final_date_join)) == 5,
-                                                         lubridate::as_date(as.numeric(!!rlang::sym(final_date_join)), origin = "1899-12-30"),
-                                                         stringr::str_sub(string = start, start = 1, end = 10))))
+                  !!rlang::sym(birthdate_roster) := ifelse(is.na(!!rlang::sym(birthdate_roster)), NA,
+                                                  ifelse(nchar(!!rlang::sym(birthdate_roster)) == 5,
+                                                         lubridate::as_date(as.numeric(!!rlang::sym(birthdate_roster)), origin = "1899-12-30"),
+                                                         stringr::str_sub(string = !!rlang::sym(birthdate_roster), start = 1, end = 10))),
+                  !!rlang::sym(joined_date_roster) := ifelse(is.na(!!rlang::sym(joined_date_roster)), NA,
+                                                  ifelse(nchar(!!rlang::sym(joined_date_roster)) == 5,
+                                                         lubridate::as_date(as.numeric(!!rlang::sym(joined_date_roster)), origin = "1899-12-30"),
+                                                         stringr::str_sub(string = !!rlang::sym(joined_date_roster), start = 1, end = 10))))
   
   raw.left_member <- raw.left_member %>%
-    dplyr::mutate(!!rlang::sym(final_ind_dob_left) := ifelse(is.na(!!rlang::sym(final_ind_dob_left)), NA,
-                                                  ifelse(nchar(!!rlang::sym(final_ind_dob_left)) == 5,
-                                                         lubridate::as_date(as.numeric(!!rlang::sym(final_ind_dob_left)), origin = "1899-12-30"),
-                                                         stringr::str_sub(string = start, start = 1, end = 10))),
-                  !!rlang::sym(final_date_join_left) := ifelse(is.na(!!rlang::sym(final_date_join_left)), NA,
-                                                  ifelse(nchar(!!rlang::sym(final_date_join_left)) == 5,
-                                                         lubridate::as_date(as.numeric(!!rlang::sym(final_date_join_left)), origin = "1899-12-30"),
-                                                         stringr::str_sub(string = start, start = 1, end = 10))),
-                  !!rlang::sym(final_date_left) := ifelse(is.na(!!rlang::sym(final_date_left)), NA,
-                                                  ifelse(nchar(!!rlang::sym(final_date_left)) == 5,
-                                                         lubridate::as_date(as.numeric(!!rlang::sym(final_date_left)), origin = "1899-12-30"),
-                                                         stringr::str_sub(string = start, start = 1, end = 10))))
+    dplyr::mutate(!!rlang::sym(birthdate_left) := ifelse(is.na(!!rlang::sym(birthdate_left)), NA,
+                                                  ifelse(nchar(!!rlang::sym(birthdate_left)) == 5,
+                                                         lubridate::as_date(as.numeric(!!rlang::sym(birthdate_left)), origin = "1899-12-30"),
+                                                         stringr::str_sub(string = !!rlang::sym(birthdate_left), start = 1, end = 10))),
+                  !!rlang::sym(joined_date_left) := ifelse(is.na(!!rlang::sym(joined_date_left)), NA,
+                                                  ifelse(nchar(!!rlang::sym(joined_date_left)) == 5,
+                                                         lubridate::as_date(as.numeric(!!rlang::sym(joined_date_left)), origin = "1899-12-30"),
+                                                         stringr::str_sub(string = !!rlang::sym(joined_date_left), start = 1, end = 10))),
+                  !!rlang::sym(left_date_left) := ifelse(is.na(!!rlang::sym(left_date_left)), NA,
+                                                  ifelse(nchar(!!rlang::sym(left_date_left)) == 5,
+                                                         lubridate::as_date(as.numeric(!!rlang::sym(left_date_left)), origin = "1899-12-30"),
+                                                         stringr::str_sub(string = !!rlang::sym(left_date_left), start = 1, end = 10))))
   
   
   raw.died_member <- raw.died_member %>%
-    dplyr::mutate(!!rlang::sym(dob_died) := ifelse(is.na(!!rlang::sym(dob_died)), NA,
-                                                  ifelse(nchar(!!rlang::sym(dob_died)) == 5,
-                                                         lubridate::as_date(as.numeric(!!rlang::sym(dob_died)), origin = "1899-12-30"),
-                                                         stringr::str_sub(string = start, start = 1, end = 10))),
-                  !!rlang::sym(final_date_death) := ifelse(is.na(!!rlang::sym(final_date_death)), NA,
-                                                  ifelse(nchar(!!rlang::sym(final_date_death)) == 5,
-                                                         lubridate::as_date(as.numeric(!!rlang::sym(final_date_death)), origin = "1899-12-30"),
-                                                         stringr::str_sub(string = start, start = 1, end = 10))),
-                  !!rlang::sym(date_join_final_death) := ifelse(is.na(!!rlang::sym(date_join_final_death)), NA,
-                                                  ifelse(nchar(!!rlang::sym(date_join_final_death)) == 5,
-                                                         lubridate::as_date(as.numeric(!!rlang::sym(date_join_final_death)), origin = "1899-12-30"),
-                                                         stringr::str_sub(string = start, start = 1, end = 10))))
+    dplyr::mutate(!!rlang::sym(birthdate_died) := ifelse(is.na(!!rlang::sym(birthdate_died)), NA,
+                                                  ifelse(nchar(!!rlang::sym(birthdate_died)) == 5,
+                                                         lubridate::as_date(as.numeric(!!rlang::sym(birthdate_died)), origin = "1899-12-30"),
+                                                         stringr::str_sub(string = !!rlang::sym(birthdate_died), start = 1, end = 10))),
+                  !!rlang::sym(date_death) := ifelse(is.na(!!rlang::sym(date_death)), NA,
+                                                  ifelse(nchar(!!rlang::sym(date_death)) == 5,
+                                                         lubridate::as_date(as.numeric(!!rlang::sym(date_death)), origin = "1899-12-30"),
+                                                         stringr::str_sub(string = !!rlang::sym(date_death), start = 1, end = 10))),
+                  !!rlang::sym(joined_date_died) := ifelse(is.na(!!rlang::sym(joined_date_died)), NA,
+                                                  ifelse(nchar(!!rlang::sym(joined_date_died)) == 5,
+                                                         lubridate::as_date(as.numeric(!!rlang::sym(joined_date_died)), origin = "1899-12-30"),
+                                                         stringr::str_sub(string = !!rlang::sym(joined_date_died), start = 1, end = 10))))
   
   df_mortality_long <- impactR4PHU::create_mortality_long_df(df_main = raw.main,
                                                              date_dc = date_dc,
@@ -610,50 +610,14 @@ if(!file.exists("inputs/environment.Rdata")) {
                                                              death_cause = death_cause,
                                                              death_location = death_location)
 } else {
-  df_mortality_long <- impactR4PHU::create_mortality_long_df(df_main = raw.main,
-                                                           date_dc = date_dc,
-                                                           date_recall_event = date_recall_event,
-                                                           enumerator = enumerator,
-                                                           admin1 = admin1,
-                                                           admin2 = admin2,
-                                                           cluster = cluster,
-                                                           uuid_main = uuid_main,
-                                                           df_roster = raw.hh_roster,
-                                                           uuid_roster = uuid_roster,
-                                                           sex_roster = sex_roster,
-                                                           age_roster = age_roster,
-                                                           joined_roster = joined_roster,
-                                                           joined_date_roster = joined_date_roster,
-                                                           birth_roster = birth_roster,
-                                                           birthdate_roster = birthdate_roster,
-                                                           df_left = raw.left_member,
-                                                           uuid_left = uuid_left,
-                                                           sex_left = sex_left,
-                                                           age_left = age_left,
-                                                           birth_left = birth_left,
-                                                           birthdate_left = birthdate_left,
-                                                           joined_left = joined_left,
-                                                           joined_date_left = joined_date_left,
-                                                           left_date_left = left_date_left,
-                                                           df_died = raw.died_member,
-                                                           uuid_died = uuid_died,
-                                                           sex_died = sex_died,
-                                                           age_died = age_died,
-                                                           birth_died = birth_died,
-                                                           birthdate_died = birthdate_died,
-                                                           joined_died = joined_died,
-                                                           joined_date_died = joined_date_died,
-                                                           date_death = date_death,
-                                                           death_cause = death_cause,
-                                                           death_location = death_location)
+  df_mortality_long <- df_mortality_long
 }
 if(!file.exists("inputs/environment.Rdata")) {
-  cause_death_f <- tcltk::tk_select.list(dplyr::pull(df_mortality_long[,death_cause]) %>% unique, title = "Cause Death related to Women")
+  cause_death_f <- tcltk::tk_select.list(dplyr::pull(df_mortality_long[,"death_cause"]) %>% unique, title = "Cause Death related to Women",multiple = T)
   flag_mortality <- impactR4PHU::check_mortality_flags(df_mortality = df_mortality_long,
                                                      cause_death_f = cause_death_f)
 } else {
-  flag_mortality <- impactR4PHU::check_mortality_flags(df_mortality = df_mortality_long,
-                                                     cause_death_f = cause_death_f)
+  flag_mortality <- flag_mortality
 }
 
 if(!file.exists("inputs/environment.Rdata")) {
@@ -708,7 +672,8 @@ list_of_var <- c("date_dc","date_recall_event","enumerator","admin1","admin2","c
                  "birthdate_left","joined_left","joined_date_left","left_date_left","uuid_died",
                  "sex_died","age_died","birth_died","birthdate_died","joined_died",
                  "joined_date_died","date_death","death_cause","death_location","cause_death_f",
-                 "exp_sex_ratio","exp_ratio_0_4","exp_ratio_2_5","exp_ratio_5_10","exp_hh_size")
+                 "exp_sex_ratio","exp_ratio_0_4","exp_ratio_2_5","exp_ratio_5_10","exp_hh_size",
+                 "df_mortality_long","flag_mortality")
 
 if(!file.exists("inputs/environment.Rdata")){
   save(list = list_of_var, file = "inputs/environment.Rdata")
@@ -717,7 +682,7 @@ if(!file.exists("inputs/environment.Rdata")){
 
 ```{r, include = FALSE}
 ## Read the Plausibility excel file
-overall_mort_plaus <- openxlsx::read.xlsx("resources/overall_plaus.xlsx",fillMergedCells = TRUE, sheet = "FSL") %>%
+overall_mort_plaus <- openxlsx::read.xlsx("resources/overall_plaus.xlsx",fillMergedCells = TRUE, sheet = "MORT") %>%
   dplyr::distinct()
 
 
@@ -729,7 +694,7 @@ results_mort <- impactR4PHU::create_mortality_plaus(df_mortality = flag_mortalit
                                                     exp_ratio_5_10 = exp_ratio_5_10,
                                                     exp_hh_size = exp_hh_size)
   
-results_mort_enum <- create_mortality_quality_report_phu(df_mortality = flag_mortality,
+results_mort_enum <- impactR4PHU::create_mortality_plaus(df_mortality = flag_mortality,
                                                          exp_sex_ratio = exp_sex_ratio,
                                                          exp_ratio_0_4 = exp_ratio_0_4,
                                                          exp_ratio_2_5 = exp_ratio_2_5,
@@ -737,13 +702,13 @@ results_mort_enum <- create_mortality_quality_report_phu(df_mortality = flag_mor
                                                          exp_hh_size = exp_hh_size,
                                                          grouping = enumerator)
 
-result_mort_pivot <- result %>%
+result_mort_pivot <- results_mort %>%
   dplyr::mutate_all(., as.character) %>%
   tidyr::pivot_longer(cols = everything(),names_to = "Criteria",
                values_to = "Score") %>%
   filter(stringr::str_starts(Criteria,"plaus_"))
 
-result_mort_pivot <- results_mort %>% 
+result_mort_pivot_enum <- results_mort_enum %>% 
   mutate_all(., as.character) %>% 
   tidyr::pivot_longer(cols = everything(),names_to = "Criteria",
                values_to = "Score") %>% 
