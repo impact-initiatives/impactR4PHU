@@ -50,15 +50,15 @@ plot_age_distribution <- function (.dataset,
       breaks <- 1
     }
     .dataset <- .dataset %>% dplyr::filter(!!rlang::sym(age_years) >= min_age &
-                                 !!rlang::sym(age_years) <= max_age)
+                                             !!rlang::sym(age_years) <= max_age)
     if (is.null(by_group)) {
-      g <- ggplot2::ggplot(data = .dataset, ggplot2::aes(x = get(age_years))) +
+      g <- ggplot2::ggplot(data = .dataset, ggplot2::aes(x = age_years)) +
         ggplot2::geom_histogram(binwidth = breaks) + ggplot2::scale_x_continuous(minor_breaks = seq(min_age,
                                                                                                     max_age, by = 1), breaks = seq(min_age, max_age,
-                                                                                                                                  by = breaks), limits = c(min_age, max_age))
+                                                                                                                                   by = breaks), limits = c(min_age, max_age))
     }
     else {
-      g <- ggplot2::ggplot(data = .dataset, ggplot2::aes(x = get(age_years))) +
+      g <- ggplot2::ggplot(data = .dataset, ggplot2::aes(x = age_years)) +
         ggplot2::geom_histogram(binwidth = breaks) + ggplot2::scale_x_continuous(minor_breaks = seq(min_age,
                                                                                                     max_age, by = 1), breaks = seq(min_age, max_age,
                                                                                                                                    by = breaks), limits = c(min_age, max_age)) + ggplot2::facet_wrap(~get(by_group),
@@ -79,16 +79,18 @@ plot_age_distribution <- function (.dataset,
       breaks <- 12
     }
 
-    .dataset <- .dataset %>% dplyr::filter(!!rlang::sym(age_months) >= min_age &
-                                             !!rlang::sym(age_months) <= max_age)
+    .dataset <- .dataset %>%
+      dplyr::mutate(!!rlang::sym(age_months) := as.numeric(!!rlang::sym(age_months))) %>%
+      dplyr::filter(!!rlang::sym(age_months) >= min_age &
+                      !!rlang::sym(age_months) <= max_age)
     if (is.null(by_group)) {
-      g <- ggplot2::ggplot(data = .dataset, ggplot2::aes(x = get(age_months))) +
+      g <- ggplot2::ggplot(data = .dataset, ggplot2::aes(x = age_months)) +
         ggplot2::geom_histogram(binwidth = breaks) + ggplot2::scale_x_continuous(minor_breaks = seq(min_age,
                                                                                                     max_age, by = 1), breaks = seq(min_age, max_age,
                                                                                                                                    by = breaks), limits = c(min_age, max_age))
     }
     else {
-      g <- ggplot2::ggplot(data = .dataset, ggplot2::aes(x = get(age_months))) +
+      g <- ggplot2::ggplot(data = .dataset, ggplot2::aes(x = age_months)) +
         ggplot2::geom_histogram(binwidth = breaks) + ggplot2::scale_x_continuous(minor_breaks = seq(min_age,
                                                                                                     max_age, by = 1), breaks = seq(min_age, max_age,
                                                                                                                                    by = breaks), limits = c(min_age, max_age)) + ggplot2::facet_wrap(~get(by_group),
