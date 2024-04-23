@@ -160,13 +160,19 @@ create_mortality_plaus <- function(df_mortality,
                   u5dr_se = sqrt((u5dr * (1 - u5dr)) / total_under5_persontime),
                   u5dr_lower_ci = round((u5dr - 1.96*u5dr_se)*10000,3),
                   u5dr_upper_ci = round((u5dr + 1.96*u5dr_se)*10000,3),
+                  birth_rate = births / (total_persontime/365),
+                  birth_rate_se = sqrt((birth_rate * (1 - birth_rate)) / (total_persontime/365)),
+                  birth_rate_lower_ci = round((birth_rate - 1.96*birth_rate_se)*1000,3),
+                  birth_rate_upper_ci = round((birth_rate + 1.96*birth_rate_se)*1000,3),
                   cdr = round(cdr,6)*10000,
                   u5dr = round(u5dr*10000,3),
+                  birth_rate = round(birth_rate*1000,3),
                   cdr_ci = paste0(cdr, " [", cdr_lower_ci, " - ", cdr_upper_ci, "]"),
                   u5dr_ci = paste0(u5dr, " [", u5dr_lower_ci, " - ", u5dr_upper_ci, "]"),
+                  birth_rate_ci = paste0(birth_rate, " [", birth_rate_lower_ci, " - ", birth_rate_upper_ci, "]"),
                   prop_join_people = round((joins / total_people),2)*100,
                   prop_left_people = round((lefts / total_people),2)*100) %>%
-    dplyr::select(cdr_ci, u5dr_ci, dplyr::everything())
+    dplyr::select(cdr_ci, u5dr_ci, birth_rate_ci, dplyr::everything())
 
   # summarizing household level indicators
   # average household size, % of households with a child under 5
@@ -202,7 +208,7 @@ create_mortality_plaus <- function(df_mortality,
   df4 <- impactR4PHU::calculate_plausibility(df4)
 
   df4 <- df4 %>%
-    dplyr::select(c(1, cdr, cdr_ci, u5dr, u5dr_ci, deaths, deaths_under5, mean_deaths_per_hh,
+    dplyr::select(c(1, cdr, cdr_ci, u5dr, u5dr_ci,birth_rate, birth_rate_ci, deaths, deaths_under5, mean_deaths_per_hh,
                     n_hh_flag_deaths, prop_hh_flag_deaths, total_people, mean_hh_size,
                     mean_hh_size.pvalue, total_persontime, total_under5, mean_num_under5, total_under5_persontime,
                     n_hh, n_hh_under_5, sex_ratio, sex_ratio.pvalue, age_ratio_0_5,
@@ -216,7 +222,7 @@ create_mortality_plaus <- function(df_mortality,
   if(short_report == TRUE) {
 
     df4 <- df4 %>%
-      dplyr::select(1,cdr_ci,u5dr_ci,deaths, deaths_under5, prop_hh_flag_deaths,
+      dplyr::select(1,cdr_ci,u5dr_ci,birth_rate, birth_rate_ci,deaths, deaths_under5, prop_hh_flag_deaths,
                     sex_ratio.pvalue, age_ratio_0_5.pvalue,prop_join_people,prop_left_people,
                     plaus_cdr,  plaus_hh_multiple_death, plaus_sex_ratio,
                     plaus_age0to4_5plus_ratio, plaus_age0to1_2to4_ratio, plaus_age0to4_5to10_ratio,
