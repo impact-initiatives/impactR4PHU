@@ -394,7 +394,7 @@ create_mortality_long_df <- function (df_main, date_dc = "today", date_recall_ev
   df_mortality <- dplyr::bind_rows(df_mortality, df_died)
   df_mortality <- reformat_mortality(df_mortality)
 
-  if (smart == FALSE) {
+  if (smart == TRUE) {
     df_mortality <- df_mortality %>% dplyr::mutate(age_years = as.numeric(age_years),
                                                    join = ifelse(date_recall_date - date_join_date >
                                                                    0, NA, join), left = ifelse(date_left_date -
@@ -511,7 +511,7 @@ create_mortality_long_df <- function (df_main, date_dc = "today", date_recall_ev
                                                                     NA, ifelse(as.numeric(age_years) < 5, 1, NA)), under_5_pt = ifelse(is.na(under_5),
                                                                                                                                        NA, ifelse(under_5 == 1, person_time, NA)))
   }
-  if(smart == TRUE) {
+  if(smart == FALSE) {
     df_mortality <- df_mortality %>% dplyr::mutate(age_years = as.numeric(age_years),
                                                    person_time = date_dc_date - date_recall_date,
                                                    person_time = as.numeric(person_time),
