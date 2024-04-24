@@ -523,57 +523,16 @@ if(!file.exists("inputs/environment.Rdata")) {
     death_location <- svDialogs::dlg_input(message= "Enter the name of the location of death column","death_location")$res
   }
   
+  all_vars <- ls()
+  is_empty <- function(x) {
+  obj <- get(x)
+  length(obj) == 0 || is.null(obj) ||  (is.character(obj) && all(obj == ""))
+  }
+  empty_vars <- all_vars[sapply(all_vars, is_empty)]
   
-  
-  raw.main <- raw.main %>% 
-    dplyr::mutate(!!rlang::sym(date_dc) := ifelse(is.na(!!rlang::sym(date_dc)), NA,
-                                                  ifelse(nchar(!!rlang::sym(date_dc)) == 5,
-                                                         lubridate::as_date(as.numeric(!!rlang::sym(date_dc)), origin = "1899-12-30"),
-                                                         stringr::str_sub(string = !!rlang::sym(date_dc), start = 1, end = 10))),
-                  !!rlang::sym(date_recall_event) := ifelse(is.na(!!rlang::sym(date_recall_event)), NA,
-                                                  ifelse(nchar(!!rlang::sym(date_recall_event)) == 5,
-                                                         lubridate::as_date(as.numeric(!!rlang::sym(date_recall_event)), origin = "1899-12-30"),
-                                                         stringr::str_sub(string = !!rlang::sym(date_recall_event), start = 1, end = 10))))
-  
-  raw.hh_roster <- raw.hh_roster %>% 
-    dplyr::mutate(age_years = NULL,
-                  !!rlang::sym(birthdate_roster) := ifelse(is.na(!!rlang::sym(birthdate_roster)), NA,
-                                                  ifelse(nchar(!!rlang::sym(birthdate_roster)) == 5,
-                                                         lubridate::as_date(as.numeric(!!rlang::sym(birthdate_roster)), origin = "1899-12-30"),
-                                                         stringr::str_sub(string = !!rlang::sym(birthdate_roster), start = 1, end = 10))),
-                  !!rlang::sym(joined_date_roster) := ifelse(is.na(!!rlang::sym(joined_date_roster)), NA,
-                                                  ifelse(nchar(!!rlang::sym(joined_date_roster)) == 5,
-                                                         lubridate::as_date(as.numeric(!!rlang::sym(joined_date_roster)), origin = "1899-12-30"),
-                                                         stringr::str_sub(string = !!rlang::sym(joined_date_roster), start = 1, end = 10))))
-  
-  raw.left_member <- raw.left_member %>%
-    dplyr::mutate(!!rlang::sym(birthdate_left) := ifelse(is.na(!!rlang::sym(birthdate_left)), NA,
-                                                  ifelse(nchar(!!rlang::sym(birthdate_left)) == 5,
-                                                         lubridate::as_date(as.numeric(!!rlang::sym(birthdate_left)), origin = "1899-12-30"),
-                                                         stringr::str_sub(string = !!rlang::sym(birthdate_left), start = 1, end = 10))),
-                  !!rlang::sym(joined_date_left) := ifelse(is.na(!!rlang::sym(joined_date_left)), NA,
-                                                  ifelse(nchar(!!rlang::sym(joined_date_left)) == 5,
-                                                         lubridate::as_date(as.numeric(!!rlang::sym(joined_date_left)), origin = "1899-12-30"),
-                                                         stringr::str_sub(string = !!rlang::sym(joined_date_left), start = 1, end = 10))),
-                  !!rlang::sym(left_date_left) := ifelse(is.na(!!rlang::sym(left_date_left)), NA,
-                                                  ifelse(nchar(!!rlang::sym(left_date_left)) == 5,
-                                                         lubridate::as_date(as.numeric(!!rlang::sym(left_date_left)), origin = "1899-12-30"),
-                                                         stringr::str_sub(string = !!rlang::sym(left_date_left), start = 1, end = 10))))
-  
-  
-  raw.died_member <- raw.died_member %>%
-    dplyr::mutate(!!rlang::sym(birthdate_died) := ifelse(is.na(!!rlang::sym(birthdate_died)), NA,
-                                                  ifelse(nchar(!!rlang::sym(birthdate_died)) == 5,
-                                                         lubridate::as_date(as.numeric(!!rlang::sym(birthdate_died)), origin = "1899-12-30"),
-                                                         stringr::str_sub(string = !!rlang::sym(birthdate_died), start = 1, end = 10))),
-                  !!rlang::sym(date_death) := ifelse(is.na(!!rlang::sym(date_death)), NA,
-                                                  ifelse(nchar(!!rlang::sym(date_death)) == 5,
-                                                         lubridate::as_date(as.numeric(!!rlang::sym(date_death)), origin = "1899-12-30"),
-                                                         stringr::str_sub(string = !!rlang::sym(date_death), start = 1, end = 10))),
-                  !!rlang::sym(joined_date_died) := ifelse(is.na(!!rlang::sym(joined_date_died)), NA,
-                                                  ifelse(nchar(!!rlang::sym(joined_date_died)) == 5,
-                                                         lubridate::as_date(as.numeric(!!rlang::sym(joined_date_died)), origin = "1899-12-30"),
-                                                         stringr::str_sub(string = !!rlang::sym(joined_date_died), start = 1, end = 10))))
+  for (i in empty_vars) {
+    assign(i, NULL)
+  }
   
   df_mortality_long <- impactR4PHU::create_mortality_long_df(df_main = raw.main,
                                                              date_dc = date_dc,
