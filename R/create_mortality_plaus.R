@@ -131,6 +131,8 @@ create_mortality_plaus <- function(df_mortality,
     dplyr::group_by(group) %>%
     dplyr::summarize(total_people = sum(!is.na(person_time), na.rm = TRUE),
                      total_persontime = sum(person_time, na.rm = TRUE),
+                     total_persontime_out = sum(person_time_out, na.rm = T),
+                     total_persontime_in = sum(person_time_in, na.rm = T),
                      avg.persontime = mean(person_time, na.rm = TRUE),
                      total_under5 = sum(under_5, na.rm = TRUE),
                      total_under5_persontime = sum(under_5_pt, na.rm = TRUE),
@@ -152,7 +154,7 @@ create_mortality_plaus <- function(df_mortality,
                      age_ratio_5_10 = sum(!is.na(under_5)) / sum(!is.na(age_5to10)),
                      age_ratio_5_10.pvalue = stats::chisq.test(x = c(sum(!is.na(under_5)), sum(!is.na(age_5to10))), p = age_under5to10_ratio)[3]
     ) %>%
-    dplyr::mutate(cdr = deaths / (total_persontime),
+    dplyr::mutate(cdr = deaths / (total_persontime + total_persontime_out - total_persontime_in),
                   cdr_se = sqrt((cdr * (1 - cdr)) / total_persontime),
                   cdr_lower_ci = round((cdr - 1.96*cdr_se)*10000,3),
                   cdr_upper_ci = round((cdr + 1.96*cdr_se)*10000,3),

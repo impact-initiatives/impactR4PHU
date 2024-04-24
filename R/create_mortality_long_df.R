@@ -68,6 +68,7 @@
 #' death individuals. By default: "dob_died"
 #' @param uuid_died the name of the variable that indicates the unique uuid of HH
 #' By default: NULL
+#' @param smart boolean to check if calculation should follow smart methodology or IMPACT
 #'
 #' @return return a long reformated dataframe including all roster/left/death individuals
 #' @export
@@ -92,7 +93,8 @@
 #'   birth_died = "ind_born_died",joined_died = "died_present",
 #'   death_cause = "cause_death", death_location = "location_death",
 #'   date_death = "final_date_death", joined_date_died = "date_join_final_death",
-#'   birthdate_died = "dob_died",uuid_died = "_submission__uuid")
+#'   birthdate_died = "dob_died",uuid_died = "_submission__uuid",
+#'   smart = F)
 #' }
 
 create_mortality_long_df <- function (df_main, date_dc = "today", date_recall_event = "recall_date",
@@ -109,7 +111,8 @@ create_mortality_long_df <- function (df_main, date_dc = "today", date_recall_ev
                                       birth_died = "ind_born_died", joined_died = "died_present",
                                       death_cause = "cause_death", death_location = "location_death",
                                       date_death = "final_date_death", joined_date_died = "date_join_final_death",
-                                      birthdate_died = "dob_died", uuid_died = NULL) {
+                                      birthdate_died = "dob_died", uuid_died = NULL,
+                                      smart = FALSE) {
   options(warn = -1)
   if (is.null(date_recall_event)) {
     stop("A date for recall event is required. Please input a character date with a format like dd/mm/yyyy. E.g 28/12/2020. Please check your input.")
@@ -170,128 +173,6 @@ create_mortality_long_df <- function (df_main, date_dc = "today", date_recall_ev
                                               uuid = uuid_main) %>% dplyr::select(uuid, date_dc,
                                                                                   date_recall_event, enumerator, cluster, admin1,
                                                                                   admin2)
-  }
-
-  if(!is.null(date_dc)){
-    if(!purrr::is_empty(date_dc)){
-      if(date_dc %in% names(df_main)){
-        df_main <- df_main %>%
-          dplyr::mutate(!!rlang::sym(date_dc) := ifelse(is.na(!!rlang::sym(date_dc)), NA,
-                                                        ifelse(nchar(!!rlang::sym(date_dc)) == 5,
-                                                               lubridate::as_date(as.numeric(!!rlang::sym(date_dc)), origin = "1899-12-30"),
-                                                               stringr::str_sub(string = !!rlang::sym(date_dc), start = 1, end = 10))))
-      }
-    }
-  }
-
-  if(!is.null(date_recall_event)){
-    if(!purrr::is_empty(date_recall_event)){
-      if(date_recall_event %in% names(df_main)){
-        df_main <- df_main %>%
-          dplyr::mutate(!!rlang::sym(date_recall_event) := ifelse(is.na(!!rlang::sym(date_recall_event)), NA,
-                                                                  ifelse(nchar(!!rlang::sym(date_recall_event)) == 5,
-                                                                         lubridate::as_date(as.numeric(!!rlang::sym(date_recall_event)), origin = "1899-12-30"),
-                                                                         stringr::str_sub(string = !!rlang::sym(date_recall_event), start = 1, end = 10))))
-      }
-    }
-  }
-
-  if(!is.null(birthdate_roster)){
-    if(!purrr::is_empty(birthdate_roster)){
-      if(birthdate_roster %in% names(df_roster)){
-        df_roster <- df_roster %>%
-          dplyr::mutate(age_years = NULL,
-                        !!rlang::sym(birthdate_roster) := ifelse(is.na(!!rlang::sym(birthdate_roster)), NA,
-                                                                 ifelse(nchar(!!rlang::sym(birthdate_roster)) == 5,
-                                                                        lubridate::as_date(as.numeric(!!rlang::sym(birthdate_roster)), origin = "1899-12-30"),
-                                                                        stringr::str_sub(string = !!rlang::sym(birthdate_roster), start = 1, end = 10))))
-      }
-    }
-  }
-
-  if(!is.null(joined_date_roster)){
-    if(!purrr::is_empty(joined_date_roster)){
-      if(joined_date_roster %in% names(df_roster)){
-        df_roster <- df_roster %>%
-          dplyr::mutate(age_years = NULL,
-                        !!rlang::sym(joined_date_roster) := ifelse(is.na(!!rlang::sym(joined_date_roster)), NA,
-                                                                   ifelse(nchar(!!rlang::sym(joined_date_roster)) == 5,
-                                                                          lubridate::as_date(as.numeric(!!rlang::sym(joined_date_roster)), origin = "1899-12-30"),
-                                                                          stringr::str_sub(string = !!rlang::sym(joined_date_roster), start = 1, end = 10))))
-      }
-    }
-  }
-
-  if(!is.null(birthdate_left)){
-    if(!purrr::is_empty(birthdate_left)){
-      if(birthdate_left %in% names(df_left)){
-        df_left <- df_left %>%
-          dplyr::mutate(!!rlang::sym(birthdate_left) := ifelse(is.na(!!rlang::sym(birthdate_left)), NA,
-                                                               ifelse(nchar(!!rlang::sym(birthdate_left)) == 5,
-                                                                      lubridate::as_date(as.numeric(!!rlang::sym(birthdate_left)), origin = "1899-12-30"),
-                                                                      stringr::str_sub(string = !!rlang::sym(birthdate_left), start = 1, end = 10))))
-      }
-    }
-  }
-
-  if(!is.null(joined_date_left)){
-    if(!purrr::is_empty(joined_date_left)){
-      if(joined_date_left %in% names(df_left)){
-        df_left <- df_left %>%
-          dplyr::mutate(!!rlang::sym(joined_date_left) := ifelse(is.na(!!rlang::sym(joined_date_left)), NA,
-                                                                 ifelse(nchar(!!rlang::sym(joined_date_left)) == 5,
-                                                                        lubridate::as_date(as.numeric(!!rlang::sym(joined_date_left)), origin = "1899-12-30"),
-                                                                        stringr::str_sub(string = !!rlang::sym(joined_date_left), start = 1, end = 10))))
-      }
-    }
-  }
-
-  if(!is.null(left_date_left)){
-    if(!purrr::is_empty(left_date_left)){
-      if(left_date_left %in% names(df_left)){
-        df_left <- df_left %>%
-          dplyr::mutate(!!rlang::sym(left_date_left) := ifelse(is.na(!!rlang::sym(left_date_left)), NA,
-                                                               ifelse(nchar(!!rlang::sym(left_date_left)) == 5,
-                                                                      lubridate::as_date(as.numeric(!!rlang::sym(left_date_left)), origin = "1899-12-30"),
-                                                                      stringr::str_sub(string = !!rlang::sym(left_date_left), start = 1, end = 10))))
-      }
-    }
-  }
-
-  if(!is.null(birthdate_died)){
-    if(!purrr::is_empty(birthdate_died)){
-      if(birthdate_died %in% names(df_died)){
-        df_died <- df_died %>%
-          dplyr::mutate(!!rlang::sym(birthdate_died) := ifelse(is.na(!!rlang::sym(birthdate_died)), NA,
-                                                               ifelse(nchar(!!rlang::sym(birthdate_died)) == 5,
-                                                                      lubridate::as_date(as.numeric(!!rlang::sym(birthdate_died)), origin = "1899-12-30"),
-                                                                      stringr::str_sub(string = !!rlang::sym(birthdate_died), start = 1, end = 10))))
-      }
-    }
-  }
-
-  if(!is.null(date_death)){
-    if(!purrr::is_empty(date_death)){
-      if(date_death %in% names(df_died)){
-        df_died <- df_died %>%
-          dplyr::mutate(!!rlang::sym(date_death) := ifelse(is.na(!!rlang::sym(date_death)), NA,
-                                                           ifelse(nchar(!!rlang::sym(date_death)) == 5,
-                                                                  lubridate::as_date(as.numeric(!!rlang::sym(date_death)), origin = "1899-12-30"),
-                                                                  stringr::str_sub(string = !!rlang::sym(date_death), start = 1, end = 10))))
-      }
-    }
-  }
-
-  if(!is.null(joined_date_died)){
-    if(!purrr::is_empty(joined_date_died)){
-      if(joined_date_died %in% names(df_died)){
-        df_died <- df_died %>%
-          dplyr::mutate(!!rlang::sym(joined_date_died) := ifelse(is.na(!!rlang::sym(joined_date_died)), NA,
-                                                                 ifelse(nchar(!!rlang::sym(joined_date_died)) == 5,
-                                                                        lubridate::as_date(as.numeric(!!rlang::sym(joined_date_died)), origin = "1899-12-30"),
-                                                                        stringr::str_sub(string = !!rlang::sym(joined_date_died), start = 1, end = 10))))
-      }
-    }
   }
 
 
@@ -512,8 +393,8 @@ create_mortality_long_df <- function (df_main, date_dc = "today", date_recall_ev
   df_mortality <- dplyr::bind_rows(df_roster, df_left)
   df_mortality <- dplyr::bind_rows(df_mortality, df_died)
   df_mortality <- reformat_mortality(df_mortality)
-  if (length(setdiff(c(date_vars), colnames(df_mortality))) !=
-      4) {
+
+  if (smart == FALSE) {
     df_mortality <- df_mortality %>% dplyr::mutate(age_years = as.numeric(age_years),
                                                    join = ifelse(date_recall_date - date_join_date >
                                                                    0, NA, join), left = ifelse(date_left_date -
@@ -630,13 +511,15 @@ create_mortality_long_df <- function (df_main, date_dc = "today", date_recall_ev
                                                                     NA, ifelse(as.numeric(age_years) < 5, 1, NA)), under_5_pt = ifelse(is.na(under_5),
                                                                                                                                        NA, ifelse(under_5 == 1, person_time, NA)))
   }
-  else {
+  if(smart == TRUE) {
     df_mortality <- df_mortality %>% dplyr::mutate(age_years = as.numeric(age_years),
-                                                   person_time = date_dc_date - date_recall_date, person_time = as.numeric(person_time),
-                                                   person_time = ifelse(!is.na(join) | !is.na(left) |
-                                                                          !is.na(birth) | !is.na(death), person_time *
-                                                                          0.5, person_time), under_5 = ifelse(is.na(age_years),
-                                                                                                              NA, ifelse(as.numeric(age_years) < 5, 1, NA)),
+                                                   person_time = date_dc_date - date_recall_date,
+                                                   person_time = as.numeric(person_time),
+                                                   person_time_in = ifelse(!is.na(join) | !is.na(birth) , person_time *
+                                                                          0.5, 0),
+                                                   person_time_out = ifelse(!is.na(death) | !is.na(left), person_time *
+                                                                          0.5, 0),
+                                                   under_5 = ifelse(is.na(age_years),NA, ifelse(as.numeric(age_years) < 5, 1, NA)),
                                                    under_5_pt = ifelse(is.na(under_5), NA, ifelse(under_5 ==
                                                                                                     1, person_time, NA)))
   }
