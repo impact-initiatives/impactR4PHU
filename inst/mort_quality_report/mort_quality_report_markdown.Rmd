@@ -523,6 +523,8 @@ if(!file.exists("inputs/environment.Rdata")) {
     death_location <- svDialogs::dlg_input(message= "Enter the name of the location of death column","death_location")$res
   }
   
+  smart <- tcltk::tk_select.list(c(TRUE,FALSE), title = "Do you have all the Dates Collected? (1 for Yes, 0 for No")
+  
   all_vars <- ls()
   is_empty <- function(x) {
   obj <- get(x)
@@ -533,6 +535,128 @@ if(!file.exists("inputs/environment.Rdata")) {
   for (i in empty_vars) {
     assign(i, NULL)
   }
+  if(!is.null(date_dc)){
+    if(!purrr::is_empty(date_dc)){
+      if(date_dc %in% names(raw.main)){
+        raw.main <- raw.main %>%
+          dplyr::mutate(!!rlang::sym(date_dc) := ifelse(is.na(!!rlang::sym(date_dc)), NA,
+                                                        ifelse(nchar(!!rlang::sym(date_dc)) == 5,
+                                                               lubridate::as_date(as.numeric(!!rlang::sym(date_dc)), origin = "1899-12-30"),
+                                                               stringr::str_sub(string = !!rlang::sym(date_dc), start = 1, end = 10))))
+      }
+    }
+  }
+
+  if(!is.null(date_recall_event)){
+    if(!purrr::is_empty(date_recall_event)){
+      if(date_recall_event %in% names(raw.main)){
+        raw.main <- raw.main %>%
+          dplyr::mutate(!!rlang::sym(date_recall_event) := ifelse(is.na(!!rlang::sym(date_recall_event)), NA,
+                                                                  ifelse(nchar(!!rlang::sym(date_recall_event)) == 5,
+                                                                         lubridate::as_date(as.numeric(!!rlang::sym(date_recall_event)), origin = "1899-12-30"),
+                                                                         stringr::str_sub(string = !!rlang::sym(date_recall_event), start = 1, end = 10))))
+      }
+    }
+  }
+
+  if(!is.null(birthdate_roster)){
+    if(!purrr::is_empty(birthdate_roster)){
+      if(birthdate_roster %in% names(raw.hh_roster)){
+        raw.hh_roster <- raw.hh_roster %>%
+          dplyr::mutate(age_years = NULL,
+                        !!rlang::sym(birthdate_roster) := ifelse(is.na(!!rlang::sym(birthdate_roster)), NA,
+                                                                 ifelse(nchar(!!rlang::sym(birthdate_roster)) == 5,
+                                                                        lubridate::as_date(as.numeric(!!rlang::sym(birthdate_roster)), origin = "1899-12-30"),
+                                                                        stringr::str_sub(string = !!rlang::sym(birthdate_roster), start = 1, end = 10))))
+      }
+    }
+  }
+
+  if(!is.null(joined_date_roster)){
+    if(!purrr::is_empty(joined_date_roster)){
+      if(joined_date_roster %in% names(raw.hh_roster)){
+        raw.hh_roster <- raw.hh_roster %>%
+          dplyr::mutate(age_years = NULL,
+                        !!rlang::sym(joined_date_roster) := ifelse(is.na(!!rlang::sym(joined_date_roster)), NA,
+                                                                   ifelse(nchar(!!rlang::sym(joined_date_roster)) == 5,
+                                                                          lubridate::as_date(as.numeric(!!rlang::sym(joined_date_roster)), origin = "1899-12-30"),
+                                                                          stringr::str_sub(string = !!rlang::sym(joined_date_roster), start = 1, end = 10))))
+      }
+    }
+  }
+
+  if(!is.null(birthdate_left)){
+    if(!purrr::is_empty(birthdate_left)){
+      if(birthdate_left %in% names(raw.left_member)){
+        raw.left_member <- raw.left_member %>%
+          dplyr::mutate(!!rlang::sym(birthdate_left) := ifelse(is.na(!!rlang::sym(birthdate_left)), NA,
+                                                               ifelse(nchar(!!rlang::sym(birthdate_left)) == 5,
+                                                                      lubridate::as_date(as.numeric(!!rlang::sym(birthdate_left)), origin = "1899-12-30"),
+                                                                      stringr::str_sub(string = !!rlang::sym(birthdate_left), start = 1, end = 10))))
+      }
+    }
+  }
+
+  if(!is.null(joined_date_left)){
+    if(!purrr::is_empty(joined_date_left)){
+      if(joined_date_left %in% names(raw.left_member)){
+        raw.left_member <- raw.left_member %>%
+          dplyr::mutate(!!rlang::sym(joined_date_left) := ifelse(is.na(!!rlang::sym(joined_date_left)), NA,
+                                                                 ifelse(nchar(!!rlang::sym(joined_date_left)) == 5,
+                                                                        lubridate::as_date(as.numeric(!!rlang::sym(joined_date_left)), origin = "1899-12-30"),
+                                                                        stringr::str_sub(string = !!rlang::sym(joined_date_left), start = 1, end = 10))))
+      }
+    }
+  }
+
+  if(!is.null(left_date_left)){
+    if(!purrr::is_empty(left_date_left)){
+      if(left_date_left %in% names(raw.left_member)){
+        raw.left_member <- raw.left_member %>%
+          dplyr::mutate(!!rlang::sym(left_date_left) := ifelse(is.na(!!rlang::sym(left_date_left)), NA,
+                                                               ifelse(nchar(!!rlang::sym(left_date_left)) == 5,
+                                                                      lubridate::as_date(as.numeric(!!rlang::sym(left_date_left)), origin = "1899-12-30"),
+                                                                      stringr::str_sub(string = !!rlang::sym(left_date_left), start = 1, end = 10))))
+      }
+    }
+  }
+
+  if(!is.null(birthdate_died)){
+    if(!purrr::is_empty(birthdate_died)){
+      if(birthdate_died %in% names(raw.died_member)){
+        raw.died_member <- raw.died_member %>%
+          dplyr::mutate(!!rlang::sym(birthdate_died) := ifelse(is.na(!!rlang::sym(birthdate_died)), NA,
+                                                               ifelse(nchar(!!rlang::sym(birthdate_died)) == 5,
+                                                                      lubridate::as_date(as.numeric(!!rlang::sym(birthdate_died)), origin = "1899-12-30"),
+                                                                      stringr::str_sub(string = !!rlang::sym(birthdate_died), start = 1, end = 10))))
+      }
+    }
+  }
+
+  if(!is.null(date_death)){
+    if(!purrr::is_empty(date_death)){
+      if(date_death %in% names(raw.died_member)){
+        raw.died_member <- raw.died_member %>%
+          dplyr::mutate(!!rlang::sym(date_death) := ifelse(is.na(!!rlang::sym(date_death)), NA,
+                                                           ifelse(nchar(!!rlang::sym(date_death)) == 5,
+                                                                  lubridate::as_date(as.numeric(!!rlang::sym(date_death)), origin = "1899-12-30"),
+                                                                  stringr::str_sub(string = !!rlang::sym(date_death), start = 1, end = 10))))
+      }
+    }
+  }
+
+  if(!is.null(joined_date_died)){
+    if(!purrr::is_empty(joined_date_died)){
+      if(joined_date_died %in% names(raw.died_member)){
+        raw.died_member <- raw.died_member %>%
+          dplyr::mutate(!!rlang::sym(joined_date_died) := ifelse(is.na(!!rlang::sym(joined_date_died)), NA,
+                                                                 ifelse(nchar(!!rlang::sym(joined_date_died)) == 5,
+                                                                        lubridate::as_date(as.numeric(!!rlang::sym(joined_date_died)), origin = "1899-12-30"),
+                                                                        stringr::str_sub(string = !!rlang::sym(joined_date_died), start = 1, end = 10))))
+      }
+    }
+  }
+
   
   df_mortality_long <- impactR4PHU::create_mortality_long_df(df_main = raw.main,
                                                              date_dc = date_dc,
@@ -569,7 +693,8 @@ if(!file.exists("inputs/environment.Rdata")) {
                                                              joined_date_died = joined_date_died,
                                                              date_death = date_death,
                                                              death_cause = death_cause,
-                                                             death_location = death_location)
+                                                             death_location = death_location,
+                                                             smart = smart)
 } else {
   df_mortality_long <- df_mortality_long
 }
@@ -637,7 +762,7 @@ list_of_var <- c("date_dc","date_recall_event","enumerator","admin1","admin2","c
                  "joined_date_died","date_death","death_cause","death_location","cause_death_f",
                  "exp_sex_ratio","exp_ratio_0_4","exp_ratio_2_5","exp_ratio_5_10","exp_hh_size",
                  "df_mortality_long","flag_mortality", "label_colname","path.sheet.with.main",
-                 "path.sheet.with.roster","path.sheet.with.leavers","path.sheet.with.death")
+                 "path.sheet.with.roster","path.sheet.with.leavers","path.sheet.with.death", "smart")
 
 if(!file.exists("inputs/environment.Rdata")){
   save(list = list_of_var, file = "inputs/environment.Rdata")
@@ -664,7 +789,7 @@ results_mort_enum <- impactR4PHU::create_mortality_plaus(df_mortality = flag_mor
                                                          exp_ratio_2_5 = exp_ratio_2_5,
                                                          exp_ratio_5_10 = exp_ratio_5_10,
                                                          exp_hh_size = exp_hh_size,
-                                                         grouping = enumerator)
+                                                         grouping = "enumerator")
 
 result_mort_pivot <- results_mort %>%
   dplyr::mutate_all(., as.character) %>%
@@ -727,7 +852,7 @@ impactR4PHU::plot_age_distribution(df_mortality_long %>%
                                             is.na(death)),
                                    year_or_month = "year",
                                    max_age = 10,
-                                   by_group = enumerator)
+                                   by_group = "enumerator")
 ```
 
 #### Histogram of age in months 
@@ -744,7 +869,7 @@ impactR4PHU::plot_age_distribution(raw.hh_roster,
 impactR4PHU::plot_age_distribution(raw.hh_roster %>% 
                                      dplyr::left_join(select(raw.main, c(uuid_main, enumerator))),
                                    year_or_month = "month",
-                                   by_group = enumerator,
+                                   by_group = "enumerator",
                                    breaks = 1)
 ```
 
@@ -865,7 +990,7 @@ for(flag in flags_mort_columns) {
 
 ```{r, include=FALSE}
 table_djl_enum <- df_mortality_long %>% 
-  dplyr::group_by(!!rlang::sym(enumerator)) %>% 
+  dplyr::group_by(enumerator) %>% 
   dplyr::summarise(Leavers = sum(as.numeric(left), na.rm = T),
                    Joiners = sum(as.numeric(join), na.rm = T),
                    Death = sum(as.numeric(death), na.rm = T),
