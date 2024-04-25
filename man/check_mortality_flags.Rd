@@ -5,12 +5,12 @@
 \title{check_mortality_flags}
 \usage{
 check_mortality_flags(
-  df_mortality,
+  df,
   cause_death_f = c("post_partum", "during_pregnancy", "during_delivery")
 )
 }
 \arguments{
-\item{df_mortality}{output dataframe long mortality from create_mortality_long_df}
+\item{df}{output dataframe long mortality from create_mortality_long_df}
 
 \item{cause_death_f}{vector list of the cause of death options related to female}
 }

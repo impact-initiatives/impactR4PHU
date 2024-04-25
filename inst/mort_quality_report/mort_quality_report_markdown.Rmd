@@ -657,7 +657,9 @@ if(!file.exists("inputs/environment.Rdata")) {
     }
   }
 
-  
+  raw.hh_roster <- raw.hh_roster %>% 
+    dplyr::mutate(joined = ifelse(joined == "yes","no","yes"))
+}
   df_mortality_long <- impactR4PHU::create_mortality_long_df(df_main = raw.main,
                                                              date_dc = date_dc,
                                                              date_recall_event = date_recall_event,
@@ -695,16 +697,15 @@ if(!file.exists("inputs/environment.Rdata")) {
                                                              death_cause = death_cause,
                                                              death_location = death_location,
                                                              smart = smart)
-} else {
-  df_mortality_long <- df_mortality_long
-}
+
+
 if(!file.exists("inputs/environment.Rdata")) {
   cause_death_f <- tcltk::tk_select.list(dplyr::pull(df_mortality_long[,"death_cause"]) %>% unique, title = "Cause Death related to Women",multiple = T)
-  flag_mortality <- impactR4PHU::check_mortality_flags(df_mortality = df_mortality_long,
-                                                     cause_death_f = cause_death_f)
-} else {
-  flag_mortality <- flag_mortality
 }
+
+flag_mortality <- impactR4PHU::check_mortality_flags(df = df_mortality_long,
+                                                   cause_death_f = cause_death_f)
+
 
 if(!file.exists("inputs/environment.Rdata")) {
   # exp_sex_ratio
@@ -771,19 +772,19 @@ if(!file.exists("inputs/environment.Rdata")){
 
 ```{r, include = FALSE}
 ## Read the Plausibility excel file
-overall_mort_plaus <- openxlsx::read.xlsx("resources/overall_plaus.xlsx",fillMergedCells = TRUE, sheet = "MORT") %>%
+overall_mort_plaus <- openxlsx::read.xlsx("resources/overall_plaus.xlsx", fillMergedCells = TRUE, sheet = "MORT") %>%
   dplyr::distinct()
 
 
 
-results_mort <- impactR4PHU::create_mortality_plaus(df_mortality = flag_mortality,
+results_mort <- impactR4PHU::create_mortality_plaus(df_mortality = df_mortality_long,
                                                     exp_sex_ratio = exp_sex_ratio,
                                                     exp_ratio_0_4 = exp_ratio_0_4,
                                                     exp_ratio_2_5 = exp_ratio_2_5,
                                                     exp_ratio_5_10 = exp_ratio_5_10,
                                                     exp_hh_size = exp_hh_size)
   
-results_mort_enum <- impactR4PHU::create_mortality_plaus(df_mortality = flag_mortality,
+results_mort_enum <- impactR4PHU::create_mortality_plaus(df_mortality = df_mortality_long,
                                                          exp_sex_ratio = exp_sex_ratio,
                                                          exp_ratio_0_4 = exp_ratio_0_4,
                                                          exp_ratio_2_5 = exp_ratio_2_5,
@@ -821,15 +822,15 @@ impactR4PHU::plot_age_pyramid(df_mortality_long %>%
 #### 2.	Age pyramid in years disaggregated by gender per enumerator
 
 ```{r, results='asis', message=FALSE}
-list_enum <- df_mortality_long[[enumerator]]%>% unique
+list_enum <- df_mortality_long[["enumerator"]]%>% unique
 list_flex_enum <- list()
 for (i in list_enum) {
   cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",5), collapse=""), " ", "<strong>Enumerator: ",i,"</strong>"))
   subch(impactR4PHU::plot_age_pyramid(df_mortality_long %>% 
                                   filter(is.na(left),
                                          is.na(death),
-                                         !!rlang::sym(enumerator) == i)),
-        fig_height = 5,fig_width = 7)
+                                         !!rlang::sym("enumerator") == i)),
+        fig_height = 5, fig_width = 7)
 }
 
 ```
@@ -912,20 +913,15 @@ for (i in list_enum) {
 ```{r, results='asis'}
 flag_description <- readxl::read_excel("resources/flag_description.xlsx", sheet = "MORT")
 
-raw.flag.mort <- flag_mortality %>% 
-  dplyr::group_by(uuid,enumerator) %>% 
-  dplyr::summarise(flag_cause_death = sum(flag_cause_death, na.rm = T),
-                   flag_multiple_death = sum(flag_multiple_death, na.rm = T))
-
 # raw.flag.mort <- flag_mortality %>% 
 #   dplyr::left_join(select(cause_join, c(uuid, flag_cause_death)), by ="uuid")
 
-flags_mort_columns <- names(raw.flag.mort)[stringr::str_starts(names(raw.flag.mort),"flag_")]
+flags_mort_columns <- names(flag_mortality)[stringr::str_starts(names(flag_mortality),"flag_")]
 
 overall_flag <- tibble()
 
 for(flag in flags_mort_columns) {
-  flag_overall <- raw.flag.mort %>%
+  flag_overall <- flag_mortality %>%
     dplyr::select(enumerator, !!rlang::sym(flag)) %>%
     filter(!is.na(!!rlang::sym(flag))) %>%
     dplyr::mutate(flag := flag) %>%
@@ -954,7 +950,7 @@ for(flag in flags_mort_columns) {
   flag_action <- flag_description %>%
     filter(flag_name %in% flag) %>%
     dplyr::pull(Action)
-  flag_by_enum <- raw.flag.mort %>%
+  flag_by_enum <- flag_mortality %>%
     dplyr::select(enumerator, !!rlang::sym(flag)) %>%
     filter(!is.na(!!rlang::sym(flag))) %>%
     dplyr::mutate(flag := flag) %>%
@@ -994,7 +990,7 @@ table_djl_enum <- df_mortality_long %>%
   dplyr::summarise(Leavers = sum(as.numeric(left), na.rm = T),
                    Joiners = sum(as.numeric(join), na.rm = T),
                    Death = sum(as.numeric(death), na.rm = T),
-                   `Death Under 5` = sum(as.numeric(under_5), na.rm = T),
+                   `Death Under 5` = sum(as.numeric(death_under5), na.rm = T),
                    `Person Time` = sum(as.numeric(person_time), na.rm = T),
                    `Person Time Under 5` = sum(as.numeric(under_5_pt), na.rm = T))
 

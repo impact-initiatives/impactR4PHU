@@ -47,7 +47,7 @@ reformat_mortality <- function(df) {
 
   if(c("date_dc") %in% names(df)) {
 
-    date_recodes <- c("mdy", "dmy", "ymd", "ydm")
+    date_recodes <- c("mdy", "dmy", "ymd", "ydm", "NA")
     unique_dates <- df %>% dplyr::filter(!is.na(date_dc)) %>% dplyr::select(date_dc) %>% t %>% c %>% unique
     a <- svDialogs::dlg_input(message= paste0("Example of Date of Data collection values: ", if(length(unique_dates)>0) {unique_dates[[1]]}, " ", if(length(unique_dates)>1) {unique_dates[[2]]}, " ",if(length(unique_dates)>2) {unique_dates[[3]]},
                                               "\n RE-FORMATTING VARIABLE : DATE OF DATA COLLECTION \n What is the date format for the DATE OF DATA COLLECTION column? Please input : \n 'mdy' for months-day-year, \n 'dmy' for day-months-year \n 'ymd' for year-month-day \n 'ydm' for year-day-month."))$res
@@ -73,7 +73,7 @@ reformat_mortality <- function(df) {
 
   if(c("date_recall") %in% names(df)) {
 
-    dob_recodes <- c("mdy", "dmy", "ymd", "ydm")
+    dob_recodes <- c("mdy", "dmy", "ymd", "ydm", "NA")
     unique_dates <- df %>% dplyr::filter(!is.na(date_recall)) %>% dplyr::select(date_recall) %>% t %>% c %>% unique
 
 
@@ -101,7 +101,7 @@ reformat_mortality <- function(df) {
 
   if(c("date_join") %in% names(df)) {
 
-    dob_recodes <- c("mdy", "dmy", "ymd", "ydm")
+    dob_recodes <- c("mdy", "dmy", "ymd", "ydm", "NA")
     unique_dates <- df %>% dplyr::filter(!is.na(date_join)) %>% dplyr::select(date_join) %>% t %>% c %>% unique
 
     a <- svDialogs::dlg_input(message= paste0("Example of JOIN DATE value: ", if(length(unique_dates)>0) {unique_dates[[1]]}, " ", if(length(unique_dates)>1) {unique_dates[[2]]}, " ",if(length(unique_dates)>2) {unique_dates[[3]]},
@@ -128,7 +128,7 @@ reformat_mortality <- function(df) {
 
   if(c("date_left") %in% names(df)) {
 
-    dob_recodes <- c("mdy", "dmy", "ymd", "ydm")
+    dob_recodes <- c("mdy", "dmy", "ymd", "ydm", "NA")
     unique_dates <- df %>% dplyr::filter(!is.na(date_left)) %>% dplyr::select(date_left) %>% t %>% c %>% unique
 
     a <- svDialogs::dlg_input(message= paste0("Example of LEFT DATE value: ", if(length(unique_dates)>0) {unique_dates[[1]]}, " ", if(length(unique_dates)>1) {unique_dates[[2]]}, " ",if(length(unique_dates)>2) {unique_dates[[3]]},
@@ -154,7 +154,7 @@ reformat_mortality <- function(df) {
 
   if(c("date_birth") %in% names(df)) {
 
-    dob_recodes <- c("mdy", "dmy", "ymd", "ydm")
+    dob_recodes <- c("mdy", "dmy", "ymd", "ydm", "NA")
     unique_dates <- df %>% dplyr::filter(!is.na(date_birth)) %>% dplyr::select(date_birth) %>% t %>% c %>% unique
 
     a <- svDialogs::dlg_input(message= paste0("Example of BIRTH DATE value: ", if(length(unique_dates)>0) {unique_dates[[1]]}, " ", if(length(unique_dates)>1) {unique_dates[[2]]}, " ",if(length(unique_dates)>2) {unique_dates[[3]]},
@@ -181,7 +181,7 @@ reformat_mortality <- function(df) {
 
   if(c("date_death") %in% names(df)) {
 
-    dob_recodes <- c("mdy", "dmy", "ymd", "ydm")
+    dob_recodes <- c("mdy", "dmy", "ymd", "ydm", "NA")
     unique_dates <- df %>% dplyr::filter(!is.na(date_death)) %>% dplyr::select(date_death) %>% t %>% c %>% unique
 
     a <- svDialogs::dlg_input(message= paste0("Example of DEATH DATE value: ", if(length(unique_dates)>0) {unique_dates[[1]]}, " ", if(length(unique_dates)>1) {unique_dates[[2]]}, " ",if(length(unique_dates)>2) {unique_dates[[3]]},

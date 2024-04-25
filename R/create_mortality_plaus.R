@@ -185,12 +185,10 @@ create_mortality_plaus <- function(df_mortality,
     dplyr::summarise(hh_size = sum(!is.na(sex), na.rm = TRUE),
                      total_under5 = sum(!is.na(under_5), na.rm = TRUE),
                      num_deaths = sum(!is.na(death), na.rm = TRUE),
-                     total_flag_deaths = sum(flag_multiple_death, na.rm = TRUE),
-                     total_flag_cause_deaths = sum(flag_cause_death, na.rm = TRUE)) %>%
+                     total_flag_deaths = ifelse(sum(!is.na(death))>1, 1, 0)) %>%
     dplyr::mutate(is_hh = ifelse(is.na(uuid), NA, 1),
                   is_hh_under5 = ifelse(is.na(uuid), NA, ifelse(total_under5 > 0, 1, 0)),
-                  is_hh_flag_deaths = ifelse(is.na(uuid), NA, ifelse(total_flag_deaths > 0, 1, 0)),
-                  is_hh_flag_cause_deaths = ifelse(is.na(uuid), NA, ifelse(total_flag_cause_deaths > 0, 1, 0))) %>%
+                  is_hh_flag_deaths = ifelse(is.na(uuid), NA, ifelse(total_flag_deaths > 0, 1, 0))) %>%
     dplyr::group_by(group) %>%
     dplyr::summarise(mean_hh_size = mean(hh_size, na.rm = TRUE),
                      mean_hh_size.pvalue = round(as.numeric(stats::t.test(x = hh_size, mu = expected_hh_size, alternative = "two.sided")[3]),2),
@@ -198,8 +196,7 @@ create_mortality_plaus <- function(df_mortality,
                      mean_deaths_per_hh = mean(num_deaths, na.rm = TRUE),
                      n_hh = sum(is_hh, na.rm = TRUE),
                      n_hh_under_5 = sum(is_hh_under5, na.rm = TRUE),
-                     n_hh_flag_deaths = sum(is_hh_flag_deaths, na.rm = TRUE),
-                     n_hh_flag_cause_deaths = sum(is_hh_flag_deaths, na.rm = TRUE)
+                     n_hh_flag_deaths = sum(is_hh_flag_deaths, na.rm = TRUE)
     ) %>%
     dplyr::mutate(prop_hh_under5 = round((n_hh_under_5 / n_hh),2),
                   prop_hh_flag_deaths = round((n_hh_flag_deaths / n_hh), 2))

@@ -21,7 +21,6 @@ Imports:
     lubridate,
     magrittr,
     nipnTK,
-    purrr,
     rlang,
     stats,
     stringr,
