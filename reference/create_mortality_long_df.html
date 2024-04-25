@@ -78,7 +78,8 @@
 <span>  date_death <span class="op">=</span> <span class="st">"final_date_death"</span>,</span>
 <span>  joined_date_died <span class="op">=</span> <span class="st">"date_join_final_death"</span>,</span>
 <span>  birthdate_died <span class="op">=</span> <span class="st">"dob_died"</span>,</span>
-<span>  uuid_died <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  uuid_died <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  smart <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -259,6 +260,10 @@ death individuals. By default: "dob_died"</p></dd>
 <dd><p>the name of the variable that indicates the unique uuid of HH
 By default: NULL</p></dd>
 
+
+<dt>smart</dt>
+<dd><p>boolean to check if calculation should follow smart methodology or IMPACT</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -288,7 +293,8 @@ By default: NULL</p></dd>
 <span class="r-in"><span>  birth_died <span class="op">=</span> <span class="st">"ind_born_died"</span>,joined_died <span class="op">=</span> <span class="st">"died_present"</span>,</span></span>
 <span class="r-in"><span>  death_cause <span class="op">=</span> <span class="st">"cause_death"</span>, death_location <span class="op">=</span> <span class="st">"location_death"</span>,</span></span>
 <span class="r-in"><span>  date_death <span class="op">=</span> <span class="st">"final_date_death"</span>, joined_date_died <span class="op">=</span> <span class="st">"date_join_final_death"</span>,</span></span>
-<span class="r-in"><span>  birthdate_died <span class="op">=</span> <span class="st">"dob_died"</span>,uuid_died <span class="op">=</span> <span class="st">"_submission__uuid"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  birthdate_died <span class="op">=</span> <span class="st">"dob_died"</span>,uuid_died <span class="op">=</span> <span class="st">"_submission__uuid"</span>,</span></span>
+<span class="r-in"><span>  smart <span class="op">=</span> <span class="cn">F</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
 </code></pre></div>
     </div>
