@@ -99,7 +99,10 @@ globalVariables(unique(c(
   "is_hh","is_hh_under5","is_hh_flag_deaths","n_hh_under_5","n_hh",
   "n_hh_flag_deaths","mean_deaths_per_hh","mean_hh_size","mean_num_under5","sex_ratio",
   "age_ratio_0_5","age_ratio_2_5","age_ratio_5_10","births","plaus_mort_cat",
+  "enumerator","flag_negative_pt",
   #create_mortality_plaus
   "birth_rate","birth_rate_se","birth_rate_lower_ci","birth_rate_upper_ci",
-  "birth_rate_ci"
+  "birth_rate_ci","person_time_out","person_time_in","total_persontime_in",
+  "total_persontime_out"
+
 )))
