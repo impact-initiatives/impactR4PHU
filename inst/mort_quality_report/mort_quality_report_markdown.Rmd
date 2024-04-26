@@ -151,7 +151,7 @@ if(!file.exists("inputs/environment.Rdata")) {
       uuid_main <- svDialogs::dlg_input(message= "Enter the name of the HH UUID Column in main data","uuid_main")$res
     }
   } else if (length(uuid_main) > 1){
-    uuid_main <- tcltk::tk_select.list(uuid_main, title = "HH UUID Column")
+    uuid_main <- tcltk::tk_select.list(uuid_main, title = "HH UUID Column [Main Data]")
   } else if (length(uuid_main) == 0) {
     uuid_main <- svDialogs::dlg_input(message= "Enter the name of the HH UUID Column in main data","uuid_main")$res
   }
@@ -165,7 +165,7 @@ if(!file.exists("inputs/environment.Rdata")) {
       uuid_roster <- svDialogs::dlg_input(message= "Enter the name of the HH UUID Column in roster data","uuid_roster")$res
     }
   } else if (length(uuid_roster) > 1){
-    uuid_roster <- tcltk::tk_select.list(uuid_roster, title = "HH UUID Column")
+    uuid_roster <- tcltk::tk_select.list(uuid_roster, title = "HH UUID Column [Roster Data]")
   } else if (length(uuid_roster) == 0) {
     uuid_roster <- svDialogs::dlg_input(message= "Enter the name of the HH UUID Column in roster data","uuid_roster")$res
   }
@@ -179,7 +179,7 @@ if(!file.exists("inputs/environment.Rdata")) {
       sex_roster <- svDialogs::dlg_input(message= "Enter the name of the sex roster column","sex_roster")$res
     }
   } else if (length(sex_roster) > 1){
-    sex_roster <- tcltk::tk_select.list(sex_roster, title = "Sex Column")
+    sex_roster <- tcltk::tk_select.list(sex_roster, title = "Sex Column [Roster Data]")
   } else if (length(sex_roster) == 0) {
     sex_roster <- svDialogs::dlg_input(message= "Enter the name of the sex roster column","sex_roster")$res
   }
@@ -193,7 +193,7 @@ if(!file.exists("inputs/environment.Rdata")) {
       age_roster <- svDialogs::dlg_input(message= "Enter the name of the age roster column","age_roster")$res
     }
   } else if (length(age_roster) > 1){
-    age_roster <- tcltk::tk_select.list(age_roster, title = "Age Column")
+    age_roster <- tcltk::tk_select.list(age_roster, title = "Age Column [Roster Data]")
   } else if (length(age_roster) == 0) {
     age_roster <- svDialogs::dlg_input(message= "Enter the name of the age roster column","age_roster")$res
   }
@@ -207,7 +207,7 @@ if(!file.exists("inputs/environment.Rdata")) {
       joined_roster <- svDialogs::dlg_input(message= "Enter the name of the joined roster column","joined_roster")$res
     }
   } else if (length(joined_roster) > 1){
-    joined_roster <- tcltk::tk_select.list(joined_roster, title = "Joined Column")
+    joined_roster <- tcltk::tk_select.list(joined_roster, title = "Joined Column [Roster Data]")
   } else if (length(joined_roster) == 0) {
     joined_roster <- svDialogs::dlg_input(message= "Enter the name of the joined roster column","joined_roster")$res
   }
@@ -221,7 +221,7 @@ if(!file.exists("inputs/environment.Rdata")) {
       joined_date_roster <- svDialogs::dlg_input(message= "Enter the name of the joined date roster column","joined_date_roster")$res
     }
   } else if (length(joined_date_roster) > 1){
-    joined_date_roster <- tcltk::tk_select.list(joined_date_roster, title = "Joined Date Column")
+    joined_date_roster <- tcltk::tk_select.list(joined_date_roster, title = "Joined Date Column [Roster Data]")
   } else if (length(joined_date_roster) == 0) {
     joined_date_roster <- svDialogs::dlg_input(message= "Enter the name of the joined date roster column","joined_date_roster")$res
   }
@@ -235,7 +235,7 @@ if(!file.exists("inputs/environment.Rdata")) {
       birth_roster <- svDialogs::dlg_input(message= "Enter the name of the birth roster column","birth_roster")$res
     }
   } else if (length(birth_roster) > 1){
-    birth_roster <- tcltk::tk_select.list(birth_roster, title = "Birth Column")
+    birth_roster <- tcltk::tk_select.list(birth_roster, title = "Birth Column [Roster Data]")
   } else if (length(birth_roster) == 0) {
     birth_roster <- svDialogs::dlg_input(message= "Enter the name of the birth roster column","birth_roster")$res
   }
@@ -249,7 +249,7 @@ if(!file.exists("inputs/environment.Rdata")) {
       birthdate_roster <- svDialogs::dlg_input(message= "Enter the name of the birth date roster column","birthdate_roster")$res
     }
   } else if (length(birthdate_roster) > 1){
-    birthdate_roster <- tcltk::tk_select.list(birthdate_roster, title = "Birth date Column")
+    birthdate_roster <- tcltk::tk_select.list(birthdate_roster, title = "Birth date Column [Roster Data]")
   } else if (length(birthdate_roster) == 0) {
     birthdate_roster <- svDialogs::dlg_input(message= "Enter the name of the birth date roster column","birthdate_roster")$res
   }
@@ -263,7 +263,7 @@ if(!file.exists("inputs/environment.Rdata")) {
       uuid_left <- svDialogs::dlg_input(message= "Enter the name of the HH UUID column in left data","uuid_left")$res
     }
   } else if (length(uuid_left) > 1){
-    uuid_left <- tcltk::tk_select.list(uuid_left, title = "HH UUID Column")
+    uuid_left <- tcltk::tk_select.list(uuid_left, title = "HH UUID Column [Left Data]")
   } else if (length(uuid_left) == 0) {
     uuid_left <- svDialogs::dlg_input(message= "Enter the name of the HH UUID column in left data","uuid_left")$res
   }
@@ -277,7 +277,7 @@ if(!file.exists("inputs/environment.Rdata")) {
       sex_left <- svDialogs::dlg_input(message= "Enter the name of the sex left column","sex_left")$res
     }
   } else if (length(sex_left) > 1){
-    sex_left <- tcltk::tk_select.list(sex_left, title = "sex date Column")
+    sex_left <- tcltk::tk_select.list(sex_left, title = "Sex date Column [Left Data]")
   } else if (length(sex_left) == 0) {
     sex_left <- svDialogs::dlg_input(message= "Enter the name of the sex left column","sex_left")$res
   }
@@ -291,7 +291,7 @@ if(!file.exists("inputs/environment.Rdata")) {
       age_left <- svDialogs::dlg_input(message= "Enter the name of the age left column","age_left")$res
     }
   } else if (length(age_left) > 1){
-    age_left <- tcltk::tk_select.list(age_left, title = "age date Column")
+    age_left <- tcltk::tk_select.list(age_left, title = "Age date Column [Left Data]")
   } else if (length(age_left) == 0) {
     age_left <- svDialogs::dlg_input(message= "Enter the name of the age left column","age_left")$res
   }
@@ -305,7 +305,7 @@ if(!file.exists("inputs/environment.Rdata")) {
       birth_left <- svDialogs::dlg_input(message= "Enter the name of the birth column","birth_left")$res
     }
   } else if (length(birth_left) > 1){
-    birth_left <- tcltk::tk_select.list(birth_left, title = "Birth date Column")
+    birth_left <- tcltk::tk_select.list(birth_left, title = "Birth date Column [Left Data]")
   } else if (length(birth_left) == 0) {
     birth_left <- svDialogs::dlg_input(message= "Enter the name of the birth column","birth_left")$res
   }
@@ -319,7 +319,7 @@ if(!file.exists("inputs/environment.Rdata")) {
       birthdate_left <- svDialogs::dlg_input(message= "Enter the name of the birth date column","birthdate_left")$res
     }
   } else if (length(birthdate_left) > 1){
-    birthdate_left <- tcltk::tk_select.list(birthdate_left, title = "Birth date Column")
+    birthdate_left <- tcltk::tk_select.list(birthdate_left, title = "Birth date Column [Left Data]")
   } else if (length(birthdate_left) == 0) {
     birthdate_left <- svDialogs::dlg_input(message= "Enter the name of the birth date column","birthdate_left")$res
   }
@@ -333,7 +333,7 @@ if(!file.exists("inputs/environment.Rdata")) {
       joined_left <- svDialogs::dlg_input(message= "Enter the name of the joined column in left data","joined_left")$res
     }
   } else if (length(joined_left) > 1){
-    joined_left <- tcltk::tk_select.list(joined_left, title = "Joined Column")
+    joined_left <- tcltk::tk_select.list(joined_left, title = "Joined Column [Left Data]")
   } else if (length(joined_left) == 0) {
     joined_left <- svDialogs::dlg_input(message= "Enter the name of the joined column in left data","joined_left")$res
   }
@@ -347,7 +347,7 @@ if(!file.exists("inputs/environment.Rdata")) {
       joined_date_left <- svDialogs::dlg_input(message= "Enter the name of the joined date column in left data","joined_date_left")$res
     }
   } else if (length(joined_date_left) > 1){
-    joined_date_left <- tcltk::tk_select.list(joined_date_left, title = "Joined date Column")
+    joined_date_left <- tcltk::tk_select.list(joined_date_left, title = "Joined date Column [Left Data]")
   } else if (length(joined_date_left) == 0) {
     joined_date_left <- svDialogs::dlg_input(message= "Enter the name of the joined date column in left data","joined_date_left")$res
   }
@@ -361,7 +361,7 @@ if(!file.exists("inputs/environment.Rdata")) {
       left_date_left <- svDialogs::dlg_input(message= "Enter the name of the left date column","left_date_left")$res
     }
   } else if (length(left_date_left) > 1){
-    left_date_left <- tcltk::tk_select.list(left_date_left, title = "Left date Column")
+    left_date_left <- tcltk::tk_select.list(left_date_left, title = "Left date Column [Left Data]")
   } else if (length(left_date_left) == 0) {
     left_date_left <- svDialogs::dlg_input(message= "Enter the name of the left date column","left_date_left")$res
   }
@@ -375,7 +375,7 @@ if(!file.exists("inputs/environment.Rdata")) {
       uuid_died <- svDialogs::dlg_input(message= "Enter the name of the HH UUID column in died data","uuid_died")$res
     }
   } else if (length(uuid_died) > 1){
-    uuid_died <- tcltk::tk_select.list(uuid_died, title = "HH UUID Column")
+    uuid_died <- tcltk::tk_select.list(uuid_died, title = "HH UUID Column [Died Data]")
   } else if (length(uuid_died) == 0) {
     uuid_died <- svDialogs::dlg_input(message= "Enter the name of the HH UUID column in died data","uuid_died")$res
   }
@@ -389,7 +389,7 @@ if(!file.exists("inputs/environment.Rdata")) {
       sex_died <- svDialogs::dlg_input(message= "Enter the name of the sex died column","sex_died")$res
     }
   } else if (length(sex_died) > 1){
-    sex_died <- tcltk::tk_select.list(sex_died, title = "Sex date Column")
+    sex_died <- tcltk::tk_select.list(sex_died, title = "Sex date Column [Died Data]")
   } else if (length(sex_died) == 0) {
     sex_died <- svDialogs::dlg_input(message= "Enter the name of the sex died column","sex_died")$res
   }
@@ -403,7 +403,7 @@ if(!file.exists("inputs/environment.Rdata")) {
       age_died <- svDialogs::dlg_input(message= "Enter the name of the age died column","age_died")$res
     }
   } else if (length(age_died) > 1){
-    age_died <- tcltk::tk_select.list(age_died, title = "Age date Column")
+    age_died <- tcltk::tk_select.list(age_died, title = "Age date Column [Died Data]")
   } else if (length(age_died) == 0) {
     age_died <- svDialogs::dlg_input(message= "Enter the name of the age died column","age_died")$res
   }
@@ -417,7 +417,7 @@ if(!file.exists("inputs/environment.Rdata")) {
       birth_died <- svDialogs::dlg_input(message= "Enter the name of the birth column","birth_died")$res
     }
   } else if (length(birth_died) > 1){
-    birth_died <- tcltk::tk_select.list(birth_died, title = "Birth Column")
+    birth_died <- tcltk::tk_select.list(birth_died, title = "Birth Column [Died Data]")
   } else if (length(birth_died) == 0) {
     birth_died <- svDialogs::dlg_input(message= "Enter the name of the birth column","birth_died")$res
   }
@@ -431,7 +431,7 @@ if(!file.exists("inputs/environment.Rdata")) {
       birthdate_died <- svDialogs::dlg_input(message= "Enter the name of the birth date column","birthdate_died")$res
     }
   } else if (length(birthdate_died) > 1){
-    birthdate_died <- tcltk::tk_select.list(birthdate_died, title = "Birth date Column")
+    birthdate_died <- tcltk::tk_select.list(birthdate_died, title = "Birth date Column [Died Data]")
   } else if (length(birthdate_died) == 0) {
     birthdate_died <- svDialogs::dlg_input(message= "Enter the name of the birth date column","birthdate_died")$res
   }
@@ -446,7 +446,7 @@ if(!file.exists("inputs/environment.Rdata")) {
       joined_died <- svDialogs::dlg_input(message= "Enter the name of the joined column in died data","joined_died")$res
     }
   } else if (length(joined_died) > 1){
-    joined_died <- tcltk::tk_select.list(joined_died, title = "Joined Column")
+    joined_died <- tcltk::tk_select.list(joined_died, title = "Joined Column [Died Data]")
   } else if (length(joined_died) == 0) {
     joined_died <- svDialogs::dlg_input(message= "Enter the name of the joined column in died data","joined_died")$res
   }
@@ -460,7 +460,7 @@ if(!file.exists("inputs/environment.Rdata")) {
       joined_date_died <- svDialogs::dlg_input(message= "Enter the name of the joined date column in died data","joined_date_died")$res
     }
   } else if (length(joined_date_died) > 1){
-    joined_date_died <- tcltk::tk_select.list(joined_date_died, title = "Joined date Column")
+    joined_date_died <- tcltk::tk_select.list(joined_date_died, title = "Joined date Column [Died Data]")
   } else if (length(joined_date_died) == 0) {
     joined_date_died <- svDialogs::dlg_input(message= "Enter the name of the joined date column in died data","joined_date_died")$res
   }
@@ -474,7 +474,7 @@ if(!file.exists("inputs/environment.Rdata")) {
       date_death <- svDialogs::dlg_input(message= "Enter the name of the death date column in died data","date_death")$res
     }
   } else if (length(date_death) > 1){
-    date_death <- tcltk::tk_select.list(date_death, title = "Death date Column")
+    date_death <- tcltk::tk_select.list(date_death, title = "Death date Column [Died Data]")
   } else if (length(date_death) == 0) {
     date_death <- svDialogs::dlg_input(message= "Enter the name of the death date column in died data","date_death")$res
   }
@@ -488,7 +488,7 @@ if(!file.exists("inputs/environment.Rdata")) {
       death_cause <- svDialogs::dlg_input(message= "Enter the name of the cause of death column","death_cause")$res
     }
   } else if (length(death_cause) > 1){
-    death_cause <- tcltk::tk_select.list(death_cause, title = "Cause of Death Column")
+    death_cause <- tcltk::tk_select.list(death_cause, title = "Cause of Death Column [Died Data]")
   } else if (length(death_cause) == 0) {
     death_cause <- svDialogs::dlg_input(message= "Enter the name of the cause of death column","death_cause")$res
   }
@@ -502,7 +502,7 @@ if(!file.exists("inputs/environment.Rdata")) {
       death_location <- svDialogs::dlg_input(message= "Enter the name of the location of death column","death_location")$res
     }
   } else if (length(death_location) > 1){
-    death_location <- tcltk::tk_select.list(death_location, title = "Location of Death Column")
+    death_location <- tcltk::tk_select.list(death_location, title = "Location of Death Column [Died Data]")
   } else if (length(death_location) == 0) {
     death_location <- svDialogs::dlg_input(message= "Enter the name of the location of death column","death_location")$res
   }
@@ -640,9 +640,6 @@ if(!file.exists("inputs/environment.Rdata")) {
       }
     }
   }
-
-  raw.hh_roster <- raw.hh_roster %>% 
-    dplyr::mutate(joined = ifelse(joined == "yes","no","yes"))
 }
 
 # Slicer
@@ -831,9 +828,6 @@ if(!file.exists("inputs/environment.Rdata")) {
 
   cause_codes <- unique(df_mortality_long$death_cause)
   ideal_codes <- c("1", "2", "3")
-  cause_recodes <- c("1", "2", "3", "NA")
-
-  df_mortality_long <- df_mortality_long %>% dplyr::mutate(death_cause_smart = "")
 
   if(length(setdiff(cause_codes, ideal_codes))==0) {
     print("Good - Cause of Death coded as 1/2/3 for unknown/injury/illness")
@@ -846,18 +840,31 @@ if(!file.exists("inputs/environment.Rdata")) {
   # Checking Location of Death Coding
   location_codes <- unique(df_mortality_long$death_location)
   ideal_codes <- c("1", "2", "3", "4")
-  location_recodes <- c("1", "2", "3", "4", "NA")
-
-  df_mortality_long <- df_mortality_long %>% dplyr::mutate(death_location_smart = "")
 
   if(length(setdiff(location_codes, ideal_codes))==0) {
     print("Good - Cause of Death coded as 1/2/3/4 for unknown/injury/illness")
   } else {
     current_location <- tcltk::tk_select.list(location_codes, title = "Current Location Options [LOCATION OF DEATH]", multiple = T)
-    during_migration <- tcltk::tk_select.list(cause_codes, title = "During Migration Options  [LOCATION OF DEATH]", multiple = T)
-    last_place <- tcltk::tk_select.list(cause_codes, title = "Last Place Residence Options [LOCATION OF DEATH]", multiple = T)
-    other_place <- tcltk::tk_select.list(cause_codes, title = "Other Place Options [LOCATION OF DEATH]", multiple = T)
+    during_migration <- tcltk::tk_select.list(location_codes, title = "During Migration Options  [LOCATION OF DEATH]", multiple = T)
+    last_place <- tcltk::tk_select.list(location_codes, title = "Last Place Residence Options [LOCATION OF DEATH]", multiple = T)
+    other_place <- tcltk::tk_select.list(location_codes, title = "Other Place Options [LOCATION OF DEATH]", multiple = T)
   }
+  
+  demographic_vars <- c("join", "left", "birth", "death")
+
+  list_to_check <- intersect(demographic_vars, names(df_mortality_long))
+  df_mortality_long[list_to_check] <- lapply(df_mortality_long[list_to_check], as.character)
+  list_to_check_codes <- df_mortality_long %>% dplyr::select(list_to_check) %>% t %>% c %>% unique
+
+  ideal_codes <- c("1")
+
+  if(length(setdiff(list_to_check_codes, ideal_codes))==0) {
+    print("Good - The demographic variables are already coded as 1/0 for yes/no")
+  } else {
+      yes_demo_values <- tcltk::tk_select.list(list_to_check_codes, title = "Yes values [Demographic Column]", multiple = T)
+      no_demo_values <- tcltk::tk_select.list(list_to_check_codes, title = "No/NA values [Demographic Column]", multiple = T)
+  }
+
 }
 
 if(is.character(df_mortality_long$date_dc)) {
@@ -893,63 +900,66 @@ if(is.character(df_mortality_long$date_death)) {
     dplyr::mutate(date_death = ifelse(date_death == "", NA, date_death))
 }
 
-df_mortality_long <- df_mortality_long  %>% 
-  dplyr::mutate(sex = ifelse(is.na(sex),NA,
+df_mortality_long <- df_mortality_long  %>%
+  dplyr::mutate(death_cause_smart = "",
+                death_location_smart = "",
+                sex = ifelse(is.na(sex),NA,
                              ifelse(sex == male, 1,
-                                    ifelse(sex == female,2,sex)))) %>% 
-    dplyr::mutate(date_dc_date = lubridate::parse_date_time(date_dc, orders = date_dc_reformat)) %>%
-    dplyr::mutate(date_dc_month = lubridate::month(date_dc_date),
-                  date_dc_day = lubridate::day(date_dc_date),
-                  date_dc_year = lubridate::year(date_dc_date)) %>%
-    dplyr::mutate(date_dc_char = paste(date_dc_month, date_dc_day, date_dc_year, sep = "/"),
-                  date_dc_char = ifelse(is.na(date_dc_char), NA, ifelse(date_dc_char == "NA/NA/NA", NA, date_dc_char))) %>%
-    dplyr::mutate(date_recall_date = lubridate::parse_date_time(date_recall, orders = date_recall_reformat)) %>%
-    dplyr::mutate(date_recall_month = lubridate::month(date_recall_date),
-                  date_recall_day = lubridate::day(date_recall_date),
-                  date_recall_year = lubridate::year(date_recall_date)) %>%
-    dplyr::mutate(date_recall = paste(date_recall_month, date_recall_day, date_recall_year, sep = "/"),
-                  date_recall = ifelse(is.na(date_recall), NA, ifelse(date_recall == "NA/NA/NA", NA, date_recall)))  %>%
-    dplyr::mutate(date_join_date = lubridate::parse_date_time(date_join, orders = date_join_reformat)) %>%
-    dplyr::mutate(date_join_month = lubridate::month(date_join_date),
-                  date_join_day = lubridate::day(date_join_date),
-                  date_join_year = lubridate::year(date_join_date)) %>%
-    dplyr::mutate(date_join = paste(date_join_month, date_join_day, date_join_year, sep = "/"),
-                  date_join = ifelse(is.na(date_join), NA, ifelse(date_join == "NA/NA/NA", NA, date_join))) %>%
-    dplyr::mutate(date_left_date = lubridate::parse_date_time(date_left, orders = date_left_reformat)) %>%
-    dplyr::mutate(date_left_month = lubridate::month(date_left_date),
-                  date_left_day = lubridate::day(date_left_date),
-                  date_left_year = lubridate::year(date_left_date)) %>%
-    dplyr::mutate(date_left = paste(date_left_month, date_left_day, date_left_year, sep = "/"),
-                  date_left = ifelse(is.na(date_left), NA, ifelse(date_left == "NA/NA/NA", NA, date_left))) %>%
-    dplyr::mutate(date_birth_date = lubridate::parse_date_time(date_birth, orders = date_birth_reformat)) %>%
-    dplyr::mutate(date_birth_month = lubridate::month(date_birth_date),
-                  date_birth_day = lubridate::day(date_birth_date),
-                  date_birth_year = lubridate::year(date_birth_date)) %>%
-    dplyr::mutate(date_birth = paste(date_birth_month, date_birth_day, date_birth_year, sep = "/"),
-                  date_birth = ifelse(is.na(date_birth), NA, ifelse(date_birth == "NA/NA/NA", NA, date_birth))) %>%
-    dplyr::mutate(date_death_date = lubridate::parse_date_time(date_death, orders = date_death_reformat)) %>%
-    dplyr::mutate(date_death_month = lubridate::month(date_death_date),
-                  date_death_day = lubridate::day(date_death_date),
-                  date_death_year = lubridate::year(date_death_date)) %>%
-    dplyr::mutate(date_death = paste(date_death_month, date_death_day, date_death_year, sep = "/"),
-                  date_death = ifelse(is.na(date_death), NA, ifelse(date_death == "NA/NA/NA", NA, date_death))) %>% 
-  dplyr::mutate(death_cause_smart = ifelse(is.na(death_cause),NA,
+                                    ifelse(sex == female,2,sex))),
+                date_dc_date = lubridate::parse_date_time(date_dc, orders = date_dc_reformat),
+                date_dc_month = lubridate::month(date_dc_date),
+                date_dc_day = lubridate::day(date_dc_date),
+                date_dc_year = lubridate::year(date_dc_date),
+                date_dc_char = paste(date_dc_month, date_dc_day, date_dc_year, sep = "/"),
+                date_dc_char = ifelse(is.na(date_dc_char), NA, ifelse(date_dc_char == "NA/NA/NA", NA, date_dc_char)),
+                date_recall_date = lubridate::parse_date_time(date_recall, orders = date_recall_reformat),
+                date_recall_month = lubridate::month(date_recall_date),
+                date_recall_day = lubridate::day(date_recall_date),
+                date_recall_year = lubridate::year(date_recall_date),
+                date_recall = paste(date_recall_month, date_recall_day, date_recall_year, sep = "/"),
+                date_recall = ifelse(is.na(date_recall), NA, ifelse(date_recall == "NA/NA/NA", NA, date_recall)),
+                date_join_date = lubridate::parse_date_time(date_join, orders = date_join_reformat),
+                date_join_month = lubridate::month(date_join_date),
+                date_join_day = lubridate::day(date_join_date),
+                date_join_year = lubridate::year(date_join_date),
+                date_join = paste(date_join_month, date_join_day, date_join_year, sep = "/"),
+                date_join = ifelse(is.na(date_join), NA, ifelse(date_join == "NA/NA/NA", NA, date_join)),
+                date_left_date = lubridate::parse_date_time(date_left, orders = date_left_reformat),
+                date_left_month = lubridate::month(date_left_date),
+                date_left_day = lubridate::day(date_left_date),
+                date_left_year = lubridate::year(date_left_date),
+                date_left = paste(date_left_month, date_left_day, date_left_year, sep = "/"),
+                date_left = ifelse(is.na(date_left), NA, ifelse(date_left == "NA/NA/NA", NA, date_left)),
+                date_birth_date = lubridate::parse_date_time(date_birth, orders = date_birth_reformat),
+                date_birth_month = lubridate::month(date_birth_date),
+                date_birth_day = lubridate::day(date_birth_date),
+                date_birth_year = lubridate::year(date_birth_date),
+                date_birth = paste(date_birth_month, date_birth_day, date_birth_year, sep = "/"),
+                date_birth = ifelse(is.na(date_birth), NA, ifelse(date_birth == "NA/NA/NA", NA, date_birth)),
+                date_death_date = lubridate::parse_date_time(date_death, orders = date_death_reformat),
+                date_death_month = lubridate::month(date_death_date),
+                date_death_day = lubridate::day(date_death_date),
+                date_death_year = lubridate::year(date_death_date),
+                date_death = paste(date_death_month, date_death_day, date_death_year, sep = "/"),
+                date_death = ifelse(is.na(date_death), NA, ifelse(date_death == "NA/NA/NA", NA, date_death)),
+                death_cause_smart = ifelse(is.na(death_cause),NA,
                                            ifelse(death_cause %in% unknown, 1,
                                                   ifelse(death_cause %in% injury_trauma, 2, 
-                                                         ifelse(death_cause %in% illness, 3, death_cause_smart))))) %>% 
-   dplyr::mutate(death_location_smart = ifelse(is.na(death_location), NA,
+                                                         ifelse(death_cause %in% illness, 3, death_cause_smart)))),
+                death_location_smart = ifelse(is.na(death_location), NA,
                                                ifelse(death_location %in% current_location, 1,
                                                       ifelse(death_location %in% during_migration, 2,
                                                              ifelse(death_location %in% last_place, 3,
-                                                                    ifelse(death_location %in% other_place,4,death_location_smart))))))
+                                                                    ifelse(death_location %in% other_place,4,death_location_smart)))))) %>% 
+  dplyr::mutate_at(vars(c("join", "left", "birth", "death")), ~ifelse(is.na(.),NA,
+                                                                      ifelse(. %in% no_demo_values, NA,
+                                                                             ifelse(. %in% yes_demo_values, 1, .))))
 
 
 if(!file.exists("inputs/environment.Rdata")) {
   cause_death_f <- tcltk::tk_select.list(dplyr::pull(df_mortality_long[,"death_cause"]) %>% unique, title = "Cause Death related to Women",multiple = T)
 }
 
-flag_mortality <- impactR4PHU::check_mortality_flags(df = df_mortality_long,
-                                                   cause_death_f = cause_death_f)
 
 
 if(!file.exists("inputs/environment.Rdata")) {
@@ -1007,7 +1017,7 @@ list_of_var <- c("date_dc","date_recall_event","enumerator","admin1","admin2","c
                  "sex_died","age_died","birth_died","birthdate_died","joined_died",
                  "joined_date_died","date_death","death_cause","death_location","cause_death_f",
                  "exp_sex_ratio","exp_ratio_0_4","exp_ratio_2_5","exp_ratio_5_10","exp_hh_size",
-                 "df_mortality_long","flag_mortality", "label_colname","path.sheet.with.main",
+                 "label_colname","path.sheet.with.main",
                  "path.sheet.with.roster","path.sheet.with.leavers","path.sheet.with.death", "smart",
                  "male","female","date_dc_reformat","date_recall_reformat","date_join_reformat",
                  "date_birth_reformat","date_left_reformat","date_death_reformat",
@@ -1044,7 +1054,11 @@ if(!file.exists("inputs/environment.Rdata")){
 overall_mort_plaus <- openxlsx::read.xlsx("resources/overall_plaus.xlsx", fillMergedCells = TRUE, sheet = "MORT") %>%
   dplyr::distinct()
 
+df_mortality_long <- impactR4PHU::add_persontime(df_mortality_long,
+                                                 smart = smart)
 
+flag_mortality <- impactR4PHU::check_mortality_flags(df = df_mortality_long,
+                                                   cause_death_f = cause_death_f)
 
 results_mort <- impactR4PHU::create_mortality_plaus(df_mortality = df_mortality_long,
                                                     exp_sex_ratio = exp_sex_ratio,
