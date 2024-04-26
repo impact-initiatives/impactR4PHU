@@ -46,6 +46,9 @@
     <loc>https://impact-initiatives.github.io/impactR4PHU/reference/add_muac.html</loc>
   </url>
   <url>
+    <loc>https://impact-initiatives.github.io/impactR4PHU/reference/add_persontime.html</loc>
+  </url>
+  <url>
     <loc>https://impact-initiatives.github.io/impactR4PHU/reference/add_rcsi.html</loc>
   </url>
   <url>
@@ -80,6 +83,9 @@
   </url>
   <url>
     <loc>https://impact-initiatives.github.io/impactR4PHU/reference/create_fsl_quality_report_template.html</loc>
+  </url>
+  <url>
+    <loc>https://impact-initiatives.github.io/impactR4PHU/reference/create_mort_cleaning_template.html</loc>
   </url>
   <url>
     <loc>https://impact-initiatives.github.io/impactR4PHU/reference/create_mort_quality_report_template.html</loc>
