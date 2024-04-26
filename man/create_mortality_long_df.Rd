@@ -40,8 +40,7 @@ create_mortality_long_df(
   date_death = "final_date_death",
   joined_date_died = "date_join_final_death",
   birthdate_died = "dob_died",
-  uuid_died = NULL,
-  smart = FALSE
+  uuid_died = NULL
 )
 }
 \arguments{
@@ -148,8 +147,6 @@ death individuals. By default: "dob_died"}
 
 \item{uuid_died}{the name of the variable that indicates the unique uuid of HH
 By default: NULL}
-
-\item{smart}{boolean to check if calculation should follow smart methodology or IMPACT}
 }
 \value{
 return a long reformated dataframe including all roster/left/death individuals
@@ -177,7 +174,6 @@ create_mortality_long_df
   birth_died = "ind_born_died",joined_died = "died_present",
   death_cause = "cause_death", death_location = "location_death",
   date_death = "final_date_death", joined_date_died = "date_join_final_death",
-  birthdate_died = "dob_died",uuid_died = "_submission__uuid",
-  smart = F)
+  birthdate_died = "dob_died",uuid_died = "_submission__uuid")
 }
 }

@@ -16,6 +16,7 @@
 #' -death
 #' -cause_death
 #' -location_death
+#' @export
 #'
 #' @examples
 #' \dontrun{
@@ -266,7 +267,6 @@ reformat_mortality <- function(df) {
   }
 
   # Checking Location of Death Coding
-
   location_codes <- unique(df$death_location)
   ideal_codes <- c("1", "2", "3", "4")
   location_recodes <- c("1", "2", "3", "4", "NA")
