@@ -55,11 +55,7 @@ raw.died_member <- readxl::read_excel(path.raw, path.sheet.with.death)
 
 
 ```{r, echo=FALSE, warning=FALSE,include=FALSE}
-
-
-
 if(!file.exists("inputs/environment.Rdata")) {
-  ################################################################################
   ## Detect date of data collection column
   date_dc <- names(raw.main)[grepl("today",names(raw.main))]
   if(length(date_dc) == 1){
@@ -509,6 +505,8 @@ if(!file.exists("inputs/environment.Rdata")) {
   
   smart <- tcltk::tk_select.list(c(TRUE,FALSE), title = "Do you have all the Dates Collected? (1 for Yes, 0 for No")
   
+
+}
   all_vars <- ls()
   is_empty <- function(x) {
   obj <- get(x)
@@ -640,8 +638,6 @@ if(!file.exists("inputs/environment.Rdata")) {
       }
     }
   }
-}
-
 # Slicer
 # source("src/date_selection.R")
 min_date <- min(raw.main[[date_dc]])
@@ -649,20 +645,20 @@ max_date <- max(raw.main[[date_dc]])
 # selected_dates <- date_range_input(min_date, max_date)
 
 ### TO CONTINUE HERE
-min_filter <- svDialogs::dlg_input(message= paste0("Enter the start date (format: YYYY-MM-DD). Can't be less than: ", min_date),min_date)$res
+min_filter <- svDialogs::dlg_input(message= paste0("Enter the start date (format: YYYY-MM-DD). Range: ", min_date, " and ", max_date),min_date)$res
 
-max_filter <- svDialogs::dlg_input(message= paste0("Enter the end date (format: YYYY-MM-DD). Can't be more than: ", max_date),max_date)$res
+max_filter <- svDialogs::dlg_input(message= paste0("Enter the end date (format: YYYY-MM-DD). Range: ", min_date, " and ", max_date),max_date)$res
 
 while(!stringr::str_detect(min_filter,"^\\d{4}\\-(0?[1-9]|1[012])\\-(0?[1-9]|[12][0-9]|3[01])$") | 
         lubridate::as_date(min_filter) < lubridate::as_date(min_date) |
       lubridate::as_date(min_filter) > lubridate::as_date(max_filter)){
-    min_filter <- svDialogs::dlg_input(message= paste0("[INCORRECT] Re-enter the start date (format: YYYY-MM-DD). Can't be less than: ", min_date),min_date)$res
+    min_filter <- svDialogs::dlg_input(message= paste0("[INCORRECT] Re-enter the start date (format: YYYY-MM-DD). Range: ", min_date, " and ", max_date),min_date)$res
 }
   
 while(!stringr::str_detect(max_filter,"^\\d{4}\\-(0?[1-9]|1[012])\\-(0?[1-9]|[12][0-9]|3[01])$")| 
       lubridate::as_date(max_filter) > lubridate::as_date(max_date) |
       lubridate::as_date(max_filter) < lubridate::as_date(min_filter)){
-    max_filter <- svDialogs::dlg_input(message= paste0("[INCORRECT] Re-enter the end date (format: YYYY-MM-DD). Can't be more than: ", max_date),max_date)$res
+    max_filter <- svDialogs::dlg_input(message= paste0("[INCORRECT] Re-enter the end date (format: YYYY-MM-DD). Range: ", min_date, " and ", max_date),max_date)$res
 }
 
 raw.main <- raw.main %>% 
@@ -1000,7 +996,7 @@ if(!file.exists("inputs/environment.Rdata")) {
     exp_ratio_5_10 <- NULL
   }
   # exp_hh_size
-  yes_no <- svDialogs::dlg_message(paste0("Apply a ~52% of individuals are <5 years of age out of under-10 children. No to provide your ratios."), type = "yesno")$res
+  yes_no <- svDialogs::dlg_message(paste0("Apply a 5 for HH average size. No to provide your average size."), type = "yesno")$res
   if(yes_no == "no"){
     exp_hh_size <- as.numeric(svDialogs::dlg_input(message= "Enter the HH size",5)$res)
   } else {
@@ -1055,7 +1051,7 @@ overall_mort_plaus <- openxlsx::read.xlsx("resources/overall_plaus.xlsx", fillMe
   dplyr::distinct()
 
 df_mortality_long <- impactR4PHU::add_persontime(df_mortality_long,
-                                                 smart = smart)
+                                                 smart =F)
 
 flag_mortality <- impactR4PHU::check_mortality_flags(df = df_mortality_long,
                                                    cause_death_f = cause_death_f)
@@ -1151,8 +1147,13 @@ impactR4PHU::plot_age_distribution(raw.hh_roster,
 #### Histogram of age in months per enumerator
 
 ```{r, fig.height=8, fig.width = 10, warning=FALSE}
-impactR4PHU::plot_age_distribution(raw.hh_roster %>% 
-                                     dplyr::left_join(select(raw.main, c(uuid_main, enumerator))),
+plot_raw.hh_roster <- raw.hh_roster %>% 
+  dplyr::rename(uuid = uuid_roster) 
+plot_raw.main <- raw.main %>% 
+  dplyr::rename(uuid = uuid_main)
+
+impactR4PHU::plot_age_distribution(plot_raw.hh_roster %>% 
+                                     dplyr::left_join(select(plot_raw.main, c("uuid", enumerator))),
                                    year_or_month = "month",
                                    by_group = "enumerator",
                                    breaks = 1)
