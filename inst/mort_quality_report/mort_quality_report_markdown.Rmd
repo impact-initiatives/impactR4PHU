@@ -645,20 +645,20 @@ max_date <- max(raw.main[[date_dc]])
 # selected_dates <- date_range_input(min_date, max_date)
 
 ### TO CONTINUE HERE
-min_filter <- svDialogs::dlg_input(message= paste0("Enter the start date (format: YYYY-MM-DD). Can't be less than: ", min_date),min_date)$res
+min_filter <- svDialogs::dlg_input(message= paste0("Enter the start date (format: YYYY-MM-DD). Range: ", min_date, " and ", max_date),min_date)$res
 
-max_filter <- svDialogs::dlg_input(message= paste0("Enter the end date (format: YYYY-MM-DD). Can't be more than: ", max_date),max_date)$res
+max_filter <- svDialogs::dlg_input(message= paste0("Enter the end date (format: YYYY-MM-DD). Range: ", min_date, " and ", max_date),max_date)$res
 
 while(!stringr::str_detect(min_filter,"^\\d{4}\\-(0?[1-9]|1[012])\\-(0?[1-9]|[12][0-9]|3[01])$") | 
         lubridate::as_date(min_filter) < lubridate::as_date(min_date) |
       lubridate::as_date(min_filter) > lubridate::as_date(max_filter)){
-    min_filter <- svDialogs::dlg_input(message= paste0("[INCORRECT] Re-enter the start date (format: YYYY-MM-DD). Can't be less than: ", min_date),min_date)$res
+    min_filter <- svDialogs::dlg_input(message= paste0("[INCORRECT] Re-enter the start date (format: YYYY-MM-DD). Range: ", min_date, " and ", max_date),min_date)$res
 }
   
 while(!stringr::str_detect(max_filter,"^\\d{4}\\-(0?[1-9]|1[012])\\-(0?[1-9]|[12][0-9]|3[01])$")| 
       lubridate::as_date(max_filter) > lubridate::as_date(max_date) |
       lubridate::as_date(max_filter) < lubridate::as_date(min_filter)){
-    max_filter <- svDialogs::dlg_input(message= paste0("[INCORRECT] Re-enter the end date (format: YYYY-MM-DD). Can't be more than: ", max_date),max_date)$res
+    max_filter <- svDialogs::dlg_input(message= paste0("[INCORRECT] Re-enter the end date (format: YYYY-MM-DD). Range: ", min_date, " and ", max_date),max_date)$res
 }
 
 raw.main <- raw.main %>% 
