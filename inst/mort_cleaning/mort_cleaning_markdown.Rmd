@@ -1037,7 +1037,7 @@ list_of_var <- c("date_dc","date_recall_event","enumerator","admin1","admin2","c
                  "path.sheet.with.roster","path.sheet.with.leavers","path.sheet.with.death", "smart",
                  "male","female","date_dc_reformat","date_recall_reformat","date_join_reformat",
                  "date_birth_reformat","date_left_reformat","date_death_reformat",
-                 "unknown", "injury_trauma", "illness",
+                 "unknown", "injury_trauma", "illness", "no_demo_values", "yes_demo_values",
                  "current_location","during_migration","last_place","other_place")
 
 if(!file.exists("inputs/environment.Rdata")){
@@ -1054,197 +1054,83 @@ flag_mortality <- impactR4PHU::check_mortality_flags(df = df_mortality_long,
 
 ```
 
-```{r, include = FALSE}
-## Direct Cleaning
-cleaning.log.checks.direct <- tibble()
-#### FCS
-### FCS score is 0. 
-fcs_columns <- names(raw.flag.fcs)[which(stringr::str_detect(names(raw.flag.fcs),"fsl_fcs_"))]
-if("fsl_fcs_score" %in% names(raw.flag.fcs)) {
-  check <- raw.flag.fcs %>%
-    filter(fsl_fcs_score == 0)
-  cl_fcs_all_0 <- data.frame()
-  for (i in 1:nrow(check)) {
-    cl <-  recode.set.NA.if(check[i,], fcs_columns, check[i,fcs_columns], "replacing fcs columns with NA because all fcs are 0", ignore_case = F) %>% 
-      filter(!is.na(old.value)) %>% 
-      mutate(old.value = as.character(old.value))
-    cl_fcs_all_0 <- bind_rows(cl_fcs_all_0,cl)
-  }
-  cleaning.log.checks.direct <- bind_rows(cleaning.log.checks.direct, cl_fcs_all_0)
-}
 
-### FCS score is 7. 
-fcs_columns <- names(raw.flag.fcs)[which(stringr::str_detect(names(raw.flag.fcs),"fsl_fcs_"))]
-if("fsl_fcs_score" %in% names(raw.flag.fcs)) {
-  check <- raw.flag.fcs %>% 
-    filter(fsl_fcs_score == 112)
-  cl_fcs_all_7 <- data.frame()
-  for(i in 1:nrow(check)){
-    cl<- recode.set.NA.if(check[i,], fcs_columns, check[i,fcs_columns], "replacing fcs columns with NA because all fcs are 7", ignore_case = F) %>% 
-      filter(!is.na(old.value)) %>% 
-      mutate(old.value = as.character(old.value))
-    cl_fcs_all_7 <- bind_rows(cl_fcs_all_7,cl) 
-  }
-  cleaning.log.checks.direct <- bind_rows(cleaning.log.checks.direct, cl_fcs_all_7)
-}
+<!-- ```{r, include = FALSE} -->
+<!-- # FLAG Logical Checks -->
+<!-- checks_followups <- tibble() -->
 
+<!-- # Check number 1 -->
+<!-- if("flag_protein_rcsi" %in% names(raw.flag.fcs)){ -->
+<!--   check_protein_rcsi <- raw.flag.fcs %>% -->
+<!--     select(uuid,enum_colname, flag_protein_rcsi)%>% -->
+<!--     filter(flag_protein_rcsi == 1) %>% -->
+<!--     left_join(raw.flag.fcs %>% select(uuid, fsl_rcsi_score, fsl_fcs_meat, fsl_fcs_dairy)) -->
 
-### All LCSI NA
-lcsi_columns <- names(raw.flag.fcs)[which(stringr::str_detect(names(raw.flag.fcs),"lcsi_"))]
-if("flag_lcsi_na" %in% names(raw.flag.fcs)) {
-  check <-  raw.flag.fcs %>% 
-    filter(flag_lcsi_na == 1)
-  cl_lcsi_all_na <- data.frame()
-  for (i in 1:nrow(check)) {
-    cl <- recode.set.NA.if(check[i,], lcsi_columns, check[i,lcsi_columns], "replacing lcsi columns with NA because all lcsi are na", ignore_case = F) %>% 
-      filter(!is.na(old.value)) %>% 
-      mutate(old.value = as.character(old.value))
-    cl_lcsi_all_na <- bind_rows(cl_lcsi_all_na,cl)
-  }
-  cleaning.log.checks.direct <- bind_rows(cleaning.log.checks.direct, cl_lcsi_all_na)
-}
+<!--   if(nrow(check_protein_rcsi)>0){ -->
+<!--     checks_followups <- rbind(checks_followups, -->
+<!--                               make.logical.check.entry(check_protein_rcsi, 1,  c("fsl_rcsi_score",fsl_fcs_meat, fsl_fcs_dairy), -->
+<!--                                                        cols_to_keep = c(enum_colname),"rCSI Score is high while protein consumption is also reported as frequent", F)) -->
+<!--   } -->
+<!-- } -->
 
-lcs_variables <- c("fsl_lcsi_stress1","fsl_lcsi_stress2","fsl_lcsi_stress3","fsl_lcsi_stress4","fsl_lcsi_crisis1",
-                   "fsl_lcsi_crisis2","fsl_lcsi_crisis3","fsl_lcsi_emergency1","fsl_lcsi_emergency2","fsl_lcsi_emergency3")
+<!-- if("flag_lcsi_coherence" %in% names(raw.flag.fcs)){ -->
+<!--   # Check number 2 -->
+<!--   check_lcsi_coherence <- raw.flag.fcs %>% -->
+<!--     select(uuid,enum_colname, flag_lcsi_coherence)%>% -->
+<!--     filter(flag_lcsi_coherence == 1)%>% -->
+<!--     left_join(raw.flag.fcs %>% select(uuid, -->
+<!--                                   fsl_lcsi_emergency, fsl_lcsi_stress, fsl_lcsi_crisis, -->
+<!--                                   fsl_lcsi_stress1,fsl_lcsi_stress2,fsl_lcsi_stress3,fsl_lcsi_stress4, -->
+<!--                                   fsl_lcsi_crisis1,fsl_lcsi_crisis2,fsl_lcsi_crisis3, -->
+<!--                                   fsl_lcsi_emergency1,fsl_lcsi_emergency2,fsl_lcsi_emergency3)) -->
 
-### LCSI Displaced but HH not displaced
-if("flag_lcsi_displ" %in% names(raw.flag.fcs)){
-  displ <- lcs_variables[which(grepl("displaced|migration|migrated",get.label(lcs_variables)))]
-  check <-  raw.flag.fcs %>% filter(flag_lcsi_displ == 1)
-  cl_lcsi_displ <- data.frame()
-  for (i in 1:nrow(check)) {
-    cl <- recode.set.NA.if(check[i,], displ, check[i,displ], "replacing lcsi displacement strategy columns with NA because HH not IDP", ignore_case = F) %>% 
-      filter(!is.na(old.value)) %>% 
-      mutate(old.value = as.character(old.value))
-    cl_lcsi_displ <- bind_rows(cl_lcsi_displ,cl)
-  }
-  
-  cleaning.log.checks.direct <- bind_rows(cleaning.log.checks.direct, cl_lcsi_displ)
-}
+<!--   if(nrow(check_lcsi_coherence)>0){ -->
+<!--     checks_followups <- rbind(checks_followups, -->
+<!--                               make.logical.check.entry(check_lcsi_coherence, 2, -->
+<!--                                                        c("fsl_lcsi_emergency","fsl_lcsi_stress","fsl_lcsi_crisis", -->
+<!--                                                          fsl_lcsi_stress1,fsl_lcsi_stress2,fsl_lcsi_stress3,fsl_lcsi_stress4, -->
+<!--                                                          fsl_lcsi_crisis1,fsl_lcsi_crisis2,fsl_lcsi_crisis3, -->
+<!--                                                          fsl_lcsi_emergency1,fsl_lcsi_emergency2,fsl_lcsi_emergency3), # to provide all teh strategies -->
+<!--                                                        cols_to_keep = c(enum_colname),"HHs report using crisis or emergency strategies but not stress strategies or Emergency and no crisis.", F)) -->
+<!--   } -->
+<!-- } -->
+<!-- #Check number 3 -->
+<!-- fcs_flag_columns <- c(fsl_fcs_cereal,fsl_fcs_legumes,fsl_fcs_dairy,fsl_fcs_meat,fsl_fcs_veg, -->
+<!--                       fsl_fcs_fruit,fsl_fcs_oil,fsl_fcs_sugar,"fsl_fcs_score") -->
+<!-- rcsi_flag_columns <- c(fsl_rcsi_lessquality,fsl_rcsi_borrow, -->
+<!--                        fsl_rcsi_mealsize,fsl_rcsi_mealadult,fsl_rcsi_mealnb,"fsl_rcsi_score") -->
 
-### LCSI Agriculture but HH not displaced
-if("flag_lcsi_liv_agriculture" %in% names(raw.flag.fcs)){
-  agric <- lcs_variables[which(grepl("agriculture|crop|crops|farm",get.label(lcs_variables)))]
-  check <-  raw.flag.fcs %>% filter(flag_lcsi_liv_agriculture == 1)
-  cl_lcsi_agric <- data.frame()
-  for (i in 1:nrow(check)) {
-    cl <- recode.set.NA.if(check[i,], agric, check[i,agric], "replacing lcsi agricultural strategy columns with NA because HH do not have income from agriculture", ignore_case = F) %>% 
-      filter(!is.na(old.value)) %>% 
-      mutate(old.value = as.character(old.value))
-    cl_lcsi_agric <- bind_rows(cl_lcsi_agric,cl)
-  }
-  cleaning.log.checks.direct <- bind_rows(cleaning.log.checks.direct, cl_lcsi_agric)
-}
+<!-- if("flag_fcsrcsi_box" %in% names(raw.flag.fcs)) { -->
+<!--   check_fcsrcsi_box <- raw.flag.fcs %>% -->
+<!--     select(uuid,enum_colname, flag_fcsrcsi_box)%>% -->
+<!--     filter(flag_fcsrcsi_box == 1)%>% -->
+<!--     left_join(raw.flag.fcs %>% select(uuid, fcs_flag_columns, rcsi_flag_columns)) -->
 
-### LCSI Livestock but HH not displaced
-if("flag_lcsi_liv_livestock" %in% names(raw.flag.fcs)){
-  livest <- lcs_variables[which(grepl("livestock|livestocks|animal",get.label(lcs_variables)))]
-  check <-  raw.flag.fcs %>% filter(flag_lcsi_liv_livestock == 1)
-  cl_lcsi_livest <- data.frame()
-  for (i in 1:nrow(check)) {
-    cl <- recode.set.NA.if(check[i,], livest, check[i,livest], "replacing lcsi livestock strategy columns with NA because HH do not have income from livestock", ignore_case = F) %>% 
-      filter(!is.na(old.value)) %>% 
-      mutate(old.value = as.character(old.value))
-    cl_lcsi_livest <- bind_rows(cl_lcsi_livest,cl)
-  }
-  cleaning.log.checks.direct <- bind_rows(cleaning.log.checks.direct, cl_lcsi_livest)
-}
+<!--   if(nrow(check_fcsrcsi_box)>0){ -->
+<!--     checks_followups <- rbind(checks_followups, -->
+<!--                               make.logical.check.entry(check_fcsrcsi_box, 3,  c(fcs_flag_columns, rcsi_flag_columns), -->
+<!--                                                        cols_to_keep = c(enum_colname),"HH that would have an acceptable FCS score and a high rCSI score", F)) -->
+<!--   } -->
+<!-- } -->
 
-writexl::write_xlsx(cleaning.log.checks.direct, "output/cleaning_logbook.xlsx")
-```
+<!-- create.follow.up.requests(checks_followups,loop_data = NULL, paste0("FSL_followup_requests.xlsm"), use_template = T) -->
+<!-- options(warn=0) -->
+<!-- cat("\n\n#############################################################################################\n") -->
+<!-- cat("Direct logical checks are flagged and a file is created for follow up in \noutput/checking/requests/ with follow_up_requests in the title. \nPlease check the READ_ME file for information on filling the file.\n") -->
+<!-- cat("#############################################################################################\n") -->
+<!-- ``` -->
 
-<h5>Number of detected entries with all FCS component are 0:<strong> `r nrow(cl_fcs_all_0)`</strong></h5>
-<h5>Number of detected entries with all FCS component are 7:<strong> `r nrow(cl_fcs_all_7)`</strong></h5>
-<h5>Number of detected entries with all LCSI are Not Applicable:<strong> `r nrow(cl_lcsi_all_na)`</strong></h5>
-<h5>Number of detected entries with LCSI strategy related to displacement but HH not IDPs:<strong> `r nrow(cl_lcsi_displ)`</strong></h5>
-<h5>Number of detected entries with LCSI strategy related to agriculture but HH do not have income from agriculture:<strong> `r nrow(cl_lcsi_agric)`</strong></h5>
-<h5>Number of detected entries with LCSI strategy related to livestock but HH do not have income from livestock::<strong> `r nrow(cl_lcsi_livest)`</strong></h5>
+<!-- <h5>Number of detected entries with rCSI Score is high while protein consumption is also reported as frequent:<strong> `r nrow(checks_followups %>% filter(check == 1))`</strong></h5> -->
+<!-- <h5>Number of detected entries with HHs report using crisis or emergency strategies but not stress strategies or Emergency and no crisis:<strong> `r nrow(checks_followups %>% filter(check == 2))`</strong></h5> -->
+<!-- <h5>Number of detected entries with HH that would have an acceptable FCS score and a high rCSI score:<strong> `r nrow(checks_followups %>% filter(check == 3))`</strong></h5> -->
 
-```{r}
-if(nrow(cleaning.log.checks.direct)>0){
-  cat("The below table shows the data that was directly cleaned.")
-  DT::datatable(cleaning.log.checks.direct)
-} else {
-  cat("No data were directly cleaned and logged.")
-}
-```
-
-```{r, include = FALSE}
-# FLAG Logical Checks
-checks_followups <- tibble()
-## FSL
-# Check number 1
-if("flag_protein_rcsi" %in% names(raw.flag.fcs)){
-  check_protein_rcsi <- raw.flag.fcs %>% 
-    select(uuid,enum_colname, flag_protein_rcsi)%>% 
-    filter(flag_protein_rcsi == 1) %>% 
-    left_join(raw.flag.fcs %>% select(uuid, fsl_rcsi_score, fsl_fcs_meat, fsl_fcs_dairy))
-  
-  if(nrow(check_protein_rcsi)>0){
-    checks_followups <- rbind(checks_followups,
-                              make.logical.check.entry(check_protein_rcsi, 1,  c("fsl_rcsi_score",fsl_fcs_meat, fsl_fcs_dairy), 
-                                                       cols_to_keep = c(enum_colname),"rCSI Score is high while protein consumption is also reported as frequent", F))
-  }
-}
-
-if("flag_lcsi_coherence" %in% names(raw.flag.fcs)){
-  # Check number 2
-  check_lcsi_coherence <- raw.flag.fcs %>% 
-    select(uuid,enum_colname, flag_lcsi_coherence)%>% 
-    filter(flag_lcsi_coherence == 1)%>% 
-    left_join(raw.flag.fcs %>% select(uuid, 
-                                  fsl_lcsi_emergency, fsl_lcsi_stress, fsl_lcsi_crisis,
-                                  fsl_lcsi_stress1,fsl_lcsi_stress2,fsl_lcsi_stress3,fsl_lcsi_stress4,
-                                  fsl_lcsi_crisis1,fsl_lcsi_crisis2,fsl_lcsi_crisis3,
-                                  fsl_lcsi_emergency1,fsl_lcsi_emergency2,fsl_lcsi_emergency3))
-  
-  if(nrow(check_lcsi_coherence)>0){
-    checks_followups <- rbind(checks_followups,
-                              make.logical.check.entry(check_lcsi_coherence, 2,
-                                                       c("fsl_lcsi_emergency","fsl_lcsi_stress","fsl_lcsi_crisis",
-                                                         fsl_lcsi_stress1,fsl_lcsi_stress2,fsl_lcsi_stress3,fsl_lcsi_stress4,
-                                                         fsl_lcsi_crisis1,fsl_lcsi_crisis2,fsl_lcsi_crisis3,
-                                                         fsl_lcsi_emergency1,fsl_lcsi_emergency2,fsl_lcsi_emergency3), # to provide all teh strategies
-                                                       cols_to_keep = c(enum_colname),"HHs report using crisis or emergency strategies but not stress strategies or Emergency and no crisis.", F))
-  }
-}
-#Check number 3
-fcs_flag_columns <- c(fsl_fcs_cereal,fsl_fcs_legumes,fsl_fcs_dairy,fsl_fcs_meat,fsl_fcs_veg,
-                      fsl_fcs_fruit,fsl_fcs_oil,fsl_fcs_sugar,"fsl_fcs_score")
-rcsi_flag_columns <- c(fsl_rcsi_lessquality,fsl_rcsi_borrow,
-                       fsl_rcsi_mealsize,fsl_rcsi_mealadult,fsl_rcsi_mealnb,"fsl_rcsi_score")
-
-if("flag_fcsrcsi_box" %in% names(raw.flag.fcs)) {
-  check_fcsrcsi_box <- raw.flag.fcs %>% 
-    select(uuid,enum_colname, flag_fcsrcsi_box)%>% 
-    filter(flag_fcsrcsi_box == 1)%>% 
-    left_join(raw.flag.fcs %>% select(uuid, fcs_flag_columns, rcsi_flag_columns))
-  
-  if(nrow(check_fcsrcsi_box)>0){
-    checks_followups <- rbind(checks_followups,
-                              make.logical.check.entry(check_fcsrcsi_box, 3,  c(fcs_flag_columns, rcsi_flag_columns), 
-                                                       cols_to_keep = c(enum_colname),"HH that would have an acceptable FCS score and a high rCSI score", F))
-  }
-}
-
-create.follow.up.requests(checks_followups,loop_data = NULL, paste0("FSL_followup_requests.xlsm"), use_template = T)
-options(warn=0)
-cat("\n\n#############################################################################################\n")
-cat("Direct logical checks are flagged and a file is created for follow up in \noutput/checking/requests/ with follow_up_requests in the title. \nPlease check the READ_ME file for information on filling the file.\n")
-cat("#############################################################################################\n")
-```
-
-<h5>Number of detected entries with rCSI Score is high while protein consumption is also reported as frequent:<strong> `r nrow(checks_followups %>% filter(check == 1))`</strong></h5>
-<h5>Number of detected entries with HHs report using crisis or emergency strategies but not stress strategies or Emergency and no crisis:<strong> `r nrow(checks_followups %>% filter(check == 2))`</strong></h5>
-<h5>Number of detected entries with HH that would have an acceptable FCS score and a high rCSI score:<strong> `r nrow(checks_followups %>% filter(check == 3))`</strong></h5>
-
-```{r}
-if(nrow(checks_followups)>0){
-  cat("The below table shows the data that needs follow up with the field.")
-  DT::datatable(checks_followups)
-} else {
-  cat("No Logical checks were detected in the dataset.")
-}
-```
+<!-- ```{r} -->
+<!-- if(nrow(checks_followups)>0){ -->
+<!--   cat("The below table shows the data that needs follow up with the field.") -->
+<!--   DT::datatable(checks_followups) -->
+<!-- } else { -->
+<!--   cat("No Logical checks were detected in the dataset.") -->
+<!-- } -->
+<!-- ``` -->
 
 

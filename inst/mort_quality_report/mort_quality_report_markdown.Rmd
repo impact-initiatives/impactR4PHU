@@ -1017,7 +1017,7 @@ list_of_var <- c("date_dc","date_recall_event","enumerator","admin1","admin2","c
                  "path.sheet.with.roster","path.sheet.with.leavers","path.sheet.with.death", "smart",
                  "male","female","date_dc_reformat","date_recall_reformat","date_join_reformat",
                  "date_birth_reformat","date_left_reformat","date_death_reformat",
-                 "unknown", "injury_trauma", "illness",
+                 "unknown", "injury_trauma", "illness", "no_demo_values", "yes_demo_values",
                  "current_location","during_migration","last_place","other_place")
 
 if(!file.exists("inputs/environment.Rdata")){
