@@ -21,7 +21,8 @@ create_mortality_long_df(
   birthdate_roster = "final_ind_dob",
   joined_date_roster = "final_date_join",
   uuid_roster = NULL,
-  df_left,
+  collected_df_left = TRUE,
+  df_left = NULL,
   sex_left = "sex_left",
   age_left = "calc_final_age_years_left",
   birth_left = "ind_born_left",
@@ -89,6 +90,8 @@ joined the HH. By default: "final_date_join"}
 
 \item{uuid_roster}{the name of the variable that indicates the unique uuid of HH
 By default: NULL}
+
+\item{collected_df_left}{Boolean value to check if df_left is collected. By default: T}
 
 \item{df_left}{Left Dataset}
 

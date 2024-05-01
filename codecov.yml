@@ -12,3 +12,6 @@ coverage:
         target: auto
         threshold: 1%
         informational: true
+
+codecov:
+ token: 4860b2b2-c14e-4a09-a8f2-150c8151e3b9

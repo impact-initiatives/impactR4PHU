@@ -1,6 +1,16 @@
 #' create_mortality_plaus
 #'
 #' @param df_mortality output dataframe long mortality from create_mortality_long_df
+#' @param df_main main dataset that include the num_ columns
+#' @param uuid_main the name of the variable that indicates the unique uuid
+#' By default: NULL
+#' @param enumerator the enumerator column in main dataset, by default: enumerator
+#' @param date_dc the name of the variable that indicates the date of data collection
+#' By default: NULL
+#' @param date_recall_event the name of the variable that indicates the recall date
+#' By default: NULL
+#' @param num_join variable name indicating the num_join in main dataset
+#' @param num_left variable name indicating the num_left in main dataset
 #' @param exp_sex_ratio expected sex ratio in the population of male:female
 #' By default: 1:1
 #' @param exp_ratio_0_4 expected age ratio of <5years to >5years in the population
@@ -25,6 +35,13 @@
 #'   create_mortality_plaus(df_mortality)
 #' }
 create_mortality_plaus <- function(df_mortality,
+                                   df_main = NULL,
+                                   uuid_main = NULL,
+                                   date_dc = NULL,
+                                   date_recall_event = NULL,
+                                   num_join = NULL,
+                                   num_left = NULL,
+                                   enumerator = NULL,
                                    exp_sex_ratio = NULL,
                                    exp_ratio_0_4 = NULL,
                                    exp_ratio_2_5 = NULL,
@@ -47,6 +64,7 @@ create_mortality_plaus <- function(df_mortality,
   if (nrow(df_mortality) == 0) {
     stop("Dataset is empty")
   }
+
   if(!all(c("sex", "age_years", "join", "left", "birth", "death", "date_dc", "date_recall") %in% names(df_mortality))) {
     stop("It does not appear that the dataset has been formatted yet by the create_mortality_long_df function,\n as it is missing at least one of the column names of sex, age_years, join, left, birth, death, date_dc, date_recall. Please standardize the data before using this function.")
   }
@@ -126,57 +144,151 @@ create_mortality_plaus <- function(df_mortality,
   # need to add sex and age ratios, poisson p-values for deaths, proportion of HHs with under-5 child, Avg. household size per grouping
 
   # summarizing individual level indicators
+  if(!is.null(df_main)) {
+    if (!is.data.frame(df_main)) {
+      stop("df_main should be a dataset")
+    }
 
-  df2 <- df_mortality %>%
-    dplyr::group_by(group) %>%
-    dplyr::summarize(total_people = sum(!is.na(person_time), na.rm = TRUE),
-                     total_persontime = sum(person_time, na.rm = TRUE),
-                     total_persontime_out = ifelse("person_time_out" %in% names(df_mortality),sum(person_time_out, na.rm = T),0),
-                     total_persontime_in = ifelse("person_time_out" %in% names(df_mortality),sum(person_time_in, na.rm = T),0),
-                     avg.persontime = mean(person_time, na.rm = TRUE),
-                     total_under5 = sum(under_5, na.rm = TRUE),
-                     total_under5_persontime = sum(under_5_pt, na.rm = TRUE),
-                     avg.under5_persontime = mean(under_5_pt, na.rm = TRUE),
-                     joins = sum(!is.na(join), na.rm = TRUE),
-                     joins_under5 = sum(!is.na(join_under5), na.rm = TRUE),
-                     lefts = sum(!is.na(left), na.rm = TRUE),
-                     lefts_under5 = sum(!is.na(left_under5), na.rm = TRUE),
-                     births = sum(!is.na(birth), na.rm = TRUE),
-                     births_under5 = sum(!is.na(birth_under5), na.rm = TRUE),
-                     deaths = sum(!is.na(death), na.rm = TRUE),
-                     deaths_under5 = sum(!is.na(death_under5), na.rm = TRUE),
-                     sex_ratio = round(as.numeric(nipnTK::sexRatioTest(sex, codes = c("1", "2"), pop = sx_ratio)[1]),3),
-                     sex_ratio.pvalue = round(as.numeric(nipnTK::sexRatioTest(sex, codes = c("1", "2"), pop = sx_ratio)[5]),2),
-                     age_ratio_0_5 = sum(!is.na(age_0to5)) / sum(!is.na(age_5plus)),
-                     age_ratio_0_5.pvalue = stats::chisq.test(x = c(sum(!is.na(age_0to5)), sum(!is.na(age_5plus))), p = age_under5_ratio)[3],
-                     age_ratio_2_5 = sum(!is.na(age_0to2)) / sum(!is.na(age_2to5)),
-                     age_ratio_2_5.pvalue = stats::chisq.test(x = c(sum(!is.na(age_0to2)), sum(!is.na(age_2to5))), p = age_under2to5_ratio)[3],
-                     age_ratio_5_10 = sum(!is.na(under_5)) / sum(!is.na(age_5to10)),
-                     age_ratio_5_10.pvalue = stats::chisq.test(x = c(sum(!is.na(under_5)), sum(!is.na(age_5to10))), p = age_under5to10_ratio)[3]
-    ) %>%
-    dplyr::mutate(cdr = deaths / (total_persontime + total_persontime_out - total_persontime_in),
-                  cdr_se = sqrt((cdr * (1 - cdr)) / total_persontime),
-                  cdr_lower_ci = round((cdr - 1.96*cdr_se)*10000,3),
-                  cdr_lower_ci = ifelse(cdr_lower_ci < 0, 0, cdr_lower_ci),
-                  cdr_upper_ci = round((cdr + 1.96*cdr_se)*10000,3),
-                  u5dr = deaths_under5 / (total_under5_persontime),
-                  u5dr_se = sqrt((u5dr * (1 - u5dr)) / total_under5_persontime),
-                  u5dr_lower_ci = round((u5dr - 1.96*u5dr_se)*10000,3),
-                  u5dr_lower_ci = ifelse(u5dr_lower_ci < 0, 0, u5dr_lower_ci),
-                  u5dr_upper_ci = round((u5dr + 1.96*u5dr_se)*10000,3),
-                  birth_rate = births / (total_persontime/365),
-                  birth_rate_se = sqrt((birth_rate * (1 - birth_rate)) / (total_persontime/365)),
-                  birth_rate_lower_ci = round((birth_rate - 1.96*birth_rate_se)*1000,3),
-                  birth_rate_upper_ci = round((birth_rate + 1.96*birth_rate_se)*1000,3),
-                  cdr = round(cdr*10000,6),
-                  u5dr = round(u5dr*10000,3),
-                  birth_rate = round(birth_rate*1000,3),
-                  cdr_ci = paste0(cdr, " [", cdr_lower_ci, " - ", cdr_upper_ci, "]"),
-                  u5dr_ci = paste0(u5dr, " [", u5dr_lower_ci, " - ", u5dr_upper_ci, "]"),
-                  birth_rate_ci = paste0(birth_rate, " [", birth_rate_lower_ci, " - ", birth_rate_upper_ci, "]"),
-                  prop_join_people = round((joins / total_people),2)*100,
-                  prop_left_people = round((lefts / total_people),2)*100) %>%
-    dplyr::select(cdr_ci, u5dr_ci, birth_rate_ci, dplyr::everything())
+    if (!uuid_main %in% names(df_main)) stop("uuid argument incorrect, or not available in the dataset")
+
+    ## Throw an error if the dataset is empty
+    if (nrow(df_main) == 0) {
+      stop("Dataset is empty")
+    }
+    if(!is.null(num_join)) {
+      if(!num_join %in% names(df_main)) stop("num_join argument incorrect, or not available in the dataset")
+    }
+
+    if(!is.null(num_left)) {
+      if(!num_left %in% names(df_main)) stop("num_left argument incorrect, or not available in the dataset")
+    }
+
+    if(!is.null(enumerator)) {
+      if(!enumerator %in% names(df_main)) stop("enumerator argument incorrect, or not available in the dataset")
+    }
+    if (is.null(grouping)) {
+      df_main <- df_main %>% dplyr::mutate(group = "All")
+    } else {
+      df_main <- df_main %>%
+        dplyr::rename(enumerator = enumerator) %>%
+        dplyr::mutate(enumerator = as.character(enumerator),
+                      group = !!rlang::sym(grouping))
+    }
+
+    df_main_join <- df_main %>%
+      dplyr::mutate(num_days = as.numeric(lubridate::as_date(!!rlang::sym(date_dc)) - lubridate::as_date(!!rlang::sym(date_recall_event))),
+                    pt_join = ifelse(is.na(num_join),0, as.numeric(num_days) * as.numeric(num_join) * 0.5),
+                    pt_left = ifelse(is.na(num_left),0, as.numeric(num_days) * as.numeric(num_left) * 0.5)) %>%
+      dplyr::group_by(group) %>%
+      dplyr::summarise(pt_join = sum(pt_join, na.rm = T),
+                       pt_left = sum(pt_left, na.rm = T))
+  } else {
+    df_main_join <- data.frame()
+  }
+
+  if(nrow(df_main_join) > 0){
+    print("I AM HERE")
+    df2 <- df_mortality %>%
+      dplyr::group_by(group) %>%
+      dplyr::summarize(total_people = sum(!is.na(person_time), na.rm = TRUE),
+                       total_persontime = sum(person_time, na.rm = TRUE),
+                       avg.persontime = mean(person_time, na.rm = TRUE),
+                       total_under5 = sum(under_5, na.rm = TRUE),
+                       total_under5_persontime = sum(under_5_pt, na.rm = TRUE),
+                       avg.under5_persontime = mean(under_5_pt, na.rm = TRUE),
+                       joins = sum(!is.na(join), na.rm = TRUE),
+                       joins_under5 = sum(!is.na(join_under5), na.rm = TRUE),
+                       lefts = sum(!is.na(left), na.rm = TRUE),
+                       lefts_under5 = sum(!is.na(left_under5), na.rm = TRUE),
+                       births = sum(!is.na(birth), na.rm = TRUE),
+                       births_under5 = sum(!is.na(birth_under5), na.rm = TRUE),
+                       deaths = sum(!is.na(death), na.rm = TRUE),
+                       deaths_under5 = sum(!is.na(death_under5), na.rm = TRUE),
+                       sex_ratio = round(as.numeric(nipnTK::sexRatioTest(sex, codes = c("1", "2"), pop = sx_ratio)[1]),3),
+                       sex_ratio.pvalue = round(as.numeric(nipnTK::sexRatioTest(sex, codes = c("1", "2"), pop = sx_ratio)[5]),2),
+                       age_ratio_0_5 = sum(!is.na(age_0to5)) / sum(!is.na(age_5plus)),
+                       age_ratio_0_5.pvalue = stats::chisq.test(x = c(sum(!is.na(age_0to5)), sum(!is.na(age_5plus))), p = age_under5_ratio)[3],
+                       age_ratio_2_5 = sum(!is.na(age_0to2)) / sum(!is.na(age_2to5)),
+                       age_ratio_2_5.pvalue = stats::chisq.test(x = c(sum(!is.na(age_0to2)), sum(!is.na(age_2to5))), p = age_under2to5_ratio)[3],
+                       age_ratio_5_10 = sum(!is.na(under_5)) / sum(!is.na(age_5to10)),
+                       age_ratio_5_10.pvalue = stats::chisq.test(x = c(sum(!is.na(under_5)), sum(!is.na(age_5to10))), p = age_under5to10_ratio)[3]
+      ) %>%
+      dplyr::left_join(df_main_join) %>%
+      dplyr::mutate(cdr = deaths / (total_persontime + pt_left - pt_join),
+                    cdr_se = sqrt((cdr * (1 - cdr)) / (total_persontime + pt_left - pt_join)),
+                    cdr_lower_ci = round((cdr - 1.96*cdr_se)*10000,3),
+                    cdr_lower_ci = ifelse(cdr_lower_ci < 0, 0, cdr_lower_ci),
+                    cdr_upper_ci = round((cdr + 1.96*cdr_se)*10000,3),
+                    u5dr = deaths_under5 / (total_under5_persontime),
+                    u5dr_se = sqrt((u5dr * (1 - u5dr)) / total_under5_persontime),
+                    u5dr_lower_ci = round((u5dr - 1.96*u5dr_se)*10000,3),
+                    u5dr_lower_ci = ifelse(u5dr_lower_ci < 0, 0, u5dr_lower_ci),
+                    u5dr_upper_ci = round((u5dr + 1.96*u5dr_se)*10000,3),
+                    birth_rate = births / (total_persontime/365),
+                    birth_rate_se = sqrt((birth_rate * (1 - birth_rate)) / (total_persontime/365)),
+                    birth_rate_lower_ci = round((birth_rate - 1.96*birth_rate_se)*1000,3),
+                    birth_rate_upper_ci = round((birth_rate + 1.96*birth_rate_se)*1000,3),
+                    cdr = round(cdr*10000,6),
+                    u5dr = round(u5dr*10000,3),
+                    birth_rate = round(birth_rate*1000,3),
+                    cdr_ci = paste0(cdr, " [", cdr_lower_ci, " - ", cdr_upper_ci, "]"),
+                    u5dr_ci = paste0(u5dr, " [", u5dr_lower_ci, " - ", u5dr_upper_ci, "]"),
+                    birth_rate_ci = paste0(birth_rate, " [", birth_rate_lower_ci, " - ", birth_rate_upper_ci, "]"),
+                    prop_join_people = round((joins / total_people),2)*100,
+                    prop_left_people = round((lefts / total_people),2)*100) %>%
+      dplyr::select(cdr_ci, u5dr_ci, birth_rate_ci, dplyr::everything())
+  } else {
+    df2 <- df_mortality %>%
+      dplyr::group_by(group) %>%
+      dplyr::summarize(total_people = sum(!is.na(person_time), na.rm = TRUE),
+                       total_persontime = sum(person_time, na.rm = TRUE),
+                       total_persontime_out = ifelse("person_time_out" %in% names(df_mortality),sum(person_time_out, na.rm = T),0),
+                       total_persontime_in = ifelse("person_time_in" %in% names(df_mortality),sum(person_time_in, na.rm = T),0),
+                       avg.persontime = mean(person_time, na.rm = TRUE),
+                       total_under5 = sum(under_5, na.rm = TRUE),
+                       total_under5_persontime = sum(under_5_pt, na.rm = TRUE),
+                       avg.under5_persontime = mean(under_5_pt, na.rm = TRUE),
+                       joins = sum(!is.na(join), na.rm = TRUE),
+                       joins_under5 = sum(!is.na(join_under5), na.rm = TRUE),
+                       lefts = sum(!is.na(left), na.rm = TRUE),
+                       lefts_under5 = sum(!is.na(left_under5), na.rm = TRUE),
+                       births = sum(!is.na(birth), na.rm = TRUE),
+                       births_under5 = sum(!is.na(birth_under5), na.rm = TRUE),
+                       deaths = sum(!is.na(death), na.rm = TRUE),
+                       deaths_under5 = sum(!is.na(death_under5), na.rm = TRUE),
+                       sex_ratio = round(as.numeric(nipnTK::sexRatioTest(sex, codes = c("1", "2"), pop = sx_ratio)[1]),3),
+                       sex_ratio.pvalue = round(as.numeric(nipnTK::sexRatioTest(sex, codes = c("1", "2"), pop = sx_ratio)[5]),2),
+                       age_ratio_0_5 = sum(!is.na(age_0to5)) / sum(!is.na(age_5plus)),
+                       age_ratio_0_5.pvalue = stats::chisq.test(x = c(sum(!is.na(age_0to5)), sum(!is.na(age_5plus))), p = age_under5_ratio)[3],
+                       age_ratio_2_5 = sum(!is.na(age_0to2)) / sum(!is.na(age_2to5)),
+                       age_ratio_2_5.pvalue = stats::chisq.test(x = c(sum(!is.na(age_0to2)), sum(!is.na(age_2to5))), p = age_under2to5_ratio)[3],
+                       age_ratio_5_10 = sum(!is.na(under_5)) / sum(!is.na(age_5to10)),
+                       age_ratio_5_10.pvalue = stats::chisq.test(x = c(sum(!is.na(under_5)), sum(!is.na(age_5to10))), p = age_under5to10_ratio)[3]
+      ) %>%
+      dplyr::mutate(cdr = deaths / (total_persontime + total_persontime_out - total_persontime_in),
+                    cdr_se = sqrt((cdr * (1 - cdr)) / (total_persontime + total_persontime_out - total_persontime_in)),
+                    cdr_lower_ci = round((cdr - 1.96*cdr_se)*10000,3),
+                    cdr_lower_ci = ifelse(cdr_lower_ci < 0, 0, cdr_lower_ci),
+                    cdr_upper_ci = round((cdr + 1.96*cdr_se)*10000,3),
+                    u5dr = deaths_under5 / (total_under5_persontime),
+                    u5dr_se = sqrt((u5dr * (1 - u5dr)) / total_under5_persontime),
+                    u5dr_lower_ci = round((u5dr - 1.96*u5dr_se)*10000,3),
+                    u5dr_lower_ci = ifelse(u5dr_lower_ci < 0, 0, u5dr_lower_ci),
+                    u5dr_upper_ci = round((u5dr + 1.96*u5dr_se)*10000,3),
+                    birth_rate = births / (total_persontime/365),
+                    birth_rate_se = sqrt((birth_rate * (1 - birth_rate)) / (total_persontime/365)),
+                    birth_rate_lower_ci = round((birth_rate - 1.96*birth_rate_se)*1000,3),
+                    birth_rate_upper_ci = round((birth_rate + 1.96*birth_rate_se)*1000,3),
+                    cdr = round(cdr*10000,6),
+                    u5dr = round(u5dr*10000,3),
+                    birth_rate = round(birth_rate*1000,3),
+                    cdr_ci = paste0(cdr, " [", cdr_lower_ci, " - ", cdr_upper_ci, "]"),
+                    u5dr_ci = paste0(u5dr, " [", u5dr_lower_ci, " - ", u5dr_upper_ci, "]"),
+                    birth_rate_ci = paste0(birth_rate, " [", birth_rate_lower_ci, " - ", birth_rate_upper_ci, "]"),
+                    prop_join_people = round((joins / total_people),2)*100,
+                    prop_left_people = round((lefts / total_people),2)*100) %>%
+      dplyr::select(cdr_ci, u5dr_ci, birth_rate_ci, dplyr::everything())
+  }
 
   # summarizing household level indicators
   # average household size, % of households with a child under 5
@@ -221,7 +333,6 @@ create_mortality_plaus <- function(df_mortality,
 
 
   if(short_report == TRUE) {
-
     df4 <- df4 %>%
       dplyr::select(1,cdr_ci,u5dr_ci,birth_rate, birth_rate_ci,deaths, deaths_under5, prop_hh_flag_deaths,
                     sex_ratio.pvalue, age_ratio_0_5.pvalue,prop_join_people,prop_left_people,
