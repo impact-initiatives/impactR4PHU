@@ -398,10 +398,10 @@ raw.main <- raw.main %>%
 raw.main <- raw.main %>% 
   dplyr::mutate(num_days = as.numeric(date_dc_date - date_recall_date),
                 pt_total = num_days * as.numeric(num_hh),
-                pt_join = ifelse(is.na(num_join), 0,num_days * as.numeric(num_join)),
-                pt_left = ifelse(is.na(num_left), 0,num_days * as.numeric(num_left)),
-                pt_died = ifelse(is.na(num_died), 0,num_days * as.numeric(num_died)),
-                pt_birth = ifelse(is.na(num_birth), 0,num_days * as.numeric(num_birth)),
+                pt_left = ifelse(is.na(num_left), 0,num_days * as.numeric(num_left) * 0.5),
+                pt_join = ifelse(is.na(num_join), 0,num_days * as.numeric(num_join) * 0.5),
+                pt_died = ifelse(is.na(num_died), 0,num_days * as.numeric(num_died)* 0.5),
+                pt_birth = ifelse(is.na(num_birth), 0,num_days * as.numeric(num_birth)* 0.5),
                 person_time = pt_total + pt_died + pt_left - pt_birth - pt_join)
 
 

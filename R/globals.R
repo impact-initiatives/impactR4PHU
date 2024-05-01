@@ -103,6 +103,6 @@ globalVariables(unique(c(
   #create_mortality_plaus
   "birth_rate","birth_rate_se","birth_rate_lower_ci","birth_rate_upper_ci",
   "birth_rate_ci","person_time_out","person_time_in","total_persontime_in",
-  "total_persontime_out"
+  "total_persontime_out","num_days","pt_join","pt_left"
 
 )))

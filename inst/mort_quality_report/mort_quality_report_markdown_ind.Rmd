@@ -507,7 +507,44 @@ if(!file.exists("inputs/environment.Rdata")) {
       death_location <- svDialogs::dlg_input(message= "Enter the name of the location of death column","death_location")$res
     }
   }
-  smart <- tcltk::tk_select.list(c(TRUE,FALSE), title = "Do you have all the Dates Collected? (1 for Yes, 0 for No")
+  
+  dates_collected <- tcltk::tk_select.list(c("All","Some","None"), title = "Do you have all the Dates Collected?[Left/Join/Birth/Death]")
+  
+  if(dates_collected == "All") {
+    smart <- T
+  } else if (dates_collected == "None") {
+    smart <- F
+  } else if (dates_collected == "Some") {
+    smart <- T
+    collect_num_join_left <- svDialogs::dlg_message(paste0("Do you still collect num_join and num_left on HH level?"), type = "yesno")$res
+    if(collect_num_join_left == "yes") {
+      ## Detect num_left column
+      num_left <- names(raw.main)[grepl("leaver|num_left|left",names(raw.main))]
+  
+      if(length(num_left) == 1){
+        yes_no <- svDialogs::dlg_message(paste0("Is '", num_left, "' the correct number of Leavers column in main data?"), type = "yesno")$res
+        if(yes_no == "no"){
+          num_left <- svDialogs::dlg_input(message= "Enter the number of Leavers column in main data","num_left")$res
+          }
+        } else if (length(num_left) > 1){
+          num_left <- tcltk::tk_select.list(num_left, title = "Number of Leavers Column [Main Data]")
+          } else if (length(num_left) == 0) {
+            num_left <- svDialogs::dlg_input(message= "Enter the number of Leavers column in main data","num_left")$res
+          }
+      ## Detect num_join column
+      num_join <- names(raw.main)[grepl("joiner|num_join|join",names(raw.main))]
+      if(length(num_join) == 1){
+        yes_no <- svDialogs::dlg_message(paste0("Is '", num_join, "' the correct number of Joiners column in main data?"), type = "yesno")$res
+        if(yes_no == "no"){
+          num_join <- svDialogs::dlg_input(message= "Enter the number of Joiners column in main data","num_join")$res
+          }
+        } else if (length(num_join) > 1){
+            num_join <- tcltk::tk_select.list(num_join, title = "Number of Joiners Column [Main Data]")
+          } else if (length(num_join) == 0) {
+            num_join <- svDialogs::dlg_input(message= "Enter the number of Joiners column in main data","num_join")$res
+          }
+      }
+  }
   
   all_vars <- ls()
   is_empty <- function(x) {
@@ -1018,8 +1055,8 @@ df_mortality_long <- impactR4PHU::create_mortality_long_df(df_main = raw.main,
                      "sex_died","age_died","birth_died","birthdate_died","joined_died",
                      "joined_date_died","date_death","death_cause","death_location","cause_death_f",
                      "exp_sex_ratio","exp_ratio_0_4","exp_ratio_2_5","exp_ratio_5_10","exp_hh_size",
-                     "label_colname","path.sheet.with.main",
-                     "path.sheet.with.roster","path.sheet.with.leavers","path.sheet.with.death", "smart",
+                     "label_colname","path.sheet.with.main","collect_num_join_left","num_join","num_left",
+                     "path.sheet.with.roster","path.sheet.with.leavers","path.sheet.with.death", "dates_collected",
                      "male","female","date_dc_reformat","date_recall_reformat","date_join_reformat",
                      "date_birth_reformat","date_left_reformat","date_death_reformat",
                      "unknown", "injury_trauma", "illness", "no_demo_values", "yes_demo_values",
@@ -1031,8 +1068,8 @@ df_mortality_long <- impactR4PHU::create_mortality_long_df(df_main = raw.main,
                      "sex_died","age_died","birth_died","birthdate_died","joined_died",
                      "joined_date_died","date_death","death_cause","death_location","cause_death_f",
                      "exp_sex_ratio","exp_ratio_0_4","exp_ratio_2_5","exp_ratio_5_10","exp_hh_size",
-                     "label_colname","path.sheet.with.main",
-                     "path.sheet.with.roster","path.sheet.with.death", "smart",
+                     "label_colname","path.sheet.with.main","collect_num_join_left","num_join","num_left",
+                     "path.sheet.with.roster","path.sheet.with.death", "dates_collected",
                      "male","female","date_dc_reformat","date_recall_reformat","date_join_reformat",
                      "date_birth_reformat","date_left_reformat","date_death_reformat",
                      "unknown", "injury_trauma", "illness", "no_demo_values", "yes_demo_values",
@@ -1077,20 +1114,51 @@ overall_mort_plaus <- openxlsx::read.xlsx("resources/overall_plaus.xlsx", fillMe
   flag_mortality <- impactR4PHU::check_mortality_flags(df = df_mortality_long,
                                                      cause_death_f = cause_death_f)
   
-  results_mort <- impactR4PHU::create_mortality_plaus(df_mortality = df_mortality_long,
-                                                      exp_sex_ratio = exp_sex_ratio,
-                                                      exp_ratio_0_4 = exp_ratio_0_4,
-                                                      exp_ratio_2_5 = exp_ratio_2_5,
-                                                      exp_ratio_5_10 = exp_ratio_5_10,
-                                                      exp_hh_size = exp_hh_size)
-    
-  results_mort_enum <- impactR4PHU::create_mortality_plaus(df_mortality = df_mortality_long,
-                                                           exp_sex_ratio = exp_sex_ratio,
-                                                           exp_ratio_0_4 = exp_ratio_0_4,
-                                                           exp_ratio_2_5 = exp_ratio_2_5,
-                                                           exp_ratio_5_10 = exp_ratio_5_10,
-                                                           exp_hh_size = exp_hh_size,
-                                                           grouping = "enumerator")
+  if(collect_num_join_left == "yes") {
+    results_mort <- impactR4PHU::create_mortality_plaus(df_mortality = df_mortality_long,
+                                                        df_main = raw.main,
+                                                        uuid_main = uuid_main,
+                                                        date_dc = date_dc,
+                                                        date_recall_event = date_recall_event,
+                                                        num_join = num_join,
+                                                        num_left = num_left,
+                                                        enumerator = enumerator,
+                                                        exp_sex_ratio = exp_sex_ratio,
+                                                        exp_ratio_0_4 = exp_ratio_0_4,
+                                                        exp_ratio_2_5 = exp_ratio_2_5,
+                                                        exp_ratio_5_10 = exp_ratio_5_10,
+                                                        exp_hh_size = exp_hh_size)
+      
+    results_mort_enum <- impactR4PHU::create_mortality_plaus(df_mortality = df_mortality_long,
+                                                             df_main = raw.main,
+                                                             uuid_main = uuid_main,
+                                                             date_dc = date_dc,
+                                                             date_recall_event = date_recall_event,
+                                                             num_join = num_join,
+                                                             num_left = num_left,
+                                                             enumerator = enumerator,
+                                                             exp_sex_ratio = exp_sex_ratio,
+                                                             exp_ratio_0_4 = exp_ratio_0_4,
+                                                             exp_ratio_2_5 = exp_ratio_2_5,
+                                                             exp_ratio_5_10 = exp_ratio_5_10,
+                                                             exp_hh_size = exp_hh_size,
+                                                             grouping = "enumerator")
+  } else {
+    results_mort <- impactR4PHU::create_mortality_plaus(df_mortality = df_mortality_long,
+                                                        exp_sex_ratio = exp_sex_ratio,
+                                                        exp_ratio_0_4 = exp_ratio_0_4,
+                                                        exp_ratio_2_5 = exp_ratio_2_5,
+                                                        exp_ratio_5_10 = exp_ratio_5_10,
+                                                        exp_hh_size = exp_hh_size)
+      
+    results_mort_enum <- impactR4PHU::create_mortality_plaus(df_mortality = df_mortality_long,
+                                                             exp_sex_ratio = exp_sex_ratio,
+                                                             exp_ratio_0_4 = exp_ratio_0_4,
+                                                             exp_ratio_2_5 = exp_ratio_2_5,
+                                                             exp_ratio_5_10 = exp_ratio_5_10,
+                                                             exp_hh_size = exp_hh_size,
+                                                             grouping = "enumerator")
+  }
   
   result_mort_pivot <- results_mort %>%
     dplyr::mutate_all(., as.character) %>%

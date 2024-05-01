@@ -6,6 +6,13 @@
 \usage{
 create_mortality_plaus(
   df_mortality,
+  df_main = NULL,
+  uuid_main = NULL,
+  date_dc = NULL,
+  date_recall_event = NULL,
+  num_join = NULL,
+  num_left = NULL,
+  enumerator = NULL,
   exp_sex_ratio = NULL,
   exp_ratio_0_4 = NULL,
   exp_ratio_2_5 = NULL,
@@ -19,6 +26,23 @@ create_mortality_plaus(
 }
 \arguments{
 \item{df_mortality}{output dataframe long mortality from create_mortality_long_df}
+
+\item{df_main}{main dataset that include the num_ columns}
+
+\item{uuid_main}{the name of the variable that indicates the unique uuid
+By default: NULL}
+
+\item{date_dc}{the name of the variable that indicates the date of data collection
+By default: NULL}
+
+\item{date_recall_event}{the name of the variable that indicates the recall date
+By default: NULL}
+
+\item{num_join}{variable name indicating the num_join in main dataset}
+
+\item{num_left}{variable name indicating the num_left in main dataset}
+
+\item{enumerator}{the enumerator column in main dataset, by default: enumerator}
 
 \item{exp_sex_ratio}{expected sex ratio in the population of male:female
 By default: 1:1}
