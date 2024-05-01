@@ -44,6 +44,13 @@
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">create_mortality_plaus</span><span class="op">(</span></span>
 <span>  <span class="va">df_mortality</span>,</span>
+<span>  df_main <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  uuid_main <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  date_dc <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  date_recall_event <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  num_join <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  num_left <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  enumerator <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  exp_sex_ratio <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  exp_ratio_0_4 <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  exp_ratio_2_5 <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -60,6 +67,37 @@
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>df_mortality</dt>
 <dd><p>output dataframe long mortality from create_mortality_long_df</p></dd>
+
+
+<dt>df_main</dt>
+<dd><p>main dataset that include the num_ columns</p></dd>
+
+
+<dt>uuid_main</dt>
+<dd><p>the name of the variable that indicates the unique uuid
+By default: NULL</p></dd>
+
+
+<dt>date_dc</dt>
+<dd><p>the name of the variable that indicates the date of data collection
+By default: NULL</p></dd>
+
+
+<dt>date_recall_event</dt>
+<dd><p>the name of the variable that indicates the recall date
+By default: NULL</p></dd>
+
+
+<dt>num_join</dt>
+<dd><p>variable name indicating the num_join in main dataset</p></dd>
+
+
+<dt>num_left</dt>
+<dd><p>variable name indicating the num_left in main dataset</p></dd>
+
+
+<dt>enumerator</dt>
+<dd><p>the enumerator column in main dataset, by default: enumerator</p></dd>
 
 
 <dt>exp_sex_ratio</dt>
