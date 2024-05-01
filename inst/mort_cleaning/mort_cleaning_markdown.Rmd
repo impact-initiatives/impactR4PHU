@@ -33,9 +33,6 @@ if(file.exists("inputs/environment.Rdata")) {
   load("inputs/environment.Rdata")
 }
 path.raw <- svDialogs::dlg_open(multiple = F, title = "Please select your data excel file.")$res
-path.tool <- svDialogs::dlg_open(multiple = F, title = "Please select your Kobo tool file.")$res
-tool.survey <- readxl::read_excel(path.tool, "survey")
-tool.choices <- readxl::read_excel(path.tool, "choices")
 main.sheets <- readxl::excel_sheets(path.raw)
 if(!file.exists("inputs/environment.Rdata")){
   path.sheet.with.main <- tcltk::tk_select.list(main.sheets, title = "Main Sheet", multiple = F)
@@ -44,6 +41,9 @@ if(!file.exists("inputs/environment.Rdata")){
   path.sheet.with.death <- tcltk::tk_select.list(main.sheets, title = "Died Members sheet", multiple = F)
   label_colname <- tcltk::tk_select.list(names(tool.survey)[grepl("label",names(tool.survey))], title = "Label column to choose", multiple = F)
 }
+path.tool <- svDialogs::dlg_open(multiple = F, title = "Please select your Kobo tool file.")$res
+tool.survey <- load.tool.survey(path.tool)
+tool.choices <- load.tool.choices(path.tool)
 raw.main <- readxl::read_excel(path.raw, path.sheet.with.main)
 raw.hh_roster <- readxl::read_excel(path.raw, path.sheet.with.roster)
 raw.left_member <- readxl::read_excel(path.raw, path.sheet.with.leavers)
@@ -67,13 +67,13 @@ raw.died_member <- readxl::read_excel(path.raw, path.sheet.with.death)
   cat('\n-Check 1: rCSI Score is high while protein consumption is also reported as frequent.\n-Check 2:HHs report using crisis or emergency strategies but not stress strategies or Emergency and no crisis.\n-Check 3:HH that would have an acceptable FCS score and a high rCSI score.')
   
   cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",3), collapse=""), " ", "What to do next?"))
-  cat('\nPlease check the files in the output/ folder. The cleaning_logbook.xlsx already can contain some of the directly cleaned data. The FSL_followup_request.xlsm file represent the checks that needs to be followed up with the field team. Please follow the instruction in the READ_ME tab to know how to fill the file.\n\nAfter filling the file, you can merge the [uuid/variable/old.value/new.value/issue] from the filled file with the cleaning_logbook.xlsx and add them to your cleaning scripts.')
+  cat('\nPlease check the files in the output/ folder. The cleaning_logbook.xlsx already can contain some of the directly cleaned data. The Mort_followup_request.xlsm file represent the checks that needs to be followed up with the field team. Please follow the instruction in the READ_ME tab to know how to fill the file.\n\nAfter filling the file, you can merge the [uuid/variable/old.value/new.value/issue] from the filled file with the cleaning_logbook.xlsx and add them to your cleaning scripts.')
   cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",3), collapse=""), " ", "Feedback"))
   cat('\nFeedback on improvements to this product can be done through reaching out to:\n\n-abraham.azar@impact-initiatives.org \n\n-impact.geneva.phu@impact-initiatives.org')
 
 ```
 
-## FSL {.tabset .tabset-fade}
+## Mortality {.tabset .tabset-fade}
 
 ```{r, echo=FALSE, warning=FALSE,include=FALSE}
 if(!file.exists("inputs/environment.Rdata")) {
@@ -1037,7 +1037,7 @@ list_of_var <- c("date_dc","date_recall_event","enumerator","admin1","admin2","c
                  "path.sheet.with.roster","path.sheet.with.leavers","path.sheet.with.death", "smart",
                  "male","female","date_dc_reformat","date_recall_reformat","date_join_reformat",
                  "date_birth_reformat","date_left_reformat","date_death_reformat",
-                 "unknown", "injury_trauma", "illness", "no_demo_values", "yes_demo_values",
+                 "unknown", "injury_trauma", "illness", "no_demo_values","yes_demo_values",
                  "current_location","during_migration","last_place","other_place")
 
 if(!file.exists("inputs/environment.Rdata")){
@@ -1055,82 +1055,80 @@ flag_mortality <- impactR4PHU::check_mortality_flags(df = df_mortality_long,
 ```
 
 
-<!-- ```{r, include = FALSE} -->
-<!-- # FLAG Logical Checks -->
-<!-- checks_followups <- tibble() -->
+```{r, include = FALSE}
+# FLAG Logical Checks
+checks_followups <- tibble()
 
-<!-- # Check number 1 -->
-<!-- if("flag_protein_rcsi" %in% names(raw.flag.fcs)){ -->
-<!--   check_protein_rcsi <- raw.flag.fcs %>% -->
-<!--     select(uuid,enum_colname, flag_protein_rcsi)%>% -->
-<!--     filter(flag_protein_rcsi == 1) %>% -->
-<!--     left_join(raw.flag.fcs %>% select(uuid, fsl_rcsi_score, fsl_fcs_meat, fsl_fcs_dairy)) -->
+# Check number 1
+if("flag_multiple_death" %in% names(flag_mortality)){
+  check_multiple_death <- raw.main %>%
+    dplyr::select(uuid_main, enumerator, num_died) %>% 
+    filter(num_died > 1) %>% 
+    dplyr::rename(uuid = uuid_main)
 
-<!--   if(nrow(check_protein_rcsi)>0){ -->
-<!--     checks_followups <- rbind(checks_followups, -->
-<!--                               make.logical.check.entry(check_protein_rcsi, 1,  c("fsl_rcsi_score",fsl_fcs_meat, fsl_fcs_dairy), -->
-<!--                                                        cols_to_keep = c(enum_colname),"rCSI Score is high while protein consumption is also reported as frequent", F)) -->
-<!--   } -->
-<!-- } -->
+  if(nrow(check_multiple_death)>0){
+    checks_followups <- rbind(checks_followups,
+                              make.logical.check.entry(check_multiple_death, 1,  "num_died",
+                                                       cols_to_keep = c(enumerator),"Respondent reported more than 2 death in the HH", F))
+  }
+}
 
-<!-- if("flag_lcsi_coherence" %in% names(raw.flag.fcs)){ -->
-<!--   # Check number 2 -->
-<!--   check_lcsi_coherence <- raw.flag.fcs %>% -->
-<!--     select(uuid,enum_colname, flag_lcsi_coherence)%>% -->
-<!--     filter(flag_lcsi_coherence == 1)%>% -->
-<!--     left_join(raw.flag.fcs %>% select(uuid, -->
-<!--                                   fsl_lcsi_emergency, fsl_lcsi_stress, fsl_lcsi_crisis, -->
-<!--                                   fsl_lcsi_stress1,fsl_lcsi_stress2,fsl_lcsi_stress3,fsl_lcsi_stress4, -->
-<!--                                   fsl_lcsi_crisis1,fsl_lcsi_crisis2,fsl_lcsi_crisis3, -->
-<!--                                   fsl_lcsi_emergency1,fsl_lcsi_emergency2,fsl_lcsi_emergency3)) -->
+if("flag_cause_death" %in% names(flag_mortality)){
+  enum_df <- raw.main %>% 
+    dplyr::rename(uuid = uuid_main) %>% 
+    dplyr::select(uuid, enumerator)
+  # Check number 2
+  check_cause_death <- raw.died_member %>%
+    dplyr::rename(uuid = uuid_died)%>% 
+    dplyr::left_join(enum_df) %>% 
+    dplyr::select(uuid, enumerator, sex_died, cause_death)%>%
+    filter(sex_died == "m" & cause_death %in% cause_death_f) 
+    
 
-<!--   if(nrow(check_lcsi_coherence)>0){ -->
-<!--     checks_followups <- rbind(checks_followups, -->
-<!--                               make.logical.check.entry(check_lcsi_coherence, 2, -->
-<!--                                                        c("fsl_lcsi_emergency","fsl_lcsi_stress","fsl_lcsi_crisis", -->
-<!--                                                          fsl_lcsi_stress1,fsl_lcsi_stress2,fsl_lcsi_stress3,fsl_lcsi_stress4, -->
-<!--                                                          fsl_lcsi_crisis1,fsl_lcsi_crisis2,fsl_lcsi_crisis3, -->
-<!--                                                          fsl_lcsi_emergency1,fsl_lcsi_emergency2,fsl_lcsi_emergency3), # to provide all teh strategies -->
-<!--                                                        cols_to_keep = c(enum_colname),"HHs report using crisis or emergency strategies but not stress strategies or Emergency and no crisis.", F)) -->
-<!--   } -->
-<!-- } -->
-<!-- #Check number 3 -->
-<!-- fcs_flag_columns <- c(fsl_fcs_cereal,fsl_fcs_legumes,fsl_fcs_dairy,fsl_fcs_meat,fsl_fcs_veg, -->
-<!--                       fsl_fcs_fruit,fsl_fcs_oil,fsl_fcs_sugar,"fsl_fcs_score") -->
-<!-- rcsi_flag_columns <- c(fsl_rcsi_lessquality,fsl_rcsi_borrow, -->
-<!--                        fsl_rcsi_mealsize,fsl_rcsi_mealadult,fsl_rcsi_mealnb,"fsl_rcsi_score") -->
+  if(nrow(check_cause_death)>0){
+    checks_followups <- rbind(checks_followups,
+                              make.logical.check.entry(check_cause_death, 2,
+                                                       c("sex_died","cause_death"), # to provide all teh strategies
+                                                       cols_to_keep = c(enumerator),"Respondent reported sex of dead person male and a cause of death related to female only.", F))
+  }
+}
+#Check number 3
 
-<!-- if("flag_fcsrcsi_box" %in% names(raw.flag.fcs)) { -->
-<!--   check_fcsrcsi_box <- raw.flag.fcs %>% -->
-<!--     select(uuid,enum_colname, flag_fcsrcsi_box)%>% -->
-<!--     filter(flag_fcsrcsi_box == 1)%>% -->
-<!--     left_join(raw.flag.fcs %>% select(uuid, fcs_flag_columns, rcsi_flag_columns)) -->
 
-<!--   if(nrow(check_fcsrcsi_box)>0){ -->
-<!--     checks_followups <- rbind(checks_followups, -->
-<!--                               make.logical.check.entry(check_fcsrcsi_box, 3,  c(fcs_flag_columns, rcsi_flag_columns), -->
-<!--                                                        cols_to_keep = c(enum_colname),"HH that would have an acceptable FCS score and a high rCSI score", F)) -->
-<!--   } -->
-<!-- } -->
+if("flag_negative_pt" %in% names(flag_mortality)) {
+  check_negative_pt <- df_mortality_long %>%
+    dplyr::select(uuid,enumerator,date_dc_date,date_recall_date,
+           date_join_date,date_left_date,date_birth_date,
+           date_death_date,person_time) %>%
+    filter(person_time < 0)
 
-<!-- create.follow.up.requests(checks_followups,loop_data = NULL, paste0("FSL_followup_requests.xlsm"), use_template = T) -->
-<!-- options(warn=0) -->
-<!-- cat("\n\n#############################################################################################\n") -->
-<!-- cat("Direct logical checks are flagged and a file is created for follow up in \noutput/checking/requests/ with follow_up_requests in the title. \nPlease check the READ_ME file for information on filling the file.\n") -->
-<!-- cat("#############################################################################################\n") -->
-<!-- ``` -->
+  if(nrow(check_negative_pt)>0){
+    checks_followups <- rbind(checks_followups,
+                              make.logical.check.entry(check_negative_pt, 3,  c("date_dc_date","date_recall_date",
+           "date_join_date","date_left_date","date_birth_date",
+           "date_death_date"),
+                                                       cols_to_keep = c(enumerator),"Respondent reported wrong dates leading to a negative person time", F))
+  }
+}
 
-<!-- <h5>Number of detected entries with rCSI Score is high while protein consumption is also reported as frequent:<strong> `r nrow(checks_followups %>% filter(check == 1))`</strong></h5> -->
-<!-- <h5>Number of detected entries with HHs report using crisis or emergency strategies but not stress strategies or Emergency and no crisis:<strong> `r nrow(checks_followups %>% filter(check == 2))`</strong></h5> -->
-<!-- <h5>Number of detected entries with HH that would have an acceptable FCS score and a high rCSI score:<strong> `r nrow(checks_followups %>% filter(check == 3))`</strong></h5> -->
+create.follow.up.requests(checks_followups,loop_data = NULL, paste0("Mort_followup_requests.xlsm"), use_template = T)
+options(warn=0)
+cat("\n\n#############################################################################################\n")
+cat("Logical checks are flagged and a file is created for follow up in \noutput/checking/requests/ with follow_up_requests in the title. \nPlease check the READ_ME file for information on filling the file.\n")
+cat("#############################################################################################\n")
+```
 
-<!-- ```{r} -->
-<!-- if(nrow(checks_followups)>0){ -->
-<!--   cat("The below table shows the data that needs follow up with the field.") -->
-<!--   DT::datatable(checks_followups) -->
-<!-- } else { -->
-<!--   cat("No Logical checks were detected in the dataset.") -->
-<!-- } -->
-<!-- ``` -->
+<h5>Number of detected entries with Respondent reported more than 2 death in the HH:<strong> `r nrow(checks_followups %>% filter(check.id == 1))`</strong></h5>
+<h5>Number of detected entries with Respondent reported sex of dead person male and a cause of death related to female only:<strong> `r nrow(checks_followups %>% filter(check.id == 2))`</strong></h5>
+<h5>Number of detected entries with Respondent reported wrong dates leading to a negative person time:<strong> `r nrow(checks_followups %>% filter(check.id == 3))`</strong></h5>
+
+```{r}
+if(nrow(checks_followups)>0){
+  cat("The below table shows the data that needs follow up with the field.")
+  DT::datatable(checks_followups)
+} else {
+  cat("No Logical checks were detected in the dataset.")
+}
+```
 
 

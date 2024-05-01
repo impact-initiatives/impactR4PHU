@@ -4,7 +4,7 @@
     "Repositories": [
       {
         "Name": "CRAN",
-        "URL": "https://cloud.r-project.org"
+        "URL": "https://cran.rstudio.com"
       }
     ]
   },
@@ -19,6 +19,23 @@
         "methods"
       ],
       "Hash": "164809cd72e1d5160b4cb3aa57f510fe"
+    },
+    "DT": {
+      "Package": "DT",
+      "Version": "0.33",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "crosstalk",
+        "htmltools",
+        "htmlwidgets",
+        "httpuv",
+        "jquerylib",
+        "jsonlite",
+        "magrittr",
+        "promises"
+      ],
+      "Hash": "64ff3427f559ce3f2597a4fe13255cb6"
     },
     "GGally": {
       "Package": "GGally",
@@ -110,28 +127,6 @@
       ],
       "Hash": "45f0398006e83a5b10b72a90663d8d8c"
     },
-    "RCurl": {
-      "Package": "RCurl",
-      "Version": "1.98-1.14",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Requirements": [
-        "R",
-        "bitops",
-        "methods"
-      ],
-      "Hash": "47f648d288079d0c696804ad4e55197e"
-    },
-    "RJSONIO": {
-      "Package": "RJSONIO",
-      "Version": "1.3-1.9",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Requirements": [
-        "methods"
-      ],
-      "Hash": "2f89abc0f88c647d3386c672632f4baf"
-    },
     "Rcpp": {
       "Package": "Rcpp",
       "Version": "1.0.12",
@@ -156,17 +151,6 @@
       ],
       "Hash": "df49e3306f232ec28f1604e36a202847"
     },
-    "Rtsne": {
-      "Package": "Rtsne",
-      "Version": "0.17",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Requirements": [
-        "Rcpp",
-        "stats"
-      ],
-      "Hash": "f81f7764a3c3e310b1d40e1a8acee19e"
-    },
     "SparseM": {
       "Package": "SparseM",
       "Version": "1.81",
@@ -180,19 +164,6 @@
         "utils"
       ],
       "Hash": "2042cd9759cc89a453c4aefef0ce9aae"
-    },
-    "V8": {
-      "Package": "V8",
-      "Version": "4.4.2",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Requirements": [
-        "Rcpp",
-        "curl",
-        "jsonlite",
-        "utils"
-      ],
-      "Hash": "ca98390ad1cef2a5a609597b49d3d042"
     },
     "abind": {
       "Package": "abind",
@@ -288,13 +259,6 @@
         "utils"
       ],
       "Hash": "9fe98599ca456d6552421db0d6772d8f"
-    },
-    "bitops": {
-      "Package": "bitops",
-      "Version": "1.0-7",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "b7d8d8ee39869c18d8846a184dd8a1af"
     },
     "blob": {
       "Package": "blob",
@@ -407,7 +371,7 @@
     },
     "callr": {
       "Package": "callr",
-      "Version": "3.7.5",
+      "Version": "3.7.6",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
@@ -416,7 +380,7 @@
         "processx",
         "utils"
       ],
-      "Hash": "9f0e4fae4963ba775a5e5c520838c87b"
+      "Hash": "d7e13f49c19103ece9e58ad2d83a7354"
     },
     "car": {
       "Package": "car",
@@ -485,20 +449,6 @@
       ],
       "Hash": "3f038e5ac7f41d4ac41ce658c85e3042"
     },
-    "cluster": {
-      "Package": "cluster",
-      "Version": "2.1.6",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Requirements": [
-        "R",
-        "grDevices",
-        "graphics",
-        "stats",
-        "utils"
-      ],
-      "Hash": "0aaa05204035dc43ea0004b9c76611dd"
-    },
     "colorspace": {
       "Package": "colorspace",
       "Version": "2.1-0",
@@ -554,6 +504,19 @@
         "utils"
       ],
       "Hash": "e8a1e41acf02548751f45c718d55aa6a"
+    },
+    "crosstalk": {
+      "Package": "crosstalk",
+      "Version": "1.2.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R6",
+        "htmltools",
+        "jsonlite",
+        "lazyeval"
+      ],
+      "Hash": "ab12c7b080a57475248a30f4db6298c0"
     },
     "crul": {
       "Package": "crul",
@@ -1113,6 +1076,21 @@
       ],
       "Hash": "81d371a9cc60640e74e4ab6ac46dcedc"
     },
+    "htmlwidgets": {
+      "Package": "htmlwidgets",
+      "Version": "1.6.4",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "grDevices",
+        "htmltools",
+        "jsonlite",
+        "knitr",
+        "rmarkdown",
+        "yaml"
+      ],
+      "Hash": "04291cc45198225444a397606810ac37"
+    },
     "httpcode": {
       "Package": "httpcode",
       "Version": "0.3.0",
@@ -1170,7 +1148,7 @@
       "RemoteRepo": "impactR4PHU",
       "RemoteUsername": "impact-initiatives",
       "RemoteRef": "HEAD",
-      "RemoteSha": "e2b10d19653594232114efb66998cc54f2f7ae31",
+      "RemoteSha": "72fd2745066c259360e1b2112fff98e65e6fc11f",
       "Requirements": [
         "GGally",
         "R",
@@ -1191,7 +1169,7 @@
         "writexl",
         "zscorer"
       ],
-      "Hash": "aa14ea846b67d049f4f3f5292e193a16"
+      "Hash": "4bef9d933baa507a33d5b01261f794c3"
     },
     "isoband": {
       "Package": "isoband",
@@ -1293,6 +1271,16 @@
         "utils"
       ],
       "Hash": "7c5e89f04e72d6611c77451f6331a091"
+    },
+    "lazyeval": {
+      "Package": "lazyeval",
+      "Version": "0.2.2",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R"
+      ],
+      "Hash": "d908914ae53b04d4c0c0fd72ecc35370"
     },
     "lifecycle": {
       "Package": "lifecycle",
@@ -1514,13 +1502,13 @@
     },
     "openssl": {
       "Package": "openssl",
-      "Version": "2.1.1",
+      "Version": "2.1.2",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
         "askpass"
       ],
-      "Hash": "2a0dc8c6adfb6f032e4d4af82d258ab5"
+      "Hash": "ea2475b073243d9d338aa8f086ce973e"
     },
     "openxlsx": {
       "Package": "openxlsx",
@@ -1753,17 +1741,6 @@
       ],
       "Hash": "1bbc97f7d637ab3917c514a69047b2c1"
     },
-    "rJava": {
-      "Package": "rJava",
-      "Version": "1.0-11",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Requirements": [
-        "R",
-        "methods"
-      ],
-      "Hash": "524167e771b81342f8dd7a891ed3afa8"
-    },
     "ragg": {
       "Package": "ragg",
       "Version": "1.3.0",
@@ -1774,24 +1751,6 @@
         "textshaping"
       ],
       "Hash": "082e1a198e3329d571f4448ef0ede4bc"
-    },
-    "randomcoloR": {
-      "Package": "randomcoloR",
-      "Version": "1.1.0.1",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Requirements": [
-        "Rtsne",
-        "V8",
-        "cluster",
-        "colorspace",
-        "grDevices",
-        "methods",
-        "scales",
-        "stats",
-        "stringr"
-      ],
-      "Hash": "dd08bb0be91b93194fa944b68b3bccb0"
     },
     "rappdirs": {
       "Package": "rappdirs",
@@ -1936,10 +1895,10 @@
     },
     "rstudioapi": {
       "Package": "rstudioapi",
-      "Version": "0.15.0",
+      "Version": "0.16.0",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "5564500e25cffad9e22244ced1379887"
+      "Hash": "96710351d642b70e8f02ddeb237c46a7"
     },
     "rvest": {
       "Package": "rvest",
@@ -2298,25 +2257,6 @@
       ],
       "Hash": "be7a76845222ad20adb761f462eed3ea"
     },
-    "translateR": {
-      "Package": "translateR",
-      "Version": "2.0",
-      "Source": "GitHub",
-      "RemoteType": "github",
-      "RemoteHost": "api.github.com",
-      "RemoteUsername": "Reach-WoU-Regional",
-      "RemoteRepo": "translateR",
-      "RemoteRef": "main",
-      "RemoteSha": "b261923d50f98bf6cfc5a0bf78788fcc4f43143f",
-      "Requirements": [
-        "RCurl",
-        "RJSONIO",
-        "httr",
-        "parallel",
-        "utils"
-      ],
-      "Hash": "6fd4dfb063c3bbe5ba4d7387a81e42c1"
-    },
     "triebeard": {
       "Package": "triebeard",
       "Version": "0.4.1",
@@ -2469,29 +2409,6 @@
         "tools"
       ],
       "Hash": "ab6371d8653ce5f2f9290f4ec7b42a8e"
-    },
-    "xlsx": {
-      "Package": "xlsx",
-      "Version": "0.6.5",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Requirements": [
-        "grDevices",
-        "rJava",
-        "utils",
-        "xlsxjars"
-      ],
-      "Hash": "d24d579f59a3b6da1e1cf4660425443e"
-    },
-    "xlsxjars": {
-      "Package": "xlsxjars",
-      "Version": "0.6.1",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Requirements": [
-        "rJava"
-      ],
-      "Hash": "4c4b3bc29a916f33f1298dd951133351"
     },
     "xml2": {
       "Package": "xml2",

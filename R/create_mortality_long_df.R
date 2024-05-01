@@ -30,6 +30,7 @@
 #' joined the HH. By default: "final_date_join"
 #' @param uuid_roster the name of the variable that indicates the unique uuid of HH
 #' By default: NULL
+#' @param collected_df_left Boolean value to check if df_left is collected. By default: T
 #' @param df_left Left Dataset
 #' @param sex_left the name of the variable that indicates the sex of the individuals
 #' By default: "sex_left"
@@ -101,14 +102,15 @@ create_mortality_long_df <- function (df_main, date_dc = "today", date_recall_ev
                                       age_roster = "calc_final_age_years", joined_roster = "joined",
                                       birth_roster = "ind_born", birthdate_roster = "final_ind_dob",
                                       joined_date_roster = "final_date_join", uuid_roster = NULL,
-                                      df_left, sex_left = "sex_left", age_left = "calc_final_age_years_left",
-                                      birth_left = "ind_born_left", joined_left = "left_present",
-                                      joined_date_left = "final_date_join_left", left_date_left = "final_date_left",
-                                      birthdate_left = "final_ind_dob_left", uuid_left = NULL,
-                                      df_died, sex_died = "sex_died", age_died = "calc_final_age_years_died",
-                                      birth_died = "ind_born_died", joined_died = "died_present",
-                                      death_cause = "cause_death", death_location = "location_death",
-                                      date_death = "final_date_death", joined_date_died = "date_join_final_death",
+                                      collected_df_left = TRUE, df_left = NULL, sex_left = "sex_left",
+                                      age_left = "calc_final_age_years_left", birth_left = "ind_born_left",
+                                      joined_left = "left_present", joined_date_left = "final_date_join_left",
+                                      left_date_left = "final_date_left", birthdate_left = "final_ind_dob_left",
+                                      uuid_left = NULL, df_died, sex_died = "sex_died",
+                                      age_died = "calc_final_age_years_died", birth_died = "ind_born_died",
+                                      joined_died = "died_present", death_cause = "cause_death",
+                                      death_location = "location_death", date_death = "final_date_death",
+                                      joined_date_died = "date_join_final_death",
                                       birthdate_died = "dob_died", uuid_died = NULL) {
   options(warn = -1)
   if (is.null(date_recall_event)) {
@@ -126,11 +128,13 @@ create_mortality_long_df <- function (df_main, date_dc = "today", date_recall_ev
   if (nrow(df_roster) == 0) {
     stop("Roster Data is empty")
   }
-  if (!is.data.frame(df_left)) {
-    stop("Left Data should be a dataframe")
-  }
-  if (nrow(df_left) == 0) {
-    warning("Left Data is empty")
+  if(collected_df_left) {
+    if (!is.data.frame(df_left)) {
+      stop("Left Data should be a dataframe")
+    }
+    if (nrow(df_left) == 0) {
+      stop("Left Data is empty")
+    }
   }
   if (!is.data.frame(df_died)) {
     stop("Died Data should be a dataframe")
@@ -142,8 +146,10 @@ create_mortality_long_df <- function (df_main, date_dc = "today", date_recall_ev
     stop("uuid argument incorrect, or not available in the main dataset")
   if (!uuid_roster %in% names(df_roster))
     stop("uuid argument incorrect, or not available in the roster")
-  if (!uuid_left %in% names(df_left))
-    stop("uuid argument incorrect, or not available in the left data")
+  if(collected_df_left){
+    if (!uuid_left %in% names(df_left))
+      stop("uuid argument incorrect, or not available in the left data")
+  }
   if (!uuid_died %in% names(df_died))
     stop("uuid argument incorrect, or not available in the died data")
   if (!cluster %in% names(df_main)) {
@@ -178,11 +184,13 @@ create_mortality_long_df <- function (df_main, date_dc = "today", date_recall_ev
                                            date_join = joined_date_roster, date_birth = birthdate_roster,
                                            uuid = uuid_roster) %>% dplyr::left_join(main_to_join) %>%
     dplyr::mutate(date_recall = date_recall_event)
-  df_left <- df_left %>% dplyr::rename(sex = sex_left, age_years = age_left,
-                                       join = joined_left, birth = birth_left, date_join = joined_date_left,
-                                       date_left = left_date_left, date_birth = birthdate_left,
-                                       uuid = uuid_left) %>% dplyr::left_join(main_to_join) %>%
-    dplyr::mutate(date_recall = date_recall_event)
+  if(collected_df_left){
+    df_left <- df_left %>% dplyr::rename(sex = sex_left, age_years = age_left,
+                                         join = joined_left, birth = birth_left, date_join = joined_date_left,
+                                         date_left = left_date_left, date_birth = birthdate_left,
+                                         uuid = uuid_left) %>% dplyr::left_join(main_to_join) %>%
+      dplyr::mutate(date_recall = date_recall_event)
+  }
   df_died <- df_died %>% dplyr::rename(sex = sex_died, age_years = age_died,
                                        join = joined_died, birth = birth_died, death_cause = death_cause,
                                        death_location = death_location, date_death = date_death,
@@ -192,59 +200,97 @@ create_mortality_long_df <- function (df_main, date_dc = "today", date_recall_ev
 
   date_vars <- c("date_death", "date_birth", "date_join",
                  "date_left")
-  if (length(intersect(date_vars, colnames(df_roster))) >
-      0 | length(intersect(date_vars, colnames(df_left))) >
-      0 | length(intersect(date_vars, colnames(df_died))) >
-      0) {
-    if (!"date_death" %in% names(df_roster)) {
-      df_roster <- df_roster %>% dplyr::mutate(date_death = NA)
+  if(collected_df_left){
+    if (length(intersect(date_vars, colnames(df_roster))) >
+        0 | length(intersect(date_vars, colnames(df_left))) >
+        0 | length(intersect(date_vars, colnames(df_died))) >
+        0) {
+      if (!"date_death" %in% names(df_roster)) {
+        df_roster <- df_roster %>% dplyr::mutate(date_death = NA)
+      }
+      if (!"date_join" %in% names(df_roster)) {
+        df_roster <- df_roster %>% dplyr::mutate(date_join = NA)
+      }
+      if (!"date_left" %in% names(df_roster)) {
+        df_roster <- df_roster %>% dplyr::mutate(date_left = NA)
+      }
+      if (!"date_birth" %in% names(df_roster)) {
+        df_roster <- df_roster %>% dplyr::mutate(date_birth = NA)
+      }
+      if (!"date_death" %in% names(df_left)) {
+        df_left <- df_left %>% dplyr::mutate(date_death = NA)
+      }
+      if (!"date_join" %in% names(df_left)) {
+        df_left <- df_left %>% dplyr::mutate(date_join = NA)
+      }
+      if (!"date_left" %in% names(df_left)) {
+        df_left <- df_left %>% dplyr::mutate(date_left = NA)
+      }
+      if (!"date_birth" %in% names(df_left)) {
+        df_left <- df_left %>% dplyr::mutate(date_birth = NA)
+      }
+      if (!"date_death" %in% names(df_died)) {
+        df_died <- df_died %>% dplyr::mutate(date_death = NA)
+      }
+      if (!"date_join" %in% names(df_died)) {
+        df_died <- df_died %>% dplyr::mutate(date_join = NA)
+      }
+      if (!"date_left" %in% names(df_died)) {
+        df_died <- df_died %>% dplyr::mutate(date_left = NA)
+      }
+      if (!"date_birth" %in% names(df_died)) {
+        df_died <- df_died %>% dplyr::mutate(date_birth = NA)
+      }
+      df_roster[date_vars] <- lapply(df_roster[date_vars],
+                                     as.character)
+      if(collected_df_left){
+        df_left[date_vars] <- lapply(df_left[date_vars], as.character)
+      }
+      df_died[date_vars] <- lapply(df_died[date_vars], as.character)
     }
-    if (!"date_join" %in% names(df_roster)) {
-      df_roster <- df_roster %>% dplyr::mutate(date_join = NA)
+  } else {
+    if (length(intersect(date_vars, colnames(df_roster))) > 0 |
+        length(intersect(date_vars, colnames(df_died))) > 0) {
+      if (!"date_death" %in% names(df_roster)) {
+        df_roster <- df_roster %>% dplyr::mutate(date_death = NA)
+      }
+      if (!"date_join" %in% names(df_roster)) {
+        df_roster <- df_roster %>% dplyr::mutate(date_join = NA)
+      }
+      if (!"date_left" %in% names(df_roster)) {
+        df_roster <- df_roster %>% dplyr::mutate(date_left = NA)
+      }
+      if (!"date_birth" %in% names(df_roster)) {
+        df_roster <- df_roster %>% dplyr::mutate(date_birth = NA)
+      }
+      if (!"date_death" %in% names(df_died)) {
+        df_died <- df_died %>% dplyr::mutate(date_death = NA)
+      }
+      if (!"date_join" %in% names(df_died)) {
+        df_died <- df_died %>% dplyr::mutate(date_join = NA)
+      }
+      if (!"date_left" %in% names(df_died)) {
+        df_died <- df_died %>% dplyr::mutate(date_left = NA)
+      }
+      if (!"date_birth" %in% names(df_died)) {
+        df_died <- df_died %>% dplyr::mutate(date_birth = NA)
+      }
+      df_roster[date_vars] <- lapply(df_roster[date_vars],
+                                     as.character)
+      if(collected_df_left){
+        df_left[date_vars] <- lapply(df_left[date_vars], as.character)
+      }
+      df_died[date_vars] <- lapply(df_died[date_vars], as.character)
     }
-    if (!"date_left" %in% names(df_roster)) {
-      df_roster <- df_roster %>% dplyr::mutate(date_left = NA)
-    }
-    if (!"date_birth" %in% names(df_roster)) {
-      df_roster <- df_roster %>% dplyr::mutate(date_birth = NA)
-    }
-    if (!"date_death" %in% names(df_left)) {
-      df_left <- df_left %>% dplyr::mutate(date_death = NA)
-    }
-    if (!"date_join" %in% names(df_left)) {
-      df_left <- df_left %>% dplyr::mutate(date_join = NA)
-    }
-    if (!"date_left" %in% names(df_left)) {
-      df_left <- df_left %>% dplyr::mutate(date_left = NA)
-    }
-    if (!"date_birth" %in% names(df_left)) {
-      df_left <- df_left %>% dplyr::mutate(date_birth = NA)
-    }
-    if (!"date_death" %in% names(df_died)) {
-      df_died <- df_died %>% dplyr::mutate(date_death = NA)
-    }
-    if (!"date_join" %in% names(df_died)) {
-      df_died <- df_died %>% dplyr::mutate(date_join = NA)
-    }
-    if (!"date_left" %in% names(df_died)) {
-      df_died <- df_died %>% dplyr::mutate(date_left = NA)
-    }
-    if (!"date_birth" %in% names(df_died)) {
-      df_died <- df_died %>% dplyr::mutate(date_birth = NA)
-    }
-    df_roster[date_vars] <- lapply(df_roster[date_vars],
-                                   as.character)
-    df_left[date_vars] <- lapply(df_left[date_vars], as.character)
-    df_died[date_vars] <- lapply(df_died[date_vars], as.character)
   }
-
-
 
 
 
   req_roster <- c("date_dc", "enumerator", "cluster", "sex",
                   "age_years", "birth")
-  req_left <- c("sex", "age_years", "birth")
+  if(collected_df_left){
+    req_left <- c("sex", "age_years", "birth")
+  }
   req_died <- c("sex", "age_years", "birth", "death_cause",
                 "death_location")
   additional_cols <- c("join", "left", "death", "death_cause",
@@ -255,11 +301,13 @@ create_mortality_long_df <- function (df_main, date_dc = "today", date_recall_ev
   else {
     stop("Missing minimum information (SEX, AGE, Births) for current household roster. Please check input.")
   }
-  if (all(req_left %in% names(df_left))) {
-    print("Sex, Age and Births available for Left people.")
-  }
-  else {
-    stop("Missing minimum information (SEX, AGE, Births) for left people roster. Please check input.")
+  if(collected_df_left){
+    if (all(req_left %in% names(df_left))) {
+      print("Sex, Age and Births available for Left people.")
+    }
+    else {
+      stop("Missing minimum information (SEX, AGE, Births) for left people roster. Please check input.")
+    }
   }
   if (all(req_died %in% names(df_died))) {
     print("Sex, Age, Births, Cause and Location of Death available for Deceased people.")
@@ -285,22 +333,24 @@ create_mortality_long_df <- function (df_main, date_dc = "today", date_recall_ev
       df_roster <- df_roster %>% dplyr::mutate(death_location = NA)
     }
   }
-  if (!all(additional_cols %in% names(df_left))) {
-    cols_to_add <- setdiff(additional_cols, colnames(df_left))
-    if ("join" %in% cols_to_add) {
-      df_left <- df_left %>% dplyr::mutate(join = NA)
-    }
-    if ("left" %in% cols_to_add) {
-      df_left <- df_left %>% dplyr::mutate(left = "1")
-    }
-    if ("death" %in% cols_to_add) {
-      df_left <- df_left %>% dplyr::mutate(death = NA)
-    }
-    if ("death_cause" %in% cols_to_add) {
-      df_left <- df_left %>% dplyr::mutate(death_cause = NA)
-    }
-    if ("death_location" %in% cols_to_add) {
-      df_left <- df_left %>% dplyr::mutate(death_location = NA)
+  if(collected_df_left){
+    if (!all(additional_cols %in% names(df_left))) {
+      cols_to_add <- setdiff(additional_cols, colnames(df_left))
+      if ("join" %in% cols_to_add) {
+        df_left <- df_left %>% dplyr::mutate(join = NA)
+      }
+      if ("left" %in% cols_to_add) {
+        df_left <- df_left %>% dplyr::mutate(left = "1")
+      }
+      if ("death" %in% cols_to_add) {
+        df_left <- df_left %>% dplyr::mutate(death = NA)
+      }
+      if ("death_cause" %in% cols_to_add) {
+        df_left <- df_left %>% dplyr::mutate(death_cause = NA)
+      }
+      if ("death_location" %in% cols_to_add) {
+        df_left <- df_left %>% dplyr::mutate(death_location = NA)
+      }
     }
   }
   if (!all(additional_cols %in% names(df_died))) {
@@ -315,80 +365,154 @@ create_mortality_long_df <- function (df_main, date_dc = "today", date_recall_ev
       df_died <- df_died %>% dplyr::mutate(death = "1")
     }
   }
-  if (all(date_vars %in% names(df_roster)) | all(date_vars %in%
-                                                 names(df_left)) | all(date_vars %in% names(df_died))) {
-    if (is.null(admin1)) {
-      if (is.null(admin2)) {
-        col_order <- c("date_dc", "date_recall", "enumerator",
-                       "cluster", "uuid", "sex", "age_years", "join",
-                       "date_join", "left", "date_left", "birth",
-                       "date_birth", "death", "date_death", "death_cause",
-                       "death_location")
+  if(collected_df_left){
+
+    if (all(date_vars %in% names(df_roster)) | all(date_vars %in%
+                                                   names(df_left)) | all(date_vars %in% names(df_died))) {
+      if (is.null(admin1)) {
+        if (is.null(admin2)) {
+          col_order <- c("date_dc", "date_recall", "enumerator",
+                         "cluster", "uuid", "sex", "age_years", "join",
+                         "date_join", "left", "date_left", "birth",
+                         "date_birth", "death", "date_death", "death_cause",
+                         "death_location")
+        }
+        else {
+          col_order <- c("date_dc", "date_recall", "enumerator",
+                         "admin2", "cluster", "uuid", "sex", "age_years",
+                         "join", "date_join", "left", "date_left",
+                         "birth", "date_birth", "death", "date_death",
+                         "death_cause", "death_location")
+        }
       }
       else {
-        col_order <- c("date_dc", "date_recall", "enumerator",
-                       "admin2", "cluster", "uuid", "sex", "age_years",
-                       "join", "date_join", "left", "date_left",
-                       "birth", "date_birth", "death", "date_death",
-                       "death_cause", "death_location")
+        if (is.null(admin2)) {
+          col_order <- c("date_dc", "date_recall", "enumerator",
+                         "admin1", "cluster", "uuid", "sex", "age_years",
+                         "join", "date_join", "left", "date_left",
+                         "birth", "date_birth", "death", "date_death",
+                         "death_cause", "death_location")
+        }
+        else {
+          col_order <- c("date_dc", "date_recall", "enumerator",
+                         "admin1", "admin2", "cluster", "uuid", "sex",
+                         "age_years", "join", "date_join", "left",
+                         "date_left", "birth", "date_birth", "death",
+                         "date_death", "death_cause", "death_location")
+        }
       }
     }
     else {
-      if (is.null(admin2)) {
-        col_order <- c("date_dc", "date_recall", "enumerator",
-                       "admin1", "cluster", "uuid", "sex", "age_years",
-                       "join", "date_join", "left", "date_left",
-                       "birth", "date_birth", "death", "date_death",
-                       "death_cause", "death_location")
+      if (is.null(admin1)) {
+        if (is.null(admin2)) {
+          col_order <- c("date_dc", "date_recall", "enumerator",
+                         "cluster", "uuid", "sex", "age_years", "join",
+                         "left", "birth", "death", "death_cause", "death_location")
+        }
+        else {
+          col_order <- c("date_dc", "date_recall", "enumerator",
+                         "admin2", "cluster", "uuid", "sex", "age_years",
+                         "join", "left", "birth", "death", "death_cause",
+                         "death_location")
+        }
       }
       else {
-        col_order <- c("date_dc", "date_recall", "enumerator",
-                       "admin1", "admin2", "cluster", "uuid", "sex",
-                       "age_years", "join", "date_join", "left",
-                       "date_left", "birth", "date_birth", "death",
-                       "date_death", "death_cause", "death_location")
+        if (is.null(admin2)) {
+          col_order <- c("date_dc", "date_recall", "enumerator",
+                         "admin1", "cluster", "uuid", "sex", "age_years",
+                         "join", "left", "birth", "death", "death_cause",
+                         "death_location")
+        }
+        else {
+          col_order <- c("date_dc", "date_recall", "enumerator",
+                         "admin1", "admin2", "cluster", "uuid", "sex",
+                         "age_years", "join", "left", "birth", "death",
+                         "death_cause", "death_location")
+        }
       }
     }
-  }
-  else {
-    if (is.null(admin1)) {
-      if (is.null(admin2)) {
-        col_order <- c("date_dc", "date_recall", "enumerator",
-                       "cluster", "uuid", "sex", "age_years", "join",
-                       "left", "birth", "death", "death_cause", "death_location")
+  } else {
+    if (all(date_vars %in% names(df_roster))  | all(date_vars %in% names(df_died))) {
+      if (is.null(admin1)) {
+        if (is.null(admin2)) {
+          col_order <- c("date_dc", "date_recall", "enumerator",
+                         "cluster", "uuid", "sex", "age_years", "join",
+                         "date_join", "left", "date_left", "birth",
+                         "date_birth", "death", "date_death", "death_cause",
+                         "death_location")
+        }
+        else {
+          col_order <- c("date_dc", "date_recall", "enumerator",
+                         "admin2", "cluster", "uuid", "sex", "age_years",
+                         "join", "date_join", "left", "date_left",
+                         "birth", "date_birth", "death", "date_death",
+                         "death_cause", "death_location")
+        }
       }
       else {
-        col_order <- c("date_dc", "date_recall", "enumerator",
-                       "admin2", "cluster", "uuid", "sex", "age_years",
-                       "join", "left", "birth", "death", "death_cause",
-                       "death_location")
+        if (is.null(admin2)) {
+          col_order <- c("date_dc", "date_recall", "enumerator",
+                         "admin1", "cluster", "uuid", "sex", "age_years",
+                         "join", "date_join", "left", "date_left",
+                         "birth", "date_birth", "death", "date_death",
+                         "death_cause", "death_location")
+        }
+        else {
+          col_order <- c("date_dc", "date_recall", "enumerator",
+                         "admin1", "admin2", "cluster", "uuid", "sex",
+                         "age_years", "join", "date_join", "left",
+                         "date_left", "birth", "date_birth", "death",
+                         "date_death", "death_cause", "death_location")
+        }
       }
     }
     else {
-      if (is.null(admin2)) {
-        col_order <- c("date_dc", "date_recall", "enumerator",
-                       "admin1", "cluster", "uuid", "sex", "age_years",
-                       "join", "left", "birth", "death", "death_cause",
-                       "death_location")
+      if (is.null(admin1)) {
+        if (is.null(admin2)) {
+          col_order <- c("date_dc", "date_recall", "enumerator",
+                         "cluster", "uuid", "sex", "age_years", "join",
+                         "left", "birth", "death", "death_cause", "death_location")
+        }
+        else {
+          col_order <- c("date_dc", "date_recall", "enumerator",
+                         "admin2", "cluster", "uuid", "sex", "age_years",
+                         "join", "left", "birth", "death", "death_cause",
+                         "death_location")
+        }
       }
       else {
-        col_order <- c("date_dc", "date_recall", "enumerator",
-                       "admin1", "admin2", "cluster", "uuid", "sex",
-                       "age_years", "join", "left", "birth", "death",
-                       "death_cause", "death_location")
+        if (is.null(admin2)) {
+          col_order <- c("date_dc", "date_recall", "enumerator",
+                         "admin1", "cluster", "uuid", "sex", "age_years",
+                         "join", "left", "birth", "death", "death_cause",
+                         "death_location")
+        }
+        else {
+          col_order <- c("date_dc", "date_recall", "enumerator",
+                         "admin1", "admin2", "cluster", "uuid", "sex",
+                         "age_years", "join", "left", "birth", "death",
+                         "death_cause", "death_location")
+        }
       }
     }
   }
 
   df_roster <- df_roster %>% dplyr::select(col_order) %>%
     dplyr::mutate(age_years = as.character(age_years))
-  df_left <- df_left %>% dplyr::select(col_order) %>% dplyr::mutate(age_years = as.character(age_years))
+  if(collected_df_left){
+    df_left <- df_left %>% dplyr::select(col_order) %>% dplyr::mutate(age_years = as.character(age_years))
+  }
   df_died <- df_died %>% dplyr::select(col_order) %>% dplyr::mutate(age_years = as.character(age_years))
   df_roster <- lapply(df_roster, as.character)
-  df_left <- lapply(df_left, as.character)
+  if(collected_df_left){
+    df_left <- lapply(df_left, as.character)
+  }
   df_died <- lapply(df_died, as.character)
-  df_mortality <- dplyr::bind_rows(df_roster, df_left)
-  df_mortality <- dplyr::bind_rows(df_mortality, df_died)
+
+  df_mortality <- dplyr::bind_rows(df_roster, df_died)
+  if(collected_df_left) {
+    df_mortality <- dplyr::bind_rows(df_mortality, df_left)
+  }
 
   return(df_mortality)
 }

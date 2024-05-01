@@ -8,8 +8,16 @@ library(tidyverse)
 strings <- c(
   out_date = stringr::str_sub(stringr::str_remove_all(Sys.Date(), '-'), 3)
 )
-file <- list.files(pattern = ".Rmd", full.names = T)
 
-rmarkdown::render(file,
-                  output_file = paste0("output/", "Mort_Quality_Check_and_Plausibility_", strings['out_date'],".html"))
+type_assessment <- tcltk::tk_select.list(c("Household",
+                                           "Individual"), title = "Asessment Level")
+if(type_assessment == "Individual"){
+  rmarkdown::render("mort_quality_report_markdown_ind.Rmd",
+                    output_file = paste0("output/", "Mort_Quality_Check_and_Plausibility_", strings['out_date'],".html"))
+}
+
+if(type_assessment == "Household") {
+  rmarkdown::render("mort_quality_report_markdown_hh.Rmd",
+                    output_file = paste0("output/", "Mort_Quality_Check_and_Plausibility_", strings['out_date'],".html"))
+}
 cat("\n> Quality Check completed! You can check your output folder.")
