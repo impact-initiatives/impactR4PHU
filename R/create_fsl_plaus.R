@@ -15,6 +15,10 @@
 #' @param fsl_rcsi_mealsize Column representing question- During the last 7 days, were there days (and, if so, how many) when your household had to limit portion size of meals at meal times to cope with a lack of food or money to buy it?
 #' @param fsl_rcsi_mealadult Column representing question- During the last 7 days, were there days (and, if so, how many) when your household had to restrict consumption by adults in order for small children to eat to cope with a lack of food or money to buy it?
 #' @param fsl_rcsi_mealnb Column representing question - During the last 7 days, were there days (and, if so, how many) when your household had to reduce number of meals eaten in a day to cope with a lack of food or money to buy it?
+#' @param fsl_fcs_score Column representing FCS Score
+#' @param fsl_rcsi_score Column representing rCSI Score
+#' @param fsl_hhs_score Column representing HHS Score
+#' @param fsl_hdds_score Column representing HDDS Score
 #' @param grouping the name of the variable that indicates the grouping variable - usually "enumerator"
 #' @param uuid uuid variable
 #' @param short_report Inputs a boolean value TRUE or FALSE to return just key variables. If FALSE,
@@ -42,6 +46,10 @@ create_fsl_plaus <- function(.dataset,
                              fsl_rcsi_mealsize = "fsl_rcsi_mealsize",
                              fsl_rcsi_mealadult = "fsl_rcsi_mealadult",
                              fsl_rcsi_mealnb = "fsl_rcsi_mealnb",
+                             fsl_fcs_score = "fsl_fcs_score",
+                             fsl_rcsi_score = "fsl_rcsi_score",
+                             fsl_hhs_score = "fsl_hhs_score",
+                             fsl_hdds_score = "fsl_hdds_score",
                              grouping = NULL,
                              uuid = "uuid",
                              short_report = FALSE,
@@ -135,8 +143,26 @@ create_fsl_plaus <- function(.dataset,
   }
   if (all(c("fsl_fcs_score", "fsl_rcsi_score") %in% names(.dataset))) {
     results2 <- .dataset %>% dplyr::group_by(group) %>%
+      dplyr::summarise(n = dplyr::n()) %>%
+      dplyr::select(group)
+
+    filtered_group <- .dataset %>%
+      dplyr::mutate(fsl_fcs_score_notna = ifelse(!is.na(!!rlang::sym(fsl_fcs_score)),1,0),
+                    fsl_rcsi_score_notna = ifelse(!is.na(!!rlang::sym(fsl_rcsi_score)),1,0)) %>%
+      dplyr::group_by(group) %>%
+      dplyr::summarise(fsl_fcs_score_notna = sum(fsl_fcs_score_notna, na.rm = T),
+                       fsl_rcsi_score_notna = sum(fsl_rcsi_score_notna, na.rm = T)) %>%
+      dplyr::filter(fsl_fcs_score_notna >= 3 & fsl_rcsi_score_notna >= 3) %>%
+      dplyr::pull(group)
+
+    draft_result <- .dataset %>%
+      dplyr::filter(group %in% filtered_group) %>% dplyr::group_by(group) %>%
         dplyr::summarise(corr.fcs_rcsi = round(as.numeric(stats::cor.test(fsl_fcs_score, fsl_rcsi_score)[4]), 2),
                          corr.fcs_rcsi.pvalue = as.numeric(stats::cor.test(fsl_fcs_score, fsl_rcsi_score)[3]))
+
+    results2 <- results2 %>%
+      dplyr::left_join(draft_result)
+
     if (!exists("results")) {
       results <- results2
     }else {
@@ -155,8 +181,26 @@ create_fsl_plaus <- function(.dataset,
 
   if (all(c("fsl_fcs_score", "fsl_hhs_score") %in% names(.dataset))) {
     results2 <- .dataset %>% dplyr::group_by(group) %>%
-        dplyr::summarise(corr.fcs_hhs = round(as.numeric(stats::cor.test(fsl_fcs_score, fsl_hhs_score)[4]), 2),
-                         corr.fcs_hhs.pvalue = round(as.numeric(stats::cor.test(fsl_fcs_score, fsl_hhs_score)[3]), 6))
+      dplyr::summarise(n = dplyr::n()) %>%
+      dplyr::select(group)
+
+    filtered_group <- .dataset %>%
+      dplyr::mutate(fsl_fcs_score_notna = ifelse(!is.na(!!rlang::sym(fsl_fcs_score)),1,0),
+                    fsl_hhs_score_notna = ifelse(!is.na(!!rlang::sym(fsl_hhs_score)),1,0)) %>%
+      dplyr::group_by(group) %>%
+      dplyr::summarise(fsl_fcs_score_notna = sum(fsl_fcs_score_notna, na.rm = T),
+                       fsl_hhs_score_notna = sum(fsl_hhs_score_notna, na.rm = T)) %>%
+      dplyr::filter(fsl_fcs_score_notna >= 3 & fsl_hhs_score_notna >= 3) %>%
+      dplyr::pull(group)
+
+    draft_result <- .dataset %>%
+      dplyr::filter(group %in% filtered_group) %>% dplyr::group_by(group)%>%
+      dplyr::summarise(corr.fcs_hhs = round(as.numeric(stats::cor.test(fsl_fcs_score, fsl_hhs_score)[4]), 2),
+                       corr.fcs_hhs.pvalue = round(as.numeric(stats::cor.test(fsl_fcs_score, fsl_hhs_score)[3]), 6))
+
+    results2 <- results2 %>%
+      dplyr::left_join(draft_result)
+
     if (!exists("results")) {
       results <- results2
     }else {
@@ -175,8 +219,26 @@ create_fsl_plaus <- function(.dataset,
 
   if (all(c("fsl_fcs_score", "fsl_hdds_score") %in% names(.dataset))) {
     results2 <- .dataset %>% dplyr::group_by(group) %>%
-        dplyr::summarise(corr.fcs_hdds = round(as.numeric(stats::cor.test(fsl_fcs_score, fsl_hdds_score)[4]), 2),
-                         corr.fcs_hdds.pvalue = round(as.numeric(stats::cor.test(fsl_fcs_score, fsl_hdds_score)[3]), 3))
+      dplyr::summarise(n = dplyr::n()) %>%
+      dplyr::select(group)
+
+    filtered_group <- .dataset %>%
+      dplyr::mutate(fsl_fcs_score_notna = ifelse(!is.na(!!rlang::sym(fsl_fcs_score)),1,0),
+                    fsl_hdds_score_notna = ifelse(!is.na(!!rlang::sym(fsl_hdds_score)),1,0)) %>%
+      dplyr::group_by(group) %>%
+      dplyr::summarise(fsl_fcs_score_notna = sum(fsl_fcs_score_notna, na.rm = T),
+                       fsl_hdds_score_notna = sum(fsl_hdds_score_notna, na.rm = T)) %>%
+      dplyr::filter(fsl_fcs_score_notna >= 3 & fsl_hdds_score_notna >= 3) %>%
+      dplyr::pull(group)
+
+    draft_result <- .dataset %>%
+      dplyr::filter(group %in% filtered_group) %>% dplyr::group_by(group) %>%
+      dplyr::summarise(corr.fcs_hdds = round(as.numeric(stats::cor.test(fsl_fcs_score, fsl_hdds_score)[4]), 2),
+                       corr.fcs_hdds.pvalue = round(as.numeric(stats::cor.test(fsl_fcs_score, fsl_hdds_score)[3]), 3))
+
+    results2 <- results2 %>%
+      dplyr::left_join(draft_result)
+
     if (!exists("results")) {
       results <- results2
     }else {
@@ -195,8 +257,26 @@ create_fsl_plaus <- function(.dataset,
 
   if (all(c("fsl_hdds_score", "fsl_rcsi_score") %in% names(.dataset))) {
     results2 <- .dataset %>% dplyr::group_by(group) %>%
-        dplyr::summarise(corr.hdds_rcsi = round(as.numeric(stats::cor.test(fsl_hdds_score, fsl_rcsi_score)[4]), 2),
-                         corr.hdds_rcsi.pvalue = round(as.numeric(stats::cor.test(fsl_hdds_score, fsl_rcsi_score)[3]), 3))
+      dplyr::summarise(n = dplyr::n()) %>%
+      dplyr::select(group)
+
+    filtered_group <- .dataset %>%
+      dplyr::mutate(fsl_hdds_score_notna = ifelse(!is.na(!!rlang::sym(fsl_hdds_score)),1,0),
+                    fsl_rcsi_score_notna = ifelse(!is.na(!!rlang::sym(fsl_rcsi_score)),1,0)) %>%
+      dplyr::group_by(group) %>%
+      dplyr::summarise(fsl_hdds_score_notna = sum(fsl_hdds_score_notna, na.rm = T),
+                       fsl_rcsi_score_notna = sum(fsl_rcsi_score_notna, na.rm = T)) %>%
+      dplyr::filter(fsl_hdds_score_notna >= 3 & fsl_rcsi_score_notna >= 3) %>%
+      dplyr::pull(group)
+
+    draft_result <- .dataset %>%
+      dplyr::filter(group %in% filtered_group) %>% dplyr::group_by(group) %>%
+      dplyr::summarise(corr.hdds_rcsi = round(as.numeric(stats::cor.test(fsl_hdds_score, fsl_rcsi_score)[4]), 2),
+                       corr.hdds_rcsi.pvalue = round(as.numeric(stats::cor.test(fsl_hdds_score, fsl_rcsi_score)[3]), 3))
+
+    results2 <- results2 %>%
+      dplyr::left_join(draft_result)
+
     if (!exists("results")) {
       results <- results2
     }else {
@@ -215,8 +295,26 @@ create_fsl_plaus <- function(.dataset,
 
   if (all(c("fsl_hhs_score", "fsl_rcsi_score") %in% names(.dataset))) {
     results2 <- .dataset %>% dplyr::group_by(group) %>%
-        dplyr::summarise(corr.hhs_rcsi = round(as.numeric(stats::cor.test(fsl_hhs_score, fsl_rcsi_score)[4]), 2),
-                         corr.hhs_rcsi.pvalue = round(as.numeric(stats::cor.test(fsl_hhs_score, fsl_rcsi_score)[3]), 3))
+      dplyr::summarise(n = dplyr::n()) %>%
+      dplyr::select(group)
+
+    filtered_group <- .dataset %>%
+      dplyr::mutate(fsl_hhs_score_notna = ifelse(!is.na(!!rlang::sym(fsl_hhs_score)),1,0),
+                    fsl_rcsi_score_notna = ifelse(!is.na(!!rlang::sym(fsl_rcsi_score)),1,0)) %>%
+      dplyr::group_by(group) %>%
+      dplyr::summarise(fsl_hhs_score_notna = sum(fsl_hhs_score_notna, na.rm = T),
+                       fsl_rcsi_score_notna = sum(fsl_rcsi_score_notna, na.rm = T)) %>%
+      dplyr::filter(fsl_hhs_score_notna >= 3 & fsl_rcsi_score_notna >= 3) %>%
+      dplyr::pull(group)
+
+    draft_result <- .dataset %>%
+      dplyr::filter(group %in% filtered_group) %>% dplyr::group_by(group)  %>%
+      dplyr::summarise(corr.hhs_rcsi = round(as.numeric(stats::cor.test(fsl_hhs_score, fsl_rcsi_score)[4]), 2),
+                       corr.hhs_rcsi.pvalue = round(as.numeric(stats::cor.test(fsl_hhs_score, fsl_rcsi_score)[3]), 3))
+
+    results2 <- results2 %>%
+      dplyr::left_join(draft_result)
+
     if (!exists("results")) {
       results <- results2
     }else {

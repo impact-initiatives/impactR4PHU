@@ -1,0 +1,262 @@
+---
+title: "FSL Descriptive Analysis Report"
+subtitle: "`r Sys.Date()`"
+output: html_document
+---
+
+<style>
+.tocify-subheader {
+  font-size: 0.7em;
+}
+.tocify-item {
+  font-size: 0.85em;
+  padding-left: 25px;
+  text-indent: 0;
+}
+</style>
+
+
+```{r logo, echo=FALSE}
+htmltools::img(src = knitr::image_uri("resources/Logo_Reach_RGB_1.png"),
+               alt = "REACH logo",
+               style = 'position:absolute; top:0; right:0; padding:0; margin:20; width:250px')
+```
+
+
+
+```{r setup, include=FALSE}
+  knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE)
+  options(scipen = 999)
+  rm(list=ls()[!ls() %in% c("params", "strings", "language")])
+  
+  source("src/init.R")
+
+  ##############################################################################################################
+
+  ## FIX A FEW THINGS TO ALIGN DATA & TOOL WITH ANALYSIS SCRIPT
+  
+  source("src/fix_bugged_names.R")
+  
+  ## ADDING WEIGHTS, OVERALL AND GROUPING VARIABLES 
+
+  source("src/format_dataset.R")  # <- additional indicators and grouping variables are added here 
+  
+  for(sheet in names(data.list)){
+    data.list[[sheet]] <- data.list[[sheet]] %>% 
+      mutate(overall = "overall",
+             weight = 1) %>% 
+      mutate_at(vars(everything()),~ifelse(. == "",NA,.))
+  } 
+  # all additional columns from data that need to be included in srvyr designs (need to be present in all sheets):
+  special_vars <- c("overall", "weight", daf$admin) %>% unique  
+
+```
+
+```{r setup2, include=FALSE}
+
+  ## FINAL TOUCHUPS TO DAF, CONVERTING COLUMNS
+  ################################################################################
+  
+  ## a lookup tibble for variable/column names:
+  var_lookup <- tibble()
+  for (sheet in names(data.list)){
+    var_lookup <- rbind(var_lookup, tibble(variable = names(data.list[[sheet]]), datasheet = sheet)) %>% 
+      distinct(variable, .keep_all = T) %>% filter(stringr::str_detect(variable, "(/)|(___)", T))
+                                                       # ^ here, I am assuming that no one will put a variable in the DAF that contains '/' or '___', or starts with '_'
+        # also note that by using distinct here, if the same variable appears in multiple sheets, then by default the first sheet will be used (so: main usually)
+  }
+ # ADD DATASHEET COLUMN TO DAF
+  if(!"datasheet" %in% names(daf)) daf <- daf %>% left_join(var_lookup, by = "variable")
+  
+  missing_sheets <- daf %>% filter(is.na(datasheet)) %>% pull(variable)
+  if(length(missing_sheets) > 0) stop("These variables are missing from data: ", paste(missing_sheets))
+  rm(missing_sheets)
+
+ # CONVERT!
+  source("src/convert_cols_with_daf.R")
+
+
+  ## SRVYR DESIGNS
+  ##############################################################################
+
+  srvyr.designs  <- list()
+  
+  for(sheet in names(data.list)){
+    daf_vars <- daf %>% filter(var_type != "select_multiple" & datasheet == sheet) %>% pull(variable)
+  
+    daf_vars_sm <- daf %>% filter(var_type == "select_multiple" & datasheet == sheet) %>% pull(variable)
+    sm_vars_pattern <- paste0("^",paste0("(",daf_vars_sm,")", collapse = "|"))
+    
+    daf_disaggs <- daf %>% filter(!isna(disaggregations) & datasheet == sheet) %>% pull(disaggregations) %>% stringr::str_split(" *; *") %>% unlist %>% unique
+    daf_disaggs <- daf_disaggs[daf_disaggs!=""]
+    
+    survey_data <- data.list[[sheet]] %>% select(all_of(special_vars), all_of(daf_vars), all_of(daf_disaggs), matches(sm_vars_pattern))
+    
+    srvyr.designs[[sheet]] <- srvyr::as_survey_design(survey_data, weights = NULL)
+    
+    rm(survey_data, daf_vars, daf_vars_sm, daf_disaggs)
+  }
+
+  
+```
+
+# {.tabset}
+
+## Introduction
+
+
+```{r, results='asis'}
+cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",3), collapse=""), " ", "What is this tool?"))
+cat('\nThe IPHRA Tabular Analysis is an analytical platform that presents a multitude of quantitative data tables. It encompasses a wide range of indicators collected through the IPHRA assessment process, empowering users to examine and interpret complex datasets effectively. This tool is structured to support understanding the distribution of your data and support you writing your factsheets/outputs/reports, and create other visualizations.')
+cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",3), collapse=""), " ", "What is in this tool?"))
+cat('\nWithin this tool, users will find a wealth of information organized into distinct categories, each pertaining to critical aspects of humanitarian analysis:')
+cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",4), collapse=""), " ", "Food Security and Livelihood (FSL)"))
+cat('\nExplore data on food availability, accessibility, and livelihood resources.')
+cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",3), collapse=""), " ", "What else to know?"))
+cat('\nAs you saw in the output folder, you will have another excel file outputed from the analysis script. The Excel file includes 4 sheets. The first 2 are all the tables that you see in the different sections of this HTML output. You can navigate to respective tables through the first sheet "Table of Contents". The third sheet is nothing more than just the tables shown in the MUAC/Nutrition tab. ')
+cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",3), collapse=""), " ", "Feedback"))
+cat('\nFeedback on improvements to this product can be done through reaching out to:\n\n-abraham.azar@impact-initiatives.org \n\n -impact.geneva.phu@impact-initiatives.org')
+```
+
+
+```{r, results='asis'}
+sections <- daf %>% select(section) %>% distinct() %>% pull()
+
+# produce HTML output: go line by line of the analysis flan and generate each section or table
+
+for (i in sections){
+  add_to_html.section(i)
+  daf.section <- daf %>% filter(section == i)
+  
+  progress.bar.title <- as.character(Sys.time())
+  pb <- tcltk::tkProgressBar(progress.bar.title, paste0("[", i, "] Number of entries executed"), 0, nrow(daf.section), 0, width = 500)
+  
+  for (r in 1:nrow(daf.section)){
+    tcltk::setTkProgressBar(pb, r, progress.bar.title, paste0("[", i, "] Number of entries executed: ", r, " of ", nrow(daf.section)))
+    
+    # read entry from analysis flan
+    entry <- load_entry(daf.section[r,])
+    
+    add_to_html.title(entry$label)
+    cat(paste0("\n\nVariable name: <em><strong>", entry$variable),"</strong></em>")
+    cat(entry$comments)
+    
+    # get the appropriate data source:
+    srvyr.design <- srvyr.designs[[entry$datasheet]]
+    
+    # filter out NAs
+    if(entry$omit_na) srvyr.design <- srvyr.design %>% filter(!is.na(!!sym(entry$variable)))
+    
+    # check if any data for this variable is left at all
+    if(nrow(srvyr.design) == 0) {
+      cat("\n\nNo data for this variable (all NA).\n")
+      next
+    }else{
+      if(!entry$omit_na){
+        cat(paste("\n\nIncluding NA values.\n"))
+      }else{
+        cat(paste("&emsp;|&emsp;",as_perc((nrow(srvyr.design))/nrow(data.list[[entry$datasheet]])),"of respondents answered this question.\n"))
+      }
+    }
+    
+    # group by admin:
+    srvyr.design <- srvyr.design %>% group_by(!!sym(entry$admin))
+    
+    # loop through each disagg.var
+    for (disagg.var in entry$disaggregate.variables) {
+      if(!isna(disagg.var)) cat("\nDisaggregated by:<em><strong>", paste0(disagg.var),"</strong></em>")
+      if(!is.na(disagg.var)){
+        res <- make_table(srvyr.design, entry, disagg.var) %>% ungroup %>% select(-any_of("overall")) %>%
+          filter(!is.na(disagg.var))
+      } else {
+        res <- make_table(srvyr.design, entry, disagg.var) %>% ungroup %>% select(-any_of("overall")) 
+      }
+
+      # add overall
+      if(entry$admin != "overall"){
+        entry.ovrl <- entry
+        entry.ovrl$admin <- "overall"
+        if(!"overall" %in% (srvyr.design %>% variable.names)) srvyr.design <- srvyr.design %>% mutate(overall = "overall")
+        res.overall <- make_table(srvyr.design %>% ungroup %>% group_by(overall),
+                                        entry.ovrl, disagg.var)  %>% 
+          mutate(!!sym(entry$admin) := "overall") %>% 
+          ungroup %>% select(-any_of("overall"))
+        res <- res %>% bind_rows(res.overall) %>% distinct
+      }
+      # save the xlsx
+      xlsx_name <- paste0(entry$xlsx_name, ifelse(isna(disagg.var), "", paste0("_by_", disagg.var)))
+      writexl::write_xlsx(res, paste0(params["combine_folder"],"/",xlsx_name,".xlsx"))
+    
+      subch(DT::datatable(res, options = tableFormat))
+    }
+    
+  }
+  close(pb)
+}
+
+```
+
+## FSL_Part2
+
+```{r, results='asis'}
+if ("HDDS" %in% FSL_indicators){
+  if(all(hdds_check_columns %in% names(main))) {
+    cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",3), collapse=""), " ", "<strong>HDDS Groups</strong>"))
+    subch(DT::datatable(hdds_table))
+    cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",3), collapse=""), " ", "<strong>HDDS Category</strong>"))
+    subch(DT::datatable(hdds_cat_table))
+    cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",3), collapse=""), " ", "<strong>HDDS Score</strong>"))
+    subch(DT::datatable(hdds_score_table))
+  }
+}
+if ("HHS" %in% FSL_indicators){
+  if(all(hhs_check_columns %in% names(main))) {
+    cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",3), collapse=""), " ", "<strong>HHS Groups</strong>"))
+    subch(DT::datatable(hhs_table))
+    cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",3), collapse=""), " ", "<strong>HHS Category</strong>"))
+    subch(DT::datatable(hhs_cat_table))
+  }
+}
+if ("FCS" %in% FSL_indicators){
+  if(all(fcs_check_columns %in% names(main))) {
+    cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",3), collapse=""), " ", "<strong>FCS Groups</strong>"))
+    subch(DT::datatable(fcs_table))
+    cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",3), collapse=""), " ", "<strong>FCS Category</strong>"))
+    subch(DT::datatable(fcs_cat_table))
+    cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",3), collapse=""), " ", "<strong>FCS Score</strong>"))
+    subch(DT::datatable(fcs_score_table))
+  }
+}
+if ("rCSI" %in% FSL_indicators){
+  if(all(rcsi_check_columns %in% names(main))) {
+    cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",3), collapse=""), " ", "<strong>RCSI Groups</strong>"))
+    subch(DT::datatable(rcsi_table))
+    cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",3), collapse=""), " ", "<strong>RCSI Category</strong>"))
+    subch(DT::datatable(rcsi_cat_table))
+    cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",3), collapse=""), " ", "<strong>RCSI Score</strong>"))
+    subch(DT::datatable(rcsi_score_table))
+  }
+}
+if ("LCSI" %in% FSL_indicators){
+  if(all(lcsi_check_columns %in% names(main))) {
+    cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",3), collapse=""), " ", "<strong>LCSI Groups</strong>"))
+    subch(DT::datatable(lcsi_table))
+    cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",3), collapse=""), " ", "<strong>LCSI Category</strong>"))
+    subch(DT::datatable(lcsi_cat_table))  
+  }
+}
+if(all(fcm_check_1_columns %in% names(main)) |
+   all(fcm_check_2_columns %in% names(main)) |
+   all(fcm_check_3_columns %in% names(main)) |
+   all(fcm_check_4_columns %in% names(main)) |
+   all(fcm_check_5_columns %in% names(main)) |
+   all(fcm_check_6_columns %in% names(main))) {
+  cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",3), collapse=""), " ", "<strong>FC Phase Groups</strong>"))
+  subch(DT::datatable(fc_phase_table)) 
+}
+
+if(all(fclcm_check_columns %in% names(main))) {
+  cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",3), collapse=""), " ", "<strong>FCLCM Phase Groups</strong>"))
+  subch(DT::datatable(fclcm_phase_table)) 
+}
+```
