@@ -19,9 +19,18 @@ create_plaus_table_fsl <- function(.flextable) {
   .flextable <- flextable::merge_at(.flextable, i = 48, j = 4:5)
   .flextable <- flextable::merge_at(.flextable, i = 47, j = 8:9)
   .flextable <- flextable::merge_at(.flextable, i = 48, j = 8:9)
+
   for (i in 1:36) {
     .flextable <- flextable::merge_at(.flextable, i = i, j = 2:3)
     .flextable <- flextable::merge_at(.flextable, i = i, j = 6:7)
+  }
+
+  for (i in 1:22) {
+    .flextable <- flextable::merge_at(.flextable, i = i, j = 4:5)
+  }
+
+  for (i in 25:36) {
+    .flextable <- flextable::merge_at(.flextable, i = i, j = 4:5)
   }
 
   for (n in 1:46) {
@@ -36,6 +45,7 @@ create_plaus_table_fsl <- function(.flextable) {
 
   for (i in 43:48) {
     .flextable <- flextable::merge_at(.flextable, i = i, j = 2:3)
+    .flextable <- flextable::merge_at(.flextable, i = i, j = 4:5)
     .flextable <- flextable::merge_at(.flextable, i = i, j = 6:7)
   }
 
@@ -43,10 +53,7 @@ create_plaus_table_fsl <- function(.flextable) {
     flextable::delete_part(part = "header")%>%
     flextable::add_header_lines() %>%
     flextable::add_header_row(
-      values = c("Criteria", "Excellent", "Good","Acceptable","Problematic","Score","Indicator Score"),
-      colwidths = c(1,2,1,1,2,1,1), top = TRUE) %>%
-    flextable::add_header_row(
-      values = c("", "Values", "", ""),
+      values = c("Criteria", "Values", "Score", "Indicator Score"),
       colwidths = c(1,6,1,1), top = TRUE)%>%
     flextable::align(
       j = 2:9,

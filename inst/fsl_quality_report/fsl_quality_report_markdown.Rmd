@@ -911,13 +911,13 @@ if(!file.exists("inputs/environment.Rdata")) {
       income_types <- svDialogs::dlg_input(message= "Enter the name of the income_types","income_types")$res
     }
   } else if (length(income_types) > 1){
-    income_types <- tcltk::tk_select.list(income_types, title = "Income Types column")
+    income_types <- tcltk::tk_select.list(income_types, title = "Income Types column", multiple = T)
   } else if (length(income_types) == 0) {
     income_types <- svDialogs::dlg_input(message= "Enter the name of the income_types","income_types")$res
   }
   
   ## Detect Enumerator column
-  enumerator <- names(raw.flag.fcs)[grepl("enum|team",names(raw.flag.fcs))]
+  enumerator <- names(raw.main)[grepl("enum|team",names(raw.main))]
   
   if(length(enumerator) == 1){
     yes_no <- svDialogs::dlg_message(paste0("Is '", enumerator, "' the correct enumerator column?"), type = "yesno")$res
@@ -1124,7 +1124,7 @@ overall_flag <- tibble()
 for(flag in flags_fsl_columns) {
 
   flag_overall <- raw.flag.fcs %>%
-    dplyr::select(group, !!rlang::sym(flag)) %>%
+    dplyr::select(enumerator, !!rlang::sym(flag)) %>%
     filter(!is.na(!!rlang::sym(flag))) %>%
     dplyr::mutate(flag := flag) %>%
     dplyr::group_by(flag) %>%
@@ -1153,10 +1153,10 @@ for(flag in flags_fsl_columns) {
     filter(flag_name %in% flag) %>%
     dplyr::pull(Action)
   flag_by_enum <- raw.flag.fcs %>%
-    dplyr::select(group, !!rlang::sym(flag)) %>%
+    dplyr::select(enumerator, !!rlang::sym(flag)) %>%
     filter(!is.na(!!rlang::sym(flag))) %>%
     dplyr::mutate(flag := flag) %>%
-    dplyr::group_by(flag,group) %>%
+    dplyr::group_by(flag,enumerator) %>%
     dplyr::summarise(num_samples = n(),
               flagged = sum(!!rlang::sym(flag))) %>%
     dplyr::mutate(percentage_flagged = paste0(round((flagged/num_samples)*100,2),"%")) %>%
