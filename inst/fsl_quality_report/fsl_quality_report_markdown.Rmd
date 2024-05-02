@@ -40,6 +40,7 @@ label_colname <- tcltk::tk_select.list(names(tool.survey)[grepl("label",names(to
 if(file.exists("inputs/environment.Rdata")) {
   load("inputs/environment.Rdata")
 }
+
 ```
 
 # {.tabset .tabset-fade}
@@ -943,7 +944,7 @@ if(!file.exists("inputs/environment.Rdata")) {
   }
   
   if(!is.null(residency_status)){
-    if(!is_empty(residency_status)){
+    if(!identical(residency_status, character(0))){
       value_idp <- tcltk::tk_select.list(raw.main[,c(residency_status)] %>% unique, title = "IDP Value", multiple = T)
     } else {
       value_idp <- NULL
@@ -986,12 +987,12 @@ if(!file.exists("inputs/environment.Rdata")) {
 }
 
   all_vars <- ls()
-  is_empty <- function(x) {
+    is_empty <- function(x) {
   obj <- get(x)
   length(obj) == 0 || is.null(obj) ||  (is.character(obj) && all(obj == ""))
-  }
+}
   empty_vars <- all_vars[sapply(all_vars, is_empty)]
-  
+
   for (i in empty_vars) {
     assign(i, NULL)
   }
@@ -1162,7 +1163,8 @@ if(yes_no_team == "yes"){
     cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",5), collapse=""), " ", "<strong>",i,"</strong> {.tabset .tabset-fade}"))
     list_enum <- raw.main %>% 
       dplyr::filter(!!rlang::sym(team) == i) %>% 
-      dplyr::pull(!!rlang::sym(enumerator))
+      dplyr::pull(!!rlang::sym(enumerator)) %>% 
+      unique()
     for(j in list_enum){
       cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",6), collapse=""), " ", "<strong>",j,"</strong>"))
       overall_fsl_plaus_enum <- overall_fsl_plaus %>%
@@ -1283,73 +1285,81 @@ for(flag in flags_fsl_columns) {
 
 ```
 
+### Plots {.tabset .tabset-fade}
+
+#### FCS Ridge Overall Distribution Plot
 
 ```{r, results='asis'}
 if(all(fcs_check_columns %in% names(raw.flag.fcs))) {
-  cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",3), collapse=""), " ", "Plots {.tabset .tabset-fade}"))
-  cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",4), collapse=""), " ", "FCS Ridge Overall Distribution Plot"))
   impactR4PHU::plot_ridge_distribution(raw.flag.fcs, numeric_cols = c(fsl_fcs_cereal, fsl_fcs_dairy, fsl_fcs_veg, 
                                                                        fsl_fcs_fruit, fsl_fcs_legumes, fsl_fcs_sugar, 
                                                                        fsl_fcs_oil),
                                         name_groups = "Food Groups", name_units = "Days")
+} else {
+  cat("No Plot Produced!!")
 }
 ```
 
+#### FCS Ridge by Team Distribution Plot {.tabset .tabset-fade}
 
 ```{r, results='asis'}
 if(all(fcs_check_columns %in% names(raw.flag.fcs))) {
   if(yes_no_team == "yes"){
-    cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",4), collapse=""), " ", "FCS Ridge by Team Distribution Plot"))
     for (i in list_teams) {
-    cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",5), collapse=""), " ", "<strong>",i,"</strong>"))
-    list_enum <- raw.main %>% 
-      dplyr::filter(!!rlang::sym(team) == i) %>% 
-      dplyr::pull(!!rlang::sym(enumerator))
-    (impactR4PHU::plot_ridge_distribution(raw.flag.fcs %>% 
-                                            dplyr::filter(!!rlang::sym(enumerator) %in% list_enum), numeric_cols = c(fsl_fcs_cereal, fsl_fcs_dairy, fsl_fcs_veg,
-                                                                         fsl_fcs_fruit, fsl_fcs_legumes, fsl_fcs_sugar,
-                                                                         fsl_fcs_oil),
-                                          name_groups = "Food Groups", name_units = "Days", 
-                                          grouping = enumerator))
+      cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",5), collapse=""), " ", "<strong>",i,"</strong>"))
+      list_enum <- raw.main %>% 
+        dplyr::filter(!!rlang::sym(team) == i) %>% 
+        dplyr::pull(!!rlang::sym(enumerator))%>% 
+        unique()
+      subch(impactR4PHU::plot_ridge_distribution(raw.flag.fcs %>% 
+                                              dplyr::filter(!!rlang::sym(enumerator) %in% list_enum), numeric_cols = c(fsl_fcs_cereal, fsl_fcs_dairy, fsl_fcs_veg,
+                                                                           fsl_fcs_fruit, fsl_fcs_legumes, fsl_fcs_sugar,
+                                                                           fsl_fcs_oil),
+                                            name_groups = "Food Groups", name_units = "Days", 
+                                            grouping = enumerator))
     }
   } else {
-    cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",4), collapse=""), " ", "FCS Ridge by Enumerator Distribution Plot"))
     (impactR4PHU::plot_ridge_distribution(raw.flag.fcs, numeric_cols = c(fsl_fcs_cereal, fsl_fcs_dairy, fsl_fcs_veg,
                                                                          fsl_fcs_fruit, fsl_fcs_legumes, fsl_fcs_sugar,
                                                                          fsl_fcs_oil),
                                           name_groups = "Food Groups", name_units = "Days", 
                                           grouping = enumerator))
   }
+} else {
+  cat("No Plot Produced!!")
 }
 ```
 
+#### RCSI Ridge Overall Distribution Plot
+
 ```{r, results='asis'}
 if(all(rcsi_check_columns %in% names(raw.flag.fcs))) {
-  cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",4), collapse=""), " ", "RCSI Ridge Overall Distribution Plot"))
   (impactR4PHU::plot_ridge_distribution(raw.flag.fcs, numeric_cols = c(fsl_rcsi_lessquality, fsl_rcsi_borrow,
                                                                        fsl_rcsi_mealsize, fsl_rcsi_mealadult, 
                                                                        fsl_rcsi_mealnb),
                                         name_groups = "Food Coping Strategy", name_units = "Days"))
+} else {
+  cat("No Plot Produced!!")
 }
 ```
 
-#### RCSI Ridge by Enumerator Distribution Plot
+#### RCSI Ridge by Team Distribution Plot {.tabset .tabset-fade}
 
 ```{r, results='asis'}
 if(all(fcs_check_columns %in% names(raw.flag.fcs))) {
   if(yes_no_team == "yes"){
-    cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",4), collapse=""), " ", "RCSI Ridge by Team Distribution Plot"))
     for (i in list_teams) {
-    cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",5), collapse=""), " ", "<strong>",i,"</strong>"))
-    list_enum <- raw.main %>% 
-      dplyr::filter(!!rlang::sym(team) == i) %>% 
-      dplyr::pull(!!rlang::sym(enumerator))
-    (impactR4PHU::plot_ridge_distribution(raw.flag.fcs %>% 
-                                            dplyr::filter(!!rlang::sym(enumerator) %in% list_enum), numeric_cols = c(fsl_rcsi_lessquality, fsl_rcsi_borrow,
-                                                                       fsl_rcsi_mealsize, fsl_rcsi_mealadult,
-                                                                       fsl_rcsi_mealnb),
-                                        name_groups = "Food Coping Strategy", name_units = "Days", 
-                                        grouping = enumerator))
+      cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",5), collapse=""), " ", "<strong>",i,"</strong>"))
+      list_enum <- raw.main %>% 
+        dplyr::filter(!!rlang::sym(team) == i) %>% 
+        dplyr::pull(!!rlang::sym(enumerator))%>% 
+        unique()
+      subch(impactR4PHU::plot_ridge_distribution(raw.flag.fcs %>% 
+                                              dplyr::filter(!!rlang::sym(enumerator) %in% list_enum), numeric_cols = c(fsl_rcsi_lessquality, fsl_rcsi_borrow,
+                                                                         fsl_rcsi_mealsize, fsl_rcsi_mealadult,
+                                                                         fsl_rcsi_mealnb),
+                                          name_groups = "Food Coping Strategy", name_units = "Days", 
+                                          grouping = enumerator))
     }
   } else {
       if(all(rcsi_check_columns %in% names(raw.flag.fcs))) {
@@ -1361,16 +1371,20 @@ if(all(fcs_check_columns %in% names(raw.flag.fcs))) {
                                         grouping = enumerator))
      }
   }
+} else {
+  cat("No Plot Produced!!")
 }
 
 ```
 
+#### FCS/RCSI/HHS Correlation Plot
 
 ```{r, results='asis'}
 if(all(fcs_check_columns %in% names(raw.flag.fcs)) &
    all(rcsi_check_columns %in% names(raw.flag.fcs)) &
    all(hhs_check_columns %in% names(raw.flag.fcs))) {
-  cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",4), collapse=""), " ", "FCS/RCSI/HHS Correlation Plot"))
   (impactR4PHU::plot_correlogram(raw.flag.fcs, numeric_cols = c("fsl_fcs_score",  "fsl_rcsi_score",  "fsl_hhs_score")))
+} else {
+   cat("No Plot Produced!!")
 }
 ```
