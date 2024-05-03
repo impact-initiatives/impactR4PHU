@@ -1189,16 +1189,22 @@ if("flag_fcsrcsi_box" %in% names(raw.flag.fcs)) {
   }
 }
 
-create.follow.up.requests(checks_followups,loop_data = NULL, paste0("FSL_followup_requests.xlsm"), use_template = T)
-options(warn=0)
-cat("\n\n#############################################################################################\n")
-cat("Direct logical checks are flagged and a file is created for follow up in \noutput/checking/requests/ with follow_up_requests in the title. \nPlease check the READ_ME file for information on filling the file.\n")
-cat("#############################################################################################\n")
+if(nrow(checks_followups) > 0){
+  create.follow.up.requests(checks_followups,loop_data = NULL, paste0("Mort_followup_requests.xlsm"), use_template = T)
+  options(warn=0)
+  cat("\n\n#############################################################################################\n")
+  cat("Logical checks are flagged and a file is created for follow up in \noutput/checking/requests/ with follow_up_requests in the title. \nPlease check the READ_ME file for information on filling the file.\n")
+  cat("#############################################################################################\n")
+} else {
+  cat("\n\n#############################################################################################\n")
+  cat(" No logical checks were flagged!!. All good with cleaning for Mortality")
+  cat("#############################################################################################\n")
+}
 ```
 
-<h5>Number of detected entries with rCSI Score is high while protein consumption is also reported as frequent:<strong> `r nrow(checks_followups %>% filter(check == 1))`</strong></h5>
-<h5>Number of detected entries with HHs report using crisis or emergency strategies but not stress strategies or Emergency and no crisis:<strong> `r nrow(checks_followups %>% filter(check == 2))`</strong></h5>
-<h5>Number of detected entries with HH that would have an acceptable FCS score and a high rCSI score:<strong> `r nrow(checks_followups %>% filter(check == 3))`</strong></h5>
+<h5>Number of detected entries with rCSI Score is high while protein consumption is also reported as frequent:<strong> `r if(nrow(checks_followups)>0) {nrow(checks_followups %>% filter(check == 1) %>% distinct(uuid))} else {0}`</strong></h5>
+<h5>Number of detected entries with HHs report using crisis or emergency strategies but not stress strategies or Emergency and no crisis:<strong> `r if(nrow(checks_followups)>0) {nrow(checks_followups %>% filter(check == 2) %>% distinct(uuid) )} else {0}`</strong></h5>
+<h5>Number of detected entries with HH that would have an acceptable FCS score and a high rCSI score:<strong> `r if(nrow(checks_followups)>0) {nrow(checks_followups %>% filter(check == 3) %>% distinct(uuid))} else {0}`</strong></h5>
 
 ```{r}
 if(nrow(checks_followups)>0){

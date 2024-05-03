@@ -36,12 +36,12 @@ if(file.exists("inputs/environment.Rdata")) {
 
 path.raw <- svDialogs::dlg_open(multiple = F, title = "Please select your data excel file.")$res
 path.tool <- svDialogs::dlg_open(multiple = F, title = "Please select your Kobo tool file.")$res
-tool.survey <- readxl::read_excel(path.tool, "survey")
-tool.choices <- readxl::read_excel(path.tool, "choices")
+label_colname <- tcltk::tk_select.list(names(tool.survey)[grepl("label",names(tool.survey))], title = "Label column to choose", multiple = F)
+tool.survey <- load.tool.survey(path.tool)
+tool.choices <- load.tool.choices(path.tool)
 collected_df_left <- tcltk::tk_select.list(c(TRUE,FALSE), title = "Did you collect info about leavers? (1 for Yes, 0 for No")
 main.sheets <- readxl::excel_sheets(path.raw)
 if(!file.exists("inputs/environment.Rdata")){
-  label_colname <- tcltk::tk_select.list(names(tool.survey)[grepl("label",names(tool.survey))], title = "Label column to choose", multiple = F)
   path.sheet.with.main <- tcltk::tk_select.list(main.sheets, title = "Main Sheet", multiple = F)
   path.sheet.with.roster <- tcltk::tk_select.list(main.sheets, title = "HH Roster Sheet", multiple = F)
   path.sheet.with.death <- tcltk::tk_select.list(main.sheets, title = "Died Members sheet", multiple = F)
@@ -107,6 +107,7 @@ if(!file.exists("inputs/environment.Rdata")) {
   } else if (length(date_recall_event) == 0) {
     date_recall_event <- svDialogs::dlg_input(message= "Enter the name of the recall date column","date_recall_event")$res
   }
+
   
   ## Detect Enumerator column
   enumerator <- names(raw.main)[grepl("enum|team",names(raw.main))]
@@ -532,8 +533,14 @@ if(!file.exists("inputs/environment.Rdata")) {
   
   if(dates_collected == "All") {
     smart <- T
+    collect_num_join_left <- "no"
+    num_join <- NULL
+    num_left <- NULL
   } else if (dates_collected == "None") {
     smart <- F
+    collect_num_join_left <- "no"
+    num_join <- NULL
+    num_left <- NULL
   } else if (dates_collected == "Some") {
     smart <- T
     collect_num_join_left <- svDialogs::dlg_message(paste0("Do you still collect num_join and num_left on HH level?"), type = "yesno")$res
@@ -563,7 +570,16 @@ if(!file.exists("inputs/environment.Rdata")) {
           } else if (length(num_join) == 0) {
             num_join <- svDialogs::dlg_input(message= "Enter the number of Joiners column in main data","num_join")$res
           }
-      }
+    } else {
+    collect_num_join_left <- "no"
+    num_join <- NULL
+    num_left <- NULL
+    
+    }
+  } else {
+    collect_num_join_left <- "no"
+    num_join <- NULL
+    num_left <- NULL
   }
   
   all_vars <- ls()
@@ -696,7 +712,32 @@ if(!file.exists("inputs/environment.Rdata")) {
         }
       }
     }
+# Slicer
+# source("src/date_selection.R")
+min_date <- min(raw.main[[date_dc]])
+max_date <- max(raw.main[[date_dc]])
+# selected_dates <- date_range_input(min_date, max_date)
 
+### TO CONTINUE HERE
+min_filter <- svDialogs::dlg_input(message= paste0("Enter the start date (format: YYYY-MM-DD). Range: ", min_date, " and ", max_date),min_date)$res
+
+max_filter <- svDialogs::dlg_input(message= paste0("Enter the end date (format: YYYY-MM-DD). Range: ", min_date, " and ", max_date),max_date)$res
+
+while(!stringr::str_detect(min_filter,"^\\d{4}\\-(0?[1-9]|1[012])\\-(0?[1-9]|[12][0-9]|3[01])$") | 
+        lubridate::as_date(min_filter) < lubridate::as_date(min_date) |
+      lubridate::as_date(min_filter) > lubridate::as_date(max_filter)){
+    min_filter <- svDialogs::dlg_input(message= paste0("[INCORRECT] Re-enter the start date (format: YYYY-MM-DD). Range: ", min_date, " and ", max_date),min_date)$res
+}
+  
+while(!stringr::str_detect(max_filter,"^\\d{4}\\-(0?[1-9]|1[012])\\-(0?[1-9]|[12][0-9]|3[01])$")| 
+      lubridate::as_date(max_filter) > lubridate::as_date(max_date) |
+      lubridate::as_date(max_filter) < lubridate::as_date(min_filter)){
+    max_filter <- svDialogs::dlg_input(message= paste0("[INCORRECT] Re-enter the end date (format: YYYY-MM-DD). Range: ", min_date, " and ", max_date),max_date)$res
+}
+
+raw.main <- raw.main %>% 
+  filter(lubridate::as_date(!!rlang::sym(date_dc)) >= min_filter &
+           lubridate::as_date(!!rlang::sym(date_dc)) <= max_filter)
 
 uuid_filter <- raw.main[[uuid_main]]
 
@@ -1053,7 +1094,7 @@ df_mortality_long <- impactR4PHU::create_mortality_long_df(df_main = raw.main,
                      "label_colname","path.sheet.with.main","collect_num_join_left","num_join","num_left",
                      "path.sheet.with.roster","path.sheet.with.leavers","path.sheet.with.death", "dates_collected",
                      "male","female","date_dc_reformat","date_recall_reformat","date_join_reformat",
-                     "date_birth_reformat","date_left_reformat","date_death_reformat",
+                     "date_birth_reformat","date_left_reformat","date_death_reformat","yes_no_team","team",
                      "unknown", "injury_trauma", "illness", "no_demo_values", "yes_demo_values",
                      "current_location","during_migration","last_place","other_place")
   } else {
@@ -1142,16 +1183,24 @@ if("flag_negative_pt" %in% names(flag_mortality)) {
   }
 }
 
-create.follow.up.requests(checks_followups,loop_data = NULL, paste0("Mort_followup_requests.xlsm"), use_template = T)
-options(warn=0)
-cat("\n\n#############################################################################################\n")
-cat("Logical checks are flagged and a file is created for follow up in \noutput/checking/requests/ with follow_up_requests in the title. \nPlease check the READ_ME file for information on filling the file.\n")
-cat("#############################################################################################\n")
+if(nrow(checks_followups) > 0){
+  create.follow.up.requests(checks_followups,loop_data = NULL, paste0("Mort_followup_requests.xlsm"), use_template = T)
+  options(warn=0)
+  cat("\n\n#############################################################################################\n")
+  cat("Logical checks are flagged and a file is created for follow up in \noutput/checking/requests/ with follow_up_requests in the title. \nPlease check the READ_ME file for information on filling the file.\n")
+  cat("#############################################################################################\n")
+} else {
+  cat("\n\n#############################################################################################\n")
+  cat(" No logical checks were flagged!!. All good with cleaning for Mortality")
+  cat("#############################################################################################\n")
+}
 ```
 
-<h5>Number of detected entries with Respondent reported more than 2 death in the HH:<strong> `r nrow(checks_followups %>% filter(check.id == 1))`</strong></h5>
-<h5>Number of detected entries with Respondent reported sex of dead person male and a cause of death related to female only:<strong> `r nrow(checks_followups %>% filter(check.id == 2))`</strong></h5>
-<h5>Number of detected entries with Respondent reported wrong dates leading to a negative person time:<strong> `r nrow(checks_followups %>% filter(check.id == 3))`</strong></h5>
+## Mortality 
+
+<h5>Number of detected entries with Respondent reported more than 2 death in the HH:<strong> `r if(nrow(checks_followups)>0) {nrow(checks_followups %>% filter(check.id == 1)%>% distinct(uuid))} else {0}`</strong></h5>
+<h5>Number of detected entries with Respondent reported sex of dead person male and a cause of death related to female only:<strong> `r if(nrow(checks_followups)>0) {nrow(checks_followups %>% filter(check.id == 2)%>% distinct(uuid))} else {0}`</strong></h5>
+<h5>Number of detected entries with Respondent reported wrong dates leading to a negative person time:<strong> `r if(nrow(checks_followups)>0) {nrow(checks_followups %>% filter(check.id == 3) %>% distinct(uuid))} else {0}`</strong></h5>
 
 ```{r}
 if(nrow(checks_followups)>0){

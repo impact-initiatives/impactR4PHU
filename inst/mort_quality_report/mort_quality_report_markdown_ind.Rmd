@@ -35,12 +35,12 @@ if(file.exists("inputs/environment.Rdata")) {
 
 path.raw <- svDialogs::dlg_open(multiple = F, title = "Please select your data excel file.")$res
 path.tool <- svDialogs::dlg_open(multiple = F, title = "Please select your Kobo tool file.")$res
-tool.survey <- readxl::read_excel(path.tool, "survey")
-tool.choices <- readxl::read_excel(path.tool, "choices")
+label_colname <- tcltk::tk_select.list(names(tool.survey)[grepl("label",names(tool.survey))], title = "Label column to choose", multiple = F)
+tool.survey <- load.tool.survey(path.tool)
+tool.choices <- load.tool.choices(path.tool)
 collected_df_left <- tcltk::tk_select.list(c(TRUE,FALSE), title = "Did you collect info about leavers? (1 for Yes, 0 for No")
 main.sheets <- readxl::excel_sheets(path.raw)
 if(!file.exists("inputs/environment.Rdata")){
-  label_colname <- tcltk::tk_select.list(names(tool.survey)[grepl("label",names(tool.survey))], title = "Label column to choose", multiple = F)
   path.sheet.with.main <- tcltk::tk_select.list(main.sheets, title = "Main Sheet", multiple = F)
   path.sheet.with.roster <- tcltk::tk_select.list(main.sheets, title = "HH Roster Sheet", multiple = F)
   path.sheet.with.death <- tcltk::tk_select.list(main.sheets, title = "Died Members sheet", multiple = F)
@@ -531,8 +531,14 @@ if(!file.exists("inputs/environment.Rdata")) {
   
   if(dates_collected == "All") {
     smart <- T
+    collect_num_join_left <- "no"
+    num_join <- NULL
+    num_left <- NULL
   } else if (dates_collected == "None") {
     smart <- F
+    collect_num_join_left <- "no"
+    num_join <- NULL
+    num_left <- NULL
   } else if (dates_collected == "Some") {
     smart <- T
     collect_num_join_left <- svDialogs::dlg_message(paste0("Do you still collect num_join and num_left on HH level?"), type = "yesno")$res
@@ -562,12 +568,16 @@ if(!file.exists("inputs/environment.Rdata")) {
           } else if (length(num_join) == 0) {
             num_join <- svDialogs::dlg_input(message= "Enter the number of Joiners column in main data","num_join")$res
           }
-      }
-  } else {
+    } else {
     collect_num_join_left <- "no"
     num_join <- NULL
     num_left <- NULL
     
+    }
+  } else {
+    collect_num_join_left <- "no"
+    num_join <- NULL
+    num_left <- NULL
   }
   
   all_vars <- ls()

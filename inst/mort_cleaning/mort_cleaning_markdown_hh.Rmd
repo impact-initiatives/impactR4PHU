@@ -35,11 +35,11 @@ if(file.exists("inputs/environment.Rdata")) {
 
 path.raw <- svDialogs::dlg_open(multiple = F, title = "Please select your data excel file.")$res
 path.tool <- svDialogs::dlg_open(multiple = F, title = "Please select your Kobo tool file.")$res
-tool.survey <- readxl::read_excel(path.tool, "survey")
-tool.choices <- readxl::read_excel(path.tool, "choices")
+label_colname <- tcltk::tk_select.list(names(tool.survey)[grepl("label",names(tool.survey))], title = "Label column to choose", multiple = F)
+tool.survey <- load.tool.survey(path.tool)
+tool.choices <- load.tool.choices(path.tool)
 main.sheets <- readxl::excel_sheets(path.raw)
 if(!file.exists("inputs/environment.Rdata")){
-  label_colname <- tcltk::tk_select.list(names(tool.survey)[grepl("label",names(tool.survey))], title = "Label column to choose", multiple = F)
   path.sheet.with.main <- tcltk::tk_select.list(main.sheets, title = "Main Sheet", multiple = F)
 }
 
@@ -70,7 +70,7 @@ raw.main <- readxl::read_excel(path.raw, path.sheet.with.main)
 
 ```
 
-## Mortality {.tabset .tabset-fade}
+## Mortality 
 
 
 ```{r, echo=FALSE, warning=FALSE,include=FALSE}
@@ -157,14 +157,20 @@ if("num_died" %in% names(raw.main)){
 }
 
 
-create.follow.up.requests(checks_followups,loop_data = NULL, paste0("Mort_followup_requests.xlsm"), use_template = T)
-options(warn=0)
-cat("\n\n#############################################################################################\n")
-cat("Logical checks are flagged and a file is created for follow up in \noutput/checking/requests/ with follow_up_requests in the title. \nPlease check the READ_ME file for information on filling the file.\n")
-cat("#############################################################################################\n")
+if(nrow(checks_followups) > 0){
+  create.follow.up.requests(checks_followups,loop_data = NULL, paste0("Mort_followup_requests.xlsm"), use_template = T)
+  options(warn=0)
+  cat("\n\n#############################################################################################\n")
+  cat("Logical checks are flagged and a file is created for follow up in \noutput/checking/requests/ with follow_up_requests in the title. \nPlease check the READ_ME file for information on filling the file.\n")
+  cat("#############################################################################################\n")
+} else {
+  cat("\n\n#############################################################################################\n")
+  cat(" No logical checks were flagged!!. All good with cleaning for Mortality")
+  cat("#############################################################################################\n")
+}
 ```
 
-<h5>Number of detected entries with Respondent reported more than 2 death in the HH:<strong> `r nrow(checks_followups %>% filter(check.id == 1))`</strong></h5>
+<h5>Number of detected entries with Respondent reported more than 2 death in the HH:<strong> `r if(nrow(checks_followups)>0) {nrow(checks_followups %>% filter(check.id == 1)%>% distinct(uuid) )}else {0}`</strong></h5>
 
 ```{r}
 if(nrow(checks_followups)>0){

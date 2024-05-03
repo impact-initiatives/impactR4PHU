@@ -9,7 +9,6 @@ strings <- c(
   out_date = stringr::str_sub(stringr::str_remove_all(Sys.Date(), '-'), 3)
 )
 
-
 type_assessment <- tcltk::tk_select.list(c("Household",
                                            "Individual"), title = "Asessment Level")
 if(type_assessment == "Individual"){

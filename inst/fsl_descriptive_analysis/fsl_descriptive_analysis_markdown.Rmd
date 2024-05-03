@@ -41,12 +41,7 @@ htmltools::img(src = knitr::image_uri("resources/Logo_Reach_RGB_1.png"),
 
   source("src/format_dataset.R")  # <- additional indicators and grouping variables are added here 
   
-  for(sheet in names(data.list)){
-    data.list[[sheet]] <- data.list[[sheet]] %>% 
-      mutate(overall = "overall",
-             weight = 1) %>% 
-      mutate_at(vars(everything()),~ifelse(. == "",NA,.))
-  } 
+
   # all additional columns from data that need to be included in srvyr designs (need to be present in all sheets):
   special_vars <- c("overall", "weight", daf$admin) %>% unique  
 
@@ -100,20 +95,19 @@ htmltools::img(src = knitr::image_uri("resources/Logo_Reach_RGB_1.png"),
   
 ```
 
-# {.tabset}
+# {.tabset .tabset-fade}
 
 ## Introduction
 
-
 ```{r, results='asis'}
 cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",3), collapse=""), " ", "What is this tool?"))
-cat('\nThe IPHRA Tabular Analysis is an analytical platform that presents a multitude of quantitative data tables. It encompasses a wide range of indicators collected through the IPHRA assessment process, empowering users to examine and interpret complex datasets effectively. This tool is structured to support understanding the distribution of your data and support you writing your factsheets/outputs/reports, and create other visualizations.')
+cat('\nThe FSL Descriptive Analysis is an analytical platform that presents a multitude of quantitative data tables. It encompasses a wide range of FSL indicators collected through the assessment process, empowering users to examine and interpret complex datasets effectively. This tool is structured to support understanding the distribution of your data and support you writing your factsheets/outputs/reports, and create other visualizations.')
 cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",3), collapse=""), " ", "What is in this tool?"))
 cat('\nWithin this tool, users will find a wealth of information organized into distinct categories, each pertaining to critical aspects of humanitarian analysis:')
 cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",4), collapse=""), " ", "Food Security and Livelihood (FSL)"))
 cat('\nExplore data on food availability, accessibility, and livelihood resources.')
 cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",3), collapse=""), " ", "What else to know?"))
-cat('\nAs you saw in the output folder, you will have another excel file outputed from the analysis script. The Excel file includes 4 sheets. The first 2 are all the tables that you see in the different sections of this HTML output. You can navigate to respective tables through the first sheet "Table of Contents". The third sheet is nothing more than just the tables shown in the MUAC/Nutrition tab. ')
+cat('\nAs you saw in the output folder, you will have another excel file outputed from the analysis script. The Excel file includes 2 sheets. The first 2 are all the tables that you see in the different sections of this HTML output. You can navigate to respective tables through the first sheet "Table of Contents".')
 cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",3), collapse=""), " ", "Feedback"))
 cat('\nFeedback on improvements to this product can be done through reaching out to:\n\n-abraham.azar@impact-initiatives.org \n\n -impact.geneva.phu@impact-initiatives.org')
 ```
@@ -192,6 +186,28 @@ for (i in sections){
     
   }
   close(pb)
+}
+
+```
+
+```{r message=TRUE, warning=FALSE, include=FALSE}
+## output XLSX files
+file.list <- list.files(path = params['combine_folder'], pattern = "*.xlsx")
+file.list <- setNames(file.list, paste0(params['combine_folder'], file.list))
+df <- lapply(names(file.list), readxl::read_excel)
+names(df) <- stringr::str_remove(file.list, ".xlsx")
+
+sorted_df <- df
+
+save.dfs(sorted_df,paste0("output/FSL_combined_analysis_toc_", strings['out_date'], ".xlsx"), use_template = F)
+
+for (i in 1:length(names(sorted_df))){
+  if (nchar(names(sorted_df)[i]) > 31){
+    names(sorted_df)[i] <- stringr::str_trunc(names(sorted_df)[i], 28)
+    names(sorted_df)[i] <- paste0(names(sorted_df)[i],i)
+  } else{
+    names(sorted_df) <- names(sorted_df)
+  }
 }
 
 ```
