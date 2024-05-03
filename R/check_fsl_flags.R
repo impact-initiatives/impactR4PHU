@@ -316,16 +316,18 @@ check_fsl_flags <- function(.dataset,
                                                            !!rlang::sym(fsl_rcsi_score) <= 4, 1, 0 ))),
                     flag_high_rcsi = ifelse(is.na(!!rlang::sym(fsl_rcsi_score)), NA,
                                             ifelse(!!rlang::sym(fsl_rcsi_score) >= 43, 1, 0)))
-    if(!num_children %in% names(.dataset)) {
-      warning("num_children argument incorrect or not available in the dataset.")
-      .dataset <- .dataset %>%
-        dplyr::mutate(flag_rcsi_children = NA)
-    } else{
-      .dataset <- .dataset %>%
-        dplyr::mutate(flag_rcsi_children = ifelse(is.na(!!rlang::sym(fsl_rcsi_mealadult)) |
-                                                    is.na(!!rlang::sym(num_children)), NA,
-                                                  ifelse(as.numeric(!!rlang::sym(fsl_rcsi_mealadult)) > 0 &
-                                                           as.numeric(!!rlang::sym(num_children)) == 0, 1,0)))
+    if(!is.null(num_children)){
+      if(!num_children %in% names(.dataset)) {
+        warning("num_children argument incorrect or not available in the dataset.")
+        .dataset <- .dataset %>%
+          dplyr::mutate(flag_rcsi_children = NA)
+      } else{
+        .dataset <- .dataset %>%
+          dplyr::mutate(flag_rcsi_children = ifelse(is.na(!!rlang::sym(fsl_rcsi_mealadult)) |
+                                                      is.na(!!rlang::sym(num_children)), NA,
+                                                    ifelse(as.numeric(!!rlang::sym(fsl_rcsi_mealadult)) > 0 &
+                                                             as.numeric(!!rlang::sym(num_children)) == 0, 1,0)))
+      }
     }
     .dataset <- .dataset %>%
       dplyr::mutate(flag_fcsrcsi_box = dplyr::case_when(is.na(!!rlang::sym(fsl_rcsi_score)) |
@@ -398,17 +400,22 @@ check_fsl_flags <- function(.dataset,
                                                                                   label_colname = label_colname)))]
     )
 
-
-    if(length(agric)>0){
-      .dataset$flag_lcsi_liv_agriculture <-  dplyr::case_when(rowSums(sapply(.dataset[agric], function(i) grepl(fsl_lcsi_yes_value,i))) > 0 & rowSums(sapply(.dataset[income_types], function(i) grepl(sell_agri_prod,i))) > 0 ~ 1, TRUE ~ 0)
+    if(!is.null(income_types)){
+      if(all(income_types %in% names(.dataset))){
+        if(length(agric)>0){
+          .dataset$flag_lcsi_liv_agriculture <-  dplyr::case_when(rowSums(sapply(.dataset[agric], function(i) grepl(fsl_lcsi_yes_value,i))) > 0 & rowSums(sapply(.dataset[income_types], function(i) grepl(sell_agri_prod,i))) > 0 ~ 1, TRUE ~ 0)
+        }
+        if(length(livest)>0){
+          .dataset$flag_lcsi_liv_livestock  <- dplyr::case_when(rowSums(sapply(.dataset[livest], function(i) grepl(fsl_lcsi_yes_value,i))) > 0 & rowSums(sapply(.dataset[income_types], function(i) grepl(sell_anim_prod,i))) > 0 ~ 1, TRUE ~ 0)
+        }
+      }
     }
-
-    if(length(livest)>0){
-      .dataset$flag_lcsi_liv_livestock  <- dplyr::case_when(rowSums(sapply(.dataset[livest], function(i) grepl(fsl_lcsi_yes_value,i))) > 0 & rowSums(sapply(.dataset[income_types], function(i) grepl(sell_anim_prod,i))) > 0 ~ 1, TRUE ~ 0)
-    }
-
-    if(length(displ)>0){
-      .dataset$flag_lcsi_displ <- dplyr::case_when(rowSums(sapply(.dataset[displ], function(i) grepl(fsl_lcsi_yes_value,i))) > 0 & .dataset[residency_status] == value_idp ~ 1, TRUE ~ 0)
+    if(!is.null(residency_status)){
+      if(residency_status %in% names(.dataset)){
+        if(length(displ)>0){
+          .dataset$flag_lcsi_displ <- dplyr::case_when(rowSums(sapply(.dataset[displ], function(i) grepl(fsl_lcsi_yes_value,i))) > 0 & .dataset[residency_status] == value_idp ~ 1, TRUE ~ 0)
+        }
+      }
     }
   }
 

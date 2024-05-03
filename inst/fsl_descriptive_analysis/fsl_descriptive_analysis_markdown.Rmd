@@ -1,5 +1,5 @@
 ---
-title: "FSL Analysis Report"
+title: "FSL Descriptive Analysis Report"
 subtitle: "`r Sys.Date()`"
 output: html_document
 ---

@@ -19,6 +19,10 @@ create_fsl_plaus(
   fsl_rcsi_mealsize = "fsl_rcsi_mealsize",
   fsl_rcsi_mealadult = "fsl_rcsi_mealadult",
   fsl_rcsi_mealnb = "fsl_rcsi_mealnb",
+  fsl_fcs_score = "fsl_fcs_score",
+  fsl_rcsi_score = "fsl_rcsi_score",
+  fsl_hhs_score = "fsl_hhs_score",
+  fsl_hdds_score = "fsl_hdds_score",
   grouping = NULL,
   uuid = "uuid",
   short_report = FALSE,
@@ -54,6 +58,14 @@ fcs/rcsi/hhs/hdds/fcm/fclcm add_x indicators}
 \item{fsl_rcsi_mealadult}{Column representing question- During the last 7 days, were there days (and, if so, how many) when your household had to restrict consumption by adults in order for small children to eat to cope with a lack of food or money to buy it?}
 
 \item{fsl_rcsi_mealnb}{Column representing question - During the last 7 days, were there days (and, if so, how many) when your household had to reduce number of meals eaten in a day to cope with a lack of food or money to buy it?}
+
+\item{fsl_fcs_score}{Column representing FCS Score}
+
+\item{fsl_rcsi_score}{Column representing rCSI Score}
+
+\item{fsl_hhs_score}{Column representing HHS Score}
+
+\item{fsl_hdds_score}{Column representing HDDS Score}
 
 \item{grouping}{the name of the variable that indicates the grouping variable - usually "enumerator"}
 

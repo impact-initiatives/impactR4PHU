@@ -70,7 +70,8 @@ globalVariables(unique(c(
   "plaus_age_ratio_under6m_6to23m.pvalue","plaus_prop_flag_high_mdd_low_mmf","plaus_mad_ratio.pvalue","iycf_plaus_score",
   # create_fsl_plaus
   "fsl_fcs_score","n","fsl_fc_phase","flag_fsl_fc_cell","fsl_fc_cell",
-  "p1","p2","p3","p4","p5",
+  "p1","p2","p3","p4","p5",  "fsl_fcs_score_notna",
+  "fsl_rcsi_score_notna","fsl_hhs_score_notna","fsl_hdds_score_notna",
   # get.label:
   "name",
   # create_mortality_long_df

@@ -1,0 +1,3 @@
+Binding: create_fsl_descriptive_analysis_template
+Title: FSL Descriptive Analysis Template
+OpenFiles: run_fsl_descriptive_analysis.R

@@ -938,7 +938,16 @@ if(!file.exists("inputs/environment.Rdata")) {
     enumerator <- svDialogs::dlg_input(message= "Enter the name of the Enumerator Column","enumerator")$res
   }
 }
-
+  all_vars <- ls()
+  is_empty <- function(x) {
+  obj <- get(x)
+  length(obj) == 0 || is.null(obj) ||  (is.character(obj) && all(obj == ""))
+  }
+  empty_vars <- all_vars[sapply(all_vars, is_empty)]
+  
+  for (i in empty_vars) {
+    assign(i, NULL)
+  }
 
 ## FCS
 raw.flag.fcs <- raw.main %>%

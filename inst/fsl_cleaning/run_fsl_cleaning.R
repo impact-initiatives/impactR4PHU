@@ -8,8 +8,7 @@ library(tidyverse)
 strings <- c(
   out_date = stringr::str_sub(stringr::str_remove_all(Sys.Date(), '-'), 3)
 )
-file <- list.files(pattern = ".Rmd", full.names = T)
 
-rmarkdown::render(file,
+rmarkdown::render("fsl_cleaning_markdown.Rmd",
                   output_file = paste0("output/", "FSL_Cleaning_", strings['out_date'],".html"))
 cat("\n> Quality Check completed! You can check your output folder.")
