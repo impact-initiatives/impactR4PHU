@@ -1,0 +1,508 @@
+---
+title: "Mortality Descriptive Analysis Report"
+subtitle: "`r Sys.Date()`"
+output: html_document
+---
+
+<style>
+.tocify-subheader {
+  font-size: 0.7em;
+}
+.tocify-item {
+  font-size: 0.85em;
+  padding-left: 25px;
+  text-indent: 0;
+}
+</style>
+
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE)
+options(scipen = 999)
+```
+
+```{r logo, echo=FALSE}
+htmltools::img(src = knitr::image_uri("resources/Logo_Reach_RGB_1.png"),
+               alt = "REACH logo",
+               style = 'position:absolute; top:0; right:0; padding:0; margin:20; width:250px')
+```
+
+```{r, include=FALSE, eval=TRUE}
+if(file.exists("inputs/environment.Rdata")) {
+  load("inputs/environment.Rdata")
+}
+
+path.raw <- svDialogs::dlg_open(multiple = F, title = "Please select your data excel file.")$res
+path.tool <- svDialogs::dlg_open(multiple = F, title = "Please select your Kobo tool file.")$res
+tool.survey <- readxl::read_excel(path.tool, "survey")
+tool.choices <- readxl::read_excel(path.tool, "choices")
+main.sheets <- readxl::excel_sheets(path.raw)
+if(!file.exists("inputs/environment.Rdata")){
+  label_colname <- tcltk::tk_select.list(names(tool.survey)[grepl("label",names(tool.survey))], title = "Label column to choose", multiple = F)
+  path.sheet.with.main <- tcltk::tk_select.list(main.sheets, title = "Main Sheet", multiple = F)
+}
+
+raw.main <- readxl::read_excel(path.raw, path.sheet.with.main)
+
+```
+
+# {.tabset .tabset-fade}
+
+## Introduction
+
+```{r, results='asis'}
+cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",3), collapse=""), " ", "What is this tool?"))
+cat('\nThe Mortality Descriptive Analysis is an analytical platform that presents a multitude of quantitative data tables. It encompasses a wide range of Mortality indicators collected through the assessment process, empowering users to examine and interpret complex datasets effectively. This tool is structured to support understanding the distribution of your data and support you writing your factsheets/outputs/reports, and create other visualizations.')
+cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",3), collapse=""), " ", "What is in this tool?"))
+cat('\nWithin this tool, users will find a wealth of information organized into distinct categories, each pertaining to critical aspects of humanitarian analysis:')
+cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",4), collapse=""), " ", "Mortality"))
+cat('\nExplore data on mortality.')
+cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",3), collapse=""), " ", "What else to know?"))
+cat('\nYou will have an HTML file outputed from the analysis script including number of deaths/joiners/leavers/births and crude and birth rates.')
+cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",3), collapse=""), " ", "Feedback"))
+cat('\nFeedback on improvements to this product can be done through reaching out to:\n\n-abraham.azar@impact-initiatives.org \n\n -impact.geneva.phu@impact-initiatives.org')
+```
+
+## Mortality 
+
+
+```{r, echo=FALSE, warning=FALSE,include=FALSE}
+if(!file.exists("inputs/environment.Rdata")) {
+  ## Detect date of data collection column
+  date_dc <- names(raw.main)[grepl("today",names(raw.main))]
+  if(length(date_dc) == 1){
+    yes_no <- svDialogs::dlg_message(paste0("Is '", date_dc, "' the correct date of data collection column?"), type = "yesno")$res
+    if(yes_no == "no"){
+      date_dc <- svDialogs::dlg_input(message= "Enter the name of the date of data collection column","date_dc")$res
+    }
+  } else if (length(date_dc) > 1){
+    date_dc <- tcltk::tk_select.list(date_dc, title = "Date of data collection column")
+  } else if (length(date_dc) == 0) {
+    date_dc <- svDialogs::dlg_input(message= "Enter the name of the date of data collection column","date_dc")$res
+  }
+  
+  ## Detect Recall date column
+  date_recall_event <- names(raw.main)[grepl("recall",names(raw.main))]
+  if(length(date_recall_event) == 1){
+    yes_no <- svDialogs::dlg_message(paste0("Is '", date_recall_event, "' the correct recall date column?"), type = "yesno")$res
+    if(yes_no == "no"){
+      date_recall_event <- svDialogs::dlg_input(message= "Enter the name of the recall date column","date_recall_event")$res
+    }
+  } else if (length(date_recall_event) > 1){
+    date_recall_event <- tcltk::tk_select.list(date_recall_event, title = "Recall date column")
+  } else if (length(date_recall_event) == 0) {
+    date_recall_event <- svDialogs::dlg_input(message= "Enter the name of the recall date column","date_recall_event")$res
+  }
+  
+  ## Detect Enumerator column
+  enumerator <- names(raw.main)[grepl("enum|team",names(raw.main))]
+  
+  if(length(enumerator) == 1){
+    yes_no <- svDialogs::dlg_message(paste0("Is '", enumerator, "' the correct enumerator column?"), type = "yesno")$res
+    if(yes_no == "no"){
+      enumerator <- svDialogs::dlg_input(message= "Enter the name of the Enumerator Column","enumerator")$res
+    }
+  } else if (length(enumerator) > 1){
+    enumerator <- tcltk::tk_select.list(enumerator, title = "Enumerator Column")
+  } else if (length(enumerator) == 0) {
+    enumerator <- svDialogs::dlg_input(message= "Enter the name of the Enumerator Column","enumerator")$res
+  }
+  
+  ## Detect Admin1 column
+  admin1 <- names(raw.main)[grepl("admin",names(raw.main))]
+  
+  if(length(admin1) == 1){
+    yes_no <- svDialogs::dlg_message(paste0("Is '", admin1, "' the correct admin1 column?"), type = "yesno")$res
+    if(yes_no == "no"){
+      admin1 <- svDialogs::dlg_input(message= "Enter the name of the Admin 1 Column","admin1")$res
+    }
+  } else if (length(admin1) > 1){
+    admin1 <- tcltk::tk_select.list(admin1, title = "Admin 1 Column")
+  } else if (length(admin1) == 0) {
+    admin1 <- svDialogs::dlg_input(message= "Enter the name of the Admin 1 Column","admin1")$res
+  }
+  
+  ## Detect Admin1 column
+  admin2 <- names(raw.main)[grepl("admin",names(raw.main))]
+  
+  if(length(admin2) == 1){
+    yes_no <- svDialogs::dlg_message(paste0("Is '", admin2, "' the correct admin2 column?"), type = "yesno")$res
+    if(yes_no == "no"){
+      admin2 <- svDialogs::dlg_input(message= "Enter the name of the Admin 2 Column","admin2")$res
+    }
+  } else if (length(admin2) > 1){
+    admin2 <- tcltk::tk_select.list(admin2, title = "Admin 2 Column")
+  } else if (length(admin2) == 0) {
+    admin2 <- svDialogs::dlg_input(message= "Enter the name of the Admin 2 Column","admin2")$res
+  }
+  
+  ## Detect Cluster column
+  cluster <- names(raw.main)[grepl("cluster",names(raw.main))]
+  
+  if(length(cluster) == 1){
+    yes_no <- svDialogs::dlg_message(paste0("Is '", cluster, "' the correct cluster column?"), type = "yesno")$res
+    if(yes_no == "no"){
+      cluster <- svDialogs::dlg_input(message= "Enter the name of the Cluster Column","cluster")$res
+    }
+  } else if (length(cluster) > 1){
+    cluster <- tcltk::tk_select.list(cluster, title = "Cluster Column")
+  } else if (length(cluster) == 0) {
+    cluster <- svDialogs::dlg_input(message= "Enter the name of the Cluster Column","cluster")$res
+  }
+  
+  ## Detect uuid_main column
+  uuid_main <- names(raw.main)[grepl("uuid",names(raw.main))]
+  
+  if(length(uuid_main) == 1){
+    yes_no <- svDialogs::dlg_message(paste0("Is '", uuid_main, "' the correct HH UUID column in main data?"), type = "yesno")$res
+    if(yes_no == "no"){
+      uuid_main <- svDialogs::dlg_input(message= "Enter the name of the HH UUID Column in main data","uuid_main")$res
+    }
+  } else if (length(uuid_main) > 1){
+    uuid_main <- tcltk::tk_select.list(uuid_main, title = "HH UUID Column [Main Data]")
+  } else if (length(uuid_main) == 0) {
+    uuid_main <- svDialogs::dlg_input(message= "Enter the name of the HH UUID Column in main data","uuid_main")$res
+  }
+  
+    ## Detect num_hh column
+  num_hh <- names(raw.main)[grepl("household|num_hh|hh|family|fam",names(raw.main))]
+  
+  if(length(num_hh) == 1){
+    yes_no <- svDialogs::dlg_message(paste0("Is '", num_hh, "' the correct number of HH members column in main data?"), type = "yesno")$res
+    if(yes_no == "no"){
+      num_hh <- svDialogs::dlg_input(message= "Enter the number of HH members column in main data","num_hh")$res
+    }
+  } else if (length(num_hh) > 1){
+    num_hh <- tcltk::tk_select.list(num_hh, title = "Number of HH Column [Main Data]")
+  } else if (length(num_hh) == 0) {
+    num_hh <- svDialogs::dlg_input(message= "Enter the number of HH members column in main data","num_hh")$res
+  }
+  
+    ## Detect num_birth column
+    num_birth <- names(raw.main)[grepl("birth|num_birth|born|baby",names(raw.main))]
+  
+  if(length(num_birth) == 1){
+    yes_no <- svDialogs::dlg_message(paste0("Is '", num_birth, "' the correct number of Birth column in main data?"), type = "yesno")$res
+    if(yes_no == "no"){
+      num_birth <- svDialogs::dlg_input(message= "Enter the number of Birth column in main data","num_birth")$res
+    }
+  } else if (length(num_birth) > 1){
+    num_birth <- tcltk::tk_select.list(num_birth, title = "Number of Birth Column [Main Data]")
+  } else if (length(num_birth) == 0) {
+    num_birth <- svDialogs::dlg_input(message= "Enter the number of Birth column in main data","num_birth")$res
+  }
+  
+    ## Detect num_left column
+    num_left <- names(raw.main)[grepl("leaver|num_left|left",names(raw.main))]
+  
+  if(length(num_left) == 1){
+    yes_no <- svDialogs::dlg_message(paste0("Is '", num_left, "' the correct number of Leavers column in main data?"), type = "yesno")$res
+    if(yes_no == "no"){
+      num_left <- svDialogs::dlg_input(message= "Enter the number of Leavers column in main data","num_left")$res
+    }
+  } else if (length(num_left) > 1){
+    num_left <- tcltk::tk_select.list(num_left, title = "Number of Leavers Column [Main Data]")
+  } else if (length(num_left) == 0) {
+    num_left <- svDialogs::dlg_input(message= "Enter the number of Leavers column in main data","num_left")$res
+  }
+  
+    ## Detect num_join column
+    num_join <- names(raw.main)[grepl("joiner|num_join|join",names(raw.main))]
+  
+  if(length(num_join) == 1){
+    yes_no <- svDialogs::dlg_message(paste0("Is '", num_join, "' the correct number of Joiners column in main data?"), type = "yesno")$res
+    if(yes_no == "no"){
+      num_join <- svDialogs::dlg_input(message= "Enter the number of Joiners column in main data","num_join")$res
+    }
+  } else if (length(num_join) > 1){
+    num_join <- tcltk::tk_select.list(num_join, title = "Number of Joiners Column [Main Data]")
+  } else if (length(num_join) == 0) {
+    num_join <- svDialogs::dlg_input(message= "Enter the number of Joiners column in main data","num_join")$res
+  }
+    ## Detect num_died column
+    num_died <- names(raw.main)[grepl("death|num_died|dead",names(raw.main))]
+  
+  if(length(num_died) == 1){
+    yes_no <- svDialogs::dlg_message(paste0("Is '", num_died, "' the correct number of Death column in main data?"), type = "yesno")$res
+    if(yes_no == "no"){
+      num_died <- svDialogs::dlg_input(message= "Enter the number of Death column in main data","num_died")$res
+    }
+  } else if (length(num_died) > 1){
+    num_died <- tcltk::tk_select.list(num_died, title = "Number of Death Column [Main Data]")
+  } else if (length(num_died) == 0) {
+    num_died <- svDialogs::dlg_input(message= "Enter the number of Death column in main data","num_died")$res
+  }
+}
+  
+  all_vars <- ls()
+  is_empty <- function(x) {
+  obj <- get(x)
+  length(obj) == 0 || is.null(obj) ||  (is.character(obj) && all(obj == ""))
+  }
+  empty_vars <- all_vars[sapply(all_vars, is_empty)]
+  
+  for (i in empty_vars) {
+    assign(i, NULL)
+  }
+  
+  if(!is.null(date_dc)){
+    if(!purrr::is_empty(date_dc)){
+      if(date_dc %in% names(raw.main)){
+        raw.main <- raw.main %>%
+          dplyr::mutate(!!rlang::sym(date_dc) := ifelse(is.na(!!rlang::sym(date_dc)), NA,
+                                                        ifelse(nchar(!!rlang::sym(date_dc)) == 5,
+                                                               lubridate::as_date(as.numeric(!!rlang::sym(date_dc)), origin = "1899-12-30"),
+                                                               stringr::str_sub(string = !!rlang::sym(date_dc), start = 1, end = 10))))
+      }
+    }
+  }
+
+  if(!is.null(date_recall_event)){
+    if(!purrr::is_empty(date_recall_event)){
+      if(date_recall_event %in% names(raw.main)){
+        raw.main <- raw.main %>%
+          dplyr::mutate(!!rlang::sym(date_recall_event) := ifelse(is.na(!!rlang::sym(date_recall_event)), NA,
+                                                                  ifelse(nchar(!!rlang::sym(date_recall_event)) == 5,
+                                                                         lubridate::as_date(as.numeric(!!rlang::sym(date_recall_event)), origin = "1899-12-30"),
+                                                                         stringr::str_sub(string = !!rlang::sym(date_recall_event), start = 1, end = 10))))
+      }
+    }
+  }
+
+
+raw.main <- raw.main %>% 
+  filter(lubridate::as_date(!!rlang::sym(date_dc)) >= min_filter &
+           lubridate::as_date(!!rlang::sym(date_dc)) <= max_filter) %>% 
+  dplyr::rename(date_dc = date_dc,
+                date_recall = date_recall_event,
+                enumerator = enumerator,
+                num_hh = num_hh,
+                num_left = num_left,
+                num_join = num_join, 
+                num_birth = num_birth,
+                num_died = num_died)
+
+
+  if(!file.exists("inputs/environment.Rdata")) {
+    
+    if(c("date_dc") %in% names(raw.main)) {
+  
+      date_recodes <- c("mdy", "dmy", "ymd", "ydm", "NA")
+      unique_dates <- raw.main %>% dplyr::filter(!is.na(date_dc)) %>% dplyr::select(date_dc) %>% t %>% c %>% unique
+      date_dc_reformat <- svDialogs::dlg_input(message= paste0("Example of Date of Data collection values: ", if(length(unique_dates)>0) {unique_dates[[1]]}, " ", if(length(unique_dates)>1) {unique_dates[[2]]}, " ",if(length(unique_dates)>2) {unique_dates[[3]]},
+                                                "\n RE-FORMATTING VARIABLE : DATE OF DATA COLLECTION \n What is the date format for the DATE OF DATA COLLECTION column? Please input : \n 'mdy' for months-day-year, \n 'dmy' for day-months-year \n 'ymd' for year-month-day \n 'ydm' for year-day-month \n 'NA' for NA."))$res
+      while(length(setdiff(date_dc_reformat, date_recodes))==1) {
+        date_dc_reformat <- svDialogs::dlg_input(message= paste0("Example of Date of Data collection values: ", if(length(unique_dates)>0) {unique_dates[[1]]}, " ", if(length(unique_dates)>1) {unique_dates[[2]]}, " ",if(length(unique_dates)>2) {unique_dates[[3]]},
+                                                  "Invalid input. \n ", "\n RE-FORMATTING VARIABLE : DATE OF DATA COLLECTION \n How is DATE OF DATA COLLECTION formatted? Please input : \n  'mdy' for months-day-year, \n 'dmy' for day-months-year \n 'ymd' for year-month-day \n 'ydm' for year-day-month \n 'NA' for NA."))$res
+      }
+    }
+    
+    
+    if(c("date_recall") %in% names(raw.main)) {
+  
+      dob_recodes <- c("mdy", "dmy", "ymd", "ydm", "NA")
+      unique_dates <- raw.main %>% dplyr::filter(!is.na(date_recall)) %>% dplyr::select(date_recall) %>% t %>% c %>% unique
+  
+      date_recall_reformat <- svDialogs::dlg_input(message= paste0("Example of RECALL DATE value: ", if(length(unique_dates)>0) {unique_dates[[1]]}, " ", if(length(unique_dates)>1) {unique_dates[[2]]}, " ",if(length(unique_dates)>2) {unique_dates[[3]]},
+                                                "\n RE-FORMATTING VARIABLE : RECALL DATE \n What is the date format for the RECALL DATE formatted? Please input : \n 'mdy' for months-day-year, \n 'dmy' for day-months-year \n 'ymd' for year-month-day \n 'ydm' for year-day-month \n 'NA' for NA."))$res
+      while(length(setdiff(date_recall_reformat, dob_recodes))==1) {
+        date_recall_reformat <- svDialogs::dlg_input(message= paste0("Example of RECALL DATE value: ", if(length(unique_dates)>0) {unique_dates[[1]]}, " ", if(length(unique_dates)>1) {unique_dates[[2]]}, " ",if(length(unique_dates)>2) {unique_dates[[3]]},
+                                                  "Invalid input. \n", "\n RE-FORMATTING VARIABLE : RECALL DATE \n How is RECALL DATE formatted? Please input : \n  'mdy' for months-day-year, \n 'dmy' for day-months-year \n 'ymd' for year-month-day \n 'ydm' for year-day-month \n 'NA' for NA."))$res
+      }
+    }
+  }
+  
+  if(is.character(raw.main$date_dc)) {
+    raw.main <- raw.main %>% 
+      dplyr::mutate(date_dc = ifelse(date_dc == "", NA, date_dc))
+    }
+  
+  if(is.character(raw.main$date_recall)) {
+    raw.main <- raw.main %>% 
+      dplyr::mutate(date_recall = ifelse(date_recall == "", NA, date_recall))
+    }
+  
+  raw.main <- raw.main  %>%
+    dplyr::mutate(date_dc_date = lubridate::parse_date_time(date_dc, orders = date_dc_reformat),
+                  date_dc_month = lubridate::month(date_dc_date),
+                  date_dc_day = lubridate::day(date_dc_date),
+                  date_dc_year = lubridate::year(date_dc_date),
+                  date_dc_char = paste(date_dc_month, date_dc_day, date_dc_year, sep = "/"),
+                  date_dc_char = ifelse(is.na(date_dc_char), NA, ifelse(date_dc_char == "NA/NA/NA", NA, date_dc_char)),
+                  date_recall_date = lubridate::parse_date_time(date_recall, orders = date_recall_reformat),
+                  date_recall_month = lubridate::month(date_recall_date),
+                  date_recall_day = lubridate::day(date_recall_date),
+                  date_recall_year = lubridate::year(date_recall_date),
+                  date_recall = paste(date_recall_month, date_recall_day, date_recall_year, sep = "/"),
+                  date_recall = ifelse(is.na(date_recall), NA, ifelse(date_recall == "NA/NA/NA", NA, date_recall)))
+  
+  
+  if(!"num_join" %in% names(raw.main)){
+    raw.main <- raw.main %>% 
+      dplyr::mutate(num_join = NA)
+  }
+  
+  if(!"num_died" %in% names(raw.main)){
+    raw.main <- raw.main %>% 
+      dplyr::mutate(num_died = NA)
+  }
+  
+  if(!"num_birth" %in% names(raw.main)){
+    raw.main <- raw.main %>% 
+      dplyr::mutate(num_birth = NA)
+  }
+  
+  if(!"num_left" %in% names(raw.main)){
+    raw.main <- raw.main %>% 
+      dplyr::mutate(num_left = NA)
+  }
+  
+  list_of_var <- c("date_dc","date_recall_event","enumerator","admin1","admin2","cluster",
+                   "uuid_main","label_colname","path.sheet.with.main",
+                   "num_hh","num_join","num_left","num_birth","num_died",
+                   "date_dc_reformat","date_recall_reformat")
+  
+  if(!file.exists("inputs/environment.Rdata")){
+    save(list = list_of_var, file = "inputs/environment.Rdata")
+  }
+```
+
+
+### Results
+
+#### Number of Death/Joiners/Leavers & Person Time per Enumerator
+
+```{r, include=FALSE}
+raw.main <- raw.main %>% 
+  dplyr::mutate(num_days = as.numeric(date_dc_date - date_recall_date),
+                pt_total = num_days * as.numeric(num_hh),
+                pt_left = ifelse(is.na(num_left), 0,num_days * as.numeric(num_left) * 0.5),
+                pt_join = ifelse(is.na(num_join), 0,num_days * as.numeric(num_join) * 0.5),
+                pt_died = ifelse(is.na(num_died), 0,num_days * as.numeric(num_died)* 0.5),
+                pt_birth = ifelse(is.na(num_birth), 0,num_days * as.numeric(num_birth)* 0.5),
+                person_time = pt_total + pt_died + pt_left - pt_birth - pt_join)
+
+
+table_djl_enum <- raw.main %>% 
+  dplyr::group_by(enumerator) %>% 
+  dplyr::summarise(Leavers = sum(as.numeric(num_left), na.rm = T),
+                   Joiners = sum(as.numeric(num_join), na.rm = T),
+                   Death = sum(as.numeric(num_died), na.rm = T),
+                   Birth = sum(as.numeric(num_birth), na.rm = T),
+                   `Person Time` = sum(as.numeric(person_time), na.rm = T)) %>% 
+  dplyr::mutate(enumerator = as.character(enumerator))
+
+total <- raw.main %>% 
+  dplyr::group_by() %>% 
+  dplyr::summarise(Leavers = sum(as.numeric(num_left), na.rm = T),
+                   Joiners = sum(as.numeric(num_join), na.rm = T),
+                   Death = sum(as.numeric(num_died), na.rm = T),
+                   Birth = sum(as.numeric(num_birth), na.rm = T),
+                   `Person Time` = sum(as.numeric(person_time), na.rm = T)) %>% 
+  dplyr::mutate(enumerator = "Total") %>% 
+  dplyr::relocate(enumerator, .before = 1)
+
+table_djl_enum <- bind_rows(table_djl_enum, total)
+```
+
+```{r, results='asis'}
+DT::datatable(table_djl_enum)
+```
+
+#### Mortality Rates
+
+```{r, include=FALSE}
+results_mort <- raw.main %>% 
+  dplyr::group_by() %>% 
+  dplyr::summarise(total_persontime = sum(as.numeric(person_time), na.rm = T), 
+                   deaths = sum(as.numeric(num_died), na.rm = T),
+                   births = sum(as.numeric(num_birth), na.rm = T)) %>% 
+  dplyr::mutate(cdr = deaths / (total_persontime),
+                cdr_se = sqrt((cdr * (1 - cdr)) / total_persontime),
+                cdr_lower_ci = round((cdr - 1.96*cdr_se)*10000,3),
+                cdr_lower_ci = ifelse(cdr_lower_ci < 0, 0, cdr_lower_ci),
+                cdr_upper_ci = round((cdr + 1.96*cdr_se)*10000,3),
+                birth_rate = births / (total_persontime/365),
+                birth_rate_se = sqrt((birth_rate * (1 - birth_rate)) / (total_persontime/365)),
+                birth_rate_lower_ci = round((birth_rate - 1.96*birth_rate_se)*1000,3),
+                birth_rate_upper_ci = round((birth_rate + 1.96*birth_rate_se)*1000,3),
+                cdr = round(cdr*10000,6),
+                birth_rate = round(birth_rate*1000,3),
+                cdr_ci = paste0(cdr, " [", cdr_lower_ci, " - ", cdr_upper_ci, "]"),
+                birth_rate_ci = paste0(birth_rate, " [", birth_rate_lower_ci, " - ", birth_rate_upper_ci, "]"))
+
+
+crude <- results_mort %>%
+  dplyr::mutate(`point.est` = as.numeric(cdr),
+                `95%lci` = as.numeric(stringr::str_extract(cdr_ci,"(?<=\\[)[^\\s\\-]*")),
+                `95%uci` = as.numeric(stringr::str_remove(stringr::str_extract(cdr_ci,"(?<=-)[^\\]]*")," "))) %>% 
+  dplyr::select(`point.est`,`95%lci`,`95%uci`) %>% 
+  dplyr::mutate(variable = "cmr")
+  
+results.summary <- crude %>% 
+  dplyr::relocate(variable, .before = 1)
+```
+
+```{r, results='asis'}
+DT::datatable(results.summary)
+```
+
+```{r, include=FALSE}
+plot_results.summary <- ggplot2::ggplot(results.summary %>% 
+                                               mutate(variable = case_when(variable == "cmr"~"Crude")),
+                                        ggplot2::aes(x = variable)) +
+  ggplot2::geom_hline(yintercept=1, linetype='dotted', color = 'black', size =1)+
+  ggplot2::geom_errorbar(ggplot2::aes(ymin =`95%lci`, ymax = `95%uci`, width = 0.2, color = "red"))+
+  ggplot2::geom_text(ggplot2::aes(x = variable, y = `95%lci`, label = `95%lci`, vjust = 1.5, color = "red", fontface = "bold"), size = 3)+
+  ggplot2::geom_text(ggplot2::aes(x = variable, y = `95%uci`, label = `95%uci`, vjust = -0.5, color = "red", fontface = "bold"), size = 3)+
+  ggplot2::geom_point(ggplot2::aes(y = point.est), color = "blue")+
+  ggplot2::geom_text(ggplot2::aes(x = variable, y = point.est, label = point.est, hjust = -0.5), size = 3, color = "blue", fontface = "bold")+
+  ggplot2::scale_y_continuous(limits=c(0, if(max(results.summary$`95%uci`)<2){
+    2
+  } else {
+    max(results.summary$`95%uci`)
+  }))+
+  ggplot2::theme(legend.position = "none", axis.title.y = ggplot2::element_blank())+
+  ggplot2::xlab("Overall Mortality Rates")+ 
+  ggplot2::labs(caption = c("Black Dotted Line: Crude Threshold (WHO)")) + 
+  ggplot2::theme(plot.caption = ggplot2::element_text(hjust = c(0.5),color = c("black")))
+```
+
+```{r}
+plot_results.summary
+```
+
+#### Birth Rates
+
+```{r, include=FALSE}
+birth <- results_mort %>%
+  dplyr::mutate(`point.est` = as.numeric(birth_rate),
+                `95%lci` = as.numeric(stringr::str_extract(birth_rate_ci,"(?<=\\[)[^\\s\\-]*")),
+                `95%uci` = as.numeric(stringr::str_remove(stringr::str_extract(birth_rate_ci,"(?<=-)[^\\]]*")," "))) %>% 
+  dplyr::select(`point.est`,`95%lci`,`95%uci`) %>% 
+  dplyr::mutate(variable = "Birth")
+  
+results.summary.birth <- birth %>% 
+  dplyr::relocate(variable, .before = 1)
+```
+
+```{r, results='asis'}
+DT::datatable(results.summary.birth)
+```
+
+```{r, include=FALSE}
+plot_results.summary.birth <- ggplot2::ggplot(results.summary.birth, ggplot2::aes(x = variable)) +
+  ggplot2::geom_errorbar(ggplot2::aes(ymin =`95%lci`, ymax = `95%uci`, width = 0.2, color = "red"))+
+  ggplot2::geom_text(ggplot2::aes(x = variable, y = `95%lci`, label = `95%lci`, vjust = 1.5, color = "red", fontface = "bold"), size = 3)+
+  ggplot2::geom_text(ggplot2::aes(x = variable, y = `95%uci`, label = `95%uci`, vjust = -0.5, color = "red", fontface = "bold"), size = 3)+
+  ggplot2::geom_point(ggplot2::aes(y = point.est), color = "blue")+
+  ggplot2::geom_text(ggplot2::aes(x = variable, y = point.est, label = point.est, hjust = -0.5), size = 3, color = "blue", fontface = "bold")+
+  ggplot2::scale_y_continuous(limits=c(0, max(results.summary.birth$`95%uci`)))+
+  ggplot2::theme(legend.position = "none", axis.title.y = ggplot2::element_blank())+
+  ggplot2::xlab("Overall Birth Rates")
+```
+
+```{r}
+plot_results.summary.birth
+```

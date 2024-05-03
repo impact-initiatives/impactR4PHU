@@ -1073,13 +1073,44 @@ if(all(fclcm_check_columns %in% names(main))) {
 
 data.list$main <- main
 
+yes_no_weight <- svDialogs::dlg_message("Is your data weighted?", type = "yesno")$res
+if(yes_no_weight == "yes"){
+  weight <- names(data.list$main)[grepl("weight",names(data.list$main))]
+  if(length(weight) == 1){
+    yes_no <- svDialogs::dlg_message(paste0("Is '", weight, "' the correct weight column?"), type = "yesno")$res
+    if (yes_no == "no") {
+      weight <- svDialogs::dlg_input(message= "Enter the name of the fsl_hdds_condiments","weight")$res
+    }
+  } else if (length(weight) > 1){
+    weight <- tcltk::tk_select.list(weight, title = "Weight column")
+  } else if (length(weight) == 0) {
+    weight <- svDialogs::dlg_input(message= "Enter the name of the weight column","weight")$res
+  }
+} else {
+  weight <- 1
+}
+if(yes_no_weight == "yes"){
+  for(sheet in names(data.list)){
+    data.list[[sheet]] <- data.list[[sheet]] %>%
+      mutate(overall = "overall",
+             weight = !!rlang::sym(weight)) %>%
+      mutate_at(vars(everything()),~ifelse(. == "",NA,.))
+  }
+} else {
+  for(sheet in names(data.list)){
+    data.list[[sheet]] <- data.list[[sheet]] %>%
+      mutate(overall = "overall",
+             weight = 1) %>%
+      mutate_at(vars(everything()),~ifelse(. == "",NA,.))
+  }
+}
 list_of_var <- c("FSL_indicators","fsl_daf_variable","fsl_fcs_cereal","fsl_fcs_legumes",
                  "fsl_fcs_veg","fsl_fcs_fruit","fsl_fcs_meat","fsl_fcs_dairy","fsl_fcs_sugar",
                  "fsl_fcs_oil","fsl_rcsi_lessquality","fsl_rcsi_borrow","fsl_rcsi_mealsize","fsl_rcsi_mealadult",
                  "fsl_rcsi_mealnb","fsl_hhs_nofoodhh","fsl_hhs_nofoodhh_freq","fsl_hhs_sleephungry","fsl_hhs_sleephungry_freq",
                  "fsl_hhs_alldaynight","fsl_hhs_alldaynight_freq","yes_answer","no_answer","rarely_answer","sometimes_answer","often_answer",
-                 "fsl_lcsi_stress1","fsl_lcsi_stress2","fsl_lcsi_stress3","fsl_lcsi_stress4",
-                 "fsl_lcsi_crisis1","fsl_lcsi_crisis2","fsl_lcsi_crisis3","fsl_lcsi_emergency1",
+                 "fsl_lcsi_stress1","fsl_lcsi_stress2","fsl_lcsi_stress3","fsl_lcsi_stress4","yes_no_weight",
+                 "fsl_lcsi_crisis1","fsl_lcsi_crisis2","fsl_lcsi_crisis3","fsl_lcsi_emergency1","weight",
                  "fsl_lcsi_emergency2","fsl_lcsi_emergency3","yes_val","no_val","exhausted_val","not_applicable_val",
                  "fsl_hdds_cereals","fsl_hdds_tubers","fsl_hdds_veg","fsl_hdds_fruit","fsl_hdds_meat",
                  "fsl_hdds_eggs","fsl_hdds_fish","fsl_hdds_legumes","fsl_hdds_dairy","fsl_hdds_oil","fsl_hdds_sugar","fsl_hdds_condiments",
