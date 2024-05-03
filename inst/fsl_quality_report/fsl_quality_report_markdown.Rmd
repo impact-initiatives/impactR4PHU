@@ -952,7 +952,7 @@ if(!file.exists("inputs/environment.Rdata")) {
   } else {
       value_idp <- NULL
   }
-  ## Detect Enumerator column
+  ## Detect Team column
   yes_no_team <- svDialogs::dlg_message(paste0("Is there teams of enumerators?"), type = "yesno")$res
   if(yes_no_team == "yes"){
     team <- names(raw.main)[grepl("team|organization|organisation",names(raw.main))]

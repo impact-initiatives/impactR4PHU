@@ -40,7 +40,7 @@ add_persontime <- function(df_mortality, smart = FALSE) {
                                                    person_time = ifelse(is.na(date_death_date), person_time,
                                                                         ifelse(!is.na(date_join_date) & !is.na(join), person_time,
                                                                                ifelse(!is.na(date_birth_date) & !is.na(birth), person_time,
-                                                                                      ifelse(!is.na(death), as.numeric(lubridate::days(date_death_date - date_recall_date)/86400), person_time)))),
+                                                                                      ifelse(!is.na(death), as.numeric(lubridate::days(date_death_date - date_recall_date))/86400, person_time)))),
                                                    person_time = ifelse(person_time >= 86400, person_time /86400, person_time))
 
 
