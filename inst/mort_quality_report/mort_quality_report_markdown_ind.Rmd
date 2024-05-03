@@ -88,6 +88,25 @@ if(!file.exists("inputs/environment.Rdata")) {
     date_recall_event <- svDialogs::dlg_input(message= "Enter the name of the recall date column","date_recall_event")$res
   }
   
+  ## Detect Team column
+  yes_no_team <- svDialogs::dlg_message(paste0("Is there teams of enumerators?"), type = "yesno")$res
+  if(yes_no_team == "yes"){
+    team <- names(raw.main)[grepl("team|organization|organisation",names(raw.main))]
+    
+    if(length(team) == 1){
+      yes_no <- svDialogs::dlg_message(paste0("Is '", team, "' the correct team/organization column?"), type = "yesno")$res
+      if(yes_no == "no"){
+        team <- svDialogs::dlg_input(message= "Enter the name of the team/organization Column","enumerator")$res
+      }
+    } else if (length(team) > 1){
+      team <- tcltk::tk_select.list(team, title = "Team/Organization Columns")
+    } else if (length(team) == 0) {
+      team <- svDialogs::dlg_input(message= "Enter the name of the team/organization Column","team")$res
+    }
+  } else {
+    team <- NULL
+  }
+  
   ## Detect Enumerator column
   enumerator <- names(raw.main)[grepl("enum|team",names(raw.main))]
   
@@ -544,6 +563,11 @@ if(!file.exists("inputs/environment.Rdata")) {
             num_join <- svDialogs::dlg_input(message= "Enter the number of Joiners column in main data","num_join")$res
           }
       }
+  } else {
+    collect_num_join_left <- "no"
+    num_join <- NULL
+    num_left <- NULL
+    
   }
   
   all_vars <- ls()
@@ -1058,7 +1082,7 @@ df_mortality_long <- impactR4PHU::create_mortality_long_df(df_main = raw.main,
                      "label_colname","path.sheet.with.main","collect_num_join_left","num_join","num_left",
                      "path.sheet.with.roster","path.sheet.with.leavers","path.sheet.with.death", "dates_collected",
                      "male","female","date_dc_reformat","date_recall_reformat","date_join_reformat",
-                     "date_birth_reformat","date_left_reformat","date_death_reformat",
+                     "date_birth_reformat","date_left_reformat","date_death_reformat","yes_no_team","team",
                      "unknown", "injury_trauma", "illness", "no_demo_values", "yes_demo_values",
                      "current_location","during_migration","last_place","other_place")
   } else {
@@ -1071,7 +1095,7 @@ df_mortality_long <- impactR4PHU::create_mortality_long_df(df_main = raw.main,
                      "label_colname","path.sheet.with.main","collect_num_join_left","num_join","num_left",
                      "path.sheet.with.roster","path.sheet.with.death", "dates_collected",
                      "male","female","date_dc_reformat","date_recall_reformat","date_join_reformat",
-                     "date_birth_reformat","date_left_reformat","date_death_reformat",
+                     "date_birth_reformat","date_left_reformat","date_death_reformat","yes_no_team","team",
                      "unknown", "injury_trauma", "illness", "no_demo_values", "yes_demo_values",
                      "current_location","during_migration","last_place","other_place")
   }
@@ -1177,8 +1201,8 @@ mort <- flextable::flextable(overall_mort_plaus_overall)
 final_table <- impactR4PHU::create_plaus_table_nut_mort(mort)
 
 ```
-### Demographics
 
+### Demographics {.tabset .tabset-fade}
 
 #### Age pyramid in years disaggregated by gender 
 
@@ -1188,25 +1212,45 @@ impactR4PHU::plot_age_pyramid(df_mortality_long %>%
                                          is.na(death)))
 ```
 
-#### Age pyramid in years disaggregated by gender per enumerator
-```{r, results='asis', message=FALSE}
-  list_enum <- df_mortality_long[["enumerator"]]%>% unique
-  list_flex_enum <- list()
-  for (i in list_enum) {
-    cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",5), collapse=""), " ", "<strong>Enumerator: ",i,"</strong>"))
-    subch(impactR4PHU::plot_age_pyramid(df_mortality_long %>% 
-                                    filter(is.na(left),
-                                           is.na(death),
-                                           !!rlang::sym("enumerator") == i)),
-          fig_height = 5, fig_width = 7)
+#### Age pyramid in years disaggregated by gender per Team
+
+```{r, results='asis', echo=FALSE}
+if(yes_no_team == "yes"){
+    list_teams <- raw.main[[team]] %>% unique()
+    for (i in list_teams) {
+      cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",5), collapse=""), " ", "<strong>",i,"</strong> {.tabset .tabset-fade}"))
+      list_enum <- raw.main %>% 
+        dplyr::filter(!!rlang::sym(team) %in% i) %>% 
+        dplyr::pull(!!rlang::sym(enumerator))%>% 
+        unique()
+      for (j in list_enum){
+        cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",6), collapse=""), " ", "<strong>",j,"</strong>"))
+        subch(impactR4PHU::plot_age_pyramid(df_mortality_long %>% 
+                                              dplyr::filter(is.na(left),
+                                                            is.na(death),
+                                                            !!rlang::sym("enumerator") %in% j)),
+            fig_height = 5, fig_width = 7)
+      }
+    }
+} else {
+    list_enum <- df_mortality_long[["enumerator"]]%>% unique
+    for (i in list_enum) {
+      cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",5), collapse=""), " ", "<strong>Enumerator: ",i,"</strong>"))
+      subch(impactR4PHU::plot_age_pyramid(df_mortality_long %>% 
+                                      dplyr::filter(is.na(left),
+                                             is.na(death),
+                                             !!rlang::sym("enumerator") %in% i)),
+            fig_height = 5, fig_width = 7)
+    }
   }
+
 ```
 
-#### Histogram of age in years 
+#### Histogram of age in years
 
 ```{r, message=FALSE}
 
-  impactR4PHU::plot_age_distribution(df_mortality_long %>% 
+  impactR4PHU::plot_age_distribution(df_mortality_long %>%
                                        filter(is.na(left),
                                               is.na(death)),
                                      year_or_month = "year",
@@ -1214,19 +1258,41 @@ impactR4PHU::plot_age_pyramid(df_mortality_long %>%
 
 ```
 
-#### Histogram of age in years per enumerator
+#### Histogram of age in years per Team
 
-```{r, fig.height=8, message=FALSE}
-  impactR4PHU::plot_age_distribution(df_mortality_long %>% 
+```{r, results='asis', message=FALSE}
+if(yes_no_team == "yes"){
+    list_teams <- raw.main[[team]] %>% unique()
+    for (i in list_teams) {
+      cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",5), collapse=""), " ", "<strong>",i,"</strong> {.tabset .tabset-fade}"))
+      list_enum <- raw.main %>% 
+        dplyr::filter(!!rlang::sym(team) %in% i) %>% 
+        dplyr::pull(!!rlang::sym(enumerator))%>% 
+        unique()
+       for (j in list_enum){
+          cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",6), collapse=""), " ", "<strong>",j,"</strong>"))
+          subch(impactR4PHU::plot_age_distribution(df_mortality_long %>%
+                                               filter(is.na(left),
+                                                      is.na(death),
+                                                      !!rlang::sym("enumerator") %in% j),
+                                             year_or_month = "year",
+                                             max_age = 10,
+                                             by_group = "enumerator"),
+                fig_height = 8)
+       }
+    }
+} else {
+    subch(impactR4PHU::plot_age_distribution(df_mortality_long %>%
                                        filter(is.na(left),
                                               is.na(death)),
                                      year_or_month = "year",
                                      max_age = 10,
-                                     by_group = "enumerator")
-
+                                     by_group = "enumerator"),
+                fig_height = 8)
+  }
 ```
 
-#### Histogram of age in months 
+#### Histogram of age in months
 
 ```{r, fig.width = 10, warning=FALSE, message=FALSE}
   impactR4PHU::plot_age_distribution(raw.hh_roster,
@@ -1235,20 +1301,47 @@ impactR4PHU::plot_age_pyramid(df_mortality_long %>%
 
 ```
 
-#### Histogram of age in months per enumerator
+#### Histogram of age in months per Team
 
-```{r, fig.height=8, fig.width = 10, warning=FALSE}
+```{r, results='asis',  warning=FALSE}
+if(yes_no_team == "yes"){
+    for (i in list_teams) {
+      cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",5), collapse=""), " ", "<strong>",i,"</strong> {.tabset .tabset-fade}"))
+      plot_raw.main <- raw.main %>%
+        dplyr::rename(uuid = uuid_main) %>%
+        dplyr::filter(!!rlang::sym(team) == i)
 
-  plot_raw.hh_roster <- raw.hh_roster %>% 
-    dplyr::rename(uuid = uuid_roster) 
-  plot_raw.main <- raw.main %>% 
+      plot_raw.hh_roster <- raw.hh_roster %>%
+        dplyr::rename(uuid = uuid_roster) %>%
+        dplyr::filter(uuid %in% plot_raw.main$uuid)
+      list_enum <- raw.main %>% 
+        dplyr::filter(!!rlang::sym(team) %in% i) %>% 
+        dplyr::pull(!!rlang::sym(enumerator))%>% 
+        unique()
+      for (j in list_enum){
+        cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",6), collapse=""), " ", "<strong>",j,"</strong>"))
+        subch(impactR4PHU::plot_age_distribution(plot_raw.hh_roster %>%
+                                             dplyr::left_join(select(plot_raw.main, c("uuid", enumerator))) %>%
+                                             dplyr::filter(!!rlang::sym(enumerator) == j),
+                                           year_or_month = "month",
+                                           by_group = enumerator,
+                                           breaks = 1),
+              fig_height = 8, fig_width = 10)
+      }
+    }
+} else {
+  plot_raw.hh_roster <- raw.hh_roster %>%
+    dplyr::rename(uuid = uuid_roster)
+  plot_raw.main <- raw.main %>%
     dplyr::rename(uuid = uuid_main)
-  
-  impactR4PHU::plot_age_distribution(plot_raw.hh_roster %>% 
+
+  subch(impactR4PHU::plot_age_distribution(plot_raw.hh_roster %>%
                                        dplyr::left_join(select(plot_raw.main, c("uuid", enumerator))),
                                      year_or_month = "month",
-                                     by_group = "enumerator",
-                                     breaks = 1)
+                                     by_group = enumerator,
+                                     breaks = 1),
+              fig_height = 8, fig_width = 10)
+}
 
 ```
 
@@ -1264,26 +1357,45 @@ final_table
 ```
 
 ```{r, results='asis'}
-result_mort_pivot_enum <- results_mort_enum %>% 
-    dplyr::mutate_all(., as.character) %>% 
+result_mort_pivot_enum <- results_mort_enum %>%
+    dplyr::mutate_all(., as.character) %>%
     tidyr::pivot_longer(-group,names_to = "Criteria",
-                 values_to = "Score") %>% 
+                 values_to = "Score") %>%
     filter(stringr::str_starts(Criteria,"plaus_"))
+if(yes_no_team == "yes"){
+  for (i in list_teams) {
+    cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",5), collapse=""), " ", "<strong>",i,"</strong> {.tabset .tabset-fade}"))
+    list_enum <- raw.main %>%
+      dplyr::filter(!!rlang::sym(team) %in% i) %>%
+      dplyr::pull(!!rlang::sym(enumerator)) %>%
+      unique()
+    for (j in list_enum) {
+      cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",6), collapse=""), " ", "<strong>",j,"</strong>"))
+      overall_mort_plaus_enum <- overall_mort_plaus %>%
+        dplyr::left_join(result_mort_pivot_enum %>% filter(group == j), by = c("flag_name"="Criteria")) %>%
+        dplyr::mutate_all(., ~ifelse(is.na(.),"NA",.)) %>%
+        dplyr::select(-group)
 
-list_enum <- results_mort_enum$group %>% unique
-list_flex_enum <- list()
-for (i in list_enum) {
-  cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",5), collapse=""), " ", "<strong>",i,"</strong>"))
-  overall_mort_plaus_enum <- overall_mort_plaus %>% 
-    dplyr::left_join(result_mort_pivot_enum %>% filter(group == i), by = c("flag_name"="Criteria")) %>% 
-    dplyr::mutate_all(., ~ifelse(is.na(.),"NA",.)) %>% 
-    dplyr::select(-group)
+      mort <- flextable::flextable(overall_mort_plaus_enum)
 
-  mort <- flextable::flextable(overall_mort_plaus_enum)
+      final_table_mort_enum <- impactR4PHU::create_plaus_table_nut_mort(mort)
+      subch(final_table_mort_enum)
+    }
+  }
+} else {
+  list_enum <- results_mort_enum$group %>% unique
+  for (i in list_enum) {
+    cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",5), collapse=""), " ", "<strong>",i,"</strong>"))
+    overall_mort_plaus_enum <- overall_mort_plaus %>%
+      dplyr::left_join(result_mort_pivot_enum %>% filter(group == i), by = c("flag_name"="Criteria")) %>%
+      dplyr::mutate_all(., ~ifelse(is.na(.),"NA",.)) %>%
+      dplyr::select(-group)
 
-  final_table_mort_enum <- impactR4PHU::create_plaus_table_nut_mort(mort)
-  subch(final_table_mort_enum)
-  list_flex_enum <- append(list_flex_enum,final_table_mort_enum)
+    mort <- flextable::flextable(overall_mort_plaus_enum)
+
+    final_table_mort_enum <- impactR4PHU::create_plaus_table_nut_mort(mort)
+    subch(final_table_mort_enum)
+  }
 }
 ```
 
@@ -1360,8 +1472,8 @@ for(flag in flags_mort_columns) {
 #### Number of Death/Joiners/Leavers & Person Time per Enumerator
 
 ```{r, include=FALSE}
-table_djl_enum <- df_mortality_long %>% 
-  dplyr::group_by(enumerator) %>% 
+table_djl_enum <- df_mortality_long %>%
+  dplyr::group_by(enumerator) %>%
   dplyr::summarise(Leavers = sum(as.numeric(left), na.rm = T),
                    Joiners = sum(as.numeric(join), na.rm = T),
                    Death = sum(as.numeric(death), na.rm = T),
@@ -1369,15 +1481,15 @@ table_djl_enum <- df_mortality_long %>%
                    `Person Time` = sum(as.numeric(person_time), na.rm = T),
                    `Person Time Under 5` = sum(as.numeric(under_5_pt), na.rm = T))
 
-total <- table_djl_enum %>% 
-  dplyr::group_by() %>% 
+total <- table_djl_enum %>%
+  dplyr::group_by() %>%
   dplyr::summarise(Leavers = sum(as.numeric(Leavers), na.rm = T),
                    Joiners = sum(as.numeric(Joiners), na.rm = T),
                    Death = sum(as.numeric(Death), na.rm = T),
                    `Death Under 5` = sum(as.numeric(`Death Under 5`), na.rm = T),
                    `Person Time` = sum(as.numeric(`Person Time`), na.rm = T),
-                   `Person Time Under 5` = sum(as.numeric(`Person Time Under 5`), na.rm = T)) %>% 
-  dplyr::mutate(enumerator = "Total") %>% 
+                   `Person Time Under 5` = sum(as.numeric(`Person Time Under 5`), na.rm = T)) %>%
+  dplyr::mutate(enumerator = "Total") %>%
   dplyr::relocate(enumerator, .before = 1)
 
 table_djl_enum <- bind_rows(table_djl_enum, total)
@@ -1393,18 +1505,18 @@ DT::datatable(table_djl_enum)
 crude <- results_mort %>%
   dplyr::mutate(`point.est` = as.numeric(cdr),
                 `95%lci` = as.numeric(stringr::str_extract(cdr_ci,"(?<=\\[)[^\\s\\-]*")),
-                `95%uci` = as.numeric(stringr::str_remove(stringr::str_extract(cdr_ci,"(?<=-)[^\\]]*")," "))) %>% 
-  dplyr::select(`point.est`,`95%lci`,`95%uci`) %>% 
+                `95%uci` = as.numeric(stringr::str_remove(stringr::str_extract(cdr_ci,"(?<=-)[^\\]]*")," "))) %>%
+  dplyr::select(`point.est`,`95%lci`,`95%uci`) %>%
   dplyr::mutate(variable = "cmr")
-  
+
 under5 <- results_mort %>%
   dplyr::mutate(`point.est` = as.numeric(u5dr),
                 `95%lci` = as.numeric(stringr::str_extract(u5dr_ci,"(?<=\\[)[^\\s\\-]*")),
-                `95%uci` = as.numeric(stringr::str_remove(stringr::str_extract(u5dr_ci,"(?<=-)[^\\]]*")," "))) %>% 
-  dplyr::select(`point.est`,`95%lci`,`95%uci`) %>% 
+                `95%uci` = as.numeric(stringr::str_remove(stringr::str_extract(u5dr_ci,"(?<=-)[^\\]]*")," "))) %>%
+  dplyr::select(`point.est`,`95%lci`,`95%uci`) %>%
   dplyr::mutate(variable = "u5mr")
 
-results.summary <- rbind(crude,under5) %>% 
+results.summary <- rbind(crude,under5) %>%
   dplyr::relocate(variable, .before = 1)
 ```
 
@@ -1413,7 +1525,7 @@ DT::datatable(results.summary)
 ```
 
 ```{r, include=FALSE}
-plot_results.summary <- ggplot2::ggplot(results.summary %>% 
+plot_results.summary <- ggplot2::ggplot(results.summary %>%
                                                mutate(variable = case_when(variable == "cmr"~"Crude",
                                                                            variable == "u5mr"~"Under 5")), ggplot2::aes(x = variable)) +
   ggplot2::geom_hline(yintercept=1, linetype='dotted', color = 'black', size =1)+
@@ -1429,8 +1541,8 @@ plot_results.summary <- ggplot2::ggplot(results.summary %>%
     max(results.summary$`95%uci`)
   }))+
   ggplot2::theme(legend.position = "none", axis.title.y = ggplot2::element_blank())+
-  ggplot2::xlab("Overall Mortality Rates")+ 
-  ggplot2::labs(caption = c("Black Dotted Line: Crude Threshold (WHO)", "Red Dotted Line: Under 5 Threshold (WHO)")) + 
+  ggplot2::xlab("Overall Mortality Rates")+
+  ggplot2::labs(caption = c("Black Dotted Line: Crude Threshold (WHO)", "Red Dotted Line: Under 5 Threshold (WHO)")) +
   ggplot2::theme(plot.caption = ggplot2::element_text(hjust = c(0.2,0.8),color = c("black","red")))
 ```
 
@@ -1444,11 +1556,11 @@ plot_results.summary
 birth <- results_mort %>%
   dplyr::mutate(`point.est` = as.numeric(birth_rate),
                 `95%lci` = as.numeric(stringr::str_extract(birth_rate_ci,"(?<=\\[)[^\\s\\-]*")),
-                `95%uci` = as.numeric(stringr::str_remove(stringr::str_extract(birth_rate_ci,"(?<=-)[^\\]]*")," "))) %>% 
-  dplyr::select(`point.est`,`95%lci`,`95%uci`) %>% 
+                `95%uci` = as.numeric(stringr::str_remove(stringr::str_extract(birth_rate_ci,"(?<=-)[^\\]]*")," "))) %>%
+  dplyr::select(`point.est`,`95%lci`,`95%uci`) %>%
   dplyr::mutate(variable = "Birth")
-  
-results.summary.birth <- birth %>% 
+
+results.summary.birth <- birth %>%
   dplyr::relocate(variable, .before = 1)
 ```
 
