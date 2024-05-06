@@ -31,7 +31,7 @@ plot_age_pyramid <- function (.dataset,
                               title_name = NULL)
 {
   print("Please note, the sex variable must be coded numerically by 1s (male) and 2s (female).")
-  if (age_grouping) {
+  if (age_grouping == FALSE) {
     .dataset <- .dataset %>%
       dplyr::mutate(age_group = cut(as.numeric(!!rlang::sym(age_years)),
                                     breaks = c(-1,4,9,14,19,24,29,34,39,44,49,54,59,64,69,74,79,84, Inf),

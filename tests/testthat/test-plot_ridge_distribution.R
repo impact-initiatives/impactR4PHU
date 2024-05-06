@@ -11,7 +11,6 @@ data <- data.frame(
 )
 
 
-
 testthat::test_that("Test file output", {
   temp_path <- tempfile(fileext = ".png")
   plot_ridge_distribution(data, numeric_cols = "score", name_groups = "category", name_units = "score", grouping = "group", file_path = temp_path)
@@ -20,8 +19,8 @@ testthat::test_that("Test file output", {
 
 testthat::test_that("Test parameter effects", {
   # Test changes with grouping
-  plot1 <- plot_ridge_distribution(data, numeric_cols = "score", name_groups = "category", name_units = "score", grouping = "group")
-  plot2 <- plot_ridge_distribution(data, numeric_cols = "score", name_groups = "category", name_units = "score", grouping = NULL)
+  plot1 <- plot_ridge_distribution(data, numeric_cols = "score", name_groups = "category", name_units = "score", grouping = "group", title= "Test")
+  plot2 <- plot_ridge_distribution(data, numeric_cols = "score", name_groups = "category", name_units = "score", grouping = NULL, title= "Test")
   testthat::expect_false(identical(plot1, plot2), "Plots are different when grouping is changed")
 })
 
