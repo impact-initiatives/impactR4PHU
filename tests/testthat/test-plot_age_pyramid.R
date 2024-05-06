@@ -17,6 +17,6 @@ testthat::test_that("plot_age_pyramid returns a ggplot object", {
 
 testthat::test_that("Test file output", {
   temp_path <- tempfile(fileext = ".png")
-  plot_age_pyramid(mock_data, file_path = temp_path)
+  plot_age_pyramid(mock_data, file_path = temp_path, title = "test_title")
   testthat::expect_true(file.exists(temp_path), "File is created")
 })

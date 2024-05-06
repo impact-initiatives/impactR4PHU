@@ -16,10 +16,22 @@
 #' }
 
 check_mortality_flags <- function(df,
-                                  cause_death_f = c("post_partum","during_pregnancy","during_delivery")){
+                                  cause_death_f = c("post_partum",
+                                                    "during_pregnancy",
+                                                    "during_delivery")){
   options(warn = -1)
+  ## Throw an error if a dataset wasn't provided as a first argument
+  if (!is.data.frame(df)) {
+    stop("First argument should be a dataset")
+  }
+
+  ## Throw an error if the dataset is empty
+  if (nrow(df) == 0) {
+    stop("Dataset is empty")
+  }
   if (!"uuid" %in% names(df)) stop("uuid not available in the df Mortality")
   if (!"enumerator" %in% names(df)) stop("enumerator not available in the df Mortality")
+
 
   hh_summary <- df %>%
     dplyr::mutate(flag_cause_death = ifelse(sex == 1 & death_cause %in% cause_death_f, 1, 0),
