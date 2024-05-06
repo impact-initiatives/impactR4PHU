@@ -11,7 +11,6 @@ data <- data.frame(
 )
 
 
-
 testthat::test_that("Test file output", {
   temp_path <- tempfile(fileext = ".png")
   plot_ridge_distribution(data, numeric_cols = "score", name_groups = "category", name_units = "score", grouping = "group", file_path = temp_path)
