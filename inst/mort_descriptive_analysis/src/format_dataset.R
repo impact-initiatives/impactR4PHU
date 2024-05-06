@@ -476,60 +476,60 @@ if(!file.exists("inputs/environment.Rdata")) {
   } else if (length(death_location) == 0) {
     death_location <- svDialogs::dlg_input(message= "Enter the name of the location of death column","death_location")$res
   }
-}
+  dates_collected <- tcltk::tk_select.list(c("All","Some","None"), title = "Do you have all the Dates Collected?[Left/Join/Birth/Death]")
 
-dates_collected <- tcltk::tk_select.list(c("All","Some","None"), title = "Do you have all the Dates Collected?[Left/Join/Birth/Death]")
+  if(dates_collected == "All") {
+    smart <- T
+    collect_num_join_left <- "no"
+    num_join <- NULL
+    num_left <- NULL
+  } else if (dates_collected == "None") {
+    smart <- F
+    collect_num_join_left <- "no"
+    num_join <- NULL
+    num_left <- NULL
+  } else if (dates_collected == "Some") {
+    smart <- T
+    collect_num_join_left <- svDialogs::dlg_message(paste0("Do you still collect num_join and num_left on HH level?"), type = "yesno")$res
+    if(collect_num_join_left == "yes") {
+      ## Detect num_left column
+      num_left <- names(raw.main)[grepl("leaver|num_left|left",names(raw.main))]
 
-if(dates_collected == "All") {
-  smart <- T
-  collect_num_join_left <- "no"
-  num_join <- NULL
-  num_left <- NULL
-} else if (dates_collected == "None") {
-  smart <- F
-  collect_num_join_left <- "no"
-  num_join <- NULL
-  num_left <- NULL
-} else if (dates_collected == "Some") {
-  smart <- T
-  collect_num_join_left <- svDialogs::dlg_message(paste0("Do you still collect num_join and num_left on HH level?"), type = "yesno")$res
-  if(collect_num_join_left == "yes") {
-    ## Detect num_left column
-    num_left <- names(raw.main)[grepl("leaver|num_left|left",names(raw.main))]
-
-    if(length(num_left) == 1){
-      yes_no <- svDialogs::dlg_message(paste0("Is '", num_left, "' the correct number of Leavers column in main data?"), type = "yesno")$res
-      if(yes_no == "no"){
+      if(length(num_left) == 1){
+        yes_no <- svDialogs::dlg_message(paste0("Is '", num_left, "' the correct number of Leavers column in main data?"), type = "yesno")$res
+        if(yes_no == "no"){
+          num_left <- svDialogs::dlg_input(message= "Enter the number of Leavers column in main data","num_left")$res
+        }
+      } else if (length(num_left) > 1){
+        num_left <- tcltk::tk_select.list(num_left, title = "Number of Leavers Column [Main Data]")
+      } else if (length(num_left) == 0) {
         num_left <- svDialogs::dlg_input(message= "Enter the number of Leavers column in main data","num_left")$res
       }
-    } else if (length(num_left) > 1){
-      num_left <- tcltk::tk_select.list(num_left, title = "Number of Leavers Column [Main Data]")
-    } else if (length(num_left) == 0) {
-      num_left <- svDialogs::dlg_input(message= "Enter the number of Leavers column in main data","num_left")$res
-    }
-    ## Detect num_join column
-    num_join <- names(raw.main)[grepl("joiner|num_join|join",names(raw.main))]
-    if(length(num_join) == 1){
-      yes_no <- svDialogs::dlg_message(paste0("Is '", num_join, "' the correct number of Joiners column in main data?"), type = "yesno")$res
-      if(yes_no == "no"){
+      ## Detect num_join column
+      num_join <- names(raw.main)[grepl("joiner|num_join|join",names(raw.main))]
+      if(length(num_join) == 1){
+        yes_no <- svDialogs::dlg_message(paste0("Is '", num_join, "' the correct number of Joiners column in main data?"), type = "yesno")$res
+        if(yes_no == "no"){
+          num_join <- svDialogs::dlg_input(message= "Enter the number of Joiners column in main data","num_join")$res
+        }
+      } else if (length(num_join) > 1){
+        num_join <- tcltk::tk_select.list(num_join, title = "Number of Joiners Column [Main Data]")
+      } else if (length(num_join) == 0) {
         num_join <- svDialogs::dlg_input(message= "Enter the number of Joiners column in main data","num_join")$res
       }
-    } else if (length(num_join) > 1){
-      num_join <- tcltk::tk_select.list(num_join, title = "Number of Joiners Column [Main Data]")
-    } else if (length(num_join) == 0) {
-      num_join <- svDialogs::dlg_input(message= "Enter the number of Joiners column in main data","num_join")$res
+    } else {
+      collect_num_join_left <- "no"
+      num_join <- NULL
+      num_left <- NULL
+
     }
   } else {
     collect_num_join_left <- "no"
     num_join <- NULL
     num_left <- NULL
-
   }
-} else {
-  collect_num_join_left <- "no"
-  num_join <- NULL
-  num_left <- NULL
 }
+
 
 all_vars <- ls()
 is_empty <- function(x) {
@@ -545,10 +545,10 @@ if(!is.null(date_dc)){
   if(!purrr::is_empty(date_dc)){
     if(date_dc %in% names(raw.main)){
       raw.main <- raw.main %>%
-        dplyr::mutate(!!rlang::sym(date_dc) := ifelse(is.na(!!rlang::sym(date_dc)), NA,
-                                                      ifelse(nchar(!!rlang::sym(date_dc)) == 5,
-                                                             lubridate::as_date(as.numeric(!!rlang::sym(date_dc)), origin = "1899-12-30"),
-                                                             stringr::str_sub(string = !!rlang::sym(date_dc), start = 1, end = 10))))
+        dplyr::mutate(!!rlang::sym(date_dc) := dplyr::if_else(is.na(!!rlang::sym(date_dc)), NA,
+                                                              dplyr::if_else(nchar(!!rlang::sym(date_dc)) == 5,
+                                                                             as.character(lubridate::as_date(as.numeric(!!rlang::sym(date_dc)), origin = "1899-12-30")),
+                                                                             stringr::str_sub(string = !!rlang::sym(date_dc), start = 1, end = 10))))
     }
   }
 }
@@ -557,10 +557,10 @@ if(!is.null(date_recall_event)){
   if(!purrr::is_empty(date_recall_event)){
     if(date_recall_event %in% names(raw.main)){
       raw.main <- raw.main %>%
-        dplyr::mutate(!!rlang::sym(date_recall_event) := ifelse(is.na(!!rlang::sym(date_recall_event)), NA,
-                                                                ifelse(nchar(!!rlang::sym(date_recall_event)) == 5,
-                                                                       lubridate::as_date(as.numeric(!!rlang::sym(date_recall_event)), origin = "1899-12-30"),
-                                                                       stringr::str_sub(string = !!rlang::sym(date_recall_event), start = 1, end = 10))))
+        dplyr::mutate(!!rlang::sym(date_recall_event) := dplyr::if_else(is.na(!!rlang::sym(date_recall_event)), NA,
+                                                                        dplyr::if_else(nchar(!!rlang::sym(date_recall_event)) == 5,
+                                                                                       as.character(lubridate::as_date(as.numeric(!!rlang::sym(date_recall_event)), origin = "1899-12-30")),
+                                                                                       stringr::str_sub(string = !!rlang::sym(date_recall_event), start = 1, end = 10))))
     }
   }
 }
@@ -569,10 +569,10 @@ if(!is.null(birthdate_roster)){
     if(birthdate_roster %in% names(raw.hh_roster)){
       raw.hh_roster <- raw.hh_roster %>%
         dplyr::mutate(age_years = NULL,
-                      !!rlang::sym(birthdate_roster) := ifelse(is.na(!!rlang::sym(birthdate_roster)), NA,
-                                                               ifelse(nchar(!!rlang::sym(birthdate_roster)) == 5,
-                                                                      lubridate::as_date(as.numeric(!!rlang::sym(birthdate_roster)), origin = "1899-12-30"),
-                                                                      stringr::str_sub(string = !!rlang::sym(birthdate_roster), start = 1, end = 10))))
+                      !!rlang::sym(birthdate_roster) := dplyr::if_else(is.na(!!rlang::sym(birthdate_roster)), NA,
+                                                                       dplyr::if_else(nchar(!!rlang::sym(birthdate_roster)) == 5,
+                                                                                      as.character(lubridate::as_date(as.numeric(!!rlang::sym(birthdate_roster)), origin = "1899-12-30")),
+                                                                                      stringr::str_sub(string = !!rlang::sym(birthdate_roster), start = 1, end = 10))))
     }
   }
 }
@@ -581,10 +581,10 @@ if(!is.null(joined_date_roster)){
     if(joined_date_roster %in% names(raw.hh_roster)){
       raw.hh_roster <- raw.hh_roster %>%
         dplyr::mutate(age_years = NULL,
-                      !!rlang::sym(joined_date_roster) := ifelse(is.na(!!rlang::sym(joined_date_roster)), NA,
-                                                                 ifelse(nchar(!!rlang::sym(joined_date_roster)) == 5,
-                                                                        lubridate::as_date(as.numeric(!!rlang::sym(joined_date_roster)), origin = "1899-12-30"),
-                                                                        stringr::str_sub(string = !!rlang::sym(joined_date_roster), start = 1, end = 10))))
+                      !!rlang::sym(joined_date_roster) := dplyr::if_else(is.na(!!rlang::sym(joined_date_roster)), NA,
+                                                                         dplyr::if_else(nchar(!!rlang::sym(joined_date_roster)) == 5,
+                                                                                        as.character(lubridate::as_date(as.numeric(!!rlang::sym(joined_date_roster)), origin = "1899-12-30")),
+                                                                                        stringr::str_sub(string = !!rlang::sym(joined_date_roster), start = 1, end = 10))))
     }
   }
 }
@@ -593,10 +593,10 @@ if(collected_df_left){
     if(!purrr::is_empty(birthdate_left)){
       if(birthdate_left %in% names(raw.left_member)){
         raw.left_member <- raw.left_member %>%
-          dplyr::mutate(!!rlang::sym(birthdate_left) := ifelse(is.na(!!rlang::sym(birthdate_left)), NA,
-                                                               ifelse(nchar(!!rlang::sym(birthdate_left)) == 5,
-                                                                      lubridate::as_date(as.numeric(!!rlang::sym(birthdate_left)), origin = "1899-12-30"),
-                                                                      stringr::str_sub(string = !!rlang::sym(birthdate_left), start = 1, end = 10))))
+          dplyr::mutate(!!rlang::sym(birthdate_left) := dplyr::if_else(is.na(!!rlang::sym(birthdate_left)), NA,
+                                                                       dplyr::if_else(nchar(!!rlang::sym(birthdate_left)) == 5,
+                                                                                      as.character(lubridate::as_date(as.numeric(!!rlang::sym(birthdate_left)), origin = "1899-12-30")),
+                                                                                      stringr::str_sub(string = !!rlang::sym(birthdate_left), start = 1, end = 10))))
       }
     }
   }
@@ -605,10 +605,10 @@ if(collected_df_left){
     if(!purrr::is_empty(joined_date_left)){
       if(joined_date_left %in% names(raw.left_member)){
         raw.left_member <- raw.left_member %>%
-          dplyr::mutate(!!rlang::sym(joined_date_left) := ifelse(is.na(!!rlang::sym(joined_date_left)), NA,
-                                                                 ifelse(nchar(!!rlang::sym(joined_date_left)) == 5,
-                                                                        lubridate::as_date(as.numeric(!!rlang::sym(joined_date_left)), origin = "1899-12-30"),
-                                                                        stringr::str_sub(string = !!rlang::sym(joined_date_left), start = 1, end = 10))))
+          dplyr::mutate(!!rlang::sym(joined_date_left) := dplyr::if_else(is.na(!!rlang::sym(joined_date_left)), NA,
+                                                                         dplyr::if_else(nchar(!!rlang::sym(joined_date_left)) == 5,
+                                                                                        as.character(lubridate::as_date(as.numeric(!!rlang::sym(joined_date_left)), origin = "1899-12-30")),
+                                                                                        stringr::str_sub(string = !!rlang::sym(joined_date_left), start = 1, end = 10))))
       }
     }
   }
@@ -617,10 +617,10 @@ if(collected_df_left){
     if(!purrr::is_empty(left_date_left)){
       if(left_date_left %in% names(raw.left_member)){
         raw.left_member <- raw.left_member %>%
-          dplyr::mutate(!!rlang::sym(left_date_left) := ifelse(is.na(!!rlang::sym(left_date_left)), NA,
-                                                               ifelse(nchar(!!rlang::sym(left_date_left)) == 5,
-                                                                      lubridate::as_date(as.numeric(!!rlang::sym(left_date_left)), origin = "1899-12-30"),
-                                                                      stringr::str_sub(string = !!rlang::sym(left_date_left), start = 1, end = 10))))
+          dplyr::mutate(!!rlang::sym(left_date_left) := dplyr::if_else(is.na(!!rlang::sym(left_date_left)), NA,
+                                                                       dplyr::if_else(nchar(!!rlang::sym(left_date_left)) == 5,
+                                                                                      as.character(lubridate::as_date(as.numeric(!!rlang::sym(left_date_left)), origin = "1899-12-30")),
+                                                                                      stringr::str_sub(string = !!rlang::sym(left_date_left), start = 1, end = 10))))
       }
     }
   }
@@ -629,10 +629,10 @@ if(!is.null(joined_date_died)){
   if(!purrr::is_empty(joined_date_died)){
     if(joined_date_died %in% names(raw.died_member)){
       raw.died_member <- raw.died_member %>%
-        dplyr::mutate(!!rlang::sym(joined_date_died) := ifelse(is.na(!!rlang::sym(joined_date_died)), NA,
-                                                               ifelse(nchar(!!rlang::sym(joined_date_died)) == 5,
-                                                                      lubridate::as_date(as.numeric(!!rlang::sym(joined_date_died)), origin = "1899-12-30"),
-                                                                      stringr::str_sub(string = !!rlang::sym(joined_date_died), start = 1, end = 10))))
+        dplyr::mutate(!!rlang::sym(joined_date_died) := dplyr::if_else(is.na(!!rlang::sym(joined_date_died)), NA,
+                                                                       dplyr::if_else(nchar(!!rlang::sym(joined_date_died)) == 5,
+                                                                                      as.character(lubridate::as_date(as.numeric(!!rlang::sym(joined_date_died)), origin = "1899-12-30")),
+                                                                                      stringr::str_sub(string = !!rlang::sym(joined_date_died), start = 1, end = 10))))
     }
   }
 }
@@ -642,10 +642,10 @@ if(!is.null(birthdate_died)){
   if(!purrr::is_empty(birthdate_died)){
     if(birthdate_died %in% names(raw.died_member)){
       raw.died_member <- raw.died_member %>%
-        dplyr::mutate(!!rlang::sym(birthdate_died) := ifelse(is.na(!!rlang::sym(birthdate_died)), NA,
-                                                             ifelse(nchar(!!rlang::sym(birthdate_died)) == 5,
-                                                                    lubridate::as_date(as.numeric(!!rlang::sym(birthdate_died)), origin = "1899-12-30"),
-                                                                    stringr::str_sub(string = !!rlang::sym(birthdate_died), start = 1, end = 10))))
+        dplyr::mutate(!!rlang::sym(birthdate_died) := dplyr::if_else(is.na(!!rlang::sym(birthdate_died)), NA,
+                                                                     dplyr::if_else(nchar(!!rlang::sym(birthdate_died)) == 5,
+                                                                                    as.character(lubridate::as_date(as.numeric(!!rlang::sym(birthdate_died)), origin = "1899-12-30")),
+                                                                                    stringr::str_sub(string = !!rlang::sym(birthdate_died), start = 1, end = 10))))
     }
   }
 }
@@ -654,10 +654,10 @@ if(!is.null(date_death)){
   if(!purrr::is_empty(date_death)){
     if(date_death %in% names(raw.died_member)){
       raw.died_member <- raw.died_member %>%
-        dplyr::mutate(!!rlang::sym(date_death) := ifelse(is.na(!!rlang::sym(date_death)), NA,
-                                                         ifelse(nchar(!!rlang::sym(date_death)) == 5,
-                                                                lubridate::as_date(as.numeric(!!rlang::sym(date_death)), origin = "1899-12-30"),
-                                                                stringr::str_sub(string = !!rlang::sym(date_death), start = 1, end = 10))))
+        dplyr::mutate(!!rlang::sym(date_death) := dplyr::if_else(is.na(!!rlang::sym(date_death)), NA,
+                                                                 dplyr::if_else(nchar(!!rlang::sym(date_death)) == 5,
+                                                                                as.character(lubridate::as_date(as.numeric(!!rlang::sym(date_death)), origin = "1899-12-30")),
+                                                                                stringr::str_sub(string = !!rlang::sym(date_death), start = 1, end = 10))))
     }
   }
 }
