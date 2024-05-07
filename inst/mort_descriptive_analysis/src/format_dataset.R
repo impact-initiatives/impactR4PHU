@@ -22,6 +22,9 @@ if(!file.exists("inputs/environment.Rdata")) {
     }
   } else if (length(date_dc) > 1){
     date_dc <- tcltk::tk_select.list(date_dc, title = "Date of data collection column")
+    if(date_dc == "") {
+      date_dc <- svDialogs::dlg_input(message= "Enter the name of the date of data collection column","date_dc")$res
+    }
   } else if (length(date_dc) == 0) {
     date_dc <- svDialogs::dlg_input(message= "Enter the name of the date of data collection column","date_dc")$res
   }
@@ -35,11 +38,12 @@ if(!file.exists("inputs/environment.Rdata")) {
     }
   } else if (length(date_recall_event) > 1){
     date_recall_event <- tcltk::tk_select.list(date_recall_event, title = "Recall date column")
+    if(date_recall_event == "") {
+      date_recall_event <- svDialogs::dlg_input(message= "Enter the name of the recall date column","date_recall_event")$res
+    }
   } else if (length(date_recall_event) == 0) {
     date_recall_event <- svDialogs::dlg_input(message= "Enter the name of the recall date column","date_recall_event")$res
   }
-
-
   ## Detect Team column
   yes_no_team <- svDialogs::dlg_message(paste0("Is there teams of enumerators?"), type = "yesno")$res
   if(yes_no_team == "yes"){
@@ -48,16 +52,20 @@ if(!file.exists("inputs/environment.Rdata")) {
     if(length(team) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", team, "' the correct team/organization column?"), type = "yesno")$res
       if(yes_no == "no"){
-        team <- svDialogs::dlg_input(message= "Enter the name of the team/organization Column","enumerator")$res
+        team <- svDialogs::dlg_input(message= "Enter the name of the team/organization Column","team")$res
       }
     } else if (length(team) > 1){
       team <- tcltk::tk_select.list(team, title = "Team/Organization Columns")
+      if(team == "") {
+        team <- svDialogs::dlg_input(message= "Enter the name of the team/organization Column","team")$res
+      }
     } else if (length(team) == 0) {
       team <- svDialogs::dlg_input(message= "Enter the name of the team/organization Column","team")$res
     }
   } else {
     team <- NULL
   }
+
   ## Detect Enumerator column
   enumerator <- names(raw.main)[grepl("enum|team",names(raw.main))]
 
@@ -68,6 +76,9 @@ if(!file.exists("inputs/environment.Rdata")) {
     }
   } else if (length(enumerator) > 1){
     enumerator <- tcltk::tk_select.list(enumerator, title = "Enumerator Column")
+    if(enumerator == "") {
+      enumerator <- svDialogs::dlg_input(message= "Enter the name of the Enumerator Column","enumerator")$res
+    }
   } else if (length(enumerator) == 0) {
     enumerator <- svDialogs::dlg_input(message= "Enter the name of the Enumerator Column","enumerator")$res
   }
@@ -82,6 +93,9 @@ if(!file.exists("inputs/environment.Rdata")) {
     }
   } else if (length(admin1) > 1){
     admin1 <- tcltk::tk_select.list(admin1, title = "Admin 1 Column")
+    if(admin1 == "") {
+      admin1 <- svDialogs::dlg_input(message= "Enter the name of the Admin 1 Column","admin1")$res
+    }
   } else if (length(admin1) == 0) {
     admin1 <- svDialogs::dlg_input(message= "Enter the name of the Admin 1 Column","admin1")$res
   }
@@ -96,6 +110,9 @@ if(!file.exists("inputs/environment.Rdata")) {
     }
   } else if (length(admin2) > 1){
     admin2 <- tcltk::tk_select.list(admin2, title = "Admin 2 Column")
+    if(admin2 == "") {
+      admin2 <- svDialogs::dlg_input(message= "Enter the name of the Admin 2 Column","admin2")$res
+    }
   } else if (length(admin2) == 0) {
     admin2 <- svDialogs::dlg_input(message= "Enter the name of the Admin 2 Column","admin2")$res
   }
@@ -110,6 +127,9 @@ if(!file.exists("inputs/environment.Rdata")) {
     }
   } else if (length(cluster) > 1){
     cluster <- tcltk::tk_select.list(cluster, title = "Cluster Column")
+    if(cluster == "") {
+      cluster <- svDialogs::dlg_input(message= "Enter the name of the Cluster Column","cluster")$res
+    }
   } else if (length(cluster) == 0) {
     cluster <- svDialogs::dlg_input(message= "Enter the name of the Cluster Column","cluster")$res
   }
@@ -124,6 +144,9 @@ if(!file.exists("inputs/environment.Rdata")) {
     }
   } else if (length(uuid_main) > 1){
     uuid_main <- tcltk::tk_select.list(uuid_main, title = "HH UUID Column [Main Data]")
+    if(uuid_main == "") {
+      uuid_main <- svDialogs::dlg_input(message= "Enter the name of the HH UUID Column in main data","uuid_main")$res
+    }
   } else if (length(uuid_main) == 0) {
     uuid_main <- svDialogs::dlg_input(message= "Enter the name of the HH UUID Column in main data","uuid_main")$res
   }
@@ -138,6 +161,9 @@ if(!file.exists("inputs/environment.Rdata")) {
     }
   } else if (length(uuid_roster) > 1){
     uuid_roster <- tcltk::tk_select.list(uuid_roster, title = "HH UUID Column [Roster Data]")
+    if(uuid_roster == ""){
+      uuid_roster <- svDialogs::dlg_input(message= "Enter the name of the HH UUID Column in roster data","uuid_roster")$res
+    }
   } else if (length(uuid_roster) == 0) {
     uuid_roster <- svDialogs::dlg_input(message= "Enter the name of the HH UUID Column in roster data","uuid_roster")$res
   }
@@ -156,6 +182,24 @@ if(!file.exists("inputs/environment.Rdata")) {
     sex_roster <- svDialogs::dlg_input(message= "Enter the name of the sex roster column","sex_roster")$res
   }
 
+
+  ## Detect sex_roster column
+  sex_roster <- names(raw.hh_roster)[grepl("sex",names(raw.hh_roster))]
+
+  if(length(sex_roster) == 1){
+    yes_no <- svDialogs::dlg_message(paste0("Is '", sex_roster, "' the correct sex roster column?"), type = "yesno")$res
+    if(yes_no == "no"){
+      sex_roster <- svDialogs::dlg_input(message= "Enter the name of the sex roster column","sex_roster")$res
+    }
+  } else if (length(sex_roster) > 1){
+    sex_roster <- tcltk::tk_select.list(sex_roster, title = "Sex Column [Roster Data]")
+    if(sex_roster == "") {
+      sex_roster <- svDialogs::dlg_input(message= "Enter the name of the sex roster column","sex_roster")$res
+    }
+  } else if (length(sex_roster) == 0) {
+    sex_roster <- svDialogs::dlg_input(message= "Enter the name of the sex roster column","sex_roster")$res
+  }
+
   ## Detect age_roster column
   age_roster <- names(raw.hh_roster)[grepl("final",names(raw.hh_roster))]
 
@@ -166,6 +210,9 @@ if(!file.exists("inputs/environment.Rdata")) {
     }
   } else if (length(age_roster) > 1){
     age_roster <- tcltk::tk_select.list(age_roster, title = "Age Column [Roster Data]")
+    if(age_roster == ""){
+      age_roster <- svDialogs::dlg_input(message= "Enter the name of the age roster column","age_roster")$res
+    }
   } else if (length(age_roster) == 0) {
     age_roster <- svDialogs::dlg_input(message= "Enter the name of the age roster column","age_roster")$res
   }
@@ -180,6 +227,9 @@ if(!file.exists("inputs/environment.Rdata")) {
     }
   } else if (length(birth_roster) > 1){
     birth_roster <- tcltk::tk_select.list(birth_roster, title = "Birth Column [Roster Data]")
+    if(birth_roster == ""){
+      birth_roster <- svDialogs::dlg_input(message= "Enter the name of the birth roster column","birth_roster")$res
+    }
   } else if (length(birth_roster) == 0) {
     birth_roster <- svDialogs::dlg_input(message= "Enter the name of the birth roster column","birth_roster")$res
   }
@@ -194,6 +244,9 @@ if(!file.exists("inputs/environment.Rdata")) {
     }
   } else if (length(birthdate_roster) > 1){
     birthdate_roster <- tcltk::tk_select.list(birthdate_roster, title = "Birth date Column [Roster Data]")
+    if(birthdate_roster == "") {
+      birthdate_roster <- svDialogs::dlg_input(message= "Enter the name of the birth date roster column","birthdate_roster")$res
+    }
   } else if (length(birthdate_roster) == 0) {
     birthdate_roster <- svDialogs::dlg_input(message= "Enter the name of the birth date roster column","birthdate_roster")$res
   }
@@ -208,6 +261,9 @@ if(!file.exists("inputs/environment.Rdata")) {
     }
   } else if (length(joined_roster) > 1){
     joined_roster <- tcltk::tk_select.list(joined_roster, title = "Joined Column [Roster Data]")
+    if(joined_roster == "") {
+      joined_roster <- svDialogs::dlg_input(message= "Enter the name of the joined roster column","joined_roster")$res
+    }
   } else if (length(joined_roster) == 0) {
     joined_roster <- svDialogs::dlg_input(message= "Enter the name of the joined roster column","joined_roster")$res
   }
@@ -222,6 +278,9 @@ if(!file.exists("inputs/environment.Rdata")) {
     }
   } else if (length(joined_date_roster) > 1){
     joined_date_roster <- tcltk::tk_select.list(joined_date_roster, title = "Joined Date Column [Roster Data]")
+    if(joined_date_roster == "") {
+      joined_date_roster <- svDialogs::dlg_input(message= "Enter the name of the joined date roster column","joined_date_roster")$res
+    }
   } else if (length(joined_date_roster) == 0) {
     joined_date_roster <- svDialogs::dlg_input(message= "Enter the name of the joined date roster column","joined_date_roster")$res
   }
@@ -236,6 +295,9 @@ if(!file.exists("inputs/environment.Rdata")) {
       }
     } else if (length(uuid_left) > 1){
       uuid_left <- tcltk::tk_select.list(uuid_left, title = "HH UUID Column [Left Data]")
+      if(uuid_left == ""){
+        uuid_left <- svDialogs::dlg_input(message= "Enter the name of the HH UUID column in left data","uuid_left")$res
+      }
     } else if (length(uuid_left) == 0) {
       uuid_left <- svDialogs::dlg_input(message= "Enter the name of the HH UUID column in left data","uuid_left")$res
     }
@@ -250,6 +312,9 @@ if(!file.exists("inputs/environment.Rdata")) {
       }
     } else if (length(sex_left) > 1){
       sex_left <- tcltk::tk_select.list(sex_left, title = "Sex date Column [Left Data]")
+      if(sex_left == "") {
+        sex_left <- svDialogs::dlg_input(message= "Enter the name of the sex left column","sex_left")$res
+      }
     } else if (length(sex_left) == 0) {
       sex_left <- svDialogs::dlg_input(message= "Enter the name of the sex left column","sex_left")$res
     }
@@ -264,6 +329,9 @@ if(!file.exists("inputs/environment.Rdata")) {
       }
     } else if (length(age_left) > 1){
       age_left <- tcltk::tk_select.list(age_left, title = "Age date Column [Left Data]")
+      if(age_left == ""){
+        age_left <- svDialogs::dlg_input(message= "Enter the name of the age left column","age_left")$res
+      }
     } else if (length(age_left) == 0) {
       age_left <- svDialogs::dlg_input(message= "Enter the name of the age left column","age_left")$res
     }
@@ -278,6 +346,9 @@ if(!file.exists("inputs/environment.Rdata")) {
       }
     } else if (length(birth_left) > 1){
       birth_left <- tcltk::tk_select.list(birth_left, title = "Birth date Column [Left Data]")
+      if(birth_left == "") {
+        birth_left <- svDialogs::dlg_input(message= "Enter the name of the birth column","birth_left")$res
+      }
     } else if (length(birth_left) == 0) {
       birth_left <- svDialogs::dlg_input(message= "Enter the name of the birth column","birth_left")$res
     }
@@ -292,6 +363,9 @@ if(!file.exists("inputs/environment.Rdata")) {
       }
     } else if (length(birthdate_left) > 1){
       birthdate_left <- tcltk::tk_select.list(birthdate_left, title = "Birth date Column [Left Data]")
+      if(birthdate_left == "") {
+        birthdate_left <- svDialogs::dlg_input(message= "Enter the name of the birth date column","birthdate_left")$res
+      }
     } else if (length(birthdate_left) == 0) {
       birthdate_left <- svDialogs::dlg_input(message= "Enter the name of the birth date column","birthdate_left")$res
     }
@@ -306,6 +380,9 @@ if(!file.exists("inputs/environment.Rdata")) {
       }
     } else if (length(joined_left) > 1){
       joined_left <- tcltk::tk_select.list(joined_left, title = "Joined Column [Left Data]")
+      if(joined_left == "") {
+        joined_left <- svDialogs::dlg_input(message= "Enter the name of the joined column in left data","joined_left")$res
+      }
     } else if (length(joined_left) == 0) {
       joined_left <- svDialogs::dlg_input(message= "Enter the name of the joined column in left data","joined_left")$res
     }
@@ -320,6 +397,9 @@ if(!file.exists("inputs/environment.Rdata")) {
       }
     } else if (length(joined_date_left) > 1){
       joined_date_left <- tcltk::tk_select.list(joined_date_left, title = "Joined date Column [Left Data]")
+      if(joined_date_left == "") {
+        joined_date_left <- svDialogs::dlg_input(message= "Enter the name of the joined date column in left data","joined_date_left")$res
+      }
     } else if (length(joined_date_left) == 0) {
       joined_date_left <- svDialogs::dlg_input(message= "Enter the name of the joined date column in left data","joined_date_left")$res
     }
@@ -334,6 +414,9 @@ if(!file.exists("inputs/environment.Rdata")) {
       }
     } else if (length(left_date_left) > 1){
       left_date_left <- tcltk::tk_select.list(left_date_left, title = "Left date Column [Left Data]")
+      if(left_date_left == ""){
+        left_date_left <- svDialogs::dlg_input(message= "Enter the name of the left date column","left_date_left")$res
+      }
     } else if (length(left_date_left) == 0) {
       left_date_left <- svDialogs::dlg_input(message= "Enter the name of the left date column","left_date_left")$res
     }
@@ -348,6 +431,9 @@ if(!file.exists("inputs/environment.Rdata")) {
     }
   } else if (length(uuid_died) > 1){
     uuid_died <- tcltk::tk_select.list(uuid_died, title = "HH UUID Column [Died Data]")
+    if(uuid_died == ""){
+      uuid_died <- svDialogs::dlg_input(message= "Enter the name of the HH UUID column in died data","uuid_died")$res
+    }
   } else if (length(uuid_died) == 0) {
     uuid_died <- svDialogs::dlg_input(message= "Enter the name of the HH UUID column in died data","uuid_died")$res
   }
@@ -362,6 +448,9 @@ if(!file.exists("inputs/environment.Rdata")) {
     }
   } else if (length(sex_died) > 1){
     sex_died <- tcltk::tk_select.list(sex_died, title = "Sex date Column [Died Data]")
+    if(sex_died == ""){
+      sex_died <- svDialogs::dlg_input(message= "Enter the name of the sex died column","sex_died")$res
+    }
   } else if (length(sex_died) == 0) {
     sex_died <- svDialogs::dlg_input(message= "Enter the name of the sex died column","sex_died")$res
   }
@@ -376,6 +465,9 @@ if(!file.exists("inputs/environment.Rdata")) {
     }
   } else if (length(age_died) > 1){
     age_died <- tcltk::tk_select.list(age_died, title = "Age date Column [Died Data]")
+    if(age_died == "") {
+      age_died <- svDialogs::dlg_input(message= "Enter the name of the age died column","age_died")$res
+    }
   } else if (length(age_died) == 0) {
     age_died <- svDialogs::dlg_input(message= "Enter the name of the age died column","age_died")$res
   }
@@ -390,6 +482,9 @@ if(!file.exists("inputs/environment.Rdata")) {
     }
   } else if (length(birth_died) > 1){
     birth_died <- tcltk::tk_select.list(birth_died, title = "Birth Column [Died Data]")
+    if(birth_died == "") {
+      birth_died <- svDialogs::dlg_input(message= "Enter the name of the birth column","birth_died")$res
+    }
   } else if (length(birth_died) == 0) {
     birth_died <- svDialogs::dlg_input(message= "Enter the name of the birth column","birth_died")$res
   }
@@ -404,6 +499,9 @@ if(!file.exists("inputs/environment.Rdata")) {
     }
   } else if (length(birthdate_died) > 1){
     birthdate_died <- tcltk::tk_select.list(birthdate_died, title = "Birth date Column [Died Data]")
+    if(birthdate_died == "") {
+      birthdate_died <- svDialogs::dlg_input(message= "Enter the name of the birth date column","birthdate_died")$res
+    }
   } else if (length(birthdate_died) == 0) {
     birthdate_died <- svDialogs::dlg_input(message= "Enter the name of the birth date column","birthdate_died")$res
   }
@@ -418,6 +516,9 @@ if(!file.exists("inputs/environment.Rdata")) {
     }
   } else if (length(joined_died) > 1){
     joined_died <- tcltk::tk_select.list(joined_died, title = "Joined Column [Died Data]")
+    if(joined_died == "") {
+      joined_died <- tcltk::tk_select.list(joined_died, title = "Joined Column [Died Data]")
+    }
   } else if (length(joined_died) == 0) {
     joined_died <- svDialogs::dlg_input(message= "Enter the name of the joined column in died data","joined_died")$res
   }
@@ -432,6 +533,9 @@ if(!file.exists("inputs/environment.Rdata")) {
     }
   } else if (length(joined_date_died) > 1){
     joined_date_died <- tcltk::tk_select.list(joined_date_died, title = "Joined date Column [Died Data]")
+    if(joined_date_died == "") {
+      joined_date_died <- svDialogs::dlg_input(message= "Enter the name of the joined date column in died data","joined_date_died")$res
+    }
   } else if (length(joined_date_died) == 0) {
     joined_date_died <- svDialogs::dlg_input(message= "Enter the name of the joined date column in died data","joined_date_died")$res
   }
@@ -445,6 +549,9 @@ if(!file.exists("inputs/environment.Rdata")) {
     }
   } else if (length(date_death) > 1){
     date_death <- tcltk::tk_select.list(date_death, title = "Death date Column [Died Data]")
+    if(date_death == "") {
+      date_death <- svDialogs::dlg_input(message= "Enter the name of the death date column in died data","date_death")$res
+    }
   } else if (length(date_death) == 0) {
     date_death <- svDialogs::dlg_input(message= "Enter the name of the death date column in died data","date_death")$res
   }
@@ -459,6 +566,9 @@ if(!file.exists("inputs/environment.Rdata")) {
     }
   } else if (length(death_cause) > 1){
     death_cause <- tcltk::tk_select.list(death_cause, title = "Cause of Death Column [Died Data]")
+    if(death_cause == ""){
+      death_cause <- svDialogs::dlg_input(message= "Enter the name of the cause of death column","death_cause")$res
+    }
   } else if (length(death_cause) == 0) {
     death_cause <- svDialogs::dlg_input(message= "Enter the name of the cause of death column","death_cause")$res
   }
@@ -473,9 +583,13 @@ if(!file.exists("inputs/environment.Rdata")) {
     }
   } else if (length(death_location) > 1){
     death_location <- tcltk::tk_select.list(death_location, title = "Location of Death Column [Died Data]")
+    if(death_location == ""){
+      death_location <- svDialogs::dlg_input(message= "Enter the name of the location of death column","death_location")$res
+    }
   } else if (length(death_location) == 0) {
     death_location <- svDialogs::dlg_input(message= "Enter the name of the location of death column","death_location")$res
   }
+
   dates_collected <- tcltk::tk_select.list(c("All","Some","None"), title = "Do you have all the Dates Collected?[Left/Join/Birth/Death]")
 
   if(dates_collected == "All") {
@@ -529,7 +643,6 @@ if(!file.exists("inputs/environment.Rdata")) {
     num_left <- NULL
   }
 }
-
 
 all_vars <- ls()
 is_empty <- function(x) {
