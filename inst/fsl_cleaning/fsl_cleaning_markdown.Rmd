@@ -1222,6 +1222,8 @@ if("fsl_fcs_score" %in% names(raw.flag.fcs)) {
     cl_fcs_all_0 <- bind_rows(cl_fcs_all_0,cl)
   }
   cleaning.log.checks.direct <- bind_rows(cleaning.log.checks.direct, cl_fcs_all_0)
+} else {
+  cl_fcs_all_0 <- data.frame()
 }
 
 ### FCS score is 7. 
@@ -1237,7 +1239,10 @@ if("fsl_fcs_score" %in% names(raw.flag.fcs)) {
     cl_fcs_all_7 <- bind_rows(cl_fcs_all_7,cl) 
   }
   cleaning.log.checks.direct <- bind_rows(cleaning.log.checks.direct, cl_fcs_all_7)
+} else {
+  cl_fcs_all_7 <- data.frame()
 }
+
 
 
 ### All LCSI NA
@@ -1253,6 +1258,8 @@ if("flag_lcsi_na" %in% names(raw.flag.fcs)) {
     cl_lcsi_all_na <- bind_rows(cl_lcsi_all_na,cl)
   }
   cleaning.log.checks.direct <- bind_rows(cleaning.log.checks.direct, cl_lcsi_all_na)
+} else {
+  cl_lcsi_all_na <- data.frame()
 }
 
 lcs_variables <- c("fsl_lcsi_stress1","fsl_lcsi_stress2","fsl_lcsi_stress3","fsl_lcsi_stress4","fsl_lcsi_crisis1",
@@ -1271,6 +1278,8 @@ if("flag_lcsi_displ" %in% names(raw.flag.fcs)){
   }
   
   cleaning.log.checks.direct <- bind_rows(cleaning.log.checks.direct, cl_lcsi_displ)
+} else {
+  cl_lcsi_displ <- data.frame()
 }
 
 ### LCSI Agriculture but HH not displaced
@@ -1285,6 +1294,8 @@ if("flag_lcsi_liv_agriculture" %in% names(raw.flag.fcs)){
     cl_lcsi_agric <- bind_rows(cl_lcsi_agric,cl)
   }
   cleaning.log.checks.direct <- bind_rows(cleaning.log.checks.direct, cl_lcsi_agric)
+}  else {
+  cl_lcsi_agric <- data.frame()
 }
 
 ### LCSI Livestock but HH not displaced
@@ -1299,6 +1310,8 @@ if("flag_lcsi_liv_livestock" %in% names(raw.flag.fcs)){
     cl_lcsi_livest <- bind_rows(cl_lcsi_livest,cl)
   }
   cleaning.log.checks.direct <- bind_rows(cleaning.log.checks.direct, cl_lcsi_livest)
+} else {
+  cl_lcsi_livest <- data.frame()
 }
 
 writexl::write_xlsx(cleaning.log.checks.direct, "output/cleaning_logbook.xlsx")
@@ -1327,21 +1340,21 @@ checks_followups <- tibble()
 # Check number 1
 if("flag_protein_rcsi" %in% names(raw.flag.fcs)){
   check_protein_rcsi <- raw.flag.fcs %>% 
-    select(uuid,enum_colname, flag_protein_rcsi)%>% 
+    select(uuid,enumerator, flag_protein_rcsi)%>% 
     filter(flag_protein_rcsi == 1) %>% 
     left_join(raw.flag.fcs %>% select(uuid, fsl_rcsi_score, fsl_fcs_meat, fsl_fcs_dairy))
   
   if(nrow(check_protein_rcsi)>0){
     checks_followups <- rbind(checks_followups,
                               make.logical.check.entry(check_protein_rcsi, 1,  c("fsl_rcsi_score",fsl_fcs_meat, fsl_fcs_dairy), 
-                                                       cols_to_keep = c(enum_colname),"rCSI Score is high while protein consumption is also reported as frequent", F))
+                                                       cols_to_keep = c(enumerator),"rCSI Score is high while protein consumption is also reported as frequent", F))
   }
 }
 
 if("flag_lcsi_coherence" %in% names(raw.flag.fcs)){
   # Check number 2
   check_lcsi_coherence <- raw.flag.fcs %>% 
-    select(uuid,enum_colname, flag_lcsi_coherence)%>% 
+    select(uuid,enumerator, flag_lcsi_coherence)%>% 
     filter(flag_lcsi_coherence == 1)%>% 
     left_join(raw.flag.fcs %>% select(uuid, 
                                   fsl_lcsi_emergency, fsl_lcsi_stress, fsl_lcsi_crisis,
@@ -1356,7 +1369,7 @@ if("flag_lcsi_coherence" %in% names(raw.flag.fcs)){
                                                          fsl_lcsi_stress1,fsl_lcsi_stress2,fsl_lcsi_stress3,fsl_lcsi_stress4,
                                                          fsl_lcsi_crisis1,fsl_lcsi_crisis2,fsl_lcsi_crisis3,
                                                          fsl_lcsi_emergency1,fsl_lcsi_emergency2,fsl_lcsi_emergency3), # to provide all teh strategies
-                                                       cols_to_keep = c(enum_colname),"HHs report using crisis or emergency strategies but not stress strategies or Emergency and no crisis.", F))
+                                                       cols_to_keep = c(enumerator),"HHs report using crisis or emergency strategies but not stress strategies or Emergency and no crisis.", F))
   }
 }
 #Check number 3
@@ -1367,14 +1380,14 @@ rcsi_flag_columns <- c(fsl_rcsi_lessquality,fsl_rcsi_borrow,
 
 if("flag_fcsrcsi_box" %in% names(raw.flag.fcs)) {
   check_fcsrcsi_box <- raw.flag.fcs %>% 
-    select(uuid,enum_colname, flag_fcsrcsi_box)%>% 
+    select(uuid,enumerator, flag_fcsrcsi_box)%>% 
     filter(flag_fcsrcsi_box == 1)%>% 
     left_join(raw.flag.fcs %>% select(uuid, fcs_flag_columns, rcsi_flag_columns))
   
   if(nrow(check_fcsrcsi_box)>0){
     checks_followups <- rbind(checks_followups,
                               make.logical.check.entry(check_fcsrcsi_box, 3,  c(fcs_flag_columns, rcsi_flag_columns), 
-                                                       cols_to_keep = c(enum_colname),"HH that would have an acceptable FCS score and a high rCSI score", F))
+                                                       cols_to_keep = c(enumerator),"HH that would have an acceptable FCS score and a high rCSI score", F))
   }
 }
 
