@@ -370,7 +370,7 @@
     },
     "broom.helpers": {
       "Package": "broom.helpers",
-      "Version": "1.15.0",
+      "Version": "1.14.0",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
@@ -387,7 +387,7 @@
         "tibble",
         "tidyr"
       ],
-      "Hash": "768cae43c3da698d6b11763777301e43"
+      "Hash": "ea30eb5d9412a4a5c2740685f680cd49"
     },
     "bslib": {
       "Package": "bslib",
@@ -586,7 +586,7 @@
     },
     "crul": {
       "Package": "crul",
-      "Version": "1.4.2",
+      "Version": "1.4.0",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
@@ -597,7 +597,7 @@
         "mime",
         "urltools"
       ],
-      "Hash": "5685d2603020d0f879a147ba23d51292"
+      "Hash": "1eb00a531331c91d970f3af74b75321f"
     },
     "curl": {
       "Package": "curl",
@@ -678,14 +678,14 @@
     },
     "digest": {
       "Package": "digest",
-      "Version": "0.6.35",
+      "Version": "0.6.34",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
         "R",
         "utils"
       ],
-      "Hash": "698ece7ba5a4fa4559e3d537e7ec3d31"
+      "Hash": "7ede2ee9ea8d3edbf1ca84c1e333ad1a"
     },
     "dplyr": {
       "Package": "dplyr",
@@ -980,7 +980,7 @@
     },
     "ggstats": {
       "Package": "ggstats",
-      "Version": "0.6.0",
+      "Version": "0.5.1",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
@@ -999,7 +999,7 @@
         "stringr",
         "tidyr"
       ],
-      "Hash": "02cdab34154e9e70dac279afbb20d34b"
+      "Hash": "006a64911e79a7dc7cbf839a57baaff4"
     },
     "glue": {
       "Package": "glue",
@@ -1215,7 +1215,7 @@
       "RemoteRepo": "impactR4PHU",
       "RemoteUsername": "impact-initiatives",
       "RemoteRef": "HEAD",
-      "RemoteSha": "08b3279c6225dd843cd7100a81ff5f555fb59c19",
+      "RemoteSha": "ea1acb6b0febbbf2cafd74e251025804dcbd79ea",
       "Requirements": [
         "GGally",
         "R",
@@ -1236,7 +1236,7 @@
         "writexl",
         "zscorer"
       ],
-      "Hash": "25ac49522bd48d2ff0843c5363a70a7b"
+      "Hash": "85d038fd519eb57917966c27468950c9"
     },
     "isoband": {
       "Package": "isoband",
@@ -1298,7 +1298,7 @@
     },
     "labelled": {
       "Package": "labelled",
-      "Version": "2.13.0",
+      "Version": "2.12.0",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
@@ -1309,10 +1309,9 @@
         "rlang",
         "stringr",
         "tidyr",
-        "tidyselect",
         "vctrs"
       ],
-      "Hash": "ad4b6d757624221aec6220b8c78defeb"
+      "Hash": "1ec27c624ece6c20431e9249bd232797"
     },
     "later": {
       "Package": "later",
@@ -2280,9 +2279,9 @@
     },
     "tidyselect": {
       "Package": "tidyselect",
-      "Version": "1.2.1",
+      "Version": "1.2.0",
       "Source": "Repository",
-      "Repository": "CRAN",
+      "Repository": "RSPM",
       "Requirements": [
         "R",
         "cli",
@@ -2292,7 +2291,7 @@
         "vctrs",
         "withr"
       ],
-      "Hash": "829f27b9c4919c16b593794a6344d6c0"
+      "Hash": "79540e5fcd9e0435af547d885f184fd5"
     },
     "tidyverse": {
       "Package": "tidyverse",
@@ -2361,7 +2360,7 @@
       "Source": "GitHub",
       "RemoteType": "github",
       "RemoteHost": "api.github.com",
-      "RemoteUsername": "Reach-WoU-Regional",
+      "RemoteUsername": "REACH-WoU-Regional",
       "RemoteRepo": "translateR",
       "RemoteRef": "main",
       "RemoteSha": "b261923d50f98bf6cfc5a0bf78788fcc4f43143f",
@@ -2372,7 +2371,7 @@
         "parallel",
         "utils"
       ],
-      "Hash": "6fd4dfb063c3bbe5ba4d7387a81e42c1"
+      "Hash": "05e55fe93648cb511fce48afd1acee8b"
     },
     "triebeard": {
       "Package": "triebeard",
