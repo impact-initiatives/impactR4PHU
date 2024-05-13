@@ -1465,7 +1465,7 @@ for(flag in flags_fsl_columns) {
 if(all(fcs_check_columns %in% names(raw.flag.fcs))) {
   impactR4PHU::plot_ridge_distribution(raw.flag.fcs, numeric_cols = c(fsl_fcs_cereal, fsl_fcs_dairy, fsl_fcs_veg, 
                                                                        fsl_fcs_fruit, fsl_fcs_legumes, fsl_fcs_sugar, 
-                                                                       fsl_fcs_oil),
+                                                                       fsl_fcs_oil,fsl_fcs_meat),
                                         name_groups = "Food Groups", name_units = "Days")
 } else {
   cat("No Plot Produced!!")
@@ -1486,14 +1486,14 @@ if(all(fcs_check_columns %in% names(raw.flag.fcs))) {
       subch(impactR4PHU::plot_ridge_distribution(raw.flag.fcs %>% 
                                               dplyr::filter(!!rlang::sym(enumerator) %in% list_enum), numeric_cols = c(fsl_fcs_cereal, fsl_fcs_dairy, fsl_fcs_veg,
                                                                            fsl_fcs_fruit, fsl_fcs_legumes, fsl_fcs_sugar,
-                                                                           fsl_fcs_oil),
+                                                                           fsl_fcs_oil,fsl_fcs_meat),
                                             name_groups = "Food Groups", name_units = "Days", 
                                             grouping = enumerator))
     }
   } else {
     (impactR4PHU::plot_ridge_distribution(raw.flag.fcs, numeric_cols = c(fsl_fcs_cereal, fsl_fcs_dairy, fsl_fcs_veg,
                                                                          fsl_fcs_fruit, fsl_fcs_legumes, fsl_fcs_sugar,
-                                                                         fsl_fcs_oil),
+                                                                         fsl_fcs_oil,fsl_fcs_meat),
                                           name_groups = "Food Groups", name_units = "Days", 
                                           grouping = enumerator))
   }
