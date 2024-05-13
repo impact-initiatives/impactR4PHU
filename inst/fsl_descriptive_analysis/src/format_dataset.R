@@ -14,7 +14,7 @@ if(!file.exists("inputs/environment.Rdata")) {
 # FSL
 if(!file.exists("inputs/environment.Rdata")) {
   if ("FCS" %in% FSL_indicators){
-    fsl_fcs_cereal <- names(raw.main)[grepl("cereal",names(raw.main))]
+    fsl_fcs_cereal <- names(main)[grepl("cereal",names(main))]
     if(length(fsl_fcs_cereal) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_fcs_cereal, "' the correct fsl_fcs_cereal column?"), type = "yesno")$res
       if(yes_no == "no"){
@@ -29,7 +29,7 @@ if(!file.exists("inputs/environment.Rdata")) {
       fsl_fcs_cereal <- svDialogs::dlg_input(message= "Enter the name of the fsl_fcs_cereal","fsl_fcs_cereal")$res
     }
 
-    fsl_fcs_legumes <- names(raw.main)[grepl("legume|pulse|bean|nuts|noix",names(raw.main))]
+    fsl_fcs_legumes <- names(main)[grepl("legume|pulse|bean|nuts|noix",names(main))]
     if(length(fsl_fcs_legumes) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_fcs_legumes, "' the correct fsl_fcs_legumes column?"), type = "yesno")$res
       if (yes_no == "no") {
@@ -44,7 +44,7 @@ if(!file.exists("inputs/environment.Rdata")) {
       fsl_fcs_legumes <- svDialogs::dlg_input(message= "Enter the name of the fsl_fcs_legumes","fsl_fcs_legumes")$res
     }
 
-    fsl_fcs_veg <- names(raw.main)[grepl("veg|legume",names(raw.main))]
+    fsl_fcs_veg <- names(main)[grepl("veg|legume",names(main))]
     if(length(fsl_fcs_veg) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_fcs_veg, "' the correct fsl_fcs_veg column?"), type = "yesno")$res
       if (yes_no == "no") {
@@ -59,7 +59,7 @@ if(!file.exists("inputs/environment.Rdata")) {
       fsl_fcs_veg <- svDialogs::dlg_input(message= "Enter the name of the fsl_fcs_veg","fsl_fcs_veg")$res
     }
 
-    fsl_fcs_fruit <- names(raw.main)[grepl("fruit",names(raw.main))]
+    fsl_fcs_fruit <- names(main)[grepl("fruit",names(main))]
     if(length(fsl_fcs_fruit) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_fcs_fruit, "' the correct fsl_fcs_fruit column?"), type = "yesno")$res
       if (yes_no == "no") {
@@ -74,7 +74,7 @@ if(!file.exists("inputs/environment.Rdata")) {
       fsl_fcs_fruit <- svDialogs::dlg_input(message= "Enter the name of the fsl_fcs_fruit","fsl_fcs_fruit")$res
     }
 
-    fsl_fcs_meat <- names(raw.main)[grepl("meat|viande",names(raw.main))]
+    fsl_fcs_meat <- names(main)[grepl("meat|viande",names(main))]
     if(length(fsl_fcs_meat) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_fcs_meat, "' the correct fsl_fcs_meat column?"), type = "yesno")$res
       if (yes_no == "no") {
@@ -89,7 +89,7 @@ if(!file.exists("inputs/environment.Rdata")) {
       fsl_fcs_meat <- svDialogs::dlg_input(message= "Enter the name of the fsl_fcs_meat","fsl_fcs_meat")$res
     }
 
-    fsl_fcs_dairy <- names(raw.main)[grepl("dairy|milk|lait",names(raw.main))]
+    fsl_fcs_dairy <- names(main)[grepl("dairy|milk|lait",names(main))]
     if(length(fsl_fcs_dairy) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_fcs_dairy, "' the correct fsl_fcs_dairy column?"), type = "yesno")$res
       if (yes_no == "no") {
@@ -104,7 +104,7 @@ if(!file.exists("inputs/environment.Rdata")) {
       fsl_fcs_dairy <- svDialogs::dlg_input(message= "Enter the name of the fsl_fcs_dairy","fsl_fcs_dairy")$res
     }
 
-    fsl_fcs_sugar <- names(raw.main)[grepl("sugar|sucre",names(raw.main))]
+    fsl_fcs_sugar <- names(main)[grepl("sugar|sucre",names(main))]
     if(length(fsl_fcs_sugar) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_fcs_sugar, "' the correct fsl_fcs_sugar column?"), type = "yesno")$res
       if (yes_no == "no") {
@@ -119,7 +119,7 @@ if(!file.exists("inputs/environment.Rdata")) {
       fsl_fcs_sugar <- svDialogs::dlg_input(message= "Enter the name of the fsl_fcs_sugar","fsl_fcs_sugar")$res
     }
 
-    fsl_fcs_oil <- names(raw.main)[grepl("oil|huile",names(raw.main))]
+    fsl_fcs_oil <- names(main)[grepl("oil|huile",names(main))]
     if(length(fsl_fcs_oil) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_fcs_oil, "' the correct fsl_fcs_oil column?"), type = "yesno")$res
       if (yes_no == "no") {
@@ -143,11 +143,11 @@ if(!file.exists("inputs/environment.Rdata")) {
                            fsl_fcs_sugar,
                            fsl_fcs_oil)
 
-    if(!all(fcs_check_columns %in% names(raw.main))) {
+    if(!all(fcs_check_columns %in% names(main))) {
       svDialogs::dlg_message("Please check if the FCS columns selected are correct and available in the dataset")
       stop("Please check if the FCS columns selected are correct and available in the dataset")
     } else {
-      raw.main <- raw.main %>%
+      main <- main %>%
         impactR4PHU::add_fcs(cutoffs = "normal",
                              fsl_fcs_cereal = fsl_fcs_cereal,
                              fsl_fcs_legumes = fsl_fcs_legumes,
@@ -178,7 +178,7 @@ if(!file.exists("inputs/environment.Rdata")) {
   }
 } else {
   if("FCS" %in% FSL_indicators){
-    raw.main <- raw.main %>%
+    main <- main %>%
       impactR4PHU::add_fcs(cutoffs = "normal",
                            fsl_fcs_cereal = fsl_fcs_cereal,
                            fsl_fcs_legumes = fsl_fcs_legumes,
@@ -193,7 +193,7 @@ if(!file.exists("inputs/environment.Rdata")) {
 
 if(!file.exists("inputs/environment.Rdata")) {
   if ("rCSI" %in% FSL_indicators){
-    fsl_rcsi_lessquality <- names(raw.main)[grepl("less|quality|lessquality|moins",names(raw.main))]
+    fsl_rcsi_lessquality <- names(main)[grepl("less|quality|lessquality|moins",names(main))]
     if(length(fsl_rcsi_lessquality) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_rcsi_lessquality, "' the correct fsl_rcsi_lessquality column?"), type = "yesno")$res
       if (yes_no == "no") {
@@ -208,7 +208,7 @@ if(!file.exists("inputs/environment.Rdata")) {
       fsl_rcsi_lessquality <- svDialogs::dlg_input(message= "Enter the name of the fsl_rcsi_lessquality","fsl_rcsi_lessquality")$res
     }
 
-    fsl_rcsi_borrow <- names(raw.main)[grepl("borrow|emprunt",names(raw.main))]
+    fsl_rcsi_borrow <- names(main)[grepl("borrow|emprunt",names(main))]
     if(length(fsl_rcsi_borrow) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_rcsi_borrow, "' the correct fsl_rcsi_borrow column?"), type = "yesno")$res
       if (yes_no == "no") {
@@ -223,7 +223,7 @@ if(!file.exists("inputs/environment.Rdata")) {
       fsl_rcsi_borrow <- svDialogs::dlg_input(message= "Enter the name of the fsl_rcsi_borrow","fsl_rcsi_borrow")$res
     }
 
-    fsl_rcsi_mealsize <- names(raw.main)[grepl("mealsize|limit|portion|diminu",names(raw.main))]
+    fsl_rcsi_mealsize <- names(main)[grepl("mealsize|limit|portion|diminu",names(main))]
     if(length(fsl_rcsi_mealsize) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_rcsi_mealsize, "' the correct fsl_rcsi_mealsize column?"), type = "yesno")$res
       if (yes_no == "no") {
@@ -238,7 +238,7 @@ if(!file.exists("inputs/environment.Rdata")) {
       fsl_rcsi_mealsize <- svDialogs::dlg_input(message= "Enter the name of the fsl_rcsi_mealsize","fsl_rcsi_mealsize")$res
     }
 
-    fsl_rcsi_mealadult <- names(raw.main)[grepl("mealadult|restrict|consommation",names(raw.main))]
+    fsl_rcsi_mealadult <- names(main)[grepl("mealadult|restrict|consommation",names(main))]
     if(length(fsl_rcsi_mealadult) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_rcsi_mealadult, "' the correct fsl_rcsi_mealadult column?"), type = "yesno")$res
       if (yes_no == "no") {
@@ -253,7 +253,7 @@ if(!file.exists("inputs/environment.Rdata")) {
       fsl_rcsi_mealadult <- svDialogs::dlg_input(message= "Enter the name of the fsl_rcsi_mealadult","fsl_rcsi_mealadult")$res
     }
 
-    fsl_rcsi_mealnb <- names(raw.main)[grepl("mealnb|reduce|meals|nb|repas",names(raw.main))]
+    fsl_rcsi_mealnb <- names(main)[grepl("mealnb|reduce|meals|nb|repas",names(main))]
     if(length(fsl_rcsi_mealnb) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_rcsi_mealnb, "' the correct fsl_rcsi_mealnb column?"), type = "yesno")$res
       if (yes_no == "no") {
@@ -274,11 +274,11 @@ if(!file.exists("inputs/environment.Rdata")) {
                             fsl_rcsi_mealadult,
                             fsl_rcsi_mealnb)
 
-    if(!all(rcsi_check_columns %in% names(raw.main))) {
+    if(!all(rcsi_check_columns %in% names(main))) {
       svDialogs::dlg_message("Please check if the rCSI columns selected are correct and available in the dataset")
       stop("Please check if the rCSI columns selected are correct and available in the dataset")
     } else {
-      raw.main <- raw.main %>%
+      main <- main %>%
         impactR4PHU::add_rcsi(fsl_rcsi_lessquality = fsl_rcsi_lessquality,
                               fsl_rcsi_borrow = fsl_rcsi_borrow,
                               fsl_rcsi_mealsize = fsl_rcsi_mealsize,
@@ -299,7 +299,7 @@ if(!file.exists("inputs/environment.Rdata")) {
   }
 } else {
   if("rCSI" %in% FSL_indicators){
-    raw.main <- raw.main %>%
+    main <- main %>%
       impactR4PHU::add_rcsi(fsl_rcsi_lessquality = fsl_rcsi_lessquality,
                             fsl_rcsi_borrow = fsl_rcsi_borrow,
                             fsl_rcsi_mealsize = fsl_rcsi_mealsize,
@@ -310,7 +310,7 @@ if(!file.exists("inputs/environment.Rdata")) {
 
 if(!file.exists("inputs/environment.Rdata")) {
   if ("HHS" %in% FSL_indicators){
-    fsl_hhs_nofoodhh <- names(raw.main)[grepl("nofood|lack|aucun",names(raw.main))]
+    fsl_hhs_nofoodhh <- names(main)[grepl("nofood|lack|aucun",names(main))]
     if(length(fsl_hhs_nofoodhh) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_hhs_nofoodhh, "' the correct fsl_hhs_nofoodhh column?"), type = "yesno")$res
       if (yes_no == "no") {
@@ -325,7 +325,7 @@ if(!file.exists("inputs/environment.Rdata")) {
       fsl_hhs_nofoodhh <- svDialogs::dlg_input(message= "Enter the name of the fsl_hhs_nofoodhh","fsl_hhs_nofoodhh")$res
     }
 
-    fsl_hhs_nofoodhh_freq <- names(raw.main)[grepl("nofood|lack|aucun",names(raw.main))]
+    fsl_hhs_nofoodhh_freq <- names(main)[grepl("nofood|lack|aucun",names(main))]
     if(length(fsl_hhs_nofoodhh_freq) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_hhs_nofoodhh_freq, "' the correct fsl_hhs_nofoodhh_freq column?"), type = "yesno")$res
       if (yes_no == "no") {
@@ -340,7 +340,7 @@ if(!file.exists("inputs/environment.Rdata")) {
       fsl_hhs_nofoodhh_freq <- svDialogs::dlg_input(message= "Enter the name of the fsl_hhs_nofoodhh_freq","fsl_hhs_nofoodhh_freq")$res
     }
 
-    fsl_hhs_sleephungry <- names(raw.main)[grepl("sleephungry|sleep|dormir",names(raw.main))]
+    fsl_hhs_sleephungry <- names(main)[grepl("sleephungry|sleep|dormir",names(main))]
     if(length(fsl_hhs_sleephungry) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_hhs_sleephungry, "' the correct fsl_hhs_sleephungry column?"), type = "yesno")$res
       if (yes_no == "no") {
@@ -355,7 +355,7 @@ if(!file.exists("inputs/environment.Rdata")) {
       fsl_hhs_sleephungry <- svDialogs::dlg_input(message= "Enter the name of the fsl_hhs_sleephungry","fsl_hhs_sleephungry")$res
     }
 
-    fsl_hhs_sleephungry_freq <- names(raw.main)[grepl("sleephungry|sleep|dormir",names(raw.main))]
+    fsl_hhs_sleephungry_freq <- names(main)[grepl("sleephungry|sleep|dormir",names(main))]
     if(length(fsl_hhs_sleephungry_freq) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_hhs_sleephungry_freq, "' the correct fsl_hhs_sleephungry_freq column?"), type = "yesno")$res
       if (yes_no == "no") {
@@ -370,7 +370,7 @@ if(!file.exists("inputs/environment.Rdata")) {
       fsl_hhs_sleephungry_freq <- svDialogs::dlg_input(message= "Enter the name of the fsl_hhs_sleephungry_freq","fsl_hhs_sleephungry_freq")$res
     }
 
-    fsl_hhs_alldaynight <- names(raw.main)[grepl("alldaynight|daynoteating|wholeday|assez",names(raw.main))]
+    fsl_hhs_alldaynight <- names(main)[grepl("alldaynight|daynoteating|wholeday|assez",names(main))]
     if(length(fsl_hhs_alldaynight) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_hhs_alldaynight, "' the correct fsl_hhs_alldaynight column?"), type = "yesno")$res
       if (yes_no == "no") {
@@ -385,7 +385,7 @@ if(!file.exists("inputs/environment.Rdata")) {
       fsl_hhs_alldaynight <- svDialogs::dlg_input(message= "Enter the name of the fsl_hhs_alldaynight","fsl_hhs_alldaynight")$res
     }
 
-    fsl_hhs_alldaynight_freq <- names(raw.main)[grepl("alldaynight|daynoteating|wholeday|assez",names(raw.main))]
+    fsl_hhs_alldaynight_freq <- names(main)[grepl("alldaynight|daynoteating|wholeday|assez",names(main))]
     if(length(fsl_hhs_alldaynight_freq) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_hhs_alldaynight_freq, "' the correct fsl_hhs_alldaynight_freq column?"), type = "yesno")$res
       if (yes_no == "no") {
@@ -408,16 +408,16 @@ if(!file.exists("inputs/environment.Rdata")) {
                                 fsl_hhs_sleephungry_freq,
                                 fsl_hhs_alldaynight_freq)
 
-    if(!all(c(hhs_check_columns,hhs_check_columns_freq) %in% names(raw.main))) {
+    if(!all(c(hhs_check_columns,hhs_check_columns_freq) %in% names(main))) {
       svDialogs::dlg_message("Please check if the HHS columns selected are correct and available in the dataset")
       stop("Please check if the HHS columns selected are correct and available in the dataset")
     } else{
-      yes_answer <- tcltk::tk_select.list(dplyr::pull(raw.main[,hhs_check_columns]) %>% unique, title = "Yes Value")
-      no_answer <- tcltk::tk_select.list(dplyr::pull(raw.main[,hhs_check_columns]) %>% unique, title = "No Value")
-      rarely_answer <- tcltk::tk_select.list(dplyr::pull(raw.main[,hhs_check_columns_freq]) %>% unique, title = "Rarely Value")
-      sometimes_answer <- tcltk::tk_select.list(dplyr::pull(raw.main[,hhs_check_columns_freq]) %>% unique, title = "Sometimes Value")
-      often_answer <- tcltk::tk_select.list(dplyr::pull(raw.main[,hhs_check_columns_freq]) %>% unique, title = "Often Value")
-      raw.main <- raw.main %>%
+      yes_answer <- tcltk::tk_select.list(dplyr::pull(main[,hhs_check_columns]) %>% unique, title = "Yes Value")
+      no_answer <- tcltk::tk_select.list(dplyr::pull(main[,hhs_check_columns]) %>% unique, title = "No Value")
+      rarely_answer <- tcltk::tk_select.list(dplyr::pull(main[,hhs_check_columns_freq]) %>% unique, title = "Rarely Value")
+      sometimes_answer <- tcltk::tk_select.list(dplyr::pull(main[,hhs_check_columns_freq]) %>% unique, title = "Sometimes Value")
+      often_answer <- tcltk::tk_select.list(dplyr::pull(main[,hhs_check_columns_freq]) %>% unique, title = "Often Value")
+      main <- main %>%
         dplyr::mutate_at(vars(hhs_check_columns),~case_when(. == yes_answer ~ yes_answer,
                                                             . == no_answer ~ no_answer,
                                                             TRUE ~ NA)) %>%
@@ -454,7 +454,7 @@ if(!file.exists("inputs/environment.Rdata")) {
   }
 } else {
   if("HHS" %in% FSL_indicators){
-    raw.main <- raw.main %>%
+    main <- main %>%
       dplyr::mutate_at(vars(hhs_check_columns),~case_when(. == yes_answer ~ yes_answer,
                                                           . == no_answer ~ no_answer,
                                                           TRUE ~ NA)) %>%
@@ -478,7 +478,7 @@ if(!file.exists("inputs/environment.Rdata")) {
 
 if(!file.exists("inputs/environment.Rdata")) {
   if ("LCSI" %in% FSL_indicators){
-    fsl_lcsi_stress1 <- names(raw.main)[grepl("stress|stress1",names(raw.main))]
+    fsl_lcsi_stress1 <- names(main)[grepl("stress|stress1",names(main))]
     if(length(fsl_lcsi_stress1) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_lcsi_stress1, "' the correct fsl_lcsi_stress1 column?"), type = "yesno")$res
       if (yes_no == "no") {
@@ -492,7 +492,7 @@ if(!file.exists("inputs/environment.Rdata")) {
     } else if (length(fsl_lcsi_stress1) == 0) {
       fsl_lcsi_stress1 <- svDialogs::dlg_input(message= "Enter the name of the fsl_lcsi_stress1","fsl_lcsi_stress1")$res
     }
-    fsl_lcsi_stress2 <- names(raw.main)[grepl("stress|stress2",names(raw.main))]
+    fsl_lcsi_stress2 <- names(main)[grepl("stress|stress2",names(main))]
     if(length(fsl_lcsi_stress2) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_lcsi_stress2, "' the correct fsl_lcsi_stress2 column?"), type = "yesno")$res
       if (yes_no == "no") {
@@ -507,7 +507,7 @@ if(!file.exists("inputs/environment.Rdata")) {
       fsl_lcsi_stress2 <- svDialogs::dlg_input(message= "Enter the name of the fsl_lcsi_stress2","fsl_lcsi_stress2")$res
     }
 
-    fsl_lcsi_stress3 <- names(raw.main)[grepl("stress|stress3",names(raw.main))]
+    fsl_lcsi_stress3 <- names(main)[grepl("stress|stress3",names(main))]
     if(length(fsl_lcsi_stress3) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_lcsi_stress3, "' the correct fsl_lcsi_stress3 column?"), type = "yesno")$res
       if (yes_no == "no") {
@@ -522,7 +522,7 @@ if(!file.exists("inputs/environment.Rdata")) {
       fsl_lcsi_stress3 <- svDialogs::dlg_input(message= "Enter the name of the fsl_lcsi_stress3","fsl_lcsi_stress3")$res
     }
 
-    fsl_lcsi_stress4 <- names(raw.main)[grepl("stress|stress4",names(raw.main))]
+    fsl_lcsi_stress4 <- names(main)[grepl("stress|stress4",names(main))]
     if(length(fsl_lcsi_stress4) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_lcsi_stress4, "' the correct fsl_lcsi_stress4 column?"), type = "yesno")$res
       if (yes_no == "no") {
@@ -537,7 +537,7 @@ if(!file.exists("inputs/environment.Rdata")) {
       fsl_lcsi_stress4 <- svDialogs::dlg_input(message= "Enter the name of the fsl_lcsi_stress4","fsl_lcsi_stress4")$res
     }
 
-    fsl_lcsi_crisis1 <- names(raw.main)[grepl("crisis|crisis1",names(raw.main))]
+    fsl_lcsi_crisis1 <- names(main)[grepl("crisis|crisis1",names(main))]
     if(length(fsl_lcsi_crisis1) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_lcsi_crisis1, "' the correct fsl_lcsi_crisis1 column?"), type = "yesno")$res
       if (yes_no == "no") {
@@ -552,7 +552,7 @@ if(!file.exists("inputs/environment.Rdata")) {
       fsl_lcsi_crisis1 <- svDialogs::dlg_input(message= "Enter the name of the fsl_lcsi_crisis1","fsl_lcsi_crisis1")$res
     }
 
-    fsl_lcsi_crisis2 <- names(raw.main)[grepl("crisis|crisis2",names(raw.main))]
+    fsl_lcsi_crisis2 <- names(main)[grepl("crisis|crisis2",names(main))]
     if(length(fsl_lcsi_crisis2) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_lcsi_crisis2, "' the correct fsl_lcsi_crisis2 column?"), type = "yesno")$res
       if (yes_no == "no") {
@@ -567,7 +567,7 @@ if(!file.exists("inputs/environment.Rdata")) {
       fsl_lcsi_crisis2 <- svDialogs::dlg_input(message= "Enter the name of the fsl_lcsi_crisis2","fsl_lcsi_crisis2")$res
     }
 
-    fsl_lcsi_crisis3 <- names(raw.main)[grepl("crisis|crisis3",names(raw.main))]
+    fsl_lcsi_crisis3 <- names(main)[grepl("crisis|crisis3",names(main))]
     if(length(fsl_lcsi_crisis3) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_lcsi_crisis3, "' the correct fsl_lcsi_crisis3 column?"), type = "yesno")$res
       if (yes_no == "no") {
@@ -582,7 +582,7 @@ if(!file.exists("inputs/environment.Rdata")) {
       fsl_lcsi_crisis3 <- svDialogs::dlg_input(message= "Enter the name of the fsl_lcsi_crisis3","fsl_lcsi_crisis3")$res
     }
 
-    fsl_lcsi_emergency1 <- names(raw.main)[grepl("emergency|emergency1",names(raw.main))]
+    fsl_lcsi_emergency1 <- names(main)[grepl("emergency|emergency1",names(main))]
     if(length(fsl_lcsi_emergency1) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_lcsi_emergency1, "' the correct fsl_lcsi_emergency1 column?"), type = "yesno")$res
       if (yes_no == "no") {
@@ -597,7 +597,7 @@ if(!file.exists("inputs/environment.Rdata")) {
       fsl_lcsi_emergency1 <- svDialogs::dlg_input(message= "Enter the name of the fsl_lcsi_emergency1","fsl_lcsi_emergency1")$res
     }
 
-    fsl_lcsi_emergency2 <- names(raw.main)[grepl("emergency|emergency2",names(raw.main))]
+    fsl_lcsi_emergency2 <- names(main)[grepl("emergency|emergency2",names(main))]
     if(length(fsl_lcsi_emergency2) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_lcsi_emergency2, "' the correct fsl_lcsi_emergency2 column?"), type = "yesno")$res
       if (yes_no == "no") {
@@ -612,7 +612,7 @@ if(!file.exists("inputs/environment.Rdata")) {
       fsl_lcsi_emergency2 <- svDialogs::dlg_input(message= "Enter the name of the fsl_lcsi_emergency2","fsl_lcsi_emergency2")$res
     }
 
-    fsl_lcsi_emergency3 <- names(raw.main)[grepl("emergency|emergency3",names(raw.main))]
+    fsl_lcsi_emergency3 <- names(main)[grepl("emergency|emergency3",names(main))]
     if(length(fsl_lcsi_emergency3) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_lcsi_emergency3, "' the correct fsl_lcsi_emergency3 column?"), type = "yesno")$res
       if (yes_no == "no") {
@@ -632,15 +632,15 @@ if(!file.exists("inputs/environment.Rdata")) {
                             fsl_lcsi_emergency1,fsl_lcsi_emergency2,fsl_lcsi_emergency3)
 
 
-    if(!all(lcsi_check_columns %in% names(raw.main))) {
+    if(!all(lcsi_check_columns %in% names(main))) {
       svDialogs::dlg_message("Please check if the LCSI columns selected are correct and available in the dataset")
       stop("Please check if the LCSI columns selected are correct and available in the dataset")
     } else{
-      yes_val <- tcltk::tk_select.list(dplyr::pull(raw.main[,lcsi_check_columns]) %>% unique, title = "Yes Value")
-      no_val <- tcltk::tk_select.list(dplyr::pull(raw.main[,lcsi_check_columns]) %>% unique, title = "No Value")
-      exhausted_val <- tcltk::tk_select.list(dplyr::pull(raw.main[,lcsi_check_columns]) %>% unique, title = "Exhausted Value")
-      not_applicable_val <- tcltk::tk_select.list(dplyr::pull(raw.main[,lcsi_check_columns]) %>% unique, title = "Not Applicable Value")
-      raw.main <- raw.main %>%
+      yes_val <- tcltk::tk_select.list(dplyr::pull(main[,lcsi_check_columns]) %>% unique, title = "Yes Value")
+      no_val <- tcltk::tk_select.list(dplyr::pull(main[,lcsi_check_columns]) %>% unique, title = "No Value")
+      exhausted_val <- tcltk::tk_select.list(dplyr::pull(main[,lcsi_check_columns]) %>% unique, title = "Exhausted Value")
+      not_applicable_val <- tcltk::tk_select.list(dplyr::pull(main[,lcsi_check_columns]) %>% unique, title = "Not Applicable Value")
+      main <- main %>%
         dplyr::mutate_at(vars(lcsi_check_columns),~case_when(. == yes_val ~ yes_val,
                                                              . == no_val ~ no_val,
                                                              . == exhausted_val ~ exhausted_val,
@@ -678,7 +678,7 @@ if(!file.exists("inputs/environment.Rdata")) {
   }
 } else {
   if("LCSI" %in% FSL_indicators){
-    raw.main <- raw.main %>%
+    main <- main %>%
       dplyr::mutate_at(vars(lcsi_check_columns),~case_when(. == yes_val ~ yes_val,
                                                            . == no_val ~ no_val,
                                                            . == exhausted_val ~ exhausted_val,
@@ -703,7 +703,7 @@ if(!file.exists("inputs/environment.Rdata")) {
 
 if(!file.exists("inputs/environment.Rdata")) {
   if ("HDDS" %in% FSL_indicators){
-    fsl_hdds_cereals <- names(raw.main)[grepl("cereal",names(raw.main))]
+    fsl_hdds_cereals <- names(main)[grepl("cereal",names(main))]
     if(length(fsl_hdds_cereals) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_hdds_cereals, "' the correct fsl_hdds_cereals column?"), type = "yesno")$res
       if (yes_no == "no") {
@@ -718,7 +718,7 @@ if(!file.exists("inputs/environment.Rdata")) {
       fsl_hdds_cereals <- svDialogs::dlg_input(message= "Enter the name of the fsl_hdds_cereals","fsl_hdds_cereals")$res
     }
 
-    fsl_hdds_tubers <- names(raw.main)[grepl("tubers|tubercules",names(raw.main))]
+    fsl_hdds_tubers <- names(main)[grepl("tubers|tubercules",names(main))]
     if(length(fsl_hdds_tubers) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_hdds_tubers, "' the correct fsl_hdds_tubers column?"), type = "yesno")$res
       if (yes_no == "no") {
@@ -733,7 +733,7 @@ if(!file.exists("inputs/environment.Rdata")) {
       fsl_hdds_tubers <- svDialogs::dlg_input(message= "Enter the name of the fsl_hdds_tubers","fsl_hdds_tubers")$res
     }
 
-    fsl_hdds_veg <- names(raw.main)[grepl("veg|legume",names(raw.main))]
+    fsl_hdds_veg <- names(main)[grepl("veg|legume",names(main))]
     if(length(fsl_hdds_veg) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_hdds_veg, "' the correct fsl_hdds_veg column?"), type = "yesno")$res
       if (yes_no == "no") {
@@ -748,7 +748,7 @@ if(!file.exists("inputs/environment.Rdata")) {
       fsl_hdds_veg <- svDialogs::dlg_input(message= "Enter the name of the fsl_hdds_veg","fsl_hdds_veg")$res
     }
 
-    fsl_hdds_fruit <- names(raw.main)[grepl("fruit",names(raw.main))]
+    fsl_hdds_fruit <- names(main)[grepl("fruit",names(main))]
     if(length(fsl_hdds_fruit) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_hdds_fruit, "' the correct fsl_hdds_fruit column?"), type = "yesno")$res
       if (yes_no == "no") {
@@ -763,7 +763,7 @@ if(!file.exists("inputs/environment.Rdata")) {
       fsl_hdds_fruit <- svDialogs::dlg_input(message= "Enter the name of the fsl_hdds_fruit","fsl_hdds_fruit")$res
     }
 
-    fsl_hdds_meat <- names(raw.main)[grepl("meat|viande",names(raw.main))]
+    fsl_hdds_meat <- names(main)[grepl("meat|viande",names(main))]
     if(length(fsl_hdds_meat) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_hdds_meat, "' the correct fsl_hdds_meat column?"), type = "yesno")$res
       if (yes_no == "no") {
@@ -778,7 +778,7 @@ if(!file.exists("inputs/environment.Rdata")) {
       fsl_hdds_meat <- svDialogs::dlg_input(message= "Enter the name of the fsl_hdds_meat","fsl_hdds_meat")$res
     }
 
-    fsl_hdds_eggs <- names(raw.main)[grepl("egg|oeuf",names(raw.main))]
+    fsl_hdds_eggs <- names(main)[grepl("egg|oeuf",names(main))]
     if(length(fsl_hdds_eggs) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_hdds_eggs, "' the correct fsl_hdds_eggs column?"), type = "yesno")$res
       if (yes_no == "no") {
@@ -793,7 +793,7 @@ if(!file.exists("inputs/environment.Rdata")) {
       fsl_hdds_eggs <- svDialogs::dlg_input(message= "Enter the name of the fsl_hdds_eggs","fsl_hdds_eggs")$res
     }
 
-    fsl_hdds_fish <- names(raw.main)[grepl("fish|poisson",names(raw.main))]
+    fsl_hdds_fish <- names(main)[grepl("fish|poisson",names(main))]
     if(length(fsl_hdds_fish) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_hdds_fish, "' the correct fsl_hdds_fish column?"), type = "yesno")$res
       if (yes_no == "no") {
@@ -808,7 +808,7 @@ if(!file.exists("inputs/environment.Rdata")) {
       fsl_hdds_fish <- svDialogs::dlg_input(message= "Enter the name of the fsl_hdds_fish","fsl_hdds_fish")$res
     }
 
-    fsl_hdds_legumes <- names(raw.main)[grepl("legume|pulse|noix",names(raw.main))]
+    fsl_hdds_legumes <- names(main)[grepl("legume|pulse|noix",names(main))]
     if(length(fsl_hdds_legumes) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_hdds_legumes, "' the correct fsl_hdds_legumes column?"), type = "yesno")$res
       if (yes_no == "no") {
@@ -823,7 +823,7 @@ if(!file.exists("inputs/environment.Rdata")) {
       fsl_hdds_legumes <- svDialogs::dlg_input(message= "Enter the name of the fsl_hdds_legumes","fsl_hdds_legumes")$res
     }
 
-    fsl_hdds_dairy <- names(raw.main)[grepl("milk|dairy|lait",names(raw.main))]
+    fsl_hdds_dairy <- names(main)[grepl("milk|dairy|lait",names(main))]
     if(length(fsl_hdds_dairy) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_hdds_dairy, "' the correct fsl_hdds_dairy column?"), type = "yesno")$res
       if (yes_no == "no") {
@@ -838,7 +838,7 @@ if(!file.exists("inputs/environment.Rdata")) {
       fsl_hdds_dairy <- svDialogs::dlg_input(message= "Enter the name of the fsl_hdds_dairy","fsl_hdds_dairy")$res
     }
 
-    fsl_hdds_oil <- names(raw.main)[grepl("oil|huile",names(raw.main))]
+    fsl_hdds_oil <- names(main)[grepl("oil|huile",names(main))]
     if(length(fsl_hdds_oil) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_hdds_oil, "' the correct fsl_hdds_oil column?"), type = "yesno")$res
       if (yes_no == "no") {
@@ -853,7 +853,7 @@ if(!file.exists("inputs/environment.Rdata")) {
       fsl_hdds_oil <- svDialogs::dlg_input(message= "Enter the name of the fsl_hdds_oil","fsl_hdds_oil")$res
     }
 
-    fsl_hdds_sugar <- names(raw.main)[grepl("sugar|sucre",names(raw.main))]
+    fsl_hdds_sugar <- names(main)[grepl("sugar|sucre",names(main))]
     if(length(fsl_hdds_sugar) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_hdds_sugar, "' the correct fsl_hdds_sugar column?"), type = "yesno")$res
       if (yes_no == "no") {
@@ -868,7 +868,7 @@ if(!file.exists("inputs/environment.Rdata")) {
       fsl_hdds_sugar <- svDialogs::dlg_input(message= "Enter the name of the fsl_hdds_sugar","fsl_hdds_sugar")$res
     }
 
-    fsl_hdds_condiments <- names(raw.main)[grepl("condiment|epice",names(raw.main))]
+    fsl_hdds_condiments <- names(main)[grepl("condiment|epice",names(main))]
     if(length(fsl_hdds_condiments) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_hdds_condiments, "' the correct fsl_hdds_condiments column?"), type = "yesno")$res
       if (yes_no == "no") {
@@ -887,13 +887,13 @@ if(!file.exists("inputs/environment.Rdata")) {
                             fsl_hdds_eggs,fsl_hdds_fish,fsl_hdds_legumes,fsl_hdds_dairy,fsl_hdds_oil,
                             fsl_hdds_sugar,fsl_hdds_condiments)
 
-    if(!all(hdds_check_columns %in% names(raw.main))) {
+    if(!all(hdds_check_columns %in% names(main))) {
       svDialogs::dlg_message("Please check if the HDDS columns selected are correct and available in the dataset")
       stop("Please check if the HDDS columns selected are correct and available in the dataset")
     } else {
-      yes_val <- tcltk::tk_select.list(dplyr::pull(raw.main[,hdds_check_columns]) %>% unique, title = "Yes Value")
-      no_val <- tcltk::tk_select.list(dplyr::pull(raw.main[,hdds_check_columns]) %>% unique, title = "No Value")
-      raw.main <- raw.main %>%
+      yes_val <- tcltk::tk_select.list(dplyr::pull(main[,hdds_check_columns]) %>% unique, title = "Yes Value")
+      no_val <- tcltk::tk_select.list(dplyr::pull(main[,hdds_check_columns]) %>% unique, title = "No Value")
+      main <- main %>%
         dplyr::mutate_at(vars(lcsi_check_columns),~case_when(. == yes_val ~ yes_val,
                                                              . == no_val ~ no_val,
                                                              TRUE ~ NA)) %>%
@@ -931,7 +931,7 @@ if(!file.exists("inputs/environment.Rdata")) {
   }
 } else {
   if("HDDS" %in% FSL_indicators){
-    raw.main <- raw.main %>%
+    main <- main %>%
       dplyr::mutate_at(vars(lcsi_check_columns),~case_when(. == yes_val ~ yes_val,
                                                            . == no_val ~ no_val,
                                                            TRUE ~ NA)) %>%
