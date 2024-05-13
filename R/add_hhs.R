@@ -152,6 +152,13 @@ add_hhs <- function(.dataset,
                   paste0(fsl_hhs_alldaynight_freq, "_recoded"),
                   fsl_hhs_comp1, fsl_hhs_comp2, fsl_hhs_comp3, fsl_hhs_score, fsl_hhs_cat_ipc, fsl_hhs_cat)
 
+  for(i in names(columns_to_export)) {
+    if(i %in% names(.dataset)){
+      .dataset <- .dataset %>%
+        dplyr::select(-i)
+    }
+  }
+
   .dataset <- .dataset %>%
     cbind(columns_to_export)
 
