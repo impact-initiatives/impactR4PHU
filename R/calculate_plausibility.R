@@ -378,13 +378,13 @@ calculate_plausibility <- function(.dataset){
       .dataset <- .dataset %>% dplyr::mutate(plaus_prop_iycf_caregiver = 10)
       print("No iycf_caregiver variable was available. Plaus penalty of 10 applied assuming this wasn't done during the survey.")
     }
-    .dataset <- .dataset %>% dplyr::mutate(iycf_plaus_score = plaus_prop_iycf_caregiver + plaus_sdd_mdd +
+    .dataset <- .dataset %>% dplyr::mutate(plaus_iycf_score = plaus_prop_iycf_caregiver + plaus_sdd_mdd +
                                  plaus_age_ratio_under6m_6to23m.pvalue + plaus_sexratio +
                                  plaus_prop_flag_high_mdd_low_mmf + plaus_mad_ratio.pvalue,
-                               iycf_plaus_cat = ifelse(iycf_plaus_score >= 0 & iycf_plaus_score < 10, "Excellent (0-<10)",
-                                                       ifelse(iycf_plaus_score >= 10 & iycf_plaus_score < 15, "Good (10-<15)",
-                                                              ifelse(iycf_plaus_score >= 15 & iycf_plaus_score < 25, "Acceptable (15 - <25)",
-                                                                     ifelse(iycf_plaus_score >= 25, "Problematic (>=25)", NA)))))
+                               plaus_iycf_cat = ifelse(plaus_iycf_score >= 0 & plaus_iycf_score < 10, "Excellent (0-<10)",
+                                                       ifelse(plaus_iycf_score >= 10 & plaus_iycf_score < 15, "Good (10-<15)",
+                                                              ifelse(plaus_iycf_score >= 15 & plaus_iycf_score < 25, "Acceptable (15 - <25)",
+                                                                     ifelse(plaus_iycf_score >= 25, "Problematic (>=25)", NA)))))
   }
   else {
     print(paste0("Not all necessary variables for IYCF plausibility score and classification. Skipping this step. The dataframe is missing "))

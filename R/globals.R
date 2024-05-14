@@ -68,6 +68,7 @@ globalVariables(unique(c(
   "corr.hhs_rcsi","corr.hhs_rcsi.pvalue","prop_fc_flags","mad_ratio.pvalue","prop_flag_high_mdd_low_mmf",
   "age_ratio_under6m_6to23m.pvalue","sd_mdd","prop_iycf_caregiver","plaus_prop_iycf_caregiver","plaus_sdd_mdd",
   "plaus_age_ratio_under6m_6to23m.pvalue","plaus_prop_flag_high_mdd_low_mmf","plaus_mad_ratio.pvalue","iycf_plaus_score",
+  "plaus_iycf_score",
   # create_fsl_plaus
   "fsl_fcs_score","n","fsl_fc_phase","flag_fsl_fc_cell","fsl_fc_cell",
   "p1","p2","p3","p4","p5",  "fsl_fcs_score_notna",
@@ -104,6 +105,8 @@ globalVariables(unique(c(
   #create_mortality_plaus
   "birth_rate","birth_rate_se","birth_rate_lower_ci","birth_rate_upper_ci",
   "birth_rate_ci","person_time_out","person_time_in","total_persontime_in",
-  "total_persontime_out","num_days","pt_join","pt_left"
-
+  "total_persontime_out","num_days","pt_join","pt_left",
+  "is_under6m","is_6to23m","is_mad","is_not_mad","sum_is_mad","sum_is_not_mad",
+  "flag_no_foods","flag_all_foods_no_meal","flag_some_foods_no_meal",
+  "flag_yes_liquids","flag_no_anything","total_iycf_caregiver"
 )))
