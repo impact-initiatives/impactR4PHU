@@ -175,6 +175,19 @@ if(!file.exists("inputs/environment.Rdata")) {
     sex <- svDialogs::dlg_input(message= "Enter the name of the sex/gender column","sex")$res
   }
   
+  if(sex %in% names(raw.iycf)){
+      sex_codes <- unique(raw.iycf[[sex]])
+      ideal_codes <- c("1", "2")
+      sex_recodes <- c("1", "2", "NA")
+  
+      if(length(setdiff(sex_codes, ideal_codes))==0) {
+        male <- 1
+        female <- 2
+      } else {
+        male <- tcltk::tk_select.list(sex_codes, title = "Male Option", multiple = T)
+        female <- tcltk::tk_select.list(sex_codes, title = "Female Option", multiple = T)
+      }
+  }
   iycf_caregiver <- names(raw.iycf)[grepl("caregiver",names(raw.iycf))]
   if(length(iycf_caregiver) == 1){
     yes_no <- svDialogs::dlg_message(paste0("Is '", iycf_caregiver, "' the correct column that indicates if the caregiver is present?"), type = "yesno")$res
@@ -783,7 +796,7 @@ if(!file.exists("inputs/environment.Rdata")) {
       stop("Please check if the uuid or Age month column exist in the IYCF dataset")
     } else{
     raw.iycf <- raw.iycf %>%
-        impactR4PHU::add_iycf(age_months = "age_months",
+        impactR4PHU::add_iycf(age_months = age_months,
                               iycf_1 = iycf_1,
                               iycf_2 = iycf_2,
                               iycf_3 = iycf_3,
@@ -832,7 +845,7 @@ if(!file.exists("inputs/environment.Rdata")) {
     }
   } else {
    raw.iycf <- raw.iycf %>%
-        impactR4PHU::add_iycf(age_months = "age_months",
+        impactR4PHU::add_iycf(age_months = age_months,
                               iycf_1 = iycf_1,
                               iycf_2 = iycf_2,
                               iycf_3 = iycf_3,
@@ -972,7 +985,7 @@ list_of_var <- c("uuid_main","team","yes_no_team","enumerator","iycf_caregiver",
                  "iycf_6j","iycf_7a","iycf_7b","iycf_7c","iycf_7d","iycf_7e","iycf_7f","sex",
                  "iycf_7g","iycf_7h","iycf_7i","iycf_7j","iycf_7k","iycf_7l","iycf_7m",
                  "iycf_7n","iycf_7o","iycf_7p","iycf_7q","iycf_7r","iycf_8","no_value_caregiver",
-                 "iycf_6c_swt","iycf_6d_swt","iycf_6h_swt","iycf_6j_swt","yes_answer","no_answer","dnk_answer",
+                 "iycf_6c_swt","iycf_6d_swt","iycf_6h_swt","iycf_6j_swt","yes_answer","no_answer","dnk_answer","male","female",
                  "pnta_answer","iycf2_immediate_value","iycf2_lessday_value","iycf2_moreday_value","uuid_iycf",
                  "exp_sex_ratio","exp_prevalence_mad","exp_ratio_under6m_6to23m","yes_value_caregiver")
 
@@ -985,15 +998,32 @@ if(!file.exists("inputs/environment.Rdata")){
 ## Read the Plausibility excel file
 overall_iycf_plaus <- openxlsx::read.xlsx("resources/overall_plaus.xlsx",fillMergedCells = TRUE, sheet = "IYCF") %>%
   dplyr::distinct()
-
-uuid_raw_main <- raw.main %>% 
-  dplyr::select(uuid_main, enumerator) %>% 
-  dplyr::rename(uuid = uuid_main)
-
+if(!is.null(yes_no_team)){
+  if(yes_no_team == "yes") {
+    uuid_raw_main <- raw.main %>% 
+      dplyr::select(uuid_main, enumerator, team) %>% 
+      dplyr::rename(uuid = uuid_main)
+    
+    raw.flag.iycf <- raw.flag.iycf %>% 
+      dplyr::rename(uuid = uuid_iycf) %>% 
+      dplyr::left_join(uuid_raw_main)
+  }
+} else {
+  uuid_raw_main <- raw.main %>% 
+    dplyr::select(uuid_main, enumerator) %>% 
+    dplyr::rename(uuid = uuid_main)
+  
+  
+  raw.flag.iycf <- raw.flag.iycf %>% 
+    dplyr::rename(uuid = uuid_iycf) %>% 
+    dplyr::left_join(uuid_raw_main)
+}
 
 raw.flag.iycf <- raw.flag.iycf %>% 
-  dplyr::rename(uuid = uuid_iycf) %>% 
-  dplyr::left_join(uuid_raw_main)
+  dplyr::mutate(!!rlang::sym(sex) := dplyr::if_else(is.na(!!rlang::sym(sex)),NA,
+                                                    dplyr::if_else(!!rlang::sym(sex) == male, 1,
+                                                                   dplyr::if_else(!!rlang::sym(sex)  == female,2,NA))))
+
 
 result <- impactR4PHU::create_iycf_plaus(raw.flag.iycf,
                                          age_months = age_months,
