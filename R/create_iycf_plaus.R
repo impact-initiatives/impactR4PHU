@@ -1,3 +1,34 @@
+#' create_iycf_plaus
+#'
+#' @param df_iycf dataframe output of the check_iycf_flag function
+#' @param age_months the name of the variable that indicates the age in month of the child
+#' @param sex the name of the variable that indicates the sex of the child
+#' @param iycf_8 the name of the variable that indicates if the meal frequency the
+#' child had yesterday. By default "iycf_8"
+#' @param iycf_caregiver the name of the variable that indicates if the caregiver
+#' of the child is present. By default NULL
+#' @param yes_value_caregiver the value of the choice "yes" to all the caregiver column
+#' @param no_value_caregiver the value of the choice "no" to all the caregiver column
+#' @param exp_prevalence_mad Expected prevalence for Minimum Acceptable Diet (MAD)
+#' By default: 0.3:0.7
+#' @param exp_sex_ratio Expected sex ratio. By default: 1:1
+#' @param exp_ratio_under6m_6to23m Expected age ratio between children under 6 month,
+#' and children between 6 and 23 months. By default: 1:4
+#' @param grouping the name of the variable that indicates the grouping variable - usually "enumerator"
+#' @param uuid uuid variable
+#' @param short_report Inputs a boolean value TRUE or FALSE to return just key variables. If FALSE,
+#' returns a dataframe of all the variables calculated.
+#' @param file_path Inputs an optional character value specifying the file location to save a copy
+#' of the results.
+#'
+#' @return a dataframe with all IYCF related plausibility columns
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#'   create_iycf_plaus(df_iycf)
+#' }
+
 create_iycf_plaus <- function(df_iycf,
                               age_months = NULL,
                               sex = NULL,

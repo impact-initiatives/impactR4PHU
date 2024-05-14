@@ -606,9 +606,7 @@ add_iycf <- function(.dataset,
   if (is.null(loop_index)) {
     ## initiate the return output
     .dataset <- .dataset %>%
-      dplyr::mutate(loop_index = paste0("loop_iycf_",dplyr::row_number())) %>%
-      dplyr::rename("uuid" = uuid,
-                    "age_months" = age_months)
+      dplyr::mutate(loop_index = paste0("loop_iycf_",dplyr::row_number()))
   }
 
   options(warn = 0)

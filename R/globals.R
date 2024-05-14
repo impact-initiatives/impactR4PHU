@@ -55,7 +55,8 @@ globalVariables(unique(c(
   "month_exp","health_exp","prop_health_exp","flag_severe_health_exp",
   "flag_catastrophic_health_exp","month_exp_1","month_exp_2",
   # check_iycf_flags:
-  "foods_all_no","liquids_all_no","flag_yes_foods",
+  "foods_all_no","liquids_all_no","flag_yes_foods","foods_all_yes",
+  "liquids_all_yes",
   # calculate_plausibility
   "age_ratio.pvalue","sex_ratio.pvalue","dps_muac","flag_perc_mfaz_children","n_children_muac",
   "sd_muac_mm","plaus_sd_muac_mm","plaus_n_children_muac","plaus_ageratio","plaus_sexratio",

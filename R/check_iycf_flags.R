@@ -151,40 +151,21 @@ check_iycf_flags <- function(.dataset,
              iycf_7g,iycf_7h,iycf_7i,iycf_7j,iycf_7k,iycf_7l,
              iycf_7m,iycf_7n,iycf_7o,iycf_7p,iycf_7q,iycf_7r)
 
+
+
   if(!all(c(foods,liquids) %in% names(.dataset))) {
     warning("Your dataset appears not to have all the foods/liquids from the standard IYCF 2021 question sequence.\nIt is advised you ask about all recommended foods/liquids or there is a risk of overestimating EBF.")
   } else {
     .dataset <- .dataset %>%
       dplyr::mutate(
-        flag_yes_foods = apply(.[foods],1,function(x){
-          if(all(x == 1)){
-            return(1)
-          } else {
-            return(0)
-            }
-          }),
-        flag_yes_liquids = apply(.[liquids],1,function(x){
-          if(all(x == 1)){
-            return(1)
-          } else{
-            return(0)
-            }
-          }),
-        foods_all_no = apply(.[foods],1,function(x){
-          if(all(x == 0)){
-            return(1)
-          } else{
-            return(0)
-            }
-          }),
-        liquids_all_no = apply(.[liquids],1,function(x){
-          if(all(x == 0)){
-            return(1)
-          } else{
-            return(0)
-            }
-          })
-      )
+        foods_all_yes = rowSums(dplyr::across(c(foods))),
+        liquids_all_yes = rowSums(dplyr::across(c(liquids))),
+        flag_yes_foods = ifelse(foods_all_yes == 18, 1, 0),
+        flag_yes_liquids = ifelse(liquids_all_yes == 10, 1, 0),
+        foods_all_no = rowSums(dplyr::across(c(foods))) ,
+        liquids_all_no = rowSums(dplyr::across(c(liquids))),
+        flag_no_foods = ifelse(foods_all_no == 0, 1, 0),
+        flag_no_liquids = ifelse(liquids_all_no == 0, 1, 0),)
   }
 
   if(!all(c(iycf_4,foods,liquids) %in% names(.dataset))) {
