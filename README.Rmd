@@ -167,7 +167,7 @@ df_with_fcm_1 <- df_with_hdds %>%
     hhs_categories_very_severe = "Very Severe"
   )
 df_with_fcm_1 %>%
-  dplyr::select(uuid, fc_cell, fc_phase) %>%
+  dplyr::select(uuid, fsl_fc_cell, fsl_fc_phase) %>%
   head(20)
 ```
 
@@ -192,7 +192,7 @@ df_with_fcm_2 <- df_with_hdds %>%
     hhs_categories_very_severe = "Very Severe"
   )
 df_with_fcm_2 %>%
-  dplyr::select(uuid, fc_cell, fc_phase) %>%
+  dplyr::select(uuid, fsl_fc_cell, fsl_fc_phase) %>%
   head(20)
 ```
 
@@ -213,7 +213,7 @@ df_with_fcm_3 <- df_with_hdds %>%
     hhs_categories_very_severe = "Very Severe"
   )
 df_with_fcm_3 %>%
-  dplyr::select(uuid, fc_cell, fc_phase) %>%
+  dplyr::select(uuid, fsl_fc_cell, fsl_fc_phase) %>%
   head(20)
 ```
 
@@ -234,7 +234,7 @@ df_with_fcm_4 <- df_with_hdds %>%
     hhs_categories_very_severe = "Very Severe"
   )
 df_with_fcm_4 %>%
-  dplyr::select(uuid, fc_cell, fc_phase) %>%
+  dplyr::select(uuid, fsl_fc_cell, fsl_fc_phase) %>%
   head(20)
 ```
 
@@ -303,10 +303,9 @@ tool <- impactR4PHU_survey_template
 
 ``` {r, eval=TRUE, warning=F}
 fsl_flags <- df_with_fclcm %>% 
-  check_fsl_flags(tool.survey = tool,
-                  grouping = "enumerator")
+  check_fsl_flags(tool.survey = tool)
 fsl_flags %>% 
-  dplyr::select(uuid, group,starts_with("flag_")) %>% 
+  dplyr::select(uuid, starts_with("flag_")) %>% 
   head(20)
 ```
 
@@ -317,7 +316,7 @@ fsl_flags %>%
 anthro_flags <- df_with_mfaz %>% 
   check_anthro_flags(loop_index = "loop_index")
 anthro_flags %>% 
-  dplyr::select(uuid, group,starts_with("flag_"), ends_with("noflag")) %>% 
+  dplyr::select(uuid, starts_with("flag_"), ends_with("noflag")) %>% 
   head(20)
 ```
 
@@ -326,10 +325,9 @@ anthro_flags %>%
 ``` {r, eval=TRUE, warning=F}
 container_df <- impactR4PHU_data_wash_template
 wash_flags <- df %>% 
-  check_wash_flags(data_container_loop = container_df,
-                   grouping = "enumerator")
+  check_wash_flags(data_container_loop = container_df)
 wash_flags %>% 
-  dplyr::select(uuid, group,starts_with("flag_")) %>% 
+  dplyr::select(uuid, starts_with("flag_")) %>% 
   head(20)
 ```
 
@@ -342,7 +340,7 @@ health_flags <- check_health_flags(
 )
 
 health_flags %>% 
-  dplyr::select(uuid, group, starts_with("flag_")) %>% 
+  dplyr::select(uuid, starts_with("flag_")) %>% 
   head(20)
 ```
 
@@ -354,7 +352,7 @@ iycf_flags <- check_iycf_flags(
 )
 
 iycf_flags %>% 
-  dplyr::select(uuid, age_months, group, starts_with("flag_")) %>% 
+  dplyr::select(uuid, age_months, starts_with("flag_")) %>% 
   head(20)
 ```
 

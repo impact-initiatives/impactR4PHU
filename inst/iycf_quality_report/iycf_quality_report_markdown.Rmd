@@ -783,7 +783,7 @@ if(!file.exists("inputs/environment.Rdata")) {
       stop("Please check if the uuid or Age month column exist in the IYCF dataset")
     } else{
     raw.iycf <- raw.iycf %>%
-        impactR4PHU::add_iycf(age_months = age_months,
+        impactR4PHU::add_iycf(age_months = "age_months",
                               iycf_1 = iycf_1,
                               iycf_2 = iycf_2,
                               iycf_3 = iycf_3,
@@ -828,12 +828,11 @@ if(!file.exists("inputs/environment.Rdata")) {
                               pna_value = pnta_answer,
                               iycf2_immediate_value = iycf2_immediate_value,
                               iycf2_lessday_value = iycf2_lessday_value,
-                              iycf2_moreday_value = iycf2_moreday_value,
-                              uuid = uuid_iycf)
+                              iycf2_moreday_value = iycf2_moreday_value)
     }
   } else {
    raw.iycf <- raw.iycf %>%
-        impactR4PHU::add_iycf(age_months = age_months,
+        impactR4PHU::add_iycf(age_months = "age_months",
                               iycf_1 = iycf_1,
                               iycf_2 = iycf_2,
                               iycf_3 = iycf_3,
@@ -894,7 +893,8 @@ if(!file.exists("inputs/environment.Rdata")) {
   for (i in empty_vars) {
     assign(i, NULL)
   }
-## FCS
+
+  
 raw.flag.iycf <- raw.iycf %>%
   impactR4PHU::check_iycf_flags(age_months = age_months,
                                 iycf_4 = iycf_4,
@@ -927,11 +927,10 @@ raw.flag.iycf <- raw.iycf %>%
                                 iycf_7q = iycf_7q,
                                 iycf_7r = iycf_7r,
                                 iycf_8 = iycf_8,
-                                iycf_6b_num = iycf_6b_num,
-                                iycf_6c_num = iycf_6c_num,
-                                iycf_6d_num = iycf_6d_num,
-                                yes_value = yes_answer,
-                                uuid = uuid_iycf)
+                                iycf_6b_num = iycf_6b,
+                                iycf_6c_num = iycf_6c,
+                                iycf_6d_num = iycf_6d,
+                                yes_value = yes_answer)
 
   if(!file.exists("inputs/environment.Rdata")) {
     # exp_sex_ratio
@@ -953,7 +952,7 @@ raw.flag.iycf <- raw.iycf %>%
       exp_ratio_under6m_6to23m <- NULL
     }
     # exp_prevalence_mad
-    yes_no <- svDialogs::dlg_message(paste0("Apply a ~30%% of children are expected prevalence for Minimum Acceptable Diet (MAD). No to provide your ratios [Decimal between 0 - 1]."), type = "yesno")$res
+    yes_no <- svDialogs::dlg_message(paste0("Apply a ~30% of children are expected prevalence for Minimum Acceptable Diet (MAD). No to provide your ratios [Decimal between 0 - 1]."), type = "yesno")$res
     if(yes_no == "no"){
       right <- as.numeric(svDialogs::dlg_input(message= "Enter the proportion of children that are expected prevalence for Minimum Acceptable Dietin decimal",0.3)$res)
       left <- as.numeric(svDialogs::dlg_input(message= "Enter the proportion of children that are not expected prevalence for Minimum Acceptable Dietin decimal",0.7)$res)
