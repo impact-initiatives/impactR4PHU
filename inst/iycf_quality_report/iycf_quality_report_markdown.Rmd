@@ -62,7 +62,7 @@ if(file.exists("inputs/environment.Rdata")) {
   cat('\nFeedback on improvements to this product can be done through reaching out to:\n\n-abraham.azar@impact-initiatives.org \n\n-impact.geneva.phu@impact-initiatives.org')
 ```
 
-## FSL {.tabset .tabset-fade}
+## IYCF {.tabset .tabset-fade}
 
 ```{r, echo=FALSE, warning=FALSE,include=FALSE}
 ################################################################################
@@ -1066,7 +1066,7 @@ final_table <- impactR4PHU::create_plaus_table_iycf(iycf)
 
 ### Data Quality IYCF {.tabset .tabset-fade}
 
-#### Plausbility {.tabset .tabset-fade}
+#### Plausibility {.tabset .tabset-fade}
 
 ##### Overall
 
@@ -1093,9 +1093,7 @@ if(yes_no_team == "yes"){
       overall_iycf_plaus_enum <- overall_iycf_plaus %>%
         dplyr::left_join(result_iycf_pivot %>% filter(group == j), by = c("flag_name"="Criteria"))%>%
         dplyr::mutate_all(., ~ifelse(is.na(.),"NA",.)) %>%
-        cbind(bind) %>%
-        dplyr::select(-group) %>%
-        dplyr::left_join(result_iycf_pivot %>% dplyr::filter(group == j))
+        dplyr::select(-group)
     
       iycf_enum <- flextable::flextable(overall_iycf_plaus_enum)
     
@@ -1110,10 +1108,7 @@ if(yes_no_team == "yes"){
     overall_iycf_plaus_enum <- overall_iycf_plaus %>%
       dplyr::left_join(result_iycf_pivot %>% filter(group == i), by = c("flag_name"="Criteria"))%>%
       dplyr::mutate_all(., ~ifelse(is.na(.),"NA",.)) %>%
-      cbind(bind) %>%
-      dplyr::select(-group) %>%
-      dplyr::left_join(result_iycf_pivot %>%
-                  filter(group == i))
+      dplyr::select(-group)
   
     iycf_enum <- flextable::flextable(overall_iycf_plaus_enum)
     
@@ -1124,69 +1119,69 @@ if(yes_no_team == "yes"){
 ```
 
 
-<!-- ```{r, results='asis'} -->
-<!-- flag_description <- readxl::read_excel("resources/flag_description.xlsx", sheet = "FSL") -->
-<!-- flags_fsl_columns <- names(raw.flag.fcs)[stringr::str_starts(names(raw.flag.fcs),"flag_")] -->
-<!-- overall_flag <- tibble() -->
-<!-- for(flag in flags_fsl_columns) { -->
+```{r, results='asis'}
+flag_description <- readxl::read_excel("resources/flag_description.xlsx", sheet = "IYCF")
+flags_iycf_columns <- names(raw.flag.iycf)[stringr::str_starts(names(raw.flag.iycf),"flag_")]
+overall_flag <- tibble()
+for(flag in flags_iycf_columns) {
 
-<!--   flag_overall <- raw.flag.fcs %>% -->
-<!--     dplyr::select(enumerator, !!rlang::sym(flag)) %>% -->
-<!--     filter(!is.na(!!rlang::sym(flag))) %>% -->
-<!--     dplyr::mutate(flag := flag) %>% -->
-<!--     dplyr::group_by(flag) %>% -->
-<!--     dplyr::summarise(num_samples = n(), -->
-<!--               flagged = sum(!!rlang::sym(flag))) %>% -->
-<!--     dplyr::mutate(percentage_flaggged = paste0(round((flagged/num_samples)*100,2),"%")) %>% -->
-<!--     dplyr::ungroup() -->
-<!--   if(nrow(flag_overall)>0){ -->
-<!--     overall_flag <- rbind(overall_flag,flag_overall) -->
-<!--   } -->
-<!-- } -->
-<!-- add_to_html.title("Overall Flag Table") -->
-<!-- subch(DT::datatable(overall_flag, -->
-<!--                   extensions = 'Buttons', options = list( -->
-<!--                     dom = 'Blfrtip', -->
-<!--                     buttons = c('copy', 'csv', 'excel', 'pdf'), -->
-<!--                     lengthMenu = list(c(50), -->
-<!--                                       c('All')), -->
-<!--                     paging = T))) -->
+  flag_overall <- raw.flag.iycf %>%
+    dplyr::select(enumerator, !!rlang::sym(flag)) %>%
+    filter(!is.na(!!rlang::sym(flag))) %>%
+    dplyr::mutate(flag := flag) %>%
+    dplyr::group_by(flag) %>%
+    dplyr::summarise(num_samples = n(),
+              flagged = sum(!!rlang::sym(flag))) %>%
+    dplyr::mutate(percentage_flaggged = paste0(round((flagged/num_samples)*100,2),"%")) %>%
+    dplyr::ungroup()
+  if(nrow(flag_overall)>0){
+    overall_flag <- rbind(overall_flag,flag_overall)
+  }
+}
+add_to_html.title("Overall Flag Table")
+subch(DT::datatable(overall_flag,
+                  extensions = 'Buttons', options = list(
+                    dom = 'Blfrtip',
+                    buttons = c('copy', 'csv', 'excel', 'pdf'),
+                    lengthMenu = list(c(50),
+                                      c('All')),
+                    paging = T)))
 
-<!-- for(flag in flags_fsl_columns) { -->
-<!--   flag_rational <- flag_description %>% -->
-<!--     filter(flag_name %in% flag) %>% -->
-<!--     dplyr::pull(Rationale) -->
-<!--   flag_action <- flag_description %>% -->
-<!--     filter(flag_name %in% flag) %>% -->
-<!--     dplyr::pull(Action) -->
-<!--   flag_by_enum <- raw.flag.fcs %>% -->
-<!--     dplyr::select(enumerator, !!rlang::sym(flag)) %>% -->
-<!--     filter(!is.na(!!rlang::sym(flag))) %>% -->
-<!--     dplyr::mutate(flag := flag) %>% -->
-<!--     dplyr::group_by(flag,!!rlang::sym(enumerator)) %>% -->
-<!--     dplyr::summarise(num_samples = n(), -->
-<!--               flagged = sum(!!rlang::sym(flag))) %>% -->
-<!--     dplyr::mutate(percentage_flagged = paste0(round((flagged/num_samples)*100,2),"%")) %>% -->
-<!--     dplyr::ungroup() %>% -->
-<!--     dplyr::select(-1) -->
-<!--   if(nrow(flag_by_enum)>0){ -->
-<!--     add_to_html.title(flag) -->
-<!--     cat("\n") -->
-<!--     cat(paste("<em><strong>Rational</strong>: ",flag_rational,"</em>\n")) -->
-<!--     if(!is.null(flag_action)){ -->
-<!--       cat("\n") -->
-<!--       cat(paste("<em><strong>Action</strong>: ",flag_action,"</em>\n")) -->
-<!--     } -->
-<!--     subch(DT::datatable(flag_by_enum, -->
-<!--                   extensions = 'Buttons', options = list( -->
-<!--                     dom = 'Blfrtip', -->
-<!--                     buttons = c('copy', 'csv', 'excel', 'pdf'), -->
-<!--                     lengthMenu = list(c(50), -->
-<!--                                       c('All')), -->
-<!--                     paging = T))) -->
-<!--   } -->
-<!-- } -->
+for(flag in flags_iycf_columns) {
+  flag_rational <- flag_description %>%
+    filter(flag_name %in% flag) %>%
+    dplyr::pull(Rationale)
+  flag_action <- flag_description %>%
+    filter(flag_name %in% flag) %>%
+    dplyr::pull(Action)
+  flag_by_enum <- raw.flag.iycf %>%
+    dplyr::select(enumerator, !!rlang::sym(flag)) %>%
+    filter(!is.na(!!rlang::sym(flag))) %>%
+    dplyr::mutate(flag := flag) %>%
+    dplyr::group_by(flag,!!rlang::sym(enumerator)) %>%
+    dplyr::summarise(num_samples = n(),
+              flagged = sum(!!rlang::sym(flag))) %>%
+    dplyr::mutate(percentage_flagged = paste0(round((flagged/num_samples)*100,2),"%")) %>%
+    dplyr::ungroup() %>%
+    dplyr::select(-1)
+  if(nrow(flag_by_enum)>0){
+    add_to_html.title(flag)
+    cat("\n")
+    cat(paste("<em><strong>Rational</strong>: ",flag_rational,"</em>\n"))
+    if(!is.null(flag_action)){
+      cat("\n")
+      cat(paste("<em><strong>Action</strong>: ",flag_action,"</em>\n"))
+    }
+    subch(DT::datatable(flag_by_enum,
+                  extensions = 'Buttons', options = list(
+                    dom = 'Blfrtip',
+                    buttons = c('copy', 'csv', 'excel', 'pdf'),
+                    lengthMenu = list(c(50),
+                                      c('All')),
+                    paging = T)))
+  }
+}
 
-<!-- ``` -->
+```
 
 ### Plots {.tabset .tabset-fade}

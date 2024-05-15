@@ -28,10 +28,11 @@ create_plaus_table_iycf <- function(.flextable) {
     }
   }
 
-  .flextable <- flextable::merge_at(.flextable, i = 3:4, j = 1)
-  .flextable <- flextable::merge_at(.flextable, i = 3:4, j = 2)
+  .flextable <- flextable::merge_at(.flextable, i = 1, j = 3:4)
+  .flextable <- flextable::merge_at(.flextable, i = 2, j = 3:4)
 
-  .flextable <- .flextable%>%
+  .flextable <- .flextable %>%
+    flextable::delete_part(part = "header")%>%
     flextable::add_header_row(
       values = c("", "Values", ""),
       colwidths = c(1,4,1), top = TRUE)%>%

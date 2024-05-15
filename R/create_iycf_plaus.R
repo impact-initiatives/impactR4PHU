@@ -160,6 +160,16 @@ create_iycf_plaus <- function(df_iycf,
 
   }
 
+  if(c("flag_high_mdd_low_mmf") %in% colnames(df_iycf)) {
+
+    df2 <- df_iycf %>%
+      dplyr::group_by(group) %>%
+      dplyr::summarise(prop_flag_high_mdd_low_mmf = sum(flag_high_mdd_low_mmf, na.rm = TRUE) / sum(!is.na(flag_high_mdd_low_mmf)))
+
+    if(!exists("results")) {results <- df2} else {results <- merge(results, df2)}
+
+  }
+
   if(iycf_8 %in% colnames(df_iycf)) {
 
     df2 <- df_iycf %>%
@@ -236,8 +246,8 @@ create_iycf_plaus <- function(df_iycf,
     df2 <- df_iycf %>%
       dplyr::mutate(total_iycf_caregiver = ifelse(!is.na(!!rlang::sym(iycf_caregiver)), 1, 0),
                     !!rlang::sym(iycf_caregiver) := dplyr::if_else(is.na(!!rlang::sym(iycf_caregiver)), NA,
-                                                                    dplyr::if_else(!!rlang::sym(iycf_caregiver) == yes_value_caregiver, 1,
-                                                                                   dplyr::if_else(!!rlang::sym(iycf_caregiver) == no_value_caregiver, 0,NA)))) %>%
+                                                                   dplyr::if_else(!!rlang::sym(iycf_caregiver) == yes_value_caregiver, 1,
+                                                                                  dplyr::if_else(!!rlang::sym(iycf_caregiver) == no_value_caregiver, 0,NA)))) %>%
       dplyr::group_by(group) %>%
       dplyr::summarise(prop_iycf_caregiver = sum(!!rlang::sym(iycf_caregiver), na.rm = TRUE) / sum(total_iycf_caregiver))
 

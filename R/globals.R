@@ -109,5 +109,7 @@ globalVariables(unique(c(
   "total_persontime_out","num_days","pt_join","pt_left",
   "is_under6m","is_6to23m","is_mad","is_not_mad","sum_is_mad","sum_is_not_mad",
   "flag_no_foods","flag_all_foods_no_meal","flag_some_foods_no_meal",
-  "flag_yes_liquids","flag_no_anything","total_iycf_caregiver"
+  "flag_yes_liquids","flag_no_anything","total_iycf_caregiver",
+  #create_iycf_plaus
+  "flag_high_mdd_low_mmf"
 )))
