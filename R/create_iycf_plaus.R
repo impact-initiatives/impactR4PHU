@@ -141,8 +141,8 @@ create_iycf_plaus <- function(df_iycf,
 
     df2 <- df_iycf %>%
       dplyr::group_by(group) %>%
-      dplyr::summarize(sex_ratio = round(as.numeric(nipnTK::sexRatioTest(sex, codes = c("1", "2"), pop = sx_ratio)[1]),3),
-                       sex_ratio.pvalue = round(as.numeric(nipnTK::sexRatioTest(sex, codes = c("1", "2"), pop = sx_ratio)[5]),2))
+      dplyr::summarize(sex_ratio = round(as.numeric(nipnTK::sexRatioTest(!!rlang::sym(sex), codes = c("1", "2"), pop = sx_ratio)[1]),3),
+                       sex_ratio.pvalue = round(as.numeric(nipnTK::sexRatioTest(!!rlang::sym(sex), codes = c("1", "2"), pop = sx_ratio)[5]),2))
 
     if(!exists("results")) {results <- df2} else {results <- merge(results, df2)}
 
@@ -164,8 +164,8 @@ create_iycf_plaus <- function(df_iycf,
 
     df2 <- df_iycf %>%
       dplyr::group_by(group) %>%
-      dplyr::summarise(mean_mmf = mean(iycf_8, na.rm = TRUE),
-                       sd_mmf = stats::sd(iycf_8, na.rm = TRUE))
+      dplyr::summarise(mean_mmf = mean(!!rlang::sym(iycf_8), na.rm = TRUE),
+                       sd_mmf = stats::sd(!!rlang::sym(iycf_8), na.rm = TRUE))
 
     if(!exists("results")) {results <- df2} else {results <- merge(results, df2)}
 
