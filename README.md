@@ -1,5 +1,5 @@
 
-## impactR4PHU
+# impactR4PHU <a href='https://www.impact-initiatives.org'><img src='man/figures/impactR4PHU.png' align="right" height="138" /></a>
 
 <!-- badges: start -->
 
@@ -16,6 +16,25 @@ analysing and outputing results of core outcome indicators of Public
 Health Unit. This package will target mainly Food Security and
 Livelihoods, WASH, Nutrition and Health Sectors.
 
+## Table of Contents
+
+- [Installation](#installation)
+- [Projects](#projects)
+  - [Data Quality](#data-quality)
+    - FSL
+    - Mortality
+    - IYCF
+  - [Cleaning](#cleaning)
+    - FSL
+    - Mortality
+  - [Descriptive Analysis](#descriptive-analysis)
+    - FSL
+    - Mortality
+- [Standalone Functions](#standalone-functions)
+  - [FSL ADD INDICATORS](#fsl-add-indicators)
+  - [Nutrition ADD INDICATORS](#nutrition-add-indicators)
+  - [Checking Flags](#checking-flags)
+
 ## Installation
 
 You can install the development version from
@@ -26,16 +45,175 @@ You can install the development version from
 devtools::install_github("impact-initiatives/impactR4PHU")
 ```
 
-## Adding indicators (for both Analysis or Quality checks)
+## Projects
+
+Upon installing the impactR4PHU package, you will be able to access
+pre-coded projects related to the various sectors of Public Health.
+These projects aims to support country missions and the research
+department to check/clean/and analyse indicatores related to Public
+Health sectors.
+
+To access these projects, follow the following instructions.
+
+<figure>
+<img src="./man/figures/projects_1.png"
+alt="Go to File -&gt; New Project…" />
+<figcaption aria-hidden="true">Go to File -&gt; New
+Project…</figcaption>
+</figure>
+
+<figure>
+<img src="./man/figures/projects_2.png" alt="Select New Directory" />
+<figcaption aria-hidden="true">Select New Directory</figcaption>
+</figure>
+
+<figure>
+<img src="./man/figures/projects_3.png"
+alt="Scroll to find the respective projects" />
+<figcaption aria-hidden="true">Scroll to find the respective
+projects</figcaption>
+</figure>
+
+### Data Quality
+
+The Data Quality and Plausibility Report serves as a crucial tool for
+assessing the reliability and accuracy of the data collection of all
+related public health indicators across different assessments. This
+comprehensive analysis is designed to identify and address potential
+issues within the data, ensuring that field teams are being informed on
+potential issues detected in the data collection.
+
+The report provides a detailed examination of the datasets, employing a
+variety of metrics and methodologies to evaluate data quality and
+plausibility. This includes checks for completeness, consistency, and
+accuracy of the data collected. This report aims to uncover any
+discrepancies, outliers, or anomalies that may suggest data collection,
+entry errors, or underlying issues that could impact the integrity of
+the findings.
+
+#### FSL Section
+
+This section includes: - Overall Plausibility Report / By Enumerator -
+All the flags related to Food Security and Livelihoods (details shown
+for each flag in the section) - Plots showing the distribution of the
+data.
+
+#### Mortality Section
+
+This section includes: - Overall Plausibility Report / By Enumerator -
+All the flags related to Mortality (details shown for each flag in the
+section) - Number of deaths(overall and under 5)/joiners/leavers as well
+as person times. - Plots showing the crude, under 5, and birth rates.
+
+#### IYCF Section
+
+This section includes: - Overall Plausibility Report / By Enumerator -
+All the flags related to IYCF (details shown for each flag in the
+section) - Plots showing the distribution of the data.
+
+#### What to do next?
+
+Please check each flag and the <strong>ACTION</strong> related to it and
+act accordingly. Another output will be associated to this HTML, the
+Excel file of the flags that were fired and requires follow-up with the
+field team. Please check the README tab in the excel file. This file
+will again be generated with the full data during the cleaning of the
+dataset. So please do use this file during data collection and relate to
+it in the final one to be filled.
+
+### Cleaning
+
+The Data Cleaning Template serves as a crucial tool for assessing the
+data collection of all related public health indicators indicators
+across different assessments. This comprehensive tool is designed to
+identify and address potential issues within the data, ensuring that
+field teams are being followed up on potential issues detected in the
+data collection.
+
+The report provides a detailed examination of the datasets, employing a
+variety of metrics and methodologies to evaluate data quality. This
+report aims to uncover any discrepancies, outliers, or anomalies that
+may suggest data collection, entry errors, or underlying issues that
+could impact the integrity of the findings.
+
+#### FSL Section
+
+<strong>Direct Checks</strong> - All FCS columns are 0. FCS Score is
+equal to 0. All values are changed to NA. - All FCS columns are 7. All
+values are changed to NA. - All LCSI columns are not_applicable. All
+values are changed to NA. - The LCSI strategy related to
+Displacement/Migration but HH is not a displaced group. Value of LCSI
+changed to NA. - The LCSI strategy related to Agriculture but HH do not
+have income type related to agriculture. Value of LCSI changed to NA. -
+The LCSI strategy related to Livestock but HH do not have income type
+related to livestock. Value of LCSI changed to NA.
+
+<strong>Follow-Up Checks</strong> - Check 1: rCSI Score is high while
+protein consumption is also reported as frequent. - Check 2: HHs report
+using crisis or emergency strategies but not stress strategies or
+Emergency and no crisis. - Check 3: HH that would have an acceptable FCS
+score and a high rCSI score.
+
+#### Mortality Section (Individual Level)
+
+<strong>Follow-Up Checks</strong> - Check 1: Respondent reported more
+than 2 death in the HH. - Check 2:Respondent reported sex of dead person
+male and a cause of death related to female only. - Check 3:Respondent
+reported wrong dates leading to a negative person time.
+
+#### Mortality Section (Household Level)
+
+<strong>Follow-Up Checks</strong> - Check 1: Respondent reported more
+than 2 death in the HH.
+
+#### What to do next?
+
+Please check the files in the output/ folder. The cleaning_logbook.xlsx
+already can contain some of the directly cleaned data. The
+followup_request.xlsm file represent the checks that needs to be
+followed up with the field team. Please follow the instruction in the
+READ_ME tab to know how to fill the file. After filling the file, you
+can merge the \[uuid/variable/old.value/new.value/issue\] from the
+filled file with the cleaning_logbook.xlsx and add them to your cleaning
+scripts.
+
+### Descriptive Analysis
+
+The Descriptive Analysis is an analytical platform that presents a
+multitude of quantitative data tables. It encompasses a wide range of
+public health indicators collected through the assessment process,
+empowering users to examine and interpret complex datasets effectively.
+This tool is structured to support understanding the distribution of
+your data and support you writing your factsheets/outputs/reports, and
+create other visualizations.
+
+#### FSL Section
+
+As you saw in the output folder, you will have another excel file
+outputed from the analysis script. - The Excel file includes 2 sheets.
+The first 2 are all the tables that you see in the different sections of
+this HTML output. You can navigate to respective tables through the
+first sheet “Table of Contents”. - Another output as well will include
+the IPC table.
+
+#### Mortality Section
+
+As you saw in the output folder, you will have another excel file
+outputed from the analysis script. - The Excel file includes 2 sheets.
+The first 2 are all the tables that you see in the different sections of
+this HTML output. You can navigate to respective tables through the
+first sheet “Table of Contents”.
+
+## Standalone Functions (for both Analysis or Quality checks)
 
 ``` r
 library(impactR4PHU)
 df <- impactR4PHU_data_template
 ```
 
-### FSL ADD Incicators
+### FSL ADD Indicators
 
-### Example:: Add Food Consumption Score (FCS)
+#### Example:: Add Food Consumption Score (FCS)
 
 ``` r
 df_with_fcs <- df %>% add_fcs(
@@ -49,43 +227,9 @@ df_with_fcs <- df %>% add_fcs(
   fsl_fcs_sugar = "fsl_fcs_sugar",
   fsl_fcs_oil = "fsl_fcs_oil"
 )
-df_with_fcs %>%
-  dplyr::select(
-    uuid, fsl_fcs_score, fsl_fcs_cat, fcs_weight_cereal1, fcs_weight_legume2,
-    fcs_weight_dairy3, fcs_weight_meat4, fcs_weight_veg5,
-    fcs_weight_fruit6, fcs_weight_oil7, fcs_weight_sugar8
-  ) %>%
-  head(20)
 ```
 
-    ## # A tibble: 20 × 11
-    ##    uuid          fsl_fcs_score fsl_fcs_cat fcs_weight_cereal1 fcs_weight_legume2
-    ##    <chr>                 <dbl> <chr>                    <dbl>              <dbl>
-    ##  1 0cfd1539-4be…          NA   <NA>                        NA                 NA
-    ##  2 0fc8a427-f30…          NA   <NA>                        NA                 NA
-    ##  3 14c3baf8-d4b…          32.5 Borderline                   6                  6
-    ##  4 1a8de690-60a…          23   Borderline                   4                  6
-    ##  5 1c92baf4-107…          23.5 Borderline                   4                  3
-    ##  6 1d7ca542-5eb…          62.5 Acceptable                   4                  9
-    ##  7 1ecfd059-c21…          29.5 Borderline                  14                  3
-    ##  8 205d37b1-5a6…          40   Acceptable                   4                 12
-    ##  9 218f7539-061…          92.5 Acceptable                  12                 18
-    ## 10 2d56cf0a-a45…          NA   <NA>                        NA                 NA
-    ## 11 3186cfde-19a…          35   Borderline                  14                  6
-    ## 12 31d0cfb8-21d…          43   Acceptable                  12                  3
-    ## 13 328e7cd6-651…          12.5 Poor                         4                  6
-    ## 14 36584aec-f27…          23   Borderline                   6                  6
-    ## 15 37b5a861-0f2…          40   Acceptable                   4                  3
-    ## 16 38b615cf-0fd…          77   Acceptable                   4                 21
-    ## 17 3aef5849-5ca…          29.5 Borderline                  14                  3
-    ## 18 3b6948fe-340…          53   Acceptable                  14                 12
-    ## 19 3c1704f5-247…          33.5 Borderline                  14                  3
-    ## 20 3e02914b-eb2…          29   Borderline                  14                  6
-    ## # ℹ 6 more variables: fcs_weight_dairy3 <dbl>, fcs_weight_meat4 <dbl>,
-    ## #   fcs_weight_veg5 <dbl>, fcs_weight_fruit6 <dbl>, fcs_weight_oil7 <dbl>,
-    ## #   fcs_weight_sugar8 <dbl>
-
-### Example:: Add Household Hunger Scale (HHS)
+#### Example:: Add Household Hunger Scale (HHS)
 
 ``` r
 df_with_hhs <- df_with_fcs %>% add_hhs(
@@ -101,58 +245,9 @@ df_with_hhs <- df_with_fcs %>% add_hhs(
   sometimes_answer = "sometimes",
   often_answer = "often"
 )
-df_with_hhs %>%
-  dplyr::select(
-    uuid, fsl_hhs_comp1, fsl_hhs_comp2, fsl_hhs_comp3,
-    fsl_hhs_score, fsl_hhs_cat_ipc, fsl_hhs_cat, num_hh
-  ) %>%
-  head(20)
 ```
 
-    ##                                        uuid fsl_hhs_comp1 fsl_hhs_comp2
-    ## 1  0cfd1539-4be3-4c444a-8a8d8e-0d2a6bf74895            NA            NA
-    ## 2  0fc8a427-f30e-4a4341-b3b5b4-08a6392ef4dc            NA            NA
-    ## 3  14c3baf8-d4b0-43484c-8d8e8f-a5fd7134982e             0             0
-    ## 4  1a8de690-60af-45494a-8b8487-78f45ec16b39             0             0
-    ## 5  1c92baf4-107e-474c46-a3a8a5-6b2e815ad30c             0             0
-    ## 6  1d7ca542-5ebf-434e44-949e9a-d3687ef9c145             0             0
-    ## 7  1ecfd059-c215-4d4746-94999b-87920feb4a6c             0             0
-    ## 8  205d37b1-5a6f-44484d-b3b1ba-4eafbdc50873             0             0
-    ## 9  218f7539-061b-404f44-96989f-b345c89a6e21             0             0
-    ## 10 2d56cf0a-a45c-444148-898e84-ab7f4de18259            NA            NA
-    ## 11 3186cfde-19a7-434748-bbb7b1-e369754821cb             0             0
-    ## 12 31d0cfb8-21d7-414b4f-94999f-04a15ce39d78             2             2
-    ## 13 328e7cd6-6517-4f4044-8f8c86-c710a84e5639             1             1
-    ## 14 36584aec-f271-47484b-999391-417e2a3d6b59             0             0
-    ## 15 37b5a861-0f21-4e4942-909295-34826ecd950b             0             0
-    ## 16 38b615cf-0fd3-4f4d4e-bfbab1-a07658b413ce             0             0
-    ## 17 3aef5849-5ca7-4c4841-8a8584-e64b1a8d0c92             1             1
-    ## 18 3b6948fe-3409-4f4143-b3bab2-86301b529fc7             0             0
-    ## 19 3c1704f5-2473-474e4f-808982-f9830c51d7b2             1             1
-    ## 20 3e02914b-eb25-484243-909498-dcfa793514b2             0             0
-    ##    fsl_hhs_comp3 fsl_hhs_score fsl_hhs_cat_ipc  fsl_hhs_cat num_hh
-    ## 1             NA            NA            <NA>         <NA>   <NA>
-    ## 2             NA            NA            <NA>         <NA>   <NA>
-    ## 3              0             0            None No or Little      3
-    ## 4              0             0            None No or Little      3
-    ## 5              0             0            None No or Little      4
-    ## 6              0             0            None No or Little      4
-    ## 7              0             0            None No or Little      4
-    ## 8              0             0            None No or Little      4
-    ## 9              1             1    No or Little No or Little      4
-    ## 10            NA            NA            <NA>         <NA>   <NA>
-    ## 11             0             0            None No or Little      4
-    ## 12             2             6     Very Severe       Severe      4
-    ## 13             1             3        Moderate     Moderate      4
-    ## 14             0             0            None No or Little      4
-    ## 15             0             0            None No or Little      3
-    ## 16             0             0            None No or Little      4
-    ## 17             0             2        Moderate     Moderate      3
-    ## 18             0             0            None No or Little      4
-    ## 19             1             3        Moderate     Moderate      4
-    ## 20             0             0            None No or Little      3
-
-### Example:: Add Livelihood Coping Strategy score (LCSI)
+#### Example:: Add Livelihood Coping Strategy score (LCSI)
 
 ``` r
 df_with_lcsi <- df_with_hhs %>% add_lcsi(
@@ -171,55 +266,9 @@ df_with_lcsi <- df_with_hhs %>% add_lcsi(
   exhausted_val = "no_exhausted",
   not_applicable_val = "not_applicable"
 )
-df_with_lcsi %>%
-  dplyr::select(uuid, fsl_lcsi_cat, fsl_lcsi_cat_exhaust, fsl_lcsi_cat_yes) %>%
-  head(20)
 ```
 
-    ##                                        uuid fsl_lcsi_cat fsl_lcsi_cat_exhaust
-    ## 1  0cfd1539-4be3-4c444a-8a8d8e-0d2a6bf74895         <NA>                 <NA>
-    ## 2  0fc8a427-f30e-4a4341-b3b5b4-08a6392ef4dc         <NA>                 <NA>
-    ## 3  14c3baf8-d4b0-43484c-8d8e8f-a5fd7134982e       Stress                 None
-    ## 4  1a8de690-60af-45494a-8b8487-78f45ec16b39         None                 None
-    ## 5  1c92baf4-107e-474c46-a3a8a5-6b2e815ad30c       Stress                 None
-    ## 6  1d7ca542-5ebf-434e44-949e9a-d3687ef9c145    Emergency                 None
-    ## 7  1ecfd059-c215-4d4746-94999b-87920feb4a6c       Stress               Stress
-    ## 8  205d37b1-5a6f-44484d-b3b1ba-4eafbdc50873       Stress                 None
-    ## 9  218f7539-061b-404f44-96989f-b345c89a6e21         None                 None
-    ## 10 2d56cf0a-a45c-444148-898e84-ab7f4de18259         <NA>                 <NA>
-    ## 11 3186cfde-19a7-434748-bbb7b1-e369754821cb    Emergency                 None
-    ## 12 31d0cfb8-21d7-414b4f-94999f-04a15ce39d78    Emergency               Crisis
-    ## 13 328e7cd6-6517-4f4044-8f8c86-c710a84e5639         None                 None
-    ## 14 36584aec-f271-47484b-999391-417e2a3d6b59         None                 None
-    ## 15 37b5a861-0f21-4e4942-909295-34826ecd950b       Stress                 None
-    ## 16 38b615cf-0fd3-4f4d4e-bfbab1-a07658b413ce         None                 None
-    ## 17 3aef5849-5ca7-4c4841-8a8584-e64b1a8d0c92       Stress                 None
-    ## 18 3b6948fe-3409-4f4143-b3bab2-86301b529fc7         None                 None
-    ## 19 3c1704f5-2473-474e4f-808982-f9830c51d7b2       Stress               Stress
-    ## 20 3e02914b-eb25-484243-909498-dcfa793514b2       Stress               Stress
-    ##    fsl_lcsi_cat_yes
-    ## 1              <NA>
-    ## 2              <NA>
-    ## 3            Stress
-    ## 4              None
-    ## 5            Stress
-    ## 6         Emergency
-    ## 7              None
-    ## 8            Stress
-    ## 9              None
-    ## 10             <NA>
-    ## 11        Emergency
-    ## 12        Emergency
-    ## 13             None
-    ## 14             None
-    ## 15           Stress
-    ## 16             None
-    ## 17           Stress
-    ## 18             None
-    ## 19           Stress
-    ## 20             None
-
-### Example:: Add Reduced Household Coping Strategy score (rCSI)
+#### Example:: Add Reduced Household Coping Strategy score (rCSI)
 
 ``` r
 df_with_rcsi <- df_with_lcsi %>% add_rcsi(
@@ -229,34 +278,9 @@ df_with_rcsi <- df_with_lcsi %>% add_rcsi(
   fsl_rcsi_mealadult = "fsl_rcsi_mealadult",
   fsl_rcsi_mealnb = "fsl_rcsi_mealnb"
 )
-df_with_rcsi %>%
-  dplyr::select(uuid, fsl_rcsi_score, fsl_rcsi_cat) %>%
-  head(20)
 ```
 
-    ##                                        uuid fsl_rcsi_score fsl_rcsi_cat
-    ## 1  0cfd1539-4be3-4c444a-8a8d8e-0d2a6bf74895             NA         <NA>
-    ## 2  0fc8a427-f30e-4a4341-b3b5b4-08a6392ef4dc             NA         <NA>
-    ## 3  14c3baf8-d4b0-43484c-8d8e8f-a5fd7134982e              9       Medium
-    ## 4  1a8de690-60af-45494a-8b8487-78f45ec16b39              0    No to Low
-    ## 5  1c92baf4-107e-474c46-a3a8a5-6b2e815ad30c              7       Medium
-    ## 6  1d7ca542-5ebf-434e44-949e9a-d3687ef9c145              7       Medium
-    ## 7  1ecfd059-c215-4d4746-94999b-87920feb4a6c              6       Medium
-    ## 8  205d37b1-5a6f-44484d-b3b1ba-4eafbdc50873             11       Medium
-    ## 9  218f7539-061b-404f44-96989f-b345c89a6e21              6       Medium
-    ## 10 2d56cf0a-a45c-444148-898e84-ab7f4de18259             NA         <NA>
-    ## 11 3186cfde-19a7-434748-bbb7b1-e369754821cb              5       Medium
-    ## 12 31d0cfb8-21d7-414b4f-94999f-04a15ce39d78             34         High
-    ## 13 328e7cd6-6517-4f4044-8f8c86-c710a84e5639             16       Medium
-    ## 14 36584aec-f271-47484b-999391-417e2a3d6b59              5       Medium
-    ## 15 37b5a861-0f21-4e4942-909295-34826ecd950b             13       Medium
-    ## 16 38b615cf-0fd3-4f4d4e-bfbab1-a07658b413ce              0    No to Low
-    ## 17 3aef5849-5ca7-4c4841-8a8584-e64b1a8d0c92             12       Medium
-    ## 18 3b6948fe-3409-4f4143-b3bab2-86301b529fc7              0    No to Low
-    ## 19 3c1704f5-2473-474e4f-808982-f9830c51d7b2              8       Medium
-    ## 20 3e02914b-eb25-484243-909498-dcfa793514b2              5       Medium
-
-### Example:: Add Household Dietary Diversity Score (HDDS)
+#### Example:: Add Household Dietary Diversity Score (HDDS)
 
 ``` r
 df_with_hdds <- df_with_rcsi %>% add_hdds(
@@ -273,34 +297,9 @@ df_with_hdds <- df_with_rcsi %>% add_hdds(
    fsl_hdds_sugar = "fsl_hdds_sugar",
    fsl_hdds_condiments = "fsl_hdds_condiments"
 )
-df_with_hdds %>%
-  dplyr::select(uuid, fsl_hdds_score, fsl_hdds_cat) %>%
-  head(20)
 ```
 
-    ##                                        uuid fsl_hdds_score fsl_hdds_cat
-    ## 1  0cfd1539-4be3-4c444a-8a8d8e-0d2a6bf74895             NA         <NA>
-    ## 2  0fc8a427-f30e-4a4341-b3b5b4-08a6392ef4dc             NA         <NA>
-    ## 3  14c3baf8-d4b0-43484c-8d8e8f-a5fd7134982e              6         High
-    ## 4  1a8de690-60af-45494a-8b8487-78f45ec16b39              5         High
-    ## 5  1c92baf4-107e-474c46-a3a8a5-6b2e815ad30c              7         High
-    ## 6  1d7ca542-5ebf-434e44-949e9a-d3687ef9c145              6         High
-    ## 7  1ecfd059-c215-4d4746-94999b-87920feb4a6c              5         High
-    ## 8  205d37b1-5a6f-44484d-b3b1ba-4eafbdc50873              7         High
-    ## 9  218f7539-061b-404f44-96989f-b345c89a6e21              8         High
-    ## 10 2d56cf0a-a45c-444148-898e84-ab7f4de18259             NA         <NA>
-    ## 11 3186cfde-19a7-434748-bbb7b1-e369754821cb              8         High
-    ## 12 31d0cfb8-21d7-414b4f-94999f-04a15ce39d78              4       Medium
-    ## 13 328e7cd6-6517-4f4044-8f8c86-c710a84e5639              7         High
-    ## 14 36584aec-f271-47484b-999391-417e2a3d6b59              6         High
-    ## 15 37b5a861-0f21-4e4942-909295-34826ecd950b              7         High
-    ## 16 38b615cf-0fd3-4f4d4e-bfbab1-a07658b413ce              4       Medium
-    ## 17 3aef5849-5ca7-4c4841-8a8584-e64b1a8d0c92              6         High
-    ## 18 3b6948fe-3409-4f4143-b3bab2-86301b529fc7              6         High
-    ## 19 3c1704f5-2473-474e4f-808982-f9830c51d7b2              9         High
-    ## 20 3e02914b-eb25-484243-909498-dcfa793514b2              3       Medium
-
-### Example:: Add Food Consumption Matrix (FCM) using FCS, RCSI, and HHS
+#### Example:: Add Food Consumption Matrix (FCM) using FCS, RCSI, and HHS
 
 **Notice that these functions are also pipable**
 
@@ -322,34 +321,9 @@ df_with_fcm_1 <- df_with_hdds %>%
     hhs_categories_severe = "Severe",
     hhs_categories_very_severe = "Very Severe"
   )
-df_with_fcm_1 %>%
-  dplyr::select(uuid, fsl_fc_cell, fsl_fc_phase) %>%
-  head(20)
 ```
 
-    ##                                        uuid fsl_fc_cell fsl_fc_phase
-    ## 1  0cfd1539-4be3-4c444a-8a8d8e-0d2a6bf74895          NA         <NA>
-    ## 2  0fc8a427-f30e-4a4341-b3b5b4-08a6392ef4dc          NA         <NA>
-    ## 3  14c3baf8-d4b0-43484c-8d8e8f-a5fd7134982e          21   Phase 2 FC
-    ## 4  1a8de690-60af-45494a-8b8487-78f45ec16b39           6   Phase 1 FC
-    ## 5  1c92baf4-107e-474c46-a3a8a5-6b2e815ad30c          21   Phase 2 FC
-    ## 6  1d7ca542-5ebf-434e44-949e9a-d3687ef9c145          16   Phase 2 FC
-    ## 7  1ecfd059-c215-4d4746-94999b-87920feb4a6c          21   Phase 2 FC
-    ## 8  205d37b1-5a6f-44484d-b3b1ba-4eafbdc50873          16   Phase 2 FC
-    ## 9  218f7539-061b-404f44-96989f-b345c89a6e21          17   Phase 2 FC
-    ## 10 2d56cf0a-a45c-444148-898e84-ab7f4de18259          NA         <NA>
-    ## 11 3186cfde-19a7-434748-bbb7b1-e369754821cb          21   Phase 2 FC
-    ## 12 31d0cfb8-21d7-414b4f-94999f-04a15ce39d78          35   Phase 4 FC
-    ## 13 328e7cd6-6517-4f4044-8f8c86-c710a84e5639          28   Phase 3 FC
-    ## 14 36584aec-f271-47484b-999391-417e2a3d6b59          21   Phase 2 FC
-    ## 15 37b5a861-0f21-4e4942-909295-34826ecd950b          16   Phase 2 FC
-    ## 16 38b615cf-0fd3-4f4d4e-bfbab1-a07658b413ce           1   Phase 1 FC
-    ## 17 3aef5849-5ca7-4c4841-8a8584-e64b1a8d0c92          23   Phase 3 FC
-    ## 18 3b6948fe-3409-4f4143-b3bab2-86301b529fc7           1   Phase 1 FC
-    ## 19 3c1704f5-2473-474e4f-808982-f9830c51d7b2          23   Phase 3 FC
-    ## 20 3e02914b-eb25-484243-909498-dcfa793514b2          21   Phase 2 FC
-
-### Example:: Add Food Consumption Matrix (FCM) using HDDS, RCSI, and HHS
+#### Example:: Add Food Consumption Matrix (FCM) using HDDS, RCSI, and HHS
 
 **Notice that these functions are also pipable**
 
@@ -371,34 +345,9 @@ df_with_fcm_2 <- df_with_hdds %>%
     hhs_categories_severe = "Severe",
     hhs_categories_very_severe = "Very Severe"
   )
-df_with_fcm_2 %>%
-  dplyr::select(uuid, fsl_fc_cell, fsl_fc_phase) %>%
-  head(20)
 ```
 
-    ##                                        uuid fsl_fc_cell fsl_fc_phase
-    ## 1  0cfd1539-4be3-4c444a-8a8d8e-0d2a6bf74895          NA         <NA>
-    ## 2  0fc8a427-f30e-4a4341-b3b5b4-08a6392ef4dc          NA         <NA>
-    ## 3  14c3baf8-d4b0-43484c-8d8e8f-a5fd7134982e          21   Phase 2 FC
-    ## 4  1a8de690-60af-45494a-8b8487-78f45ec16b39           6   Phase 1 FC
-    ## 5  1c92baf4-107e-474c46-a3a8a5-6b2e815ad30c          21   Phase 2 FC
-    ## 6  1d7ca542-5ebf-434e44-949e9a-d3687ef9c145          16   Phase 2 FC
-    ## 7  1ecfd059-c215-4d4746-94999b-87920feb4a6c          21   Phase 2 FC
-    ## 8  205d37b1-5a6f-44484d-b3b1ba-4eafbdc50873          16   Phase 2 FC
-    ## 9  218f7539-061b-404f44-96989f-b345c89a6e21          17   Phase 2 FC
-    ## 10 2d56cf0a-a45c-444148-898e84-ab7f4de18259          NA         <NA>
-    ## 11 3186cfde-19a7-434748-bbb7b1-e369754821cb          21   Phase 2 FC
-    ## 12 31d0cfb8-21d7-414b4f-94999f-04a15ce39d78          35   Phase 4 FC
-    ## 13 328e7cd6-6517-4f4044-8f8c86-c710a84e5639          28   Phase 3 FC
-    ## 14 36584aec-f271-47484b-999391-417e2a3d6b59          21   Phase 2 FC
-    ## 15 37b5a861-0f21-4e4942-909295-34826ecd950b          16   Phase 2 FC
-    ## 16 38b615cf-0fd3-4f4d4e-bfbab1-a07658b413ce           1   Phase 1 FC
-    ## 17 3aef5849-5ca7-4c4841-8a8584-e64b1a8d0c92          23   Phase 3 FC
-    ## 18 3b6948fe-3409-4f4143-b3bab2-86301b529fc7           1   Phase 1 FC
-    ## 19 3c1704f5-2473-474e4f-808982-f9830c51d7b2          23   Phase 3 FC
-    ## 20 3e02914b-eb25-484243-909498-dcfa793514b2          21   Phase 2 FC
-
-### Example:: Add Food Consumption Matrix (FCM) using FCS and HHS
+#### Example:: Add Food Consumption Matrix (FCM) using FCS and HHS
 
 **Notice that these functions are also pipable**
 
@@ -416,34 +365,9 @@ df_with_fcm_3 <- df_with_hdds %>%
     hhs_categories_severe = "Severe",
     hhs_categories_very_severe = "Very Severe"
   )
-df_with_fcm_3 %>%
-  dplyr::select(uuid, fsl_fc_cell, fsl_fc_phase) %>%
-  head(20)
 ```
 
-    ##                                        uuid fsl_fc_cell fsl_fc_phase
-    ## 1  0cfd1539-4be3-4c444a-8a8d8e-0d2a6bf74895          NA         <NA>
-    ## 2  0fc8a427-f30e-4a4341-b3b5b4-08a6392ef4dc          NA         <NA>
-    ## 3  14c3baf8-d4b0-43484c-8d8e8f-a5fd7134982e          21   Phase 2 FC
-    ## 4  1a8de690-60af-45494a-8b8487-78f45ec16b39           6   Phase 1 FC
-    ## 5  1c92baf4-107e-474c46-a3a8a5-6b2e815ad30c          21   Phase 2 FC
-    ## 6  1d7ca542-5ebf-434e44-949e9a-d3687ef9c145          16   Phase 2 FC
-    ## 7  1ecfd059-c215-4d4746-94999b-87920feb4a6c          21   Phase 2 FC
-    ## 8  205d37b1-5a6f-44484d-b3b1ba-4eafbdc50873          16   Phase 2 FC
-    ## 9  218f7539-061b-404f44-96989f-b345c89a6e21          17   Phase 2 FC
-    ## 10 2d56cf0a-a45c-444148-898e84-ab7f4de18259          NA         <NA>
-    ## 11 3186cfde-19a7-434748-bbb7b1-e369754821cb          21   Phase 2 FC
-    ## 12 31d0cfb8-21d7-414b4f-94999f-04a15ce39d78          35   Phase 4 FC
-    ## 13 328e7cd6-6517-4f4044-8f8c86-c710a84e5639          28   Phase 3 FC
-    ## 14 36584aec-f271-47484b-999391-417e2a3d6b59          21   Phase 2 FC
-    ## 15 37b5a861-0f21-4e4942-909295-34826ecd950b          16   Phase 2 FC
-    ## 16 38b615cf-0fd3-4f4d4e-bfbab1-a07658b413ce           1   Phase 1 FC
-    ## 17 3aef5849-5ca7-4c4841-8a8584-e64b1a8d0c92          23   Phase 3 FC
-    ## 18 3b6948fe-3409-4f4143-b3bab2-86301b529fc7           1   Phase 1 FC
-    ## 19 3c1704f5-2473-474e4f-808982-f9830c51d7b2          23   Phase 3 FC
-    ## 20 3e02914b-eb25-484243-909498-dcfa793514b2          21   Phase 2 FC
-
-### Example:: Add Food Consumption Matrix (FCM) using HDDS and HHS
+#### Example:: Add Food Consumption Matrix (FCM) using HDDS and HHS
 
 **Notice that these functions are also pipable**
 
@@ -461,109 +385,31 @@ df_with_fcm_4 <- df_with_hdds %>%
     hhs_categories_severe = "Severe",
     hhs_categories_very_severe = "Very Severe"
   )
-df_with_fcm_4 %>%
-  dplyr::select(uuid, fsl_fc_cell, fsl_fc_phase) %>%
-  head(20)
 ```
 
-    ##                                        uuid fsl_fc_cell fsl_fc_phase
-    ## 1  0cfd1539-4be3-4c444a-8a8d8e-0d2a6bf74895          NA         <NA>
-    ## 2  0fc8a427-f30e-4a4341-b3b5b4-08a6392ef4dc          NA         <NA>
-    ## 3  14c3baf8-d4b0-43484c-8d8e8f-a5fd7134982e          21   Phase 2 FC
-    ## 4  1a8de690-60af-45494a-8b8487-78f45ec16b39           6   Phase 1 FC
-    ## 5  1c92baf4-107e-474c46-a3a8a5-6b2e815ad30c          21   Phase 2 FC
-    ## 6  1d7ca542-5ebf-434e44-949e9a-d3687ef9c145          16   Phase 2 FC
-    ## 7  1ecfd059-c215-4d4746-94999b-87920feb4a6c          21   Phase 2 FC
-    ## 8  205d37b1-5a6f-44484d-b3b1ba-4eafbdc50873          16   Phase 2 FC
-    ## 9  218f7539-061b-404f44-96989f-b345c89a6e21          17   Phase 2 FC
-    ## 10 2d56cf0a-a45c-444148-898e84-ab7f4de18259          NA         <NA>
-    ## 11 3186cfde-19a7-434748-bbb7b1-e369754821cb          21   Phase 2 FC
-    ## 12 31d0cfb8-21d7-414b4f-94999f-04a15ce39d78          35   Phase 4 FC
-    ## 13 328e7cd6-6517-4f4044-8f8c86-c710a84e5639          28   Phase 3 FC
-    ## 14 36584aec-f271-47484b-999391-417e2a3d6b59          21   Phase 2 FC
-    ## 15 37b5a861-0f21-4e4942-909295-34826ecd950b          16   Phase 2 FC
-    ## 16 38b615cf-0fd3-4f4d4e-bfbab1-a07658b413ce           1   Phase 1 FC
-    ## 17 3aef5849-5ca7-4c4841-8a8584-e64b1a8d0c92          23   Phase 3 FC
-    ## 18 3b6948fe-3409-4f4143-b3bab2-86301b529fc7           1   Phase 1 FC
-    ## 19 3c1704f5-2473-474e4f-808982-f9830c51d7b2          23   Phase 3 FC
-    ## 20 3e02914b-eb25-484243-909498-dcfa793514b2          21   Phase 2 FC
-
-### Example:: Add FEWSNET Food Consumption-Livelihood Matrix (FCLCM)
+#### Example:: Add FEWSNET Food Consumption-Livelihood Matrix (FCLCM)
 
 **Notice that these functions are also pipable**
 
 ``` r
 df_with_fclcm <- df_with_fcm_1 %>% ## Taken from previous Example
   add_fclcm_phase()
-df_with_fclcm %>%
-  dplyr::select(uuid, fclcm_phase) %>%
-  head(20)
 ```
 
-    ##                                        uuid  fclcm_phase
-    ## 1  0cfd1539-4be3-4c444a-8a8d8e-0d2a6bf74895         <NA>
-    ## 2  0fc8a427-f30e-4a4341-b3b5b4-08a6392ef4dc         <NA>
-    ## 3  14c3baf8-d4b0-43484c-8d8e8f-a5fd7134982e Phase 2 FCLC
-    ## 4  1a8de690-60af-45494a-8b8487-78f45ec16b39 Phase 1 FCLC
-    ## 5  1c92baf4-107e-474c46-a3a8a5-6b2e815ad30c Phase 2 FCLC
-    ## 6  1d7ca542-5ebf-434e44-949e9a-d3687ef9c145 Phase 3 FCLC
-    ## 7  1ecfd059-c215-4d4746-94999b-87920feb4a6c Phase 2 FCLC
-    ## 8  205d37b1-5a6f-44484d-b3b1ba-4eafbdc50873 Phase 2 FCLC
-    ## 9  218f7539-061b-404f44-96989f-b345c89a6e21 Phase 2 FCLC
-    ## 10 2d56cf0a-a45c-444148-898e84-ab7f4de18259         <NA>
-    ## 11 3186cfde-19a7-434748-bbb7b1-e369754821cb Phase 3 FCLC
-    ## 12 31d0cfb8-21d7-414b4f-94999f-04a15ce39d78 Phase 4 FCLC
-    ## 13 328e7cd6-6517-4f4044-8f8c86-c710a84e5639 Phase 3 FCLC
-    ## 14 36584aec-f271-47484b-999391-417e2a3d6b59 Phase 2 FCLC
-    ## 15 37b5a861-0f21-4e4942-909295-34826ecd950b Phase 2 FCLC
-    ## 16 38b615cf-0fd3-4f4d4e-bfbab1-a07658b413ce Phase 1 FCLC
-    ## 17 3aef5849-5ca7-4c4841-8a8584-e64b1a8d0c92 Phase 3 FCLC
-    ## 18 3b6948fe-3409-4f4143-b3bab2-86301b529fc7 Phase 1 FCLC
-    ## 19 3c1704f5-2473-474e4f-808982-f9830c51d7b2 Phase 3 FCLC
-    ## 20 3e02914b-eb25-484243-909498-dcfa793514b2 Phase 2 FCLC
-
-### NUTRITION ADD Incicators
+### NUTRITION ADD Indicators
 
 ``` r
 df_nut <- impactR4PHU_data_nut_template
 ```
 
-### Example:: Add MUAC
+#### Example:: Add MUAC
 
 ``` r
 df_with_muac <- df_nut %>% 
   add_muac()
-df_with_muac %>%
-  dplyr::select(
-    uuid, sam_muac, mam_muac, gam_muac) %>%
-  head(20)
 ```
 
-    ## # A tibble: 20 × 4
-    ##    uuid                                     sam_muac mam_muac gam_muac
-    ##    <chr>                                       <dbl>    <dbl>    <dbl>
-    ##  1 7b4261fa-61a5-4a4948-999093-13bc7e9f0658        0        1        1
-    ##  2 83c0a56b-15fd-4f4349-b2bcbd-806912fb3c5d        0        0        0
-    ##  3 6401c279-8a6f-464b4d-919598-da125739e64c        0        0        0
-    ##  4 1ecfd059-c215-4d4746-94999b-87920feb4a6c        0        0        0
-    ##  5 4b038c2e-25a6-484641-aca6a7-cf387e4b29d1        0        0        0
-    ##  6 3b6948fe-3409-4f4143-b3bab2-86301b529fc7        0        0        0
-    ##  7 512bce03-78ea-404742-8e8d83-e53a8296c0d4        0        0        0
-    ##  8 1a8de690-60af-45494a-8b8487-78f45ec16b39        0        0        0
-    ##  9 53a2e761-34cb-434c46-b3bdbc-b0fc1295673d        0        0        0
-    ## 10 4d5b1089-1aec-424f49-aba5a9-b3ade80461fc        0        0        0
-    ## 11 ef2963c7-ef67-4e4446-bab5b7-7e9d0431fa8c        0        0        0
-    ## 12 98fdb3a2-2c1a-4f424b-8d8782-b21d683ea94f        0        0        0
-    ## 13 1d7ca542-5ebf-434e44-949e9a-d3687ef9c145        0        0        0
-    ## 14 a725301d-21b7-444c42-919f95-2f769503b184        0        0        0
-    ## 15 4b038c2e-25a6-484641-aca6a7-cf387e4b29d1        0        0        0
-    ## 16 1d7ca542-5ebf-434e44-949e9a-d3687ef9c145        0        0        0
-    ## 17 3c1704f5-2473-474e4f-808982-f9830c51d7b2       NA       NA       NA
-    ## 18 ef0d36a5-493b-444048-bbbab9-bf719e4850a6        0        0        0
-    ## 19 31d0cfb8-21d7-414b4f-94999f-04a15ce39d78       NA       NA       NA
-    ## 20 31d0cfb8-21d7-414b4f-94999f-04a15ce39d78       NA       NA       NA
-
-### Example:: Add MFAZ
+#### Example:: Add MFAZ
 
 ``` r
 df_with_mfaz <- df_with_muac %>% 
@@ -572,167 +418,36 @@ df_with_mfaz <- df_with_muac %>%
 
     ## ================================================================================
 
-``` r
-df_with_mfaz %>%
-  dplyr::select(
-    uuid, mfaz, severe_mfaz, moderate_mfaz, global_mfaz) %>%
-  head(20)
-```
-
-    ## # A tibble: 20 × 5
-    ##    uuid                               mfaz severe_mfaz moderate_mfaz global_mfaz
-    ##    <chr>                             <dbl>       <dbl>         <dbl>       <dbl>
-    ##  1 7b4261fa-61a5-4a4948-999093-13bc… -3.4            1             0           1
-    ##  2 83c0a56b-15fd-4f4349-b2bcbd-8069… -1.48           0             0           0
-    ##  3 6401c279-8a6f-464b4d-919598-da12… -2.33           0             1           1
-    ##  4 1ecfd059-c215-4d4746-94999b-8792… -2.38           0             1           1
-    ##  5 4b038c2e-25a6-484641-aca6a7-cf38… -1.3            0             0           0
-    ##  6 3b6948fe-3409-4f4143-b3bab2-8630… -0.62           0             0           0
-    ##  7 512bce03-78ea-404742-8e8d83-e53a… -0.8            0             0           0
-    ##  8 1a8de690-60af-45494a-8b8487-78f4… -1.88           0             0           0
-    ##  9 53a2e761-34cb-434c46-b3bdbc-b0fc… -0.43           0             0           0
-    ## 10 4d5b1089-1aec-424f49-aba5a9-b3ad…  0.42           0             0           0
-    ## 11 ef2963c7-ef67-4e4446-bab5b7-7e9d… -0.57           0             0           0
-    ## 12 98fdb3a2-2c1a-4f424b-8d8782-b21d…  0.51           0             0           0
-    ## 13 1d7ca542-5ebf-434e44-949e9a-d368… -0.73           0             0           0
-    ## 14 a725301d-21b7-444c42-919f95-2f76…  0.4            0             0           0
-    ## 15 4b038c2e-25a6-484641-aca6a7-cf38…  1.05           0             0           0
-    ## 16 1d7ca542-5ebf-434e44-949e9a-d368…  1.63           0             0           0
-    ## 17 3c1704f5-2473-474e4f-808982-f983… NA             NA            NA          NA
-    ## 18 ef0d36a5-493b-444048-bbbab9-bf71…  1.04           0             0           0
-    ## 19 31d0cfb8-21d7-414b4f-94999f-04a1… NA             NA            NA          NA
-    ## 20 31d0cfb8-21d7-414b4f-94999f-04a1… NA             NA            NA          NA
-
-### Example:: Add IYCF
+#### Example:: Add IYCF
 
 ``` r
 df_iycf <- impactR4PHU_iycf_template_data
 df_with_iycf <- df_iycf %>% 
   add_iycf(uuid = "_submission__uuid",
            age_months = "child_age_months_2")
-df_with_iycf %>%
-  dplyr::select(
-    uuid, age_months, starts_with("iycf_")) %>%
-  head(20)
 ```
 
-    ## # A tibble: 20 × 67
-    ##    uuid    age_months iycf_1 iycf_2 iycf_3 iycf_4 iycf_5 iycf_6a iycf_6b iycf_6c
-    ##    <chr>   <chr>      <chr>  <chr>  <chr>  <chr>  <chr>    <dbl>   <dbl>   <dbl>
-    ##  1 0f1346… 11         yes    first… no     yes    yes          1       0       1
-    ##  2 0f1346… 11         yes    first… no     no     no           1       0       0
-    ##  3 bae8a3… 17         yes    first… no     yes    no           1       0       0
-    ##  4 8561a2… 9          yes    first… no     yes    no           1       0       1
-    ##  5 8561a2… 9          yes    first… no     yes    no           1       0       1
-    ##  6 b69d05… 12         no     <NA>   <NA>   <NA>   yes          1       0       1
-    ##  7 1e0496… 19         no     <NA>   <NA>   <NA>   no           1       0       1
-    ##  8 373977… 14         yes    immed… no     yes    no           1       0       1
-    ##  9 373977… 16         yes    immed… no     yes    no           1       0       1
-    ## 10 4b806c… 20         no     <NA>   <NA>   <NA>   no           1       0       1
-    ## 11 4b806c… 12         yes    immed… no     yes    no           1       0       1
-    ## 12 5cce47… 12         yes    immed… no     yes    yes          1       1       1
-    ## 13 78cde5… 20         yes    immed… yes    yes    no           1       1       1
-    ## 14 d929f0… 11         yes    immed… no     no     no           1       1       1
-    ## 15 987389… 14         yes    immed… yes    yes    no           1       1       0
-    ## 16 0fa5d9… 11         yes    immed… yes    yes    no           0       0       0
-    ## 17 18ef33… 10         yes    immed… yes    yes    yes          1       1       1
-    ## 18 5a91d4… 7          yes    immed… yes    yes    yes          1       0       0
-    ## 19 e4a46d… 17         no     <NA>   <NA>   <NA>   no           1       0       1
-    ## 20 28b24b… 21         no     <NA>   <NA>   <NA>   no           1       0       1
-    ## # ℹ 57 more variables: iycf_6d <dbl>, iycf_6e <dbl>, iycf_6f <dbl>,
-    ## #   iycf_6g <dbl>, iycf_6h <dbl>, iycf_6i <dbl>, iycf_6j <dbl>,
-    ## #   iycf_6j_swt <lgl>, iycf_6c_swt <chr>, iycf_6d_swt <chr>, iycf_6h_swt <chr>,
-    ## #   iycf_7a <dbl>, iycf_7b <dbl>, iycf_7c <dbl>, iycf_7d <dbl>, iycf_7e <dbl>,
-    ## #   iycf_7f <dbl>, iycf_7g <dbl>, iycf_7h <dbl>, iycf_7i <dbl>, iycf_7j <dbl>,
-    ## #   iycf_7k <dbl>, iycf_7l <dbl>, iycf_7m <dbl>, iycf_7n <dbl>, iycf_7o <dbl>,
-    ## #   iycf_7p <dbl>, iycf_7q <dbl>, iycf_7r <dbl>, iycf_cf_check <lgl>, …
-
-## Checking Flags (For Quality reports and Plausibility checks)
+### Checking Flags
 
 ``` r
 tool <- impactR4PHU_survey_template
 ```
 
-### Example:: Check Food Security and Livelihoods Flags
+#### Example:: Check Food Security and Livelihoods Flags
 
 ``` r
 fsl_flags <- df_with_fclcm %>% 
   check_fsl_flags(tool.survey = tool)
-fsl_flags %>% 
-  dplyr::select(uuid, starts_with("flag_")) %>% 
-  head(20)
 ```
 
-    ## # A tibble: 20 × 22
-    ##    uuid        flag_meat_cereal_ratio flag_low_cereal flag_low_fcs flag_high_fcs
-    ##    <chr>                        <dbl>           <dbl>        <dbl>         <dbl>
-    ##  1 0cfd1539-4…                     NA              NA           NA            NA
-    ##  2 0fc8a427-f…                     NA              NA           NA            NA
-    ##  3 14c3baf8-d…                      0               1            0             0
-    ##  4 1a8de690-6…                      0               1            0             0
-    ##  5 1c92baf4-1…                      0               1            0             0
-    ##  6 1d7ca542-5…                      1               1            0             1
-    ##  7 1ecfd059-c…                      0               0            0             0
-    ##  8 205d37b1-5…                      0               1            0             0
-    ##  9 218f7539-0…                      1               0            0             1
-    ## 10 2d56cf0a-a…                     NA              NA           NA            NA
-    ## 11 3186cfde-1…                      0               0            0             0
-    ## 12 31d0cfb8-2…                      0               0            0             0
-    ## 13 328e7cd6-6…                      0               1            0             0
-    ## 14 36584aec-f…                      0               1            0             0
-    ## 15 37b5a861-0…                      1               1            0             0
-    ## 16 38b615cf-0…                      1               1            0             1
-    ## 17 3aef5849-5…                      0               0            0             0
-    ## 18 3b6948fe-3…                      0               0            0             0
-    ## 19 3c1704f5-2…                      0               0            0             0
-    ## 20 3e02914b-e…                      0               0            0             0
-    ## # ℹ 17 more variables: flag_low_oil <dbl>, flag_sd_foodgroup <dbl>,
-    ## #   flag_protein_rcsi <dbl>, flag_fcs_rcsi <dbl>, flag_high_rcsi <dbl>,
-    ## #   flag_rcsi_children <lgl>, flag_fcsrcsi_box <dbl>, flag_sd_rcsicoping <dbl>,
-    ## #   flag_severe_hhs <dbl>, flag_lcsi_coherence <dbl>, flag_lcsi_severity <dbl>,
-    ## #   flag_lcsi_na <dbl>, flag_lcsi_liv_agriculture <dbl>,
-    ## #   flag_lcsi_liv_livestock <dbl>, flag_lcsi_displ <dbl>, flag_fc_cell <dbl>,
-    ## #   flag_low_sugar_cond_hdds <dbl>
-
-### Example:: Check Anthropometric Flags
+#### Example:: Check Anthropometric Flags
 
 ``` r
 anthro_flags <- df_with_mfaz %>% 
   check_anthro_flags(loop_index = "loop_index")
-anthro_flags %>% 
-  dplyr::select(uuid, starts_with("flag_"), ends_with("noflag")) %>% 
-  head(20)
 ```
 
-    ## # A tibble: 20 × 14
-    ##    uuid            flag_sd_mfaz flag_extreme_muac flag_edema_pitting mfaz_noflag
-    ##    <chr>                  <dbl>             <dbl>              <dbl>       <dbl>
-    ##  1 7b4261fa-61a5-…            0                 0                 NA       -3.4 
-    ##  2 83c0a56b-15fd-…            0                 0                 NA       -1.48
-    ##  3 6401c279-8a6f-…            0                 0                  0       -2.33
-    ##  4 1ecfd059-c215-…            0                 0                 NA       -2.38
-    ##  5 4b038c2e-25a6-…            0                 0                  0       -1.3 
-    ##  6 3b6948fe-3409-…            0                 0                 NA       -0.62
-    ##  7 512bce03-78ea-…            0                 0                 NA       -0.8 
-    ##  8 1a8de690-60af-…            0                 0                 NA       -1.88
-    ##  9 53a2e761-34cb-…            0                 0                  0       -0.43
-    ## 10 4d5b1089-1aec-…            0                 0                  0        0.42
-    ## 11 ef2963c7-ef67-…            0                 0                 NA       -0.57
-    ## 12 98fdb3a2-2c1a-…            0                 0                  0        0.51
-    ## 13 1d7ca542-5ebf-…            0                 0                  0       -0.73
-    ## 14 a725301d-21b7-…            0                 0                  0        0.4 
-    ## 15 4b038c2e-25a6-…            0                 0                 NA        1.05
-    ## 16 1d7ca542-5ebf-…            0                 0                  0        1.63
-    ## 17 3c1704f5-2473-…           NA                NA                  0       NA   
-    ## 18 ef0d36a5-493b-…            0                 0                  0        1.04
-    ## 19 31d0cfb8-21d7-…           NA                NA                 NA       NA   
-    ## 20 31d0cfb8-21d7-…           NA                NA                 NA       NA   
-    ## # ℹ 9 more variables: mean_mfaz_noflag <dbl>, sd_mfaz_noflag <dbl>,
-    ## #   global_mfaz_noflag <dbl>, moderate_mfaz_noflag <dbl>,
-    ## #   severe_mfaz_noflag <dbl>, muac_noflag <dbl>, gam_muac_noflag <dbl>,
-    ## #   mam_muac_noflag <dbl>, sam_muac_noflag <dbl>
-
-### Example:: Check WASH Flags
+#### Example:: Check WASH Flags
 
 ``` r
 container_df <- impactR4PHU_data_wash_template
@@ -742,113 +457,24 @@ wash_flags <- df %>%
 
     ## Joining with `by = join_by(uuid)`
 
-``` r
-wash_flags %>% 
-  dplyr::select(uuid, starts_with("flag_")) %>% 
-  head(20)
-```
-
-    ## # A tibble: 20 × 6
-    ##    uuid         flag_sd_litre flag_low_litre flag_high_litre flag_high_container
-    ##    <chr>                <dbl>          <dbl>           <dbl>               <dbl>
-    ##  1 0cfd1539-4b…            NA             NA              NA                  NA
-    ##  2 0fc8a427-f3…            NA             NA              NA                  NA
-    ##  3 14c3baf8-d4…            NA             NA              NA                  NA
-    ##  4 1a8de690-60…            NA             NA              NA                  NA
-    ##  5 1c92baf4-10…             0              0               0                   0
-    ##  6 1d7ca542-5e…            NA             NA              NA                   0
-    ##  7 1ecfd059-c2…            NA             NA              NA                  NA
-    ##  8 205d37b1-5a…            NA             NA              NA                   0
-    ##  9 218f7539-06…            NA             NA              NA                   0
-    ## 10 2d56cf0a-a4…            NA             NA              NA                  NA
-    ## 11 3186cfde-19…            NA             NA              NA                  NA
-    ## 12 31d0cfb8-21…            NA             NA              NA                   0
-    ## 13 328e7cd6-65…            NA             NA              NA                   0
-    ## 14 36584aec-f2…            NA             NA              NA                   0
-    ## 15 37b5a861-0f…            NA             NA              NA                  NA
-    ## 16 38b615cf-0f…            NA             NA              NA                  NA
-    ## 17 3aef5849-5c…            NA             NA              NA                  NA
-    ## 18 3b6948fe-34…            NA             NA              NA                  NA
-    ## 19 3c1704f5-24…            NA             NA              NA                  NA
-    ## 20 3e02914b-eb…            NA             NA              NA                   0
-    ## # ℹ 1 more variable: flag_no_container <dbl>
-
-### Example:: Check Health Flags (to add more flags related to WGSS)
+#### Example:: Check Health Flags (to add more flags related to WGSS)
 
 ``` r
 msna_data <- impactR4PHU_MSNA_template_data
 health_flags <- check_health_flags(
   .dataset = msna_data
 )
-
-health_flags %>% 
-  dplyr::select(uuid, starts_with("flag_")) %>% 
-  head(20)
 ```
 
-    ## # A tibble: 20 × 3
-    ##    uuid                            flag_severe_health_exp flag_catastrophic_he…¹
-    ##    <chr>                                            <dbl>                  <dbl>
-    ##  1 eaf540cd-32bd-41474b-b4beb5-d6…                      0                      0
-    ##  2 89e706c3-53d8-4a4049-898586-49…                      0                      0
-    ##  3 afd921c6-e54a-4c4740-919c93-87…                      0                      0
-    ##  4 d8b05f39-ba85-494c4d-808c84-9d…                      0                      0
-    ##  5 d6b42f9e-c209-4c4541-808a81-86…                      0                      0
-    ##  6 f1b9ec67-20db-47404d-a3ada0-1a…                      0                      0
-    ##  7 95ea286d-ae86-47404a-828487-fe…                      0                      0
-    ##  8 85b4a96f-cea2-4f4b48-9d929f-5d…                      0                      0
-    ##  9 ef13a764-0af7-4f494c-838b88-6c…                      0                      0
-    ## 10 1a69e87b-ec61-4e4a40-8f868a-fe…                      0                      0
-    ## 11 5613d0fe-34dc-474c43-b4b0bd-36…                      0                      0
-    ## 12 091aef7d-2b31-4f4741-a5a8af-36…                      0                      0
-    ## 13 e21a34f5-1a46-42404b-b7b6be-7b…                      0                      0
-    ## 14 42dc8573-e2d0-43484b-aaada2-c3…                      0                      0
-    ## 15 3a180db5-d126-4d4b49-808d88-b3…                      0                      0
-    ## 16 789a632b-53da-4c4f40-a0a1ad-f5…                      0                      0
-    ## 17 cd41675b-eb48-444e4f-b8b7b3-1e…                      0                      0
-    ## 18 f741c29d-b7c5-424a4d-94999c-60…                      0                      0
-    ## 19 2516eba7-789c-4c4b41-afa0ad-f0…                      0                      0
-    ## 20 c7896215-b36f-40444c-aaa2af-fa…                      0                      0
-    ## # ℹ abbreviated name: ¹​flag_catastrophic_health_exp
-
-### Example:: Check IYCF Flags
+#### Example:: Check IYCF Flags
 
 ``` r
 iycf_flags <- check_iycf_flags(
-  .dataset = df_with_iycf
+  .dataset = df_with_iycf,
+  age_months = "child_age_months_2",
+  uuid = "_submission__uuid"
 )
-
-iycf_flags %>% 
-  dplyr::select(uuid, age_months, starts_with("flag_")) %>% 
-  head(20)
 ```
-
-    ## # A tibble: 20 × 11
-    ##    uuid              age_months flag_yes_foods flag_yes_liquids flag_no_anything
-    ##    <chr>             <chr>               <dbl>            <dbl>            <dbl>
-    ##  1 0f1346c8-6ad2-40… 11                      0                0                0
-    ##  2 0f1346c8-6ad2-40… 11                      0                0                0
-    ##  3 bae8a3a7-d091-45… 17                      0                0                0
-    ##  4 8561a27d-e9de-40… 9                       0                0                0
-    ##  5 8561a27d-e9de-40… 9                       0                0                0
-    ##  6 b69d0571-d862-43… 12                      0                0               NA
-    ##  7 1e049682-6c87-49… 19                      0                0               NA
-    ##  8 3739779b-f24d-45… 14                      0                0                0
-    ##  9 3739779b-f24d-45… 16                      0                0                0
-    ## 10 4b806c8c-439e-47… 20                      0                0               NA
-    ## 11 4b806c8c-439e-47… 12                      0                0                0
-    ## 12 5cce4725-4855-49… 12                      0                0                0
-    ## 13 78cde5ca-7b9d-44… 20                      0                0                0
-    ## 14 d929f004-afc0-45… 11                      0                0                0
-    ## 15 98738911-ec59-4d… 14                      0                0                0
-    ## 16 0fa5d936-e6f9-4f… 11                      0                0                0
-    ## 17 18ef3371-6a8b-4c… 10                      0                0                0
-    ## 18 5a91d4d2-d224-4e… 7                       0                0                0
-    ## 19 e4a46dc1-dfd8-4a… 17                      0                0               NA
-    ## 20 28b24ba6-0910-44… 21                      0                0               NA
-    ## # ℹ 6 more variables: flag_no_foods <dbl>, flag_all_foods_no_meal <dbl>,
-    ## #   flag_some_foods_no_meal <dbl>, flag_high_mdd_low_mmf <dbl>,
-    ## #   flag_under6_nobf_nomilk <dbl>, flag_meats_nostaples <dbl>
 
 ## Code of Conduct
 
