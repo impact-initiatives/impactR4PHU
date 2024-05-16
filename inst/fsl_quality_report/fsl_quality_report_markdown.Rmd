@@ -517,6 +517,11 @@ if(!file.exists("inputs/environment.Rdata")) {
     fsl_hhs_sleephungry_freq <- "fsl_hhs_sleephungry_freq"
     fsl_hhs_alldaynight <- "fsl_hhs_alldaynight"
     fsl_hhs_alldaynight_freq <- "fsl_hhs_alldaynight_freq"
+    yes_answer <- "yes_answer"
+    no_answer <- "no_answer"
+    rarely_answer <- "rarely_answer"
+    sometimes_answer <- "sometimes_answer"
+    often_answer <- "often_answer"
     hhs_check_columns <- c(fsl_hhs_nofoodhh,
                            fsl_hhs_sleephungry,
                            fsl_hhs_alldaynight)
@@ -745,6 +750,10 @@ if(!file.exists("inputs/environment.Rdata")) {
     fsl_lcsi_emergency1 <- "fsl_lcsi_emergency1"
     fsl_lcsi_emergency2 <- "fsl_lcsi_emergency2"
     fsl_lcsi_emergency3 <- "fsl_lcsi_emergency3"
+    yes_val <- "yes_val"
+    no_val <- "no_val"
+    exhausted_val <- "exhausted_val"
+    not_applicable_val <- "not_applicable_val"
     lcsi_check_columns <- c(fsl_lcsi_stress1,fsl_lcsi_stress2,fsl_lcsi_stress3,fsl_lcsi_stress4,
                             fsl_lcsi_crisis1,fsl_lcsi_crisis2,fsl_lcsi_crisis3,
                             fsl_lcsi_emergency1,fsl_lcsi_emergency2,fsl_lcsi_emergency3)
@@ -964,8 +973,8 @@ if(!file.exists("inputs/environment.Rdata")) {
       svDialogs::dlg_message("Please check if the HDDS columns selected are correct and available in the dataset")
       stop("Please check if the HDDS columns selected are correct and available in the dataset")
     } else {
-      yes_val <- tcltk::tk_select.list(dplyr::pull(raw.main[,hdds_check_columns]) %>% unique, title = "Yes Value")
-      no_val <- tcltk::tk_select.list(dplyr::pull(raw.main[,hdds_check_columns]) %>% unique, title = "No Value")
+      yes_val_hdds <- tcltk::tk_select.list(dplyr::pull(raw.main[,hdds_check_columns]) %>% unique, title = "Yes Value")
+      no_val_hdds <- tcltk::tk_select.list(dplyr::pull(raw.main[,hdds_check_columns]) %>% unique, title = "No Value")
       raw.main <- raw.main %>%
         dplyr::mutate_at(vars(lcsi_check_columns),~case_when(. == yes_val ~ yes_val,
                                                              . == no_val ~ no_val,
@@ -982,8 +991,8 @@ if(!file.exists("inputs/environment.Rdata")) {
                               fsl_hdds_oil = fsl_hdds_oil,
                               fsl_hdds_sugar = fsl_hdds_sugar,
                               fsl_hdds_condiments = fsl_hdds_condiments,
-                              yes_val = yes_val,
-                              no_val = no_val)
+                              yes_val = yes_val_hdds,
+                              no_val = no_val_hdds)
     }
   } else {
     fsl_hdds_cereals <- "fsl_hdds_cereals"
@@ -998,6 +1007,8 @@ if(!file.exists("inputs/environment.Rdata")) {
     fsl_hdds_oil <- "fsl_hdds_oil"
     fsl_hdds_sugar <- "fsl_hdds_sugar"
     fsl_hdds_condiments <- "fsl_hdds_condiments"
+    yes_val_hdds <- "yes_val_hdds"
+    no_val_hdds <- "no_val_hdds"
     hdds_check_columns <- c(fsl_hdds_cereals,fsl_hdds_tubers,fsl_hdds_veg,fsl_hdds_fruit,fsl_hdds_meat,
                             fsl_hdds_eggs,fsl_hdds_fish,fsl_hdds_legumes,fsl_hdds_dairy,fsl_hdds_oil,
                             fsl_hdds_sugar,fsl_hdds_condiments)
@@ -1020,8 +1031,8 @@ if(!file.exists("inputs/environment.Rdata")) {
                             fsl_hdds_oil = fsl_hdds_oil,
                             fsl_hdds_sugar = fsl_hdds_sugar,
                             fsl_hdds_condiments = fsl_hdds_condiments,
-                            yes_val = yes_val,
-                            no_val = no_val)
+                            yes_val = yes_val_hdds,
+                            no_val = no_val_hdds)
   }
 }
 
@@ -1224,7 +1235,7 @@ list_of_var <- c("uuid_main","FSL_indicators","num_children","income_types", "fs
                  "fsl_fcs_oil","fsl_rcsi_lessquality","fsl_rcsi_borrow","fsl_rcsi_mealsize","fsl_rcsi_mealadult",
                  "fsl_rcsi_mealnb","fsl_hhs_nofoodhh","fsl_hhs_nofoodhh_freq","fsl_hhs_sleephungry","fsl_hhs_sleephungry_freq",
                  "fsl_hhs_alldaynight","fsl_hhs_alldaynight_freq","yes_answer","no_answer","rarely_answer","sometimes_answer","often_answer",
-                 "fsl_lcsi_stress1","fsl_lcsi_stress2","fsl_lcsi_stress3","fsl_lcsi_stress4",
+                 "fsl_lcsi_stress1","fsl_lcsi_stress2","fsl_lcsi_stress3","fsl_lcsi_stress4","yes_val_hdds","no_val_hdds",
                  "fsl_lcsi_crisis1","fsl_lcsi_crisis2","fsl_lcsi_crisis3","fsl_lcsi_emergency1",
                  "fsl_lcsi_emergency2","fsl_lcsi_emergency3","yes_val","no_val","exhausted_val","not_applicable_val",
                  "fsl_hdds_cereals","fsl_hdds_tubers","fsl_hdds_veg","fsl_hdds_fruit","fsl_hdds_meat",
