@@ -1077,7 +1077,7 @@ if(!file.exists("inputs/environment.Rdata")) {
       income_types <- svDialogs::dlg_input(message= "Enter the name of the income_types","income_types")$res
     }
   } else if (length(income_types) > 1){
-    income_types <- tcltk::tk_select.list(income_types, title = "Income Types column", multiple = T)
+    income_types <- tcltk::tk_select.list(income_types, title = "Income Types column")
     if(income_types == ""){
       income_types <- svDialogs::dlg_input(message= "Enter the name of the income_types","income_types")$res
     }
@@ -1092,7 +1092,7 @@ if(!file.exists("inputs/environment.Rdata")) {
       residency_status <- svDialogs::dlg_input(message= "Enter the name of the residency_status","residency_status")$res
     }
   } else if (length(residency_status) > 1){
-    residency_status <- tcltk::tk_select.list(residency_status, title = "Residency Status column", multiple = T)
+    residency_status <- tcltk::tk_select.list(residency_status, title = "Residency Status column")
     if(residency_status == ""){
       residency_status <- svDialogs::dlg_input(message= "Enter the name of the residency_status","residency_status")$res
     }
