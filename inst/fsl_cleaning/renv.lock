@@ -1186,9 +1186,10 @@
       "RemoteRepo": "impactR4PHU",
       "RemoteUsername": "impact-initiatives",
       "RemoteRef": "HEAD",
-      "RemoteSha": "e0e5412082490a0b8b90c7e128b25fbc7f7d9844",
+      "RemoteSha": "aa19e8676439ae70ba06b62dad7e13e003649f6b",
       "Requirements": [
         "GGally",
+        "R",
         "apyramid",
         "dplyr",
         "flextable",
@@ -1206,7 +1207,7 @@
         "writexl",
         "zscorer"
       ],
-      "Hash": "88d4663caf3fb0b5bf514c11cd88f01e"
+      "Hash": "114ac83ae104e8c3933a98bd1dd888fd"
     },
     "isoband": {
       "Package": "isoband",
