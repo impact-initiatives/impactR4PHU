@@ -135,11 +135,11 @@ calculate_plausibility <- function(.dataset){
     print(setdiff(mort_plaus_vars, names(.dataset)))
   }
   if (c("sd_fcs") %in% names(.dataset)) {
-    .dataset <- .dataset %>% dplyr::mutate(plaus_sd_fcs = dplyr::case_when(sd_fcs < 8 ~ 3,
+    .dataset <- .dataset %>% dplyr::mutate(plaus_sd_fcs = dplyr::case_when(sd_fcs < 8 ~ 4,
                                                                sd_fcs >= 8 & sd_fcs < 9 ~ 2,
                                                                sd_fcs >= 9 & sd_fcs < 14 ~ 0,
                                                                sd_fcs >= 14 & sd_fcs < 16 ~ 2,
-                                                               sd_fcs >= 16 ~ 3,
+                                                               sd_fcs >= 16 ~ 4,
                                                                TRUE ~ 0))
   }
   if (c("flag_low_fcs") %in% names(.dataset)) {
