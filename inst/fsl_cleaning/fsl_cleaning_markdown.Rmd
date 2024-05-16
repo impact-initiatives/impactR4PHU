@@ -76,6 +76,22 @@ if(!file.exists("inputs/environment.Rdata")) {
 ################################################################################
 # FSL
 if(!file.exists("inputs/environment.Rdata")) {
+   ## Detect uuid_main column
+  uuid_main <- names(raw.main)[grepl("uuid",names(raw.main))]
+  
+  if(length(uuid_main) == 1){
+    yes_no <- svDialogs::dlg_message(paste0("Is '", uuid_main, "' the correct HH UUID column in main data?"), type = "yesno")$res
+    if(yes_no == "no"){
+      uuid_main <- svDialogs::dlg_input(message= "Enter the name of the HH UUID Column in main data","uuid_main")$res
+    }
+  } else if (length(uuid_main) > 1){
+    uuid_main <- tcltk::tk_select.list(uuid_main, title = "HH UUID Column [Main Data]")
+    if(uuid_main == ""){
+        uuid_main <- svDialogs::dlg_input(message= "Enter the name of the HH UUID Column in main data","uuid_main")$res
+    }
+  } else if (length(uuid_main) == 0) {
+    uuid_main <- svDialogs::dlg_input(message= "Enter the name of the HH UUID Column in main data","uuid_main")$res
+  }
   if ("FCS" %in% FSL_indicators){
     fsl_fcs_cereal <- names(raw.main)[grepl("cereal",names(raw.main))]
     if(length(fsl_fcs_cereal) == 1){
@@ -1184,10 +1200,11 @@ raw.flag.fcs <- raw.main %>%
                                num_children = num_children,
                                income_types = income_types,
                                tool.survey = tool.survey,
-                               label_colname = label_colname)
+                               label_colname = label_colname,
+                               uuid = uuid_main)
 
 list_of_var <- c("FSL_indicators","num_children","income_types", "fsl_fcs_cereal","fsl_fcs_legumes",
-                 "fsl_fcs_veg","fsl_fcs_fruit","fsl_fcs_meat","fsl_fcs_dairy","fsl_fcs_sugar",
+                 "fsl_fcs_veg","fsl_fcs_fruit","fsl_fcs_meat","fsl_fcs_dairy","fsl_fcs_sugar","uuid_main",
                  "fsl_fcs_oil","fsl_rcsi_lessquality","fsl_rcsi_borrow","fsl_rcsi_mealsize","fsl_rcsi_mealadult",
                  "fsl_rcsi_mealnb","fsl_hhs_nofoodhh","fsl_hhs_nofoodhh_freq","fsl_hhs_sleephungry","fsl_hhs_sleephungry_freq",
                  "fsl_hhs_alldaynight","fsl_hhs_alldaynight_freq","yes_answer","no_answer","rarely_answer","sometimes_answer","often_answer",
@@ -1340,9 +1357,10 @@ checks_followups <- tibble()
 # Check number 1
 if("flag_protein_rcsi" %in% names(raw.flag.fcs)){
   check_protein_rcsi <- raw.flag.fcs %>% 
-    select(uuid,enumerator, flag_protein_rcsi)%>% 
+    select(uuid_main,enumerator, flag_protein_rcsi)%>% 
     filter(flag_protein_rcsi == 1) %>% 
-    left_join(raw.flag.fcs %>% select(uuid, fsl_rcsi_score, fsl_fcs_meat, fsl_fcs_dairy))
+    left_join(raw.flag.fcs %>% select(uuid_main, fsl_rcsi_score, fsl_fcs_meat, fsl_fcs_dairy)) %>% 
+    rename(uuid = uuid_main)
   
   if(nrow(check_protein_rcsi)>0){
     checks_followups <- rbind(checks_followups,
@@ -1354,13 +1372,14 @@ if("flag_protein_rcsi" %in% names(raw.flag.fcs)){
 if("flag_lcsi_coherence" %in% names(raw.flag.fcs)){
   # Check number 2
   check_lcsi_coherence <- raw.flag.fcs %>% 
-    select(uuid,enumerator, flag_lcsi_coherence)%>% 
+    select(uuid_main,enumerator, flag_lcsi_coherence)%>% 
     filter(flag_lcsi_coherence == 1)%>% 
-    left_join(raw.flag.fcs %>% select(uuid, 
+    left_join(raw.flag.fcs %>% select(uuid_main, 
                                   fsl_lcsi_emergency, fsl_lcsi_stress, fsl_lcsi_crisis,
                                   fsl_lcsi_stress1,fsl_lcsi_stress2,fsl_lcsi_stress3,fsl_lcsi_stress4,
                                   fsl_lcsi_crisis1,fsl_lcsi_crisis2,fsl_lcsi_crisis3,
-                                  fsl_lcsi_emergency1,fsl_lcsi_emergency2,fsl_lcsi_emergency3))
+                                  fsl_lcsi_emergency1,fsl_lcsi_emergency2,fsl_lcsi_emergency3))%>% 
+    rename(uuid = uuid_main)
   
   if(nrow(check_lcsi_coherence)>0){
     checks_followups <- rbind(checks_followups,
@@ -1380,9 +1399,10 @@ rcsi_flag_columns <- c(fsl_rcsi_lessquality,fsl_rcsi_borrow,
 
 if("flag_fcsrcsi_box" %in% names(raw.flag.fcs)) {
   check_fcsrcsi_box <- raw.flag.fcs %>% 
-    select(uuid,enumerator, flag_fcsrcsi_box)%>% 
+    select(uuid_main,enumerator, flag_fcsrcsi_box)%>% 
     filter(flag_fcsrcsi_box == 1)%>% 
-    left_join(raw.flag.fcs %>% select(uuid, fcs_flag_columns, rcsi_flag_columns))
+    left_join(raw.flag.fcs %>% select(uuid_main, fcs_flag_columns, rcsi_flag_columns))%>% 
+    rename(uuid = uuid_main)
   
   if(nrow(check_fcsrcsi_box)>0){
     checks_followups <- rbind(checks_followups,
@@ -1404,9 +1424,9 @@ if(nrow(checks_followups) > 0){
 }
 ```
 
-<h5>Number of detected entries with rCSI Score is high while protein consumption is also reported as frequent:<strong> `r if(nrow(checks_followups)>0) {nrow(checks_followups %>% filter(check == 1) %>% distinct(uuid))} else {0}`</strong></h5>
-<h5>Number of detected entries with HHs report using crisis or emergency strategies but not stress strategies or Emergency and no crisis:<strong> `r if(nrow(checks_followups)>0) {nrow(checks_followups %>% filter(check == 2) %>% distinct(uuid) )} else {0}`</strong></h5>
-<h5>Number of detected entries with HH that would have an acceptable FCS score and a high rCSI score:<strong> `r if(nrow(checks_followups)>0) {nrow(checks_followups %>% filter(check == 3) %>% distinct(uuid))} else {0}`</strong></h5>
+<h5>Number of detected entries with rCSI Score is high while protein consumption is also reported as frequent:<strong> `r if(nrow(checks_followups)>0) {nrow(checks_followups %>% filter(check.id == 1) %>% distinct(uuid))} else {0}`</strong></h5>
+<h5>Number of detected entries with HHs report using crisis or emergency strategies but not stress strategies or Emergency and no crisis:<strong> `r if(nrow(checks_followups)>0) {nrow(checks_followups %>% filter(check.id == 2) %>% distinct(uuid) )} else {0}`</strong></h5>
+<h5>Number of detected entries with HH that would have an acceptable FCS score and a high rCSI score:<strong> `r if(nrow(checks_followups)>0) {nrow(checks_followups %>% filter(check.id == 3) %>% distinct(uuid))} else {0}`</strong></h5>
 
 ```{r}
 if(nrow(checks_followups)>0){

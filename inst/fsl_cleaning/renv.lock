@@ -151,6 +151,17 @@
       ],
       "Hash": "df49e3306f232ec28f1604e36a202847"
     },
+    "Rtsne": {
+      "Package": "Rtsne",
+      "Version": "0.17",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "Rcpp",
+        "stats"
+      ],
+      "Hash": "f81f7764a3c3e310b1d40e1a8acee19e"
+    },
     "SparseM": {
       "Package": "SparseM",
       "Version": "1.81",
@@ -164,6 +175,19 @@
         "utils"
       ],
       "Hash": "2042cd9759cc89a453c4aefef0ce9aae"
+    },
+    "V8": {
+      "Package": "V8",
+      "Version": "4.4.2",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "Rcpp",
+        "curl",
+        "jsonlite",
+        "utils"
+      ],
+      "Hash": "ca98390ad1cef2a5a609597b49d3d042"
     },
     "abind": {
       "Package": "abind",
@@ -448,6 +472,20 @@
         "utils"
       ],
       "Hash": "3f038e5ac7f41d4ac41ce658c85e3042"
+    },
+    "cluster": {
+      "Package": "cluster",
+      "Version": "2.1.6",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "grDevices",
+        "graphics",
+        "stats",
+        "utils"
+      ],
+      "Hash": "0aaa05204035dc43ea0004b9c76611dd"
     },
     "colorspace": {
       "Package": "colorspace",
@@ -1148,10 +1186,9 @@
       "RemoteRepo": "impactR4PHU",
       "RemoteUsername": "impact-initiatives",
       "RemoteRef": "HEAD",
-      "RemoteSha": "9386732e82c26eb14034cc71368dc7aa50637c03",
+      "RemoteSha": "e0e5412082490a0b8b90c7e128b25fbc7f7d9844",
       "Requirements": [
         "GGally",
-        "R",
         "apyramid",
         "dplyr",
         "flextable",
@@ -1169,7 +1206,7 @@
         "writexl",
         "zscorer"
       ],
-      "Hash": "3d1fb337743466e8130090a6c7cd5d77"
+      "Hash": "88d4663caf3fb0b5bf514c11cd88f01e"
     },
     "isoband": {
       "Package": "isoband",
@@ -1752,6 +1789,24 @@
         "textshaping"
       ],
       "Hash": "539dcb63ce611fe389b4c8e2b546cf24"
+    },
+    "randomcoloR": {
+      "Package": "randomcoloR",
+      "Version": "1.1.0.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "Rtsne",
+        "V8",
+        "cluster",
+        "colorspace",
+        "grDevices",
+        "methods",
+        "scales",
+        "stats",
+        "stringr"
+      ],
+      "Hash": "dd08bb0be91b93194fa944b68b3bccb0"
     },
     "rappdirs": {
       "Package": "rappdirs",
