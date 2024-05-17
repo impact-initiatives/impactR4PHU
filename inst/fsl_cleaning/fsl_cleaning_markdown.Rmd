@@ -1427,18 +1427,7 @@ if("flag_fcsrcsi_box" %in% names(raw.flag.fcs)) {
                                                        cols_to_keep = c(enumerator),"HH that would have an acceptable FCS score and a high rCSI score", F))
   }
 }
-
-if(nrow(checks_followups) > 0){
-  create.follow.up.requests(checks_followups,loop_data = NULL, paste0("Mort_followup_requests.xlsm"), use_template = T)
-  options(warn=0)
-  cat("\n\n#############################################################################################\n")
-  cat("Logical checks are flagged and a file is created for follow up in \noutput/checking/requests/ with follow_up_requests in the title. \nPlease check the READ_ME file for information on filling the file.\n")
-  cat("#############################################################################################\n")
-} else {
-  cat("\n\n#############################################################################################\n")
-  cat(" No logical checks were flagged!!. All good with cleaning for Mortality")
-  cat("#############################################################################################\n")
-}
+source("src/create_file.R")
 ```
 
 <h5>Number of detected entries with rCSI Score is high while protein consumption is also reported as frequent:<strong> `r if(nrow(checks_followups)>0) {nrow(checks_followups %>% filter(check.id == 1) %>% distinct(uuid))} else {0}`</strong></h5>
