@@ -1238,10 +1238,11 @@ if(!file.exists("inputs/environment.Rdata")){
 cleaning.log.checks.direct <- tibble()
 #### FCS
 ### FCS score is 0. 
-fcs_columns <- names(raw.flag.fcs)[which(stringr::str_detect(names(raw.flag.fcs),"fsl_fcs_"))]
+fcs_columns <-  fcs_check_columns
 if("fsl_fcs_score" %in% names(raw.flag.fcs)) {
   check <- raw.flag.fcs %>%
-    filter(fsl_fcs_score == 0)
+    filter(fsl_fcs_score == 0) %>% 
+    rename(uuid = uuid_main)
   cl_fcs_all_0 <- data.frame()
   for (i in 1:nrow(check)) {
     cl <-  recode.set.NA.if(check[i,], fcs_columns, check[i,fcs_columns], "replacing fcs columns with NA because all fcs are 0", ignore_case = F) %>% 
@@ -1255,10 +1256,11 @@ if("fsl_fcs_score" %in% names(raw.flag.fcs)) {
 }
 
 ### FCS score is 7. 
-fcs_columns <- names(raw.flag.fcs)[which(stringr::str_detect(names(raw.flag.fcs),"fsl_fcs_"))]
+fcs_columns <- fcs_check_columns
 if("fsl_fcs_score" %in% names(raw.flag.fcs)) {
   check <- raw.flag.fcs %>% 
-    filter(fsl_fcs_score == 112)
+    filter(fsl_fcs_score == 112) %>% 
+    rename(uuid = uuid_main)
   cl_fcs_all_7 <- data.frame()
   for(i in 1:nrow(check)){
     cl<- recode.set.NA.if(check[i,], fcs_columns, check[i,fcs_columns], "replacing fcs columns with NA because all fcs are 7", ignore_case = F) %>% 
@@ -1274,10 +1276,11 @@ if("fsl_fcs_score" %in% names(raw.flag.fcs)) {
 
 
 ### All LCSI NA
-lcsi_columns <- names(raw.flag.fcs)[which(stringr::str_detect(names(raw.flag.fcs),"lcsi_"))]
+lcsi_columns <- lcsi_check_columns
 if("flag_lcsi_na" %in% names(raw.flag.fcs)) {
   check <-  raw.flag.fcs %>% 
-    filter(flag_lcsi_na == 1)
+    filter(flag_lcsi_na == 1) %>% 
+    rename(uuid = uuid_main)
   cl_lcsi_all_na <- data.frame()
   for (i in 1:nrow(check)) {
     cl <- recode.set.NA.if(check[i,], lcsi_columns, check[i,lcsi_columns], "replacing lcsi columns with NA because all lcsi are na", ignore_case = F) %>% 
@@ -1296,7 +1299,8 @@ lcs_variables <- c("fsl_lcsi_stress1","fsl_lcsi_stress2","fsl_lcsi_stress3","fsl
 ### LCSI Displaced but HH not displaced
 if("flag_lcsi_displ" %in% names(raw.flag.fcs)){
   displ <- lcs_variables[which(grepl("displaced|migration|migrated",get.label(lcs_variables)))]
-  check <-  raw.flag.fcs %>% filter(flag_lcsi_displ == 1)
+  check <-  raw.flag.fcs %>% filter(flag_lcsi_displ == 1) %>% 
+    rename(uuid = uuid_main)
   cl_lcsi_displ <- data.frame()
   for (i in 1:nrow(check)) {
     cl <- recode.set.NA.if(check[i,], displ, check[i,displ], "replacing lcsi displacement strategy columns with NA because HH not IDP", ignore_case = F) %>% 
@@ -1311,9 +1315,10 @@ if("flag_lcsi_displ" %in% names(raw.flag.fcs)){
 }
 
 ### LCSI Agriculture but HH not displaced
-if("flag_lcsi_liv_agriculture" %in% names(raw.flag.fcs)){
+if("flag_lcsi_liv_agriculture" %in% names(raw.flag.fcs)){ 
   agric <- lcs_variables[which(grepl("agriculture|crop|crops|farm",get.label(lcs_variables)))]
-  check <-  raw.flag.fcs %>% filter(flag_lcsi_liv_agriculture == 1)
+  check <-  raw.flag.fcs %>% filter(flag_lcsi_liv_agriculture == 1) %>% 
+    rename(uuid = uuid_main)
   cl_lcsi_agric <- data.frame()
   for (i in 1:nrow(check)) {
     cl <- recode.set.NA.if(check[i,], agric, check[i,agric], "replacing lcsi agricultural strategy columns with NA because HH do not have income from agriculture", ignore_case = F) %>% 
@@ -1329,7 +1334,8 @@ if("flag_lcsi_liv_agriculture" %in% names(raw.flag.fcs)){
 ### LCSI Livestock but HH not displaced
 if("flag_lcsi_liv_livestock" %in% names(raw.flag.fcs)){
   livest <- lcs_variables[which(grepl("livestock|livestocks|animal",get.label(lcs_variables)))]
-  check <-  raw.flag.fcs %>% filter(flag_lcsi_liv_livestock == 1)
+  check <-  raw.flag.fcs %>% filter(flag_lcsi_liv_livestock == 1) %>% 
+    rename(uuid = uuid_main)
   cl_lcsi_livest <- data.frame()
   for (i in 1:nrow(check)) {
     cl <- recode.set.NA.if(check[i,], livest, check[i,livest], "replacing lcsi livestock strategy columns with NA because HH do not have income from livestock", ignore_case = F) %>% 
@@ -1345,12 +1351,12 @@ if("flag_lcsi_liv_livestock" %in% names(raw.flag.fcs)){
 writexl::write_xlsx(cleaning.log.checks.direct, "output/cleaning_logbook.xlsx")
 ```
 
-<h5>Number of detected entries with all FCS component are 0:<strong> `r nrow(cl_fcs_all_0)`</strong></h5>
-<h5>Number of detected entries with all FCS component are 7:<strong> `r nrow(cl_fcs_all_7)`</strong></h5>
-<h5>Number of detected entries with all LCSI are Not Applicable:<strong> `r nrow(cl_lcsi_all_na)`</strong></h5>
-<h5>Number of detected entries with LCSI strategy related to displacement but HH not IDPs:<strong> `r nrow(cl_lcsi_displ)`</strong></h5>
-<h5>Number of detected entries with LCSI strategy related to agriculture but HH do not have income from agriculture:<strong> `r nrow(cl_lcsi_agric)`</strong></h5>
-<h5>Number of detected entries with LCSI strategy related to livestock but HH do not have income from livestock::<strong> `r nrow(cl_lcsi_livest)`</strong></h5>
+<h5>Number of detected entries with all FCS component are 0:<strong> `r if(nrow(cl_fcs_all_0)>0) {nrow(cl_fcs_all_0 %>%  distinct(uuid))} else {0}`</strong></h5>
+<h5>Number of detected entries with all FCS component are 7:<strong>`r if(nrow(cl_fcs_all_7)>0) {nrow(cl_fcs_all_7 %>%  distinct(uuid))} else {0}`</strong></h5>
+<h5>Number of detected entries with all LCSI are Not Applicable:<strong> `r if(nrow(cl_lcsi_all_na)>0) {nrow(cl_lcsi_all_na %>%  distinct(uuid))} else {0}`</strong></h5>
+<h5>Number of detected entries with LCSI strategy related to displacement but HH not IDPs:<strong> `r if(nrow(cl_lcsi_displ)>0) {nrow(cl_lcsi_displ %>%  distinct(uuid))} else {0}`</strong></h5>
+<h5>Number of detected entries with LCSI strategy related to agriculture but HH do not have income from agriculture:<strong> `r if(nrow(cl_lcsi_agric)>0) {nrow(cl_lcsi_agric %>%  distinct(uuid))} else {0}`</strong></h5>
+<h5>Number of detected entries with LCSI strategy related to livestock but HH do not have income from livestock::<strong>`r if(nrow(cl_lcsi_livest)>0) {nrow(cl_lcsi_livest %>%  distinct(uuid))} else {0}` </strong></h5>
 
 ```{r}
 if(nrow(cleaning.log.checks.direct)>0){
@@ -1421,18 +1427,7 @@ if("flag_fcsrcsi_box" %in% names(raw.flag.fcs)) {
                                                        cols_to_keep = c(enumerator),"HH that would have an acceptable FCS score and a high rCSI score", F))
   }
 }
-
-if(nrow(checks_followups) > 0){
-  create.follow.up.requests(checks_followups,loop_data = NULL, paste0("Mort_followup_requests.xlsm"), use_template = T)
-  options(warn=0)
-  cat("\n\n#############################################################################################\n")
-  cat("Logical checks are flagged and a file is created for follow up in \noutput/checking/requests/ with follow_up_requests in the title. \nPlease check the READ_ME file for information on filling the file.\n")
-  cat("#############################################################################################\n")
-} else {
-  cat("\n\n#############################################################################################\n")
-  cat(" No logical checks were flagged!!. All good with cleaning for Mortality")
-  cat("#############################################################################################\n")
-}
+source("src/create_file.R")
 ```
 
 <h5>Number of detected entries with rCSI Score is high while protein consumption is also reported as frequent:<strong> `r if(nrow(checks_followups)>0) {nrow(checks_followups %>% filter(check.id == 1) %>% distinct(uuid))} else {0}`</strong></h5>
