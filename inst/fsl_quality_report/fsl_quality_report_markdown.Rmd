@@ -1499,7 +1499,8 @@ if(all(fcs_check_columns %in% names(raw.flag.fcs))) {
                                                                            fsl_fcs_fruit, fsl_fcs_legumes, fsl_fcs_sugar,
                                                                            fsl_fcs_oil,fsl_fcs_meat),
                                             name_groups = "Food Groups", name_units = "Days", 
-                                            grouping = enumerator))
+                                            grouping = enumerator),
+            fig_height = 8, fig_width = 10)
     }
   } else {
     (impactR4PHU::plot_ridge_distribution(raw.flag.fcs, numeric_cols = c(fsl_fcs_cereal, fsl_fcs_dairy, fsl_fcs_veg,
@@ -1542,7 +1543,8 @@ if(all(rcsi_check_columns %in% names(raw.flag.fcs))) {
                                                                          fsl_rcsi_mealsize, fsl_rcsi_mealadult,
                                                                          fsl_rcsi_mealnb),
                                           name_groups = "Food Coping Strategy", name_units = "Days", 
-                                          grouping = enumerator))
+                                          grouping = enumerator),
+            fig_height = 8, fig_width = 10)
     }
   } else {
   (impactR4PHU::plot_ridge_distribution(raw.flag.fcs, numeric_cols = c(fsl_rcsi_lessquality, fsl_rcsi_borrow,
