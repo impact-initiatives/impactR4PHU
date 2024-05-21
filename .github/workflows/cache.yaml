@@ -1,5 +1,13 @@
 name: Caching with npm
-on: push
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+  release:
+    types: [published]
+  workflow_dispatch:
+
 jobs:
   build:
     runs-on: ubuntu-latest
