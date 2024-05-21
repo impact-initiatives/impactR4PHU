@@ -1006,9 +1006,9 @@ if("flag_no_anything" %in% names(raw.flag.iycf)) {
 
 #Check number 4
 
-if("flag_no_foods" %in% names(raw.flag.iycf)) {
+if("flag_no_foods_at_all" %in% names(raw.flag.iycf)) {
   check_no_foods <- raw.flag.iycf %>% 
-    filter(flag_no_foods == 1)%>% 
+    filter(flag_no_foods_at_all == 1)%>% 
     rename(uuid = uuid_iycf)
   
   if(nrow(check_no_foods)>0){

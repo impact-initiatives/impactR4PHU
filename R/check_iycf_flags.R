@@ -147,7 +147,7 @@ check_iycf_flags <- function(.dataset,
   liquids <- c(iycf_6a, iycf_6b,iycf_6c,iycf_6d,iycf_6e,
                iycf_6f,iycf_6g,iycf_6h,iycf_6i,iycf_6j)
 
-  foods <- c(iycf_7a, iycf_7b,iycf_7c,iycf_7d,iycf_7e,iycf_7f,
+  foods <- c(iycf_7a,iycf_7b,iycf_7c,iycf_7d,iycf_7e,iycf_7f,
              iycf_7g,iycf_7h,iycf_7i,iycf_7j,iycf_7k,iycf_7l,
              iycf_7m,iycf_7n,iycf_7o,iycf_7p,iycf_7q,iycf_7r)
 
@@ -158,14 +158,12 @@ check_iycf_flags <- function(.dataset,
   } else {
     .dataset <- .dataset %>%
       dplyr::mutate(
-        foods_all_yes = rowSums(dplyr::across(c(foods))),
-        liquids_all_yes = rowSums(dplyr::across(c(liquids))),
-        flag_yes_foods = ifelse(foods_all_yes == 18, 1, 0),
-        flag_yes_liquids = ifelse(liquids_all_yes == 10, 1, 0),
-        foods_all_no = rowSums(dplyr::across(c(foods))) ,
-        liquids_all_no = rowSums(dplyr::across(c(liquids))),
-        flag_no_foods = ifelse(foods_all_no == 0, 1, 0),
-        flag_no_liquids = ifelse(liquids_all_no == 0, 1, 0),)
+        sum_foods = rowSums(dplyr::across(c(foods))),
+        sum_liquids = rowSums(dplyr::across(c(liquids))),
+        flag_yes_foods = ifelse(sum_foods == 18, 1, 0),
+        flag_yes_liquids = ifelse(sum_liquids == 10, 1, 0),
+        flag_no_foods = ifelse(sum_foods == 0, 1, 0),
+        flag_no_liquids = ifelse(sum_liquids == 0, 1, 0))
   }
 
   if(!all(c(iycf_4,foods,liquids) %in% names(.dataset))) {
@@ -175,8 +173,8 @@ check_iycf_flags <- function(.dataset,
       dplyr::mutate(
         flag_no_anything = ifelse(is.na(!!rlang::sym(iycf_4)), NA,
                                               ifelse(!!rlang::sym(iycf_4) != yes_value &
-                                                       foods_all_no == 1 &
-                                                       liquids_all_no == 1 &
+                                                       flag_no_foods == 1 &
+                                                       flag_no_liquids == 1 &
                                                        as.numeric(!!rlang::sym(age_months)) > 5, 1, 0)))
   }
 
@@ -184,13 +182,13 @@ check_iycf_flags <- function(.dataset,
     warning("Your dataset appears not to have either all the foods/liquids or the IYCF 8 from the standard IYCF 2021 question sequence.\nIt is advised you ask about all recommended foods/liquids or there is a risk of overestimating EBF.")
   } else {
     .dataset <- .dataset %>%
-      dplyr::mutate(flag_no_foods = ifelse(foods_all_no == 1 &
+      dplyr::mutate(flag_no_foods_at_all = ifelse(flag_no_foods == 1 &
                                              as.numeric(!!rlang::sym(iycf_8)) > 0 &
                                              as.numeric(!!rlang::sym(age_months)) > 5, 1, 0),
                     flag_all_foods_no_meal = ifelse(flag_yes_foods == 1 &
                                                       as.numeric(!!rlang::sym(iycf_8)) == 0, 1, 0),
-                    flag_some_foods_no_meal = ifelse(foods_all_no == 0 &
-                                                       flag_yes_foods == 0 &
+                    flag_some_foods_no_meal = ifelse(sum_foods > 0 &
+                                                       sum_foods < 18 &
                                                        as.numeric(!!rlang::sym(iycf_8)) == 0 &
                                                        as.numeric(!!rlang::sym(age_months)) > 5, 1, 0))
 
