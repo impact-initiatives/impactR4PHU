@@ -192,46 +192,52 @@ add_iycf <- function(.dataset,
   if(!uuid %in% names(.dataset)) stop("Missing uuid column in dataset")
 
   # IYCF Indicator 1: Ever Breastfed
-  if(!iycf_1 %in% names(.dataset)){
-    warning("IYCF 1 not found in dataset.\nIYCF Indicator 1: Ever Breastfed not calculated")
-  } else {
-    .dataset <- .dataset %>%
-      dplyr::mutate(iycf_evbf = dplyr::case_when(!!rlang::sym(iycf_1) == yes_value ~ 1,
-                                                  !!rlang::sym(iycf_1) != yes_value ~ 0,
-                                                  TRUE ~ NA),
-                    iycf_evbf = dplyr::case_when(as.numeric(!!rlang::sym(age_months)) >= 24 |
-                                                   is.na(!!rlang::sym(age_months)) ~ NA,
-                                                 TRUE ~ iycf_evbf))
+  if(!is.null(iycf_1)){
+    if(!iycf_1 %in% names(.dataset)){
+      warning("IYCF 1 not found in dataset.\nIYCF Indicator 1: Ever Breastfed not calculated")
+    } else {
+      .dataset <- .dataset %>%
+        dplyr::mutate(iycf_evbf = dplyr::case_when(!!rlang::sym(iycf_1) == yes_value ~ 1,
+                                                    !!rlang::sym(iycf_1) != yes_value ~ 0,
+                                                    TRUE ~ NA),
+                      iycf_evbf = dplyr::case_when(as.numeric(!!rlang::sym(age_months)) >= 24 |
+                                                     is.na(!!rlang::sym(age_months)) ~ NA,
+                                                   TRUE ~ iycf_evbf))
+    }
   }
 
   # IYCF Indicator 2: Early Initiation of Breastfeeding
-  if(!iycf_2 %in% names(.dataset)){
-    warning("IYCF 2 not found in dataset.\nIYCF Indicator 2: Early Initiation of Breastfeeding not calculated")
-  } else {
-    .dataset <- .dataset %>%
-      dplyr::mutate(iycf_eibf =  dplyr::case_when(!!rlang::sym(iycf_2) %in% c(iycf2_immediate_value,
-                                                                              iycf2_lessday_value,
-                                                                              iycf2_moreday_value) ~ 1,
-                                                  !!rlang::sym(iycf_2) %notin% c(iycf2_immediate_value,
+  if(!is.null(iycf_2)) {
+    if(!iycf_2 %in% names(.dataset)){
+      warning("IYCF 2 not found in dataset.\nIYCF Indicator 2: Early Initiation of Breastfeeding not calculated")
+    } else {
+      .dataset <- .dataset %>%
+        dplyr::mutate(iycf_eibf =  dplyr::case_when(!!rlang::sym(iycf_2) %in% c(iycf2_immediate_value,
                                                                                 iycf2_lessday_value,
-                                                                                iycf2_moreday_value) ~ 0,
-                                                  TRUE ~ NA),
-                    iycf_eibf = dplyr::case_when(as.numeric(!!rlang::sym(age_months)) >= 24 |
-                                                is.na(!!rlang::sym(age_months)) ~ NA,
-                                              TRUE ~ iycf_eibf))
+                                                                                iycf2_moreday_value) ~ 1,
+                                                    !!rlang::sym(iycf_2) %notin% c(iycf2_immediate_value,
+                                                                                  iycf2_lessday_value,
+                                                                                  iycf2_moreday_value) ~ 0,
+                                                    TRUE ~ NA),
+                      iycf_eibf = dplyr::case_when(as.numeric(!!rlang::sym(age_months)) >= 24 |
+                                                  is.na(!!rlang::sym(age_months)) ~ NA,
+                                                TRUE ~ iycf_eibf))
+    }
   }
 
   # IYCF Indicator 3: Exclusive Breastfeeding First 2 Days After Birth
-  if(!iycf_3 %in% names(.dataset)){
-    warning("IYCF 3 not found in dataset.\nIYCF Indicator 3: Exclusive Breastfeeding First 2 Days After Birth not calculated")
-  } else {
-    .dataset <- .dataset %>%
-      dplyr::mutate(iycf_ebf2d = dplyr::case_when(!!rlang::sym(iycf_3) == no_value ~ 1,
-                                                  !!rlang::sym(iycf_3) != no_value ~ 0,
-                                                  TRUE ~ NA),
-                    iycf_ebf2d = dplyr::case_when(as.numeric(!!rlang::sym(age_months)) >= 24 |
-                                                    is.na(!!rlang::sym(age_months)) ~ NA,
-                                                  TRUE ~ iycf_ebf2d))
+  if(!is.null(iycf_3)){
+    if(!iycf_3 %in% names(.dataset)){
+      warning("IYCF 3 not found in dataset.\nIYCF Indicator 3: Exclusive Breastfeeding First 2 Days After Birth not calculated")
+    } else {
+      .dataset <- .dataset %>%
+        dplyr::mutate(iycf_ebf2d = dplyr::case_when(!!rlang::sym(iycf_3) == no_value ~ 1,
+                                                    !!rlang::sym(iycf_3) != no_value ~ 0,
+                                                    TRUE ~ NA),
+                      iycf_ebf2d = dplyr::case_when(as.numeric(!!rlang::sym(age_months)) >= 24 |
+                                                      is.na(!!rlang::sym(age_months)) ~ NA,
+                                                    TRUE ~ iycf_ebf2d))
+    }
   }
 
   # IYCF Indicator 4: Exclusive Breastfeeding
@@ -299,17 +305,19 @@ add_iycf <- function(.dataset,
 
 
   # IYCF Indicator 6: Continued Breastfeeding 12-23 months
-  if(!iycf_4 %in% names(.dataset)){
-    warning("IYCF 4 not found in dataset.\nIYCF Indicator 6: Continued Breastfeeding 12-23 months not calculated")
-  } else {
-    .dataset <- .dataset %>%
-      dplyr::mutate(iycf_cbf =  dplyr::case_when(!!rlang::sym(iycf_4) == yes_value ~ 1,
-                                                 !!rlang::sym(iycf_4) != yes_value ~ 0,
-                                                 TRUE ~ NA),
-                    iycf_cbf = dplyr::case_when(as.numeric(!!rlang::sym(age_months)) < 12 |
-                                                  as.numeric(!!rlang::sym(age_months)) >= 24 |
-                                                  is.na(!!rlang::sym(age_months)) ~ NA,
-                                                TRUE ~ iycf_cbf))
+  if(!is.null(iycf_4)){
+    if(!iycf_4 %in% names(.dataset)){
+      warning("IYCF 4 not found in dataset.\nIYCF Indicator 6: Continued Breastfeeding 12-23 months not calculated")
+    } else {
+      .dataset <- .dataset %>%
+        dplyr::mutate(iycf_cbf =  dplyr::case_when(!!rlang::sym(iycf_4) == yes_value ~ 1,
+                                                   !!rlang::sym(iycf_4) != yes_value ~ 0,
+                                                   TRUE ~ NA),
+                      iycf_cbf = dplyr::case_when(as.numeric(!!rlang::sym(age_months)) < 12 |
+                                                    as.numeric(!!rlang::sym(age_months)) >= 24 |
+                                                    is.na(!!rlang::sym(age_months)) ~ NA,
+                                                  TRUE ~ iycf_cbf))
+    }
   }
 
   # IYCF Indicator 7: Introduction of Solid, Semi-Solid, or Soft Foods (ISSSF)
@@ -590,17 +598,19 @@ add_iycf <- function(.dataset,
   }
 
   # IYCF Indicator 16: Bottle Feeding 0-23 months
-  if(!iycf_5 %in% names(.dataset)) {
-    warning("IYCF 5 column not found in dataset.\nIYCF Indicator 16: Bottle Feeding 0-23 months not calculated")
-  } else {
-    .dataset <- .dataset %>%
-      dplyr::mutate(iycf_bof = dplyr::case_when(!!rlang::sym(iycf_5) == yes_value ~ 1,
-                                                !!rlang::sym(iycf_5) != yes_value ~ 0,
-                                                TRUE ~ NA),
-                    iycf_bof = dplyr::case_when(as.numeric(!!rlang::sym(age_months)) >= 24 |
-                                                  is.na(!!rlang::sym(age_months)) |
-                                                  is.na(!!rlang::sym(iycf_5)) ~ NA,
-                                                TRUE ~ iycf_bof))
+  if(!is.null(iycf_5)){
+    if(!iycf_5 %in% names(.dataset)) {
+      warning("IYCF 5 column not found in dataset.\nIYCF Indicator 16: Bottle Feeding 0-23 months not calculated")
+    } else {
+      .dataset <- .dataset %>%
+        dplyr::mutate(iycf_bof = dplyr::case_when(!!rlang::sym(iycf_5) == yes_value ~ 1,
+                                                  !!rlang::sym(iycf_5) != yes_value ~ 0,
+                                                  TRUE ~ NA),
+                      iycf_bof = dplyr::case_when(as.numeric(!!rlang::sym(age_months)) >= 24 |
+                                                    is.na(!!rlang::sym(age_months)) |
+                                                    is.na(!!rlang::sym(iycf_5)) ~ NA,
+                                                  TRUE ~ iycf_bof))
+    }
   }
 
   if (is.null(loop_index)) {
