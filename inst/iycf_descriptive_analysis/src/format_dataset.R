@@ -1,80 +1,21 @@
----
-title: "IYCF Data Cleaning and Follow up Report"
-subtitle: "`r Sys.Date()`"
-output: html_document
----
+################################################################################
+### FORMAT DATASET
+################################################################################
 
-<style>
-.tocify-subheader {
-  font-size: 0.7em;
-}
-.tocify-item {
-  font-size: 0.85em;
-  padding-left: 25px;
-  text-indent: 0;
-}
-</style>
+# create shorthands to make working with the data easier:
+path.sheet.with.main <- tcltk::tk_select.list(names(data.list), title = "Main HH sheet", multiple = F)
+path.sheet.with.iycf <- tcltk::tk_select.list(names(data.list), title = "IYCF indicators sheet", multiple = F)
+main <- data.list[[path.sheet.with.main]]
+iycf <- data.list[[path.sheet.with.iycf]]
 
-
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE)
-options(scipen = 999)
-```
-
-```{r logo, echo=FALSE}
-htmltools::img(src = knitr::image_uri("resources/Logo_Reach_RGB_1.png"),
-               alt = "REACH logo",
-               style = 'position:absolute; top:0; right:0; padding:0; margin:20; width:250px')
-```
-
-```{r, include=FALSE, eval=TRUE}
-path.raw.main <- svDialogs::dlg_open(multiple = F, title = "Please select your data excel file.")$res
-path.tool <- svDialogs::dlg_open(multiple = F, title = "Please select your Kobo tool file.")$res
-main.sheets <- readxl::excel_sheets(path.raw.main)
-path.sheet.with.iycf <- tcltk::tk_select.list(main.sheets, title = "IYCF indicators sheet", multiple = F)
-path.sheet.with.main <- tcltk::tk_select.list(main.sheets, title = "Main HH sheet", multiple = F)
-raw.iycf <- readxl::read_excel(path.raw.main, path.sheet.with.iycf)
-raw.main <- readxl::read_excel(path.raw.main, path.sheet.with.main)
-label_colname <- tcltk::tk_select.list(names(readxl::read_excel(path.tool,"survey"))[grepl("label",names(readxl::read_excel(path.tool,"survey")))], title = "Label column to choose", multiple = F)
-tool.survey <- load.tool.survey(path.tool)
-tool.choices <- load.tool.choices(path.tool)
 if(file.exists("inputs/environment.Rdata")) {
   load("inputs/environment.Rdata")
 }
 
-```
-
-# {.tabset .tabset-fade}
-
-## Introduction
-
-```{r, results='asis'}
-  cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",3), collapse=""), " ", "What is this tool?"))
-  cat('\nThe IYCF Data Cleaning Template serves as a crucial tool for assessing the data collection of IYCF indicators across different assessments. This comprehensive tool is designed to identify and address potential issues within the data, ensuring that field teams are being followed up on potential issues detected in the data collection.\n\nThe report provides a detailed examination of the datasets, employing a variety of metrics and methodologies to evaluate data quality. This report aims to uncover any discrepancies, outliers, or anomalies that may suggest data collection, entry errors, or underlying issues that could impact the integrity of the findings.</p>')
-  cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",3), collapse=""), " ", "What is in this tool?")) 
-  cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",4), collapse=""), " ", "IYCF SECTION"))
-  cat('\nThis section includes two sections:\n\n- A section covering all the logical checks that requires follow up with the field team.')
-  
-    cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",4), collapse=""), " ", "Follow-up Checks"))
-  cat('\n-Check 1:Respondent reported child consuming all foods groups.\n-Check 2: Respondent reported child consuming all liquids groups.\n-Check 3: Respondent reported child consuming no foods or liquids groups at all.\n-Check 4: Respondent reported child consuming no foods groups while reporting eating solid or semi-solid food meals.\n-Check 5: Respondent reported child consuming all foods groups while reporting not eating any solid or semi-solid food meals.\n-Check 6: Respondent reported child consuming some foods groups while reporting not eating any solid or semi-solid food meals.\n-Check 7: Respondent reported high mdd score while reporting low meal frequency consumed (<=1).\n-Check 8: Respondent reported child under 6 month and not breastfed and no milk given.\n-Check 9: Respondent reported child consuming meats but no staples')
-  
-  cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",3), collapse=""), " ", "What to do next?"))
-  cat('\nPlease check the files in the output/ folder. Please follow the instruction in the READ_ME tab to know how to fill the file.\n\nAfter filling the file, you can merge the [uuid/variable/old.value/new.value/issue] from the filled file with the cleaning_logbook.xlsx and add them to your cleaning scripts.')
-  cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",3), collapse=""), " ", "Feedback"))
-  cat('\nFeedback on improvements to this product can be done through reaching out to:\n\n-abraham.azar@impact-initiatives.org \n\n-impact.geneva.phu@impact-initiatives.org')
-
-```
-
-## IYCF {.tabset .tabset-fade}
-
-```{r, echo=FALSE, warning=FALSE,include=FALSE}
-################################################################################
-# IYCF
 if(!file.exists("inputs/environment.Rdata")) {
   ## Detect uuid_main column
-  uuid_main <- names(raw.main)[grepl("uuid",names(raw.main))]
-  
+  uuid_main <- names(main)[grepl("uuid",names(main))]
+
   if(length(uuid_main) == 1){
     yes_no <- svDialogs::dlg_message(paste0("Is '", uuid_main, "' the correct HH UUID column in main data?"), type = "yesno")$res
     if(yes_no == "no"){
@@ -83,15 +24,15 @@ if(!file.exists("inputs/environment.Rdata")) {
   } else if (length(uuid_main) > 1){
     uuid_main <- tcltk::tk_select.list(uuid_main, title = "HH UUID Column [Main Data]")
     if(uuid_main == ""){
-        uuid_main <- svDialogs::dlg_input(message= "Enter the name of the HH UUID Column in main data","uuid_main")$res
+      uuid_main <- svDialogs::dlg_input(message= "Enter the name of the HH UUID Column in main data","uuid_main")$res
     }
   } else if (length(uuid_main) == 0) {
     uuid_main <- svDialogs::dlg_input(message= "Enter the name of the HH UUID Column in main data","uuid_main")$res
   }
-  
+
   ## Detect Enumerator column
-  enumerator <- names(raw.main)[grepl("enum|team",names(raw.main))]
-  
+  enumerator <- names(main)[grepl("enum|team",names(main))]
+
   if(length(enumerator) == 1){
     yes_no <- svDialogs::dlg_message(paste0("Is '", enumerator, "' the correct enumerator column?"), type = "yesno")$res
     if(yes_no == "no"){
@@ -100,15 +41,15 @@ if(!file.exists("inputs/environment.Rdata")) {
   } else if (length(enumerator) > 1){
     enumerator <- tcltk::tk_select.list(enumerator, title = "Enumerator Columns")
     if(enumerator == ""){
-        enumerator <- svDialogs::dlg_input(message= "Enter the name of the Enumerator Column","enumerator")$res
+      enumerator <- svDialogs::dlg_input(message= "Enter the name of the Enumerator Column","enumerator")$res
     }
   } else if (length(enumerator) == 0) {
     enumerator <- svDialogs::dlg_input(message= "Enter the name of the Enumerator Column","enumerator")$res
   }
-  
+
   ## Detect uuid_main column
-  uuid_iycf <- names(raw.iycf)[grepl("uuid",names(raw.iycf))]
-  
+  uuid_iycf <- names(iycf)[grepl("uuid",names(iycf))]
+
   if(length(uuid_iycf) == 1){
     yes_no <- svDialogs::dlg_message(paste0("Is '", uuid_iycf, "' the correct HH UUID column in iycf data?"), type = "yesno")$res
     if(yes_no == "no"){
@@ -117,15 +58,15 @@ if(!file.exists("inputs/environment.Rdata")) {
   } else if (length(uuid_iycf) > 1){
     uuid_iycf <- tcltk::tk_select.list(uuid_iycf, title = "IYCF UUID Column [IYCF Data]")
     if(uuid_iycf == ""){
-        uuid_iycf <- svDialogs::dlg_input(message= "Enter the name of the HH UUID Column in iycf data","uuid_iycf")$res
+      uuid_iycf <- svDialogs::dlg_input(message= "Enter the name of the HH UUID Column in iycf data","uuid_iycf")$res
     }
   } else if (length(uuid_iycf) == 0) {
     uuid_iycf <- svDialogs::dlg_input(message= "Enter the name of the HH UUID Column in iycf data","uuid_iycf")$res
   }
-  
+
   ## Detect age month
-  age_months <- names(raw.iycf)[grepl("month",names(raw.iycf))]
-  
+  age_months <- names(iycf)[grepl("month",names(iycf))]
+
   if(length(age_months) == 1){
     yes_no <- svDialogs::dlg_message(paste0("Is '", age_months, "' the correct age month column?"), type = "yesno")$res
     if(yes_no == "no"){
@@ -134,15 +75,15 @@ if(!file.exists("inputs/environment.Rdata")) {
   } else if (length(age_months) > 1){
     age_months <- tcltk::tk_select.list(age_months, title = "Age Month Column")
     if(age_months == ""){
-        age_months <- svDialogs::dlg_input(message= "Enter the name of the age month column","age_months")$res
+      age_months <- svDialogs::dlg_input(message= "Enter the name of the age month column","age_months")$res
     }
   } else if (length(age_months) == 0) {
     age_months <- svDialogs::dlg_input(message= "Enter the name of the age month column","age_months")$res
   }
-  
+
   ## Detect sex
-  sex <- names(raw.iycf)[grepl("sex|gender",names(raw.iycf))]
-  
+  sex <- names(iycf)[grepl("sex|gender",names(iycf))]
+
   if(length(sex) == 1){
     yes_no <- svDialogs::dlg_message(paste0("Is '", sex, "' the correct sex/gender column?"), type = "yesno")$res
     if(yes_no == "no"){
@@ -151,26 +92,26 @@ if(!file.exists("inputs/environment.Rdata")) {
   } else if (length(sex) > 1){
     sex <- tcltk::tk_select.list(sex, title = "Sex/Gender Column")
     if(sex == ""){
-        sex <- svDialogs::dlg_input(message= "Enter the name of the sex/gender column","sex")$res
+      sex <- svDialogs::dlg_input(message= "Enter the name of the sex/gender column","sex")$res
     }
   } else if (length(sex) == 0) {
     sex <- svDialogs::dlg_input(message= "Enter the name of the sex/gender column","sex")$res
   }
-  
-  if(sex %in% names(raw.iycf)){
-      sex_codes <- unique(raw.iycf[[sex]])
-      ideal_codes <- c("1", "2")
-      sex_recodes <- c("1", "2", "NA")
-  
-      if(length(setdiff(sex_codes, ideal_codes))==0) {
-        male <- 1
-        female <- 2
-      } else {
-        male <- tcltk::tk_select.list(sex_codes, title = "Male Option", multiple = T)
-        female <- tcltk::tk_select.list(sex_codes, title = "Female Option", multiple = T)
-      }
+
+  if(sex %in% names(iycf)){
+    sex_codes <- unique(iycf[[sex]])
+    ideal_codes <- c("1", "2")
+    sex_recodes <- c("1", "2", "NA")
+
+    if(length(setdiff(sex_codes, ideal_codes))==0) {
+      male <- 1
+      female <- 2
+    } else {
+      male <- tcltk::tk_select.list(sex_codes, title = "Male Option", multiple = T)
+      female <- tcltk::tk_select.list(sex_codes, title = "Female Option", multiple = T)
+    }
   }
-  iycf_caregiver <- names(raw.iycf)[grepl("caregiver",names(raw.iycf))]
+  iycf_caregiver <- names(iycf)[grepl("caregiver",names(iycf))]
   if(length(iycf_caregiver) == 1){
     yes_no <- svDialogs::dlg_message(paste0("Is '", iycf_caregiver, "' the correct column that indicates if the caregiver is present?"), type = "yesno")$res
     if(yes_no == "no"){
@@ -179,13 +120,13 @@ if(!file.exists("inputs/environment.Rdata")) {
   } else if (length(iycf_caregiver) > 1){
     iycf_caregiver <- tcltk::tk_select.list(iycf_caregiver, title = "Caregiver Present column")
     if(iycf_caregiver == ""){
-     iycf_caregiver <- svDialogs::dlg_input(message= "Enter the name of the column that indicates if the caregiver is present","iycf_caregiver")$res
+      iycf_caregiver <- svDialogs::dlg_input(message= "Enter the name of the column that indicates if the caregiver is present","iycf_caregiver")$res
     }
   } else if (length(iycf_caregiver) == 0) {
     iycf_caregiver <- svDialogs::dlg_input(message= "Enter the name of the column that indicates if the caregiver is present","iycf_caregiver")$res
   }
-  
-  iycf_1 <- names(raw.iycf)[grepl("iycf_1|bf_ever",names(raw.iycf))]
+
+  iycf_1 <- names(iycf)[grepl("iycf_1|bf_ever",names(iycf))]
   if(length(iycf_1) == 1){
     yes_no <- svDialogs::dlg_message(paste0("Is '", iycf_1, "' the correct column that indicates if the child ever breastfed?"), type = "yesno")$res
     if(yes_no == "no"){
@@ -194,13 +135,13 @@ if(!file.exists("inputs/environment.Rdata")) {
   } else if (length(iycf_1) > 1){
     iycf_1 <- tcltk::tk_select.list(iycf_1, title = "Ever Breastfed column")
     if(iycf_1 == ""){
-     iycf_1 <- svDialogs::dlg_input(message= "Enter the name of the column that indicates if the child ever breastfed","iycf_1")$res
+      iycf_1 <- svDialogs::dlg_input(message= "Enter the name of the column that indicates if the child ever breastfed","iycf_1")$res
     }
   } else if (length(iycf_1) == 0) {
     iycf_1 <- svDialogs::dlg_input(message= "Enter the name of the column that indicates if the child ever breastfed","iycf_1")$res
   }
 
-  iycf_2 <- names(raw.iycf)[grepl("iycf_2|bf_ei",names(raw.iycf))]
+  iycf_2 <- names(iycf)[grepl("iycf_2|bf_ei",names(iycf))]
   if(length(iycf_2) == 1){
     yes_no <- svDialogs::dlg_message(paste0("Is '", iycf_2, "' the correct column that indicates how long the child started breastfeeding after birth"), type = "yesno")$res
     if (yes_no == "no") {
@@ -215,7 +156,7 @@ if(!file.exists("inputs/environment.Rdata")) {
     iycf_2 <- svDialogs::dlg_input(message= "Enter the name of the column that indicates how long the child started breastfeeding after birth","iycf_2")$res
   }
 
-  iycf_3 <- names(raw.iycf)[grepl("iycf_3|bf_newborn_consumption",names(raw.iycf))]
+  iycf_3 <- names(iycf)[grepl("iycf_3|bf_newborn_consumption",names(iycf))]
   if(length(iycf_3) == 1){
     yes_no <- svDialogs::dlg_message(paste0("Is '", iycf_3, "' the correct column that indicates Exclusive Breastfeeding First 2 Days?"), type = "yesno")$res
     if (yes_no == "no") {
@@ -229,8 +170,8 @@ if(!file.exists("inputs/environment.Rdata")) {
   } else if (length(iycf_3) == 0) {
     iycf_3 <- svDialogs::dlg_input(message= "Enter the name of the column that indicates Exclusive Breastfeeding First 2 Days","iycf_3")$res
   }
-  
-  iycf_4 <- names(raw.iycf)[grepl("iycf_4|bf_yesterday",names(raw.iycf))]
+
+  iycf_4 <- names(iycf)[grepl("iycf_4|bf_yesterday",names(iycf))]
   if(length(iycf_4) == 1){
     yes_no <- svDialogs::dlg_message(paste0("Is '", iycf_4, "' the correct column that indicates if the child was breastfed yesterday?"), type = "yesno")$res
     if (yes_no == "no") {
@@ -244,8 +185,8 @@ if(!file.exists("inputs/environment.Rdata")) {
   } else if (length(iycf_4) == 0) {
     iycf_4 <- svDialogs::dlg_input(message= "Enter the name of the column that indicates if the child was breastfed yesterday","iycf_4")$res
   }
-    
-  iycf_5 <- names(raw.iycf)[grepl("iycf_5|bf_bottlefed",names(raw.iycf))]
+
+  iycf_5 <- names(iycf)[grepl("iycf_5|bf_bottlefed",names(iycf))]
   if(length(iycf_5) == 1){
     yes_no <- svDialogs::dlg_message(paste0("Is '", iycf_5, "' the correct column that indicates if the child drink anything from a bottle yesterday"), type = "yesno")$res
     if (yes_no == "no") {
@@ -259,8 +200,8 @@ if(!file.exists("inputs/environment.Rdata")) {
   } else if (length(iycf_5) == 0) {
     iycf_5 <- svDialogs::dlg_input(message= "Enter the name of the column that indicates if the child drink anything from a bottle yesterday","iycf_5")$res
   }
-    
-  iycf_6a <- names(raw.iycf)[grepl("iycf_6a|lq_water",names(raw.iycf))]
+
+  iycf_6a <- names(iycf)[grepl("iycf_6a|lq_water",names(iycf))]
   if(length(iycf_6a) == 1){
     yes_no <- svDialogs::dlg_message(paste0("Is '", iycf_6a, "' the correct liquid water column?"), type = "yesno")$res
     if (yes_no == "no") {
@@ -274,8 +215,8 @@ if(!file.exists("inputs/environment.Rdata")) {
   } else if (length(iycf_6a) == 0) {
     iycf_6a <- svDialogs::dlg_input(message= "Enter the name of the liquid water","iycf_6a")$res
   }
-    
-  iycf_6b <- names(raw.iycf)[grepl("iycf_6b|lq_formula",names(raw.iycf))]
+
+  iycf_6b <- names(iycf)[grepl("iycf_6b|lq_formula",names(iycf))]
   if(length(iycf_6b) == 1){
     yes_no <- svDialogs::dlg_message(paste0("Is '", iycf_6b, "' the correct liquid infant formula column?"), type = "yesno")$res
     if (yes_no == "no") {
@@ -289,8 +230,8 @@ if(!file.exists("inputs/environment.Rdata")) {
   } else if (length(iycf_6b) == 0) {
     iycf_6b <- svDialogs::dlg_input(message= "Enter the name of the liquid infant formula","iycf_6b")$res
   }
-    
-  iycf_6c <- names(raw.iycf)[grepl("iycf_6c|lq_milk",names(raw.iycf))]
+
+  iycf_6c <- names(iycf)[grepl("iycf_6c|lq_milk",names(iycf))]
   if(length(iycf_6c) == 1){
     yes_no <- svDialogs::dlg_message(paste0("Is '", iycf_6c, "' the correct liquid milk from animal column?"), type = "yesno")$res
     if (yes_no == "no") {
@@ -304,8 +245,8 @@ if(!file.exists("inputs/environment.Rdata")) {
   } else if (length(iycf_6c) == 0) {
     iycf_6c <- svDialogs::dlg_input(message= "Enter the name of the liquid milk from animal","iycf_6c")$res
   }
-    
-  iycf_6d <- names(raw.iycf)[grepl("iycf_6d|lq_yoghurt",names(raw.iycf))]
+
+  iycf_6d <- names(iycf)[grepl("iycf_6d|lq_yoghurt",names(iycf))]
   if(length(iycf_6d) == 1){
     yes_no <- svDialogs::dlg_message(paste0("Is '", iycf_6d, "' the correct liquid yogurt column?"), type = "yesno")$res
     if (yes_no == "no") {
@@ -319,8 +260,8 @@ if(!file.exists("inputs/environment.Rdata")) {
   } else if (length(iycf_6d) == 0) {
     iycf_6d <- svDialogs::dlg_input(message= "Enter the name of the liquid yogurt","iycf_6d")$res
   }
-  
-  iycf_6e <- names(raw.iycf)[grepl("iycf_6e|lq_chocolate",names(raw.iycf))]
+
+  iycf_6e <- names(iycf)[grepl("iycf_6e|lq_chocolate",names(iycf))]
   if(length(iycf_6e) == 1){
     yes_no <- svDialogs::dlg_message(paste0("Is '", iycf_6e, "' the correct liquid chocolate flavoured drink column?"), type = "yesno")$res
     if (yes_no == "no") {
@@ -334,8 +275,8 @@ if(!file.exists("inputs/environment.Rdata")) {
   } else if (length(iycf_6e) == 0) {
     iycf_6e <- svDialogs::dlg_input(message= "Enter the name of the liquid chocolate flavoured drink","iycf_6e")$res
   }
-  
-  iycf_6f <- names(raw.iycf)[grepl("iycf_6f|lq_juice",names(raw.iycf))]
+
+  iycf_6f <- names(iycf)[grepl("iycf_6f|lq_juice",names(iycf))]
   if(length(iycf_6f) == 1){
     yes_no <- svDialogs::dlg_message(paste0("Is '", iycf_6f, "' the correct liquid fruit juice or fruit flavored drink column?"), type = "yesno")$res
     if (yes_no == "no") {
@@ -349,8 +290,8 @@ if(!file.exists("inputs/environment.Rdata")) {
   } else if (length(iycf_6f) == 0) {
     iycf_6f <- svDialogs::dlg_input(message= "Enter the name of the liquid fruit juice or fruit flavored drink","iycf_6f")$res
   }
-  
-  iycf_6g <- names(raw.iycf)[grepl("iycf_6g|lq_soda",names(raw.iycf))]
+
+  iycf_6g <- names(iycf)[grepl("iycf_6g|lq_soda",names(iycf))]
   if(length(iycf_6g) == 1){
     yes_no <- svDialogs::dlg_message(paste0("Is '", iycf_6g, "' the correct liquid sodas/malt/sports/energy drink column?"), type = "yesno")$res
     if (yes_no == "no") {
@@ -364,9 +305,9 @@ if(!file.exists("inputs/environment.Rdata")) {
   } else if (length(iycf_6g) == 0) {
     iycf_6g <- svDialogs::dlg_input(message= "Enter the name of the liquid sodas/malt/sports/energy drink","iycf_6g")$res
   }
-    
-  
-  iycf_6h <- names(raw.iycf)[grepl("iycf_6h|lq_tea",names(raw.iycf))]
+
+
+  iycf_6h <- names(iycf)[grepl("iycf_6h|lq_tea",names(iycf))]
   if(length(iycf_6h) == 1){
     yes_no <- svDialogs::dlg_message(paste0("Is '", iycf_6h, "' the correct liquid tea/coffee/herbal drink column?"), type = "yesno")$res
     if (yes_no == "no") {
@@ -380,9 +321,9 @@ if(!file.exists("inputs/environment.Rdata")) {
   } else if (length(iycf_6h) == 0) {
     iycf_6h <- svDialogs::dlg_input(message= "Enter the name of the liquid tea/coffee/herbal drink","iycf_6h")$res
   }
-    
-  
-  iycf_6i <- names(raw.iycf)[grepl("iycf_6i|lq_broth",names(raw.iycf))]
+
+
+  iycf_6i <- names(iycf)[grepl("iycf_6i|lq_broth",names(iycf))]
   if(length(iycf_6i) == 1){
     yes_no <- svDialogs::dlg_message(paste0("Is '", iycf_6i, "' the correct liquid clear broth/soup column?"), type = "yesno")$res
     if (yes_no == "no") {
@@ -396,9 +337,9 @@ if(!file.exists("inputs/environment.Rdata")) {
   } else if (length(iycf_6i) == 0) {
     iycf_6i <- svDialogs::dlg_input(message= "Enter the name of the liquid clear broth/soup","iycf_6i")$res
   }
-    
-  
-  iycf_6j <- names(raw.iycf)[grepl("iycf_6j|lq_other",names(raw.iycf))]
+
+
+  iycf_6j <- names(iycf)[grepl("iycf_6j|lq_other",names(iycf))]
   if(length(iycf_6j) == 1){
     yes_no <- svDialogs::dlg_message(paste0("Is '", iycf_6j, "' the correct other liquids column?"), type = "yesno")$res
     if (yes_no == "no") {
@@ -412,8 +353,8 @@ if(!file.exists("inputs/environment.Rdata")) {
   } else if (length(iycf_6j) == 0) {
     iycf_6j <- svDialogs::dlg_input(message= "Enter the name of the other liquids","iycf_6j")$res
   }
-  
-  iycf_7a <- names(raw.iycf)[grepl("iycf_7a|cf_yoghurt",names(raw.iycf))]
+
+  iycf_7a <- names(iycf)[grepl("iycf_7a|cf_yoghurt",names(iycf))]
   if(length(iycf_7a) == 1){
     yes_no <- svDialogs::dlg_message(paste0("Is '", iycf_7a, "' the correct yogurt as food column?"), type = "yesno")$res
     if (yes_no == "no") {
@@ -427,8 +368,8 @@ if(!file.exists("inputs/environment.Rdata")) {
   } else if (length(iycf_7a) == 0) {
     iycf_7a <- svDialogs::dlg_input(message= "Enter the name of the yogurt as food column","iycf_7a")$res
   }
-  
-  iycf_7b <- names(raw.iycf)[grepl("iycf_7b|cf_cereals",names(raw.iycf))]
+
+  iycf_7b <- names(iycf)[grepl("iycf_7b|cf_cereals",names(iycf))]
   if(length(iycf_7b) == 1){
     yes_no <- svDialogs::dlg_message(paste0("Is '", iycf_7b, "' the correct porridge/bread/rice/noodles/pasta column?"), type = "yesno")$res
     if (yes_no == "no") {
@@ -442,8 +383,8 @@ if(!file.exists("inputs/environment.Rdata")) {
   } else if (length(iycf_7b) == 0) {
     iycf_7b <- svDialogs::dlg_input(message= "Enter the name of the porridge/bread/rice/noodles/pasta column","iycf_7b")$res
   }
-  
-  iycf_7c <- names(raw.iycf)[grepl("iycf_7c|cf_orange_veg",names(raw.iycf))]
+
+  iycf_7c <- names(iycf)[grepl("iycf_7c|cf_orange_veg",names(iycf))]
   if(length(iycf_7c) == 1){
     yes_no <- svDialogs::dlg_message(paste0("Is '", iycf_7c, "' the correct pumpkin/carrots/sweet red peppers/squash/sweet potato column?"), type = "yesno")$res
     if (yes_no == "no") {
@@ -457,8 +398,8 @@ if(!file.exists("inputs/environment.Rdata")) {
   } else if (length(iycf_7c) == 0) {
     iycf_7c <- svDialogs::dlg_input(message= "Enter the name of the pumpkin/carrots/sweet red peppers/squash/sweet potato column","iycf_7c")$res
   }
-  
-  iycf_7d <- names(raw.iycf)[grepl("iycf_7d|cf_roots_tubers",names(raw.iycf))]
+
+  iycf_7d <- names(iycf)[grepl("iycf_7d|cf_roots_tubers",names(iycf))]
   if(length(iycf_7d) == 1){
     yes_no <- svDialogs::dlg_message(paste0("Is '", iycf_7d, "' the correct plantains/white potato/yams/manioc/cassava column?"), type = "yesno")$res
     if (yes_no == "no") {
@@ -472,9 +413,9 @@ if(!file.exists("inputs/environment.Rdata")) {
   } else if (length(iycf_7d) == 0) {
     iycf_7d <- svDialogs::dlg_input(message= "Enter the name of the plantains/white potato/yams/manioc/cassava column","iycf_7d")$res
   }
-  
-  
-  iycf_7e <- names(raw.iycf)[grepl("iycf_7e|cf_greens",names(raw.iycf))]
+
+
+  iycf_7e <- names(iycf)[grepl("iycf_7e|cf_greens",names(iycf))]
   if(length(iycf_7e) == 1){
     yes_no <- svDialogs::dlg_message(paste0("Is '", iycf_7e, "' the correct dark green leafy vegetables column?"), type = "yesno")$res
     if (yes_no == "no") {
@@ -488,8 +429,8 @@ if(!file.exists("inputs/environment.Rdata")) {
   } else if (length(iycf_7e) == 0) {
     iycf_7e <- svDialogs::dlg_input(message= "Enter the name of the dark green leafy vegetables column","iycf_7e")$res
   }
-  
-  iycf_7f <- names(raw.iycf)[grepl("iycf_7f|cf_other_veg",names(raw.iycf))]
+
+  iycf_7f <- names(iycf)[grepl("iycf_7f|cf_other_veg",names(iycf))]
   if(length(iycf_7f) == 1){
     yes_no <- svDialogs::dlg_message(paste0("Is '", iycf_7f, "' the correct other vegetables column?"), type = "yesno")$res
     if (yes_no == "no") {
@@ -503,9 +444,9 @@ if(!file.exists("inputs/environment.Rdata")) {
   } else if (length(iycf_7f) == 0) {
     iycf_7f <- svDialogs::dlg_input(message= "Enter the name of the other vegetables column","iycf_7f")$res
   }
-  
-  
-  iycf_7g <- names(raw.iycf)[grepl("iycf_7g|cf_orange_fruits",names(raw.iycf))]
+
+
+  iycf_7g <- names(iycf)[grepl("iycf_7g|cf_orange_fruits",names(iycf))]
   if(length(iycf_7g) == 1){
     yes_no <- svDialogs::dlg_message(paste0("Is '", iycf_7g, "' the correct ripe mangoes/ripe papayas column?"), type = "yesno")$res
     if (yes_no == "no") {
@@ -519,8 +460,8 @@ if(!file.exists("inputs/environment.Rdata")) {
   } else if (length(iycf_7g) == 0) {
     iycf_7g <- svDialogs::dlg_input(message= "Enter the name of the ripe mangoes/ripe papayas column","iycf_7g")$res
   }
-  
-  iycf_7h <- names(raw.iycf)[grepl("iycf_7h|cf_other_fruits",names(raw.iycf))]
+
+  iycf_7h <- names(iycf)[grepl("iycf_7h|cf_other_fruits",names(iycf))]
   if(length(iycf_7h) == 1){
     yes_no <- svDialogs::dlg_message(paste0("Is '", iycf_7h, "' the correct other fruits column?"), type = "yesno")$res
     if (yes_no == "no") {
@@ -534,9 +475,9 @@ if(!file.exists("inputs/environment.Rdata")) {
   } else if (length(iycf_7h) == 0) {
     iycf_7h <- svDialogs::dlg_input(message= "Enter the name of the other fruits column","iycf_7h")$res
   }
-  
-  
-  iycf_7i <- names(raw.iycf)[grepl("iycf_7i|cf_organs",names(raw.iycf))]
+
+
+  iycf_7i <- names(iycf)[grepl("iycf_7i|cf_organs",names(iycf))]
   if(length(iycf_7i) == 1){
     yes_no <- svDialogs::dlg_message(paste0("Is '", iycf_7i, "' the correct liver/kidney/heart column?"), type = "yesno")$res
     if (yes_no == "no") {
@@ -550,8 +491,8 @@ if(!file.exists("inputs/environment.Rdata")) {
   } else if (length(iycf_7i) == 0) {
     iycf_7i <- svDialogs::dlg_input(message= "Enter the name of the liver/kidney/heart column","iycf_7i")$res
   }
-  
-  iycf_7j <- names(raw.iycf)[grepl("iycf_7j|cf_processed_meat",names(raw.iycf))]
+
+  iycf_7j <- names(iycf)[grepl("iycf_7j|cf_processed_meat",names(iycf))]
   if(length(iycf_7j) == 1){
     yes_no <- svDialogs::dlg_message(paste0("Is '", iycf_7j, "' the correct sausage/hot dogs/ham/bacon/salami/canned meat column?"), type = "yesno")$res
     if (yes_no == "no") {
@@ -565,8 +506,8 @@ if(!file.exists("inputs/environment.Rdata")) {
   } else if (length(iycf_7j) == 0) {
     iycf_7j <- svDialogs::dlg_input(message= "Enter the name of the sausage/hot dogs/ham/bacon/salami/canned meat column","iycf_7j")$res
   }
-  
-  iycf_7k <- names(raw.iycf)[grepl("iycf_7k|cf_meat",names(raw.iycf))]
+
+  iycf_7k <- names(iycf)[grepl("iycf_7k|cf_meat",names(iycf))]
   if(length(iycf_7k) == 1){
     yes_no <- svDialogs::dlg_message(paste0("Is '", iycf_7k, "' the correct meat/beef/pork/lamb/goat/chicken/duck column?"), type = "yesno")$res
     if (yes_no == "no") {
@@ -580,9 +521,9 @@ if(!file.exists("inputs/environment.Rdata")) {
   } else if (length(iycf_7k) == 0) {
     iycf_7k <- svDialogs::dlg_input(message= "Enter the name of the meat/beef/pork/lamb/goat/chicken/duck column","iycf_7k")$res
   }
-  
-  
-  iycf_7l <- names(raw.iycf)[grepl("iycf_7l|cf_egg",names(raw.iycf))]
+
+
+  iycf_7l <- names(iycf)[grepl("iycf_7l|cf_egg",names(iycf))]
   if(length(iycf_7l) == 1){
     yes_no <- svDialogs::dlg_message(paste0("Is '", iycf_7l, "' the correct eggs column?"), type = "yesno")$res
     if (yes_no == "no") {
@@ -596,8 +537,8 @@ if(!file.exists("inputs/environment.Rdata")) {
   } else if (length(iycf_7l) == 0) {
     iycf_7l <- svDialogs::dlg_input(message= "Enter the name of the eggs column","iycf_7l")$res
   }
-  
-  iycf_7m <- names(raw.iycf)[grepl("iycf_7m|cf_fish",names(raw.iycf))]
+
+  iycf_7m <- names(iycf)[grepl("iycf_7m|cf_fish",names(iycf))]
   if(length(iycf_7m) == 1){
     yes_no <- svDialogs::dlg_message(paste0("Is '", iycf_7m, "' the correct fresh/dried/shell fish column?"), type = "yesno")$res
     if (yes_no == "no") {
@@ -611,8 +552,8 @@ if(!file.exists("inputs/environment.Rdata")) {
   } else if (length(iycf_7m) == 0) {
     iycf_7m <- svDialogs::dlg_input(message= "Enter the name of the fresh/dried/shell fish column","iycf_7m")$res
   }
-  
-  iycf_7n <- names(raw.iycf)[grepl("iycf_7n|cf_legumes",names(raw.iycf))]
+
+  iycf_7n <- names(iycf)[grepl("iycf_7n|cf_legumes",names(iycf))]
   if(length(iycf_7n) == 1){
     yes_no <- svDialogs::dlg_message(paste0("Is '", iycf_7n, "' the correct beans/peas/lentils/nuts/seeds column?"), type = "yesno")$res
     if (yes_no == "no") {
@@ -626,9 +567,9 @@ if(!file.exists("inputs/environment.Rdata")) {
   } else if (length(iycf_7n) == 0) {
     iycf_7n <- svDialogs::dlg_input(message= "Enter the name of the beans/peas/lentils/nuts/seeds column","iycf_7n")$res
   }
-  
-  
-  iycf_7o <- names(raw.iycf)[grepl("iycf_7o|cf_cheese",names(raw.iycf))]
+
+
+  iycf_7o <- names(iycf)[grepl("iycf_7o|cf_cheese",names(iycf))]
   if(length(iycf_7o) == 1){
     yes_no <- svDialogs::dlg_message(paste0("Is '", iycf_7o, "' the correct hard/soft cheese column?"), type = "yesno")$res
     if (yes_no == "no") {
@@ -642,8 +583,8 @@ if(!file.exists("inputs/environment.Rdata")) {
   } else if (length(iycf_7o) == 0) {
     iycf_7o <- svDialogs::dlg_input(message= "Enter the name of the hard/soft cheese column","iycf_7o")$res
   }
-  
-  iycf_7p <- names(raw.iycf)[grepl("iycf_7p|cf_sweets",names(raw.iycf))]
+
+  iycf_7p <- names(iycf)[grepl("iycf_7p|cf_sweets",names(iycf))]
   if(length(iycf_7p) == 1){
     yes_no <- svDialogs::dlg_message(paste0("Is '", iycf_7p, "' the correct sweet foods column?"), type = "yesno")$res
     if (yes_no == "no") {
@@ -657,8 +598,8 @@ if(!file.exists("inputs/environment.Rdata")) {
   } else if (length(iycf_7p) == 0) {
     iycf_7p <- svDialogs::dlg_input(message= "Enter the name of the sweet foods column","iycf_7p")$res
   }
-  
-  iycf_7q <- names(raw.iycf)[grepl("iycf_7q|cf_crisps",names(raw.iycf))]
+
+  iycf_7q <- names(iycf)[grepl("iycf_7q|cf_crisps",names(iycf))]
   if(length(iycf_7q) == 1){
     yes_no <- svDialogs::dlg_message(paste0("Is '", iycf_7q, "' the correct chips/crisps/puffs/french fries column?"), type = "yesno")$res
     if (yes_no == "no") {
@@ -672,8 +613,8 @@ if(!file.exists("inputs/environment.Rdata")) {
   } else if (length(iycf_7q) == 0) {
     iycf_7q <- svDialogs::dlg_input(message= "Enter the name of the chips/crisps/puffs/french fries column","iycf_7q")$res
   }
-  
-  iycf_7r <- names(raw.iycf)[grepl("iycf_7r|cf_other",names(raw.iycf))]
+
+  iycf_7r <- names(iycf)[grepl("iycf_7r|cf_other",names(iycf))]
   if(length(iycf_7r) == 1){
     yes_no <- svDialogs::dlg_message(paste0("Is '", iycf_7r, "' the correct other solid food column?"), type = "yesno")$res
     if (yes_no == "no") {
@@ -687,8 +628,8 @@ if(!file.exists("inputs/environment.Rdata")) {
   } else if (length(iycf_7r) == 0) {
     iycf_7r <- svDialogs::dlg_input(message= "Enter the name of the other solid food column","iycf_7r")$res
   }
-  
-  iycf_8 <- names(raw.iycf)[grepl("iycf_8|mealfreq",names(raw.iycf))]
+
+  iycf_8 <- names(iycf)[grepl("iycf_8|mealfreq",names(iycf))]
   if(length(iycf_8) == 1){
     yes_no <- svDialogs::dlg_message(paste0("Is '", iycf_8, "' the correct meal frequency column?"), type = "yesno")$res
     if (yes_no == "no") {
@@ -702,8 +643,8 @@ if(!file.exists("inputs/environment.Rdata")) {
   } else if (length(iycf_8) == 0) {
     iycf_8 <- svDialogs::dlg_input(message= "Enter the name of the meal frequency column","iycf_8")$res
   }
-  
-  iycf_6c_swt <- names(raw.iycf)[grepl("iycf_6c_swt|sweet_milk",names(raw.iycf))]
+
+  iycf_6c_swt <- names(iycf)[grepl("iycf_6c_swt|sweet_milk",names(iycf))]
   if(length(iycf_6c_swt) == 1){
     yes_no <- svDialogs::dlg_message(paste0("Is '", iycf_6c_swt, "' the correct sweet milk column?"), type = "yesno")$res
     if (yes_no == "no") {
@@ -717,8 +658,8 @@ if(!file.exists("inputs/environment.Rdata")) {
   } else if (length(iycf_6c_swt) == 0) {
     iycf_6c_swt <- svDialogs::dlg_input(message= "Enter the name of the sweet milk column","iycf_6c_swt")$res
   }
-  
-  iycf_6d_swt <- names(raw.iycf)[grepl("iycf_6d_swt|sweet_yoghurt",names(raw.iycf))]
+
+  iycf_6d_swt <- names(iycf)[grepl("iycf_6d_swt|sweet_yoghurt",names(iycf))]
   if(length(iycf_6d_swt) == 1){
     yes_no <- svDialogs::dlg_message(paste0("Is '", iycf_6d_swt, "' the correct sweet yogurt column?"), type = "yesno")$res
     if (yes_no == "no") {
@@ -732,8 +673,8 @@ if(!file.exists("inputs/environment.Rdata")) {
   } else if (length(iycf_6d_swt) == 0) {
     iycf_6d_swt <- svDialogs::dlg_input(message= "Enter the name of the sweet yogurt column","iycf_6d_swt")$res
   }
-  
-  iycf_6h_swt <- names(raw.iycf)[grepl("iycf_6h_swt|sweet_tea",names(raw.iycf))]
+
+  iycf_6h_swt <- names(iycf)[grepl("iycf_6h_swt|sweet_tea",names(iycf))]
   if(length(iycf_6h_swt) == 1){
     yes_no <- svDialogs::dlg_message(paste0("Is '", iycf_6h_swt, "' the correct sweet tea column?"), type = "yesno")$res
     if (yes_no == "no") {
@@ -747,8 +688,8 @@ if(!file.exists("inputs/environment.Rdata")) {
   } else if (length(iycf_6h_swt) == 0) {
     iycf_6h_swt <- svDialogs::dlg_input(message= "Enter the name of the sweet tea column","iycf_6h_swt")$res
   }
-  
-  iycf_6j_swt <- names(raw.iycf)[grepl("iycf_6j_swt|sweet_lq_other",names(raw.iycf))]
+
+  iycf_6j_swt <- names(iycf)[grepl("iycf_6j_swt|sweet_lq_other",names(iycf))]
   if(length(iycf_6j_swt) == 1){
     yes_no <- svDialogs::dlg_message(paste0("Is '", iycf_6j_swt, "' the correct other sweet drink column?"), type = "yesno")$res
     if (yes_no == "no") {
@@ -762,346 +703,172 @@ if(!file.exists("inputs/environment.Rdata")) {
   } else if (length(iycf_6j_swt) == 0) {
     iycf_6j_swt <- svDialogs::dlg_input(message= "Enter the name of the other sweet drink column","iycf_6j_swt")$res
   }
-  
+
   yes_no_columns <- c(iycf_7b,iycf_7c,iycf_7d,iycf_7e,iycf_7f,iycf_7g,iycf_7h,iycf_7i,iycf_7j,
                       iycf_7k,iycf_7l,iycf_7m,iycf_7n,iycf_7o,iycf_7p,iycf_7q)
-  
-  yes_answer <- tcltk::tk_select.list(dplyr::pull(raw.iycf[,yes_no_columns]) %>% unique, title = "Yes Value")
-  no_answer <- tcltk::tk_select.list(dplyr::pull(raw.iycf[,yes_no_columns]) %>% unique, title = "No Value")
-  dnk_answer <- tcltk::tk_select.list(dplyr::pull(raw.iycf[,yes_no_columns]) %>% unique, title = "Don't Know Value")
-  pnta_answer <- tcltk::tk_select.list(dplyr::pull(raw.iycf[,yes_no_columns]) %>% unique, title = "Prefer Not To Answer Value")
-  iycf2_immediate_value <- tcltk::tk_select.list(dplyr::pull(raw.iycf[,iycf_2]) %>% unique, title = "Immediately Value")
-  iycf2_lessday_value <- tcltk::tk_select.list(dplyr::pull(raw.iycf[,iycf_2]) %>% unique, title = "Less Than A Day Value")
-  iycf2_moreday_value <- tcltk::tk_select.list(dplyr::pull(raw.iycf[,iycf_2]) %>% unique, title = "More Than A Day Value")
-  if(!all(c(uuid_iycf,age_months) %in% names(raw.iycf))) {
-      svDialogs::dlg_message("Please check if the uuid or Age month column exist in the IYCF dataset")
-      stop("Please check if the uuid or Age month column exist in the IYCF dataset")
-    } else{
-    raw.iycf <- raw.iycf %>%
-        impactR4PHU::add_iycf(age_months = age_months,
-                              iycf_1 = iycf_1,
-                              iycf_2 = iycf_2,
-                              iycf_3 = iycf_3,
-                              iycf_4 = iycf_4,
-                              iycf_5 = iycf_5,
-                              iycf_6a = iycf_6a,
-                              iycf_6b = iycf_6b,
-                              iycf_6c = iycf_6c,
-                              iycf_6d = iycf_6d,
-                              iycf_6e = iycf_6e,
-                              iycf_6f = iycf_6f,
-                              iycf_6g = iycf_6g,
-                              iycf_6h = iycf_6h,
-                              iycf_6i = iycf_6i,
-                              iycf_6j = iycf_6j,
-                              iycf_7a = iycf_7a,
-                              iycf_7b = iycf_7b,
-                              iycf_7c = iycf_7c,
-                              iycf_7d = iycf_7d,
-                              iycf_7e = iycf_7e,
-                              iycf_7f = iycf_7f,
-                              iycf_7g = iycf_7g,
-                              iycf_7h = iycf_7h,
-                              iycf_7i = iycf_7i,
-                              iycf_7j = iycf_7j,
-                              iycf_7k = iycf_7k,
-                              iycf_7l = iycf_7l,
-                              iycf_7m = iycf_7m,
-                              iycf_7n = iycf_7n,
-                              iycf_7o = iycf_7o,
-                              iycf_7p = iycf_7p,
-                              iycf_7q = iycf_7q,
-                              iycf_7r = iycf_7r,
-                              iycf_8 = iycf_8,
-                              iycf_6c_swt = iycf_6c_swt,
-                              iycf_6d_swt = iycf_6d_swt,
-                              iycf_6h_swt = iycf_6h_swt,
-                              iycf_6j_swt = iycf_6j_swt,
-                              yes_value = yes_answer,
-                              no_value = no_answer,
-                              dnk_value = dnk_answer,
-                              pna_value = pnta_answer,
-                              iycf2_immediate_value = iycf2_immediate_value,
-                              iycf2_lessday_value = iycf2_lessday_value,
-                              iycf2_moreday_value = iycf2_moreday_value)
-    }
-  } else {
-   raw.iycf <- raw.iycf %>%
-        impactR4PHU::add_iycf(age_months = age_months,
-                              iycf_1 = iycf_1,
-                              iycf_2 = iycf_2,
-                              iycf_3 = iycf_3,
-                              iycf_4 = iycf_4,
-                              iycf_5 = iycf_5,
-                              iycf_6a = iycf_6a,
-                              iycf_6b = iycf_6b,
-                              iycf_6c = iycf_6c,
-                              iycf_6d = iycf_6d,
-                              iycf_6e = iycf_6e,
-                              iycf_6f = iycf_6f,
-                              iycf_6g = iycf_6g,
-                              iycf_6h = iycf_6h,
-                              iycf_6i = iycf_6i,
-                              iycf_6j = iycf_6j,
-                              iycf_7a = iycf_7a,
-                              iycf_7b = iycf_7b,
-                              iycf_7c = iycf_7c,
-                              iycf_7d = iycf_7d,
-                              iycf_7e = iycf_7e,
-                              iycf_7f = iycf_7f,
-                              iycf_7g = iycf_7g,
-                              iycf_7h = iycf_7h,
-                              iycf_7i = iycf_7i,
-                              iycf_7j = iycf_7j,
-                              iycf_7k = iycf_7k,
-                              iycf_7l = iycf_7l,
-                              iycf_7m = iycf_7m,
-                              iycf_7n = iycf_7n,
-                              iycf_7o = iycf_7o,
-                              iycf_7p = iycf_7p,
-                              iycf_7q = iycf_7q,
-                              iycf_7r = iycf_7r,
-                              iycf_8 = iycf_8,
-                              iycf_6c_swt = iycf_6c_swt,
-                              iycf_6d_swt = iycf_6d_swt,
-                              iycf_6h_swt = iycf_6h_swt,
-                              iycf_6j_swt = iycf_6j_swt,
-                              yes_value = yes_answer,
-                              no_value = no_answer,
-                              dnk_value = dnk_answer,
-                              pna_value = pnta_answer,
-                              iycf2_immediate_value = iycf2_immediate_value,
-                              iycf2_lessday_value = iycf2_lessday_value,
-                              iycf2_moreday_value = iycf2_moreday_value,
-                              uuid = uuid_iycf)
-}
 
- 
-
-  all_vars <- ls()
-    is_empty <- function(x) {
-  obj <- get(x)
-  length(obj) == 0 || is.null(obj) ||  (is.character(obj) && all(obj == ""))
-}
-  empty_vars <- all_vars[sapply(all_vars, is_empty)]
-
-  for (i in empty_vars) {
-    assign(i, NULL)
+  yes_answer <- tcltk::tk_select.list(dplyr::pull(iycf[,yes_no_columns]) %>% unique, title = "Yes Value")
+  no_answer <- tcltk::tk_select.list(dplyr::pull(iycf[,yes_no_columns]) %>% unique, title = "No Value")
+  dnk_answer <- tcltk::tk_select.list(dplyr::pull(iycf[,yes_no_columns]) %>% unique, title = "Don't Know Value")
+  pnta_answer <- tcltk::tk_select.list(dplyr::pull(iycf[,yes_no_columns]) %>% unique, title = "Prefer Not To Answer Value")
+  iycf2_immediate_value <- tcltk::tk_select.list(dplyr::pull(iycf[,iycf_2]) %>% unique, title = "Immediately Value")
+  iycf2_lessday_value <- tcltk::tk_select.list(dplyr::pull(iycf[,iycf_2]) %>% unique, title = "Less Than A Day Value")
+  iycf2_moreday_value <- tcltk::tk_select.list(dplyr::pull(iycf[,iycf_2]) %>% unique, title = "More Than A Day Value")
+  if(!all(c(uuid_iycf,age_months) %in% names(iycf))) {
+    svDialogs::dlg_message("Please check if the uuid or Age month column exist in the IYCF dataset")
+    stop("Please check if the uuid or Age month column exist in the IYCF dataset")
+  } else{
+    iycf <- iycf %>%
+      impactR4PHU::add_iycf(age_months = age_months,
+                            iycf_1 = iycf_1,
+                            iycf_2 = iycf_2,
+                            iycf_3 = iycf_3,
+                            iycf_4 = iycf_4,
+                            iycf_5 = iycf_5,
+                            iycf_6a = iycf_6a,
+                            iycf_6b = iycf_6b,
+                            iycf_6c = iycf_6c,
+                            iycf_6d = iycf_6d,
+                            iycf_6e = iycf_6e,
+                            iycf_6f = iycf_6f,
+                            iycf_6g = iycf_6g,
+                            iycf_6h = iycf_6h,
+                            iycf_6i = iycf_6i,
+                            iycf_6j = iycf_6j,
+                            iycf_7a = iycf_7a,
+                            iycf_7b = iycf_7b,
+                            iycf_7c = iycf_7c,
+                            iycf_7d = iycf_7d,
+                            iycf_7e = iycf_7e,
+                            iycf_7f = iycf_7f,
+                            iycf_7g = iycf_7g,
+                            iycf_7h = iycf_7h,
+                            iycf_7i = iycf_7i,
+                            iycf_7j = iycf_7j,
+                            iycf_7k = iycf_7k,
+                            iycf_7l = iycf_7l,
+                            iycf_7m = iycf_7m,
+                            iycf_7n = iycf_7n,
+                            iycf_7o = iycf_7o,
+                            iycf_7p = iycf_7p,
+                            iycf_7q = iycf_7q,
+                            iycf_7r = iycf_7r,
+                            iycf_8 = iycf_8,
+                            iycf_6c_swt = iycf_6c_swt,
+                            iycf_6d_swt = iycf_6d_swt,
+                            iycf_6h_swt = iycf_6h_swt,
+                            iycf_6j_swt = iycf_6j_swt,
+                            yes_value = yes_answer,
+                            no_value = no_answer,
+                            dnk_value = dnk_answer,
+                            pna_value = pnta_answer,
+                            iycf2_immediate_value = iycf2_immediate_value,
+                            iycf2_lessday_value = iycf2_lessday_value,
+                            iycf2_moreday_value = iycf2_moreday_value)
   }
+} else {
+  iycf <- iycf %>%
+    impactR4PHU::add_iycf(age_months = age_months,
+                          iycf_1 = iycf_1,
+                          iycf_2 = iycf_2,
+                          iycf_3 = iycf_3,
+                          iycf_4 = iycf_4,
+                          iycf_5 = iycf_5,
+                          iycf_6a = iycf_6a,
+                          iycf_6b = iycf_6b,
+                          iycf_6c = iycf_6c,
+                          iycf_6d = iycf_6d,
+                          iycf_6e = iycf_6e,
+                          iycf_6f = iycf_6f,
+                          iycf_6g = iycf_6g,
+                          iycf_6h = iycf_6h,
+                          iycf_6i = iycf_6i,
+                          iycf_6j = iycf_6j,
+                          iycf_7a = iycf_7a,
+                          iycf_7b = iycf_7b,
+                          iycf_7c = iycf_7c,
+                          iycf_7d = iycf_7d,
+                          iycf_7e = iycf_7e,
+                          iycf_7f = iycf_7f,
+                          iycf_7g = iycf_7g,
+                          iycf_7h = iycf_7h,
+                          iycf_7i = iycf_7i,
+                          iycf_7j = iycf_7j,
+                          iycf_7k = iycf_7k,
+                          iycf_7l = iycf_7l,
+                          iycf_7m = iycf_7m,
+                          iycf_7n = iycf_7n,
+                          iycf_7o = iycf_7o,
+                          iycf_7p = iycf_7p,
+                          iycf_7q = iycf_7q,
+                          iycf_7r = iycf_7r,
+                          iycf_8 = iycf_8,
+                          iycf_6c_swt = iycf_6c_swt,
+                          iycf_6d_swt = iycf_6d_swt,
+                          iycf_6h_swt = iycf_6h_swt,
+                          iycf_6j_swt = iycf_6j_swt,
+                          yes_value = yes_answer,
+                          no_value = no_answer,
+                          dnk_value = dnk_answer,
+                          pna_value = pnta_answer,
+                          iycf2_immediate_value = iycf2_immediate_value,
+                          iycf2_lessday_value = iycf2_lessday_value,
+                          iycf2_moreday_value = iycf2_moreday_value,
+                          uuid = uuid_iycf)
+}
 
-  
-raw.flag.iycf <- raw.iycf %>%
-  impactR4PHU::check_iycf_flags(age_months = age_months,
-                                iycf_4 = iycf_4,
-                                iycf_6a = iycf_6a,
-                                iycf_6b = iycf_6b,
-                                iycf_6c = iycf_6c,
-                                iycf_6d = iycf_6d,
-                                iycf_6e = iycf_6e,
-                                iycf_6f = iycf_6f,
-                                iycf_6g = iycf_6g,
-                                iycf_6h = iycf_6h,
-                                iycf_6i = iycf_6i,
-                                iycf_6j = iycf_6j,
-                                iycf_7a = iycf_7a,
-                                iycf_7b = iycf_7b,
-                                iycf_7c = iycf_7c,
-                                iycf_7d = iycf_7d,
-                                iycf_7e = iycf_7e,
-                                iycf_7f = iycf_7f,
-                                iycf_7g = iycf_7g,
-                                iycf_7h = iycf_7h,
-                                iycf_7i = iycf_7i,
-                                iycf_7j = iycf_7j,
-                                iycf_7k = iycf_7k,
-                                iycf_7l = iycf_7l,
-                                iycf_7m = iycf_7m,
-                                iycf_7n = iycf_7n,
-                                iycf_7o = iycf_7o,
-                                iycf_7p = iycf_7p,
-                                iycf_7q = iycf_7q,
-                                iycf_7r = iycf_7r,
-                                iycf_8 = iycf_8,
-                                iycf_6b_num = iycf_6b,
-                                iycf_6c_num = iycf_6c,
-                                iycf_6d_num = iycf_6d,
-                                yes_value = yes_answer)
+data.list[[path.sheet.with.main]] <- main
+data.list[[path.sheet.with.iycf]] <- iycf
 
-  
+
+yes_no_weight <- svDialogs::dlg_message("Is your data weighted?", type = "yesno")$res
+if(yes_no_weight == "yes"){
+  weight <- names(data.list[[path.sheet.with.main]])[grepl("weight",names(data.list[[path.sheet.with.main]]))]
+  if(length(weight) == 1){
+    yes_no <- svDialogs::dlg_message(paste0("Is '", weight, "' the correct weight column?"), type = "yesno")$res
+    if (yes_no == "no") {
+      weight <- svDialogs::dlg_input(message= "Enter the name of the weight column","weight")$res
+    }
+  } else if (length(weight) > 1){
+    weight <- tcltk::tk_select.list(weight, title = "Weight column")
+    if(weight == "") {
+      weight <- svDialogs::dlg_input(message= "Enter the name of the weight column","weight")$res
+    }
+  } else if (length(weight) == 0) {
+    weight <- svDialogs::dlg_input(message= "Enter the name of the weight column","weight")$res
+  }
+} else {
+  weight <- 1
+}
+if(yes_no_weight == "yes"){
+  for(sheet in names(data.list)){
+    data.list[[sheet]] <- data.list[[sheet]] %>%
+      mutate(overall = "overall",
+             weight = !!rlang::sym(weight)) %>%
+      mutate_at(vars(everything()),~ifelse(. == "",NA,.))
+  }
+} else {
+  for(sheet in names(data.list)){
+    data.list[[sheet]] <- data.list[[sheet]] %>%
+      mutate(overall = "overall",
+             weight = 1) %>%
+      mutate_at(vars(everything()),~ifelse(. == "",NA,.))
+  }
+}
+
 ###### CONTINUE HERE
 list_of_var <- c("uuid_main","enumerator","iycf_caregiver",
                  "age_months","iycf_1","iycf_2","iycf_3","iycf_4","iycf_5","iycf_6a",
                  "iycf_6b","iycf_6c","iycf_6d","iycf_6e","iycf_6f","iycf_6g","iycf_6h","iycf_6i",
                  "iycf_6j","iycf_7a","iycf_7b","iycf_7c","iycf_7d","iycf_7e","iycf_7f","sex",
                  "iycf_7g","iycf_7h","iycf_7i","iycf_7j","iycf_7k","iycf_7l","iycf_7m",
-                 "iycf_7n","iycf_7o","iycf_7p","iycf_7q","iycf_7r","iycf_8",
+                 "iycf_7n","iycf_7o","iycf_7p","iycf_7q","iycf_7r","iycf_8","yes_no_weight","weight",
                  "iycf_6c_swt","iycf_6d_swt","iycf_6h_swt","iycf_6j_swt","yes_answer","no_answer","dnk_answer","male","female",
                  "pnta_answer","iycf2_immediate_value","iycf2_lessday_value","iycf2_moreday_value","uuid_iycf")
 
 if(!file.exists("inputs/environment.Rdata")){
   save(list = list_of_var, file = "inputs/environment.Rdata")
 }
-```
-
-```{r, include = FALSE}
-# FLAG Logical Checks
-checks_followups <- tibble()
-## IYCF
-# Check number 1
-foods <- c(iycf_7a, iycf_7b,iycf_7c,iycf_7d,iycf_7e,iycf_7f,
-           iycf_7g,iycf_7h,iycf_7i,iycf_7j,iycf_7k,iycf_7l,
-           iycf_7m,iycf_7n,iycf_7o,iycf_7p,iycf_7q,iycf_7r)
-
-liquids <- c(iycf_6a, iycf_6b,iycf_6c,iycf_6d,iycf_6e,
-             iycf_6f,iycf_6g,iycf_6h,iycf_6i,iycf_6j)
-
-if("flag_yes_foods" %in% names(raw.flag.iycf)){
-  check_yes_foods <- raw.flag.iycf %>% 
-    filter(flag_yes_foods == 1) %>% 
-    rename(uuid = uuid_iycf)
-  
-  if(nrow(check_yes_foods)>0){
-    checks_followups <- rbind(checks_followups,
-                              make.logical.check.entry(check_yes_foods, 1,  c(foods), 
-                                                       cols_to_keep = c(enumerator),"Respondent reported child consuming all foods groups", F))
-  }
+if(!file.exists("inputs/environment.Rdata")){
+  save(list = list_of_var, file = "inputs/environment.Rdata")
 }
-
-if("flag_yes_liquids" %in% names(raw.flag.iycf)){
-  # Check number 2
-  check_yes_liquids <- raw.flag.iycf %>% 
-    filter(flag_yes_liquids == 1)%>% 
-    rename(uuid = uuid_iycf)
-  
-  if(nrow(check_yes_liquids)>0){
-    checks_followups <- rbind(checks_followups,
-                              make.logical.check.entry(check_yes_liquids, 2,
-                                                       c(liquids), # to provide all teh strategies
-                                                       cols_to_keep = c(enumerator),"Respondent reported child consuming all liquids groups", F))
-  }
-}
-#Check number 3
-
-if("flag_no_anything" %in% names(raw.flag.iycf)) {
-  check_no_anything <- raw.flag.iycf %>% 
-    filter(flag_no_anything == 1)%>% 
-    rename(uuid = uuid_iycf)
-  
-  if(nrow(check_no_anything)>0){
-    checks_followups <- rbind(checks_followups,
-                              make.logical.check.entry(check_no_anything, 3,  c(iycf_4, foods, liquids), 
-                                                       cols_to_keep = c(enumerator),"Respondent reported child consuming no foods or liquids groups at all", F))
-  }
-}
-
-#Check number 4
-
-if("flag_no_foods" %in% names(raw.flag.iycf)) {
-  check_no_foods <- raw.flag.iycf %>% 
-    filter(flag_no_foods == 1)%>% 
-    rename(uuid = uuid_iycf)
-  
-  if(nrow(check_no_foods)>0){
-    checks_followups <- rbind(checks_followups,
-                              make.logical.check.entry(check_no_foods, 4,  c(iycf_8, foods), 
-                                                       cols_to_keep = c(enumerator),"Respondent reported child consuming no foods groups while reporting eating solid or semi-solid food meals", F))
-  }
-}
-
-#Check number 5
-
-if("flag_all_foods_no_meal" %in% names(raw.flag.iycf)) {
-  check_all_foods_no_meal <- raw.flag.iycf %>% 
-    filter(flag_all_foods_no_meal == 1)%>% 
-    rename(uuid = uuid_iycf)
-  
-  if(nrow(check_all_foods_no_meal)>0){
-    checks_followups <- rbind(checks_followups,
-                              make.logical.check.entry(check_all_foods_no_meal, 5,  c(iycf_8, foods), 
-                                                       cols_to_keep = c(enumerator),"Respondent reported child consuming all foods groups while reporting not eating any solid or semi-solid food meals", F))
-  }
-}
-
-#Check number 6
-
-if("flag_some_foods_no_meal" %in% names(raw.flag.iycf)) {
-  check_some_foods_no_meal <- raw.flag.iycf %>% 
-    filter(flag_some_foods_no_meal == 1)%>% 
-    rename(uuid = uuid_iycf)
-  
-  if(nrow(check_some_foods_no_meal)>0){
-    checks_followups <- rbind(checks_followups,
-                              make.logical.check.entry(check_some_foods_no_meal, 6,  c(iycf_8, foods), 
-                                                       cols_to_keep = c(enumerator),"Respondent reported child consuming some foods groups while reporting not eating any solid or semi-solid food meals", F))
-  }
-}
-
-#Check number 7
-mdd_columns <- c(iycf_4,iycf_6b,iycf_6c,iycf_6d,iycf_7a,iycf_7b,
-                 iycf_7c,iycf_7d,iycf_7e,iycf_7f,iycf_7g,iycf_7h,
-                 iycf_7i,iycf_7j,iycf_7k,iycf_7l,iycf_7m,iycf_7n,iycf_7o)
-if("flag_high_mdd_low_mmf" %in% names(raw.flag.iycf)) {
-  check_high_mdd_low_mmf <- raw.flag.iycf %>% 
-    filter(flag_high_mdd_low_mmf == 1)%>% 
-    rename(uuid = uuid_iycf)
-  
-  if(nrow(check_high_mdd_low_mmf)>0){
-    checks_followups <- rbind(checks_followups,
-                              make.logical.check.entry(check_high_mdd_low_mmf, 7,  c(iycf_8, mdd_columns), 
-                                                       cols_to_keep = c(enumerator),"Respondent reported high mdd score while reporting low meal frequency consumed (<=1)", F))
-  }
-}
-
-#Check number 8
-
-if("flag_under6_nobf_nomilk" %in% names(raw.flag.iycf)) {
-  check_under6_nobf_nomilk <- raw.flag.iycf %>% 
-    filter(flag_under6_nobf_nomilk == 1)%>% 
-    rename(uuid = uuid_iycf)
-  
-  if(nrow(check_under6_nobf_nomilk)>0){
-    checks_followups <- rbind(checks_followups,
-                              make.logical.check.entry(check_under6_nobf_nomilk, 8,  c(iycf_8,iycf_4,iycf_6b_num,
-                                                                                       iycf_6c_num,iycf_6d_num,age_months), 
-                                                       cols_to_keep = c(enumerator),"Respondent reported child under 6 month and not breastfed and no milk given", F))
-  }
-}
-
-#Check number 9
-
-if("flag_meats_nostaples" %in% names(raw.flag.iycf)) {
-  check_meats_nostaples <- raw.flag.iycf %>% 
-    filter(flag_meats_nostaples == 1)%>% 
-    rename(uuid = uuid_iycf)
-  
-  if(nrow(check_meats_nostaples)>0){
-    checks_followups <- rbind(checks_followups,
-                              make.logical.check.entry(check_meats_nostaples, 9,  c(iycf_7b,iycf_7d,iycf_7i,
-                                                                                    iycf_7j,iycf_7k,iycf_7l,iycf_7m), 
-                                                       cols_to_keep = c(enumerator),"Respondent reported child consuming meats but no staples", F))
-  }
-}
-
-source("src/create_file.R")
-```
-
-<h5>Number of detected entries with Respondent reported child consuming all foods groups:<strong> `r if(nrow(checks_followups)>0) {nrow(checks_followups %>% filter(check.id == 1) %>% distinct(uuid))} else {0}`</strong></h5>
-<h5>Number of detected entries with Respondent reported child consuming all liquids groups:<strong> `r if(nrow(checks_followups)>0) {nrow(checks_followups %>% filter(check.id == 2) %>% distinct(uuid) )} else {0}`</strong></h5>
-<h5>Number of detected entries with Respondent reported child consuming no foods or liquids groups at all:<strong> `r if(nrow(checks_followups)>0) {nrow(checks_followups %>% filter(check.id == 3) %>% distinct(uuid))} else {0}`</strong></h5>
-<h5>Number of detected entries with Respondent reported child consuming no foods groups while reporting eating solid or semi-solid food meals:<strong> `r if(nrow(checks_followups)>0) {nrow(checks_followups %>% filter(check.id == 4) %>% distinct(uuid))} else {0}`</strong></h5>
-<h5>Number of detected entries with Respondent reported child consuming all foods groups while reporting not eating any solid or semi-solid food meals:<strong> `r if(nrow(checks_followups)>0) {nrow(checks_followups %>% filter(check.id == 5) %>% distinct(uuid))} else {0}`</strong></h5>
-<h5>Number of detected entries with Respondent reported child consuming some foods groups while reporting not eating any solid or semi-solid food meals:<strong> `r if(nrow(checks_followups)>0) {nrow(checks_followups %>% filter(check.id == 6) %>% distinct(uuid))} else {0}`</strong></h5>
-<h5>Number of detected entries with Respondent reported high mdd score while reporting low meal frequency consumed (<=1):<strong> `r if(nrow(checks_followups)>0) {nrow(checks_followups %>% filter(check.id == 7) %>% distinct(uuid))} else {0}`</strong></h5>
-<h5>Number of detected entries with Respondent reported child under 6 month and not breastfed and no milk given:<strong> `r if(nrow(checks_followups)>0) {nrow(checks_followups %>% filter(check.id == 8) %>% distinct(uuid))} else {0}`</strong></h5>
-<h5>Number of detected entries with Respondent reported child consuming meats but no staples:<strong> `r if(nrow(checks_followups)>0) {nrow(checks_followups %>% filter(check.id == 9) %>% distinct(uuid))} else {0}`</strong></h5>
-
-```{r}
-if(nrow(checks_followups)>0){
-  cat("The below table shows the data that needs follow up with the field.")
-  DT::datatable(checks_followups)
-} else {
-  cat("No Logical checks were detected in the dataset.")
-}
-```
-
-

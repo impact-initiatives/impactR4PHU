@@ -1170,14 +1170,17 @@ result_mort_pivot <- results_mort %>%
 
 yes_no_weight <- svDialogs::dlg_message("Is your data weighted?", type = "yesno")$res
 if(yes_no_weight == "yes"){
-  weight <- names(data.list$main)[grepl("weight",names(data.list$main))]
+  weight <- names(data.list[[path.sheet.with.main]])[grepl("weight",names(data.list[[path.sheet.with.main]]))]
   if(length(weight) == 1){
     yes_no <- svDialogs::dlg_message(paste0("Is '", weight, "' the correct weight column?"), type = "yesno")$res
     if (yes_no == "no") {
-      weight <- svDialogs::dlg_input(message= "Enter the name of the fsl_hdds_condiments","weight")$res
+      weight <- svDialogs::dlg_input(message= "Enter the name of the weight column","weight")$res
     }
   } else if (length(weight) > 1){
     weight <- tcltk::tk_select.list(weight, title = "Weight column")
+    if(weight == "") {
+      weight <- svDialogs::dlg_input(message= "Enter the name of the weight column","weight")$res
+    }
   } else if (length(weight) == 0) {
     weight <- svDialogs::dlg_input(message= "Enter the name of the weight column","weight")$res
   }

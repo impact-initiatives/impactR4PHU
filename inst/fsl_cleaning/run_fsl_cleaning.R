@@ -11,4 +11,4 @@ strings <- c(
 
 rmarkdown::render("fsl_cleaning_markdown.Rmd",
                   output_file = paste0("output/", "FSL_Cleaning_", strings['out_date'],".html"))
-cat("\n> Quality Check completed! You can check your output folder.")
+cat("\n> Cleaning completed! You can check your output folder.")
