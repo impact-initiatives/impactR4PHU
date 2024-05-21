@@ -276,3 +276,8 @@ if(all(fclcm_check_columns %in% names(main))) {
   subch(DT::datatable(fclcm_phase_table)) 
 }
 ```
+
+```{r}
+source("src/workflow_ipc_table.R")
+```
+
