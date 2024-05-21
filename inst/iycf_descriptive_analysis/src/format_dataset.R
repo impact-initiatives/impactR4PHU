@@ -65,7 +65,7 @@ if(!file.exists("inputs/environment.Rdata")) {
   }
 
   ## Detect age month
-  age_months <- names(iycf)[grepl("month",names(iycf))]
+  age_months <- names(iycf)[grepl("month|age",names(iycf))]
 
   if(length(age_months) == 1){
     yes_no <- svDialogs::dlg_message(paste0("Is '", age_months, "' the correct age month column?"), type = "yesno")$res
@@ -126,7 +126,7 @@ if(!file.exists("inputs/environment.Rdata")) {
     iycf_caregiver <- svDialogs::dlg_input(message= "Enter the name of the column that indicates if the caregiver is present","iycf_caregiver")$res
   }
 
-  iycf_1 <- names(iycf)[grepl("iycf_1|bf_ever",names(iycf))]
+  iycf_1 <- names(iycf)[grepl("iycf_1|ever",names(iycf))]
   if(length(iycf_1) == 1){
     yes_no <- svDialogs::dlg_message(paste0("Is '", iycf_1, "' the correct column that indicates if the child ever breastfed?"), type = "yesno")$res
     if(yes_no == "no"){
@@ -141,7 +141,7 @@ if(!file.exists("inputs/environment.Rdata")) {
     iycf_1 <- svDialogs::dlg_input(message= "Enter the name of the column that indicates if the child ever breastfed","iycf_1")$res
   }
 
-  iycf_2 <- names(iycf)[grepl("iycf_2|bf_ei",names(iycf))]
+  iycf_2 <- names(iycf)[grepl("iycf_2|bf_ei|breastfed",names(iycf))]
   if(length(iycf_2) == 1){
     yes_no <- svDialogs::dlg_message(paste0("Is '", iycf_2, "' the correct column that indicates how long the child started breastfeeding after birth"), type = "yesno")$res
     if (yes_no == "no") {
@@ -171,7 +171,7 @@ if(!file.exists("inputs/environment.Rdata")) {
     iycf_3 <- svDialogs::dlg_input(message= "Enter the name of the column that indicates Exclusive Breastfeeding First 2 Days","iycf_3")$res
   }
 
-  iycf_4 <- names(iycf)[grepl("iycf_4|bf_yesterday",names(iycf))]
+  iycf_4 <- names(iycf)[grepl("iycf_4|yesterday",names(iycf))]
   if(length(iycf_4) == 1){
     yes_no <- svDialogs::dlg_message(paste0("Is '", iycf_4, "' the correct column that indicates if the child was breastfed yesterday?"), type = "yesno")$res
     if (yes_no == "no") {
@@ -186,7 +186,7 @@ if(!file.exists("inputs/environment.Rdata")) {
     iycf_4 <- svDialogs::dlg_input(message= "Enter the name of the column that indicates if the child was breastfed yesterday","iycf_4")$res
   }
 
-  iycf_5 <- names(iycf)[grepl("iycf_5|bf_bottlefed",names(iycf))]
+  iycf_5 <- names(iycf)[grepl("iycf_5|bottlefed",names(iycf))]
   if(length(iycf_5) == 1){
     yes_no <- svDialogs::dlg_message(paste0("Is '", iycf_5, "' the correct column that indicates if the child drink anything from a bottle yesterday"), type = "yesno")$res
     if (yes_no == "no") {
@@ -201,7 +201,7 @@ if(!file.exists("inputs/environment.Rdata")) {
     iycf_5 <- svDialogs::dlg_input(message= "Enter the name of the column that indicates if the child drink anything from a bottle yesterday","iycf_5")$res
   }
 
-  iycf_6a <- names(iycf)[grepl("iycf_6a|lq_water",names(iycf))]
+  iycf_6a <- names(iycf)[grepl("iycf_6a|water",names(iycf))]
   if(length(iycf_6a) == 1){
     yes_no <- svDialogs::dlg_message(paste0("Is '", iycf_6a, "' the correct liquid water column?"), type = "yesno")$res
     if (yes_no == "no") {
@@ -216,7 +216,7 @@ if(!file.exists("inputs/environment.Rdata")) {
     iycf_6a <- svDialogs::dlg_input(message= "Enter the name of the liquid water","iycf_6a")$res
   }
 
-  iycf_6b <- names(iycf)[grepl("iycf_6b|lq_formula",names(iycf))]
+  iycf_6b <- names(iycf)[grepl("iycf_6b|formula",names(iycf))]
   if(length(iycf_6b) == 1){
     yes_no <- svDialogs::dlg_message(paste0("Is '", iycf_6b, "' the correct liquid infant formula column?"), type = "yesno")$res
     if (yes_no == "no") {
@@ -231,7 +231,7 @@ if(!file.exists("inputs/environment.Rdata")) {
     iycf_6b <- svDialogs::dlg_input(message= "Enter the name of the liquid infant formula","iycf_6b")$res
   }
 
-  iycf_6c <- names(iycf)[grepl("iycf_6c|lq_milk",names(iycf))]
+  iycf_6c <- names(iycf)[grepl("iycf_6c|milk",names(iycf))]
   if(length(iycf_6c) == 1){
     yes_no <- svDialogs::dlg_message(paste0("Is '", iycf_6c, "' the correct liquid milk from animal column?"), type = "yesno")$res
     if (yes_no == "no") {
@@ -246,7 +246,7 @@ if(!file.exists("inputs/environment.Rdata")) {
     iycf_6c <- svDialogs::dlg_input(message= "Enter the name of the liquid milk from animal","iycf_6c")$res
   }
 
-  iycf_6d <- names(iycf)[grepl("iycf_6d|lq_yoghurt",names(iycf))]
+  iycf_6d <- names(iycf)[grepl("iycf_6d|yoghurt",names(iycf))]
   if(length(iycf_6d) == 1){
     yes_no <- svDialogs::dlg_message(paste0("Is '", iycf_6d, "' the correct liquid yogurt column?"), type = "yesno")$res
     if (yes_no == "no") {
@@ -261,7 +261,7 @@ if(!file.exists("inputs/environment.Rdata")) {
     iycf_6d <- svDialogs::dlg_input(message= "Enter the name of the liquid yogurt","iycf_6d")$res
   }
 
-  iycf_6e <- names(iycf)[grepl("iycf_6e|lq_chocolate",names(iycf))]
+  iycf_6e <- names(iycf)[grepl("iycf_6e|chocolate",names(iycf))]
   if(length(iycf_6e) == 1){
     yes_no <- svDialogs::dlg_message(paste0("Is '", iycf_6e, "' the correct liquid chocolate flavoured drink column?"), type = "yesno")$res
     if (yes_no == "no") {
@@ -276,7 +276,7 @@ if(!file.exists("inputs/environment.Rdata")) {
     iycf_6e <- svDialogs::dlg_input(message= "Enter the name of the liquid chocolate flavoured drink","iycf_6e")$res
   }
 
-  iycf_6f <- names(iycf)[grepl("iycf_6f|lq_juice",names(iycf))]
+  iycf_6f <- names(iycf)[grepl("iycf_6f|juice",names(iycf))]
   if(length(iycf_6f) == 1){
     yes_no <- svDialogs::dlg_message(paste0("Is '", iycf_6f, "' the correct liquid fruit juice or fruit flavored drink column?"), type = "yesno")$res
     if (yes_no == "no") {
@@ -291,7 +291,7 @@ if(!file.exists("inputs/environment.Rdata")) {
     iycf_6f <- svDialogs::dlg_input(message= "Enter the name of the liquid fruit juice or fruit flavored drink","iycf_6f")$res
   }
 
-  iycf_6g <- names(iycf)[grepl("iycf_6g|lq_soda",names(iycf))]
+  iycf_6g <- names(iycf)[grepl("iycf_6g|soda",names(iycf))]
   if(length(iycf_6g) == 1){
     yes_no <- svDialogs::dlg_message(paste0("Is '", iycf_6g, "' the correct liquid sodas/malt/sports/energy drink column?"), type = "yesno")$res
     if (yes_no == "no") {
@@ -307,7 +307,7 @@ if(!file.exists("inputs/environment.Rdata")) {
   }
 
 
-  iycf_6h <- names(iycf)[grepl("iycf_6h|lq_tea",names(iycf))]
+  iycf_6h <- names(iycf)[grepl("iycf_6h|tea",names(iycf))]
   if(length(iycf_6h) == 1){
     yes_no <- svDialogs::dlg_message(paste0("Is '", iycf_6h, "' the correct liquid tea/coffee/herbal drink column?"), type = "yesno")$res
     if (yes_no == "no") {
@@ -323,7 +323,7 @@ if(!file.exists("inputs/environment.Rdata")) {
   }
 
 
-  iycf_6i <- names(iycf)[grepl("iycf_6i|lq_broth",names(iycf))]
+  iycf_6i <- names(iycf)[grepl("iycf_6i|broth",names(iycf))]
   if(length(iycf_6i) == 1){
     yes_no <- svDialogs::dlg_message(paste0("Is '", iycf_6i, "' the correct liquid clear broth/soup column?"), type = "yesno")$res
     if (yes_no == "no") {
@@ -339,7 +339,7 @@ if(!file.exists("inputs/environment.Rdata")) {
   }
 
 
-  iycf_6j <- names(iycf)[grepl("iycf_6j|lq_other",names(iycf))]
+  iycf_6j <- names(iycf)[grepl("iycf_6j|other",names(iycf))]
   if(length(iycf_6j) == 1){
     yes_no <- svDialogs::dlg_message(paste0("Is '", iycf_6j, "' the correct other liquids column?"), type = "yesno")$res
     if (yes_no == "no") {
@@ -354,7 +354,7 @@ if(!file.exists("inputs/environment.Rdata")) {
     iycf_6j <- svDialogs::dlg_input(message= "Enter the name of the other liquids","iycf_6j")$res
   }
 
-  iycf_7a <- names(iycf)[grepl("iycf_7a|cf_yoghurt",names(iycf))]
+  iycf_7a <- names(iycf)[grepl("iycf_7a|yoghurt",names(iycf))]
   if(length(iycf_7a) == 1){
     yes_no <- svDialogs::dlg_message(paste0("Is '", iycf_7a, "' the correct yogurt as food column?"), type = "yesno")$res
     if (yes_no == "no") {
@@ -369,7 +369,7 @@ if(!file.exists("inputs/environment.Rdata")) {
     iycf_7a <- svDialogs::dlg_input(message= "Enter the name of the yogurt as food column","iycf_7a")$res
   }
 
-  iycf_7b <- names(iycf)[grepl("iycf_7b|cf_cereals",names(iycf))]
+  iycf_7b <- names(iycf)[grepl("iycf_7b|cereals",names(iycf))]
   if(length(iycf_7b) == 1){
     yes_no <- svDialogs::dlg_message(paste0("Is '", iycf_7b, "' the correct porridge/bread/rice/noodles/pasta column?"), type = "yesno")$res
     if (yes_no == "no") {
@@ -384,7 +384,7 @@ if(!file.exists("inputs/environment.Rdata")) {
     iycf_7b <- svDialogs::dlg_input(message= "Enter the name of the porridge/bread/rice/noodles/pasta column","iycf_7b")$res
   }
 
-  iycf_7c <- names(iycf)[grepl("iycf_7c|cf_orange_veg",names(iycf))]
+  iycf_7c <- names(iycf)[grepl("iycf_7c|orange|pumkin",names(iycf))]
   if(length(iycf_7c) == 1){
     yes_no <- svDialogs::dlg_message(paste0("Is '", iycf_7c, "' the correct pumpkin/carrots/sweet red peppers/squash/sweet potato column?"), type = "yesno")$res
     if (yes_no == "no") {
@@ -399,7 +399,7 @@ if(!file.exists("inputs/environment.Rdata")) {
     iycf_7c <- svDialogs::dlg_input(message= "Enter the name of the pumpkin/carrots/sweet red peppers/squash/sweet potato column","iycf_7c")$res
   }
 
-  iycf_7d <- names(iycf)[grepl("iycf_7d|cf_roots_tubers",names(iycf))]
+  iycf_7d <- names(iycf)[grepl("iycf_7d|roots",names(iycf))]
   if(length(iycf_7d) == 1){
     yes_no <- svDialogs::dlg_message(paste0("Is '", iycf_7d, "' the correct plantains/white potato/yams/manioc/cassava column?"), type = "yesno")$res
     if (yes_no == "no") {
@@ -415,7 +415,7 @@ if(!file.exists("inputs/environment.Rdata")) {
   }
 
 
-  iycf_7e <- names(iycf)[grepl("iycf_7e|cf_greens",names(iycf))]
+  iycf_7e <- names(iycf)[grepl("iycf_7e|greens|leaf",names(iycf))]
   if(length(iycf_7e) == 1){
     yes_no <- svDialogs::dlg_message(paste0("Is '", iycf_7e, "' the correct dark green leafy vegetables column?"), type = "yesno")$res
     if (yes_no == "no") {
@@ -430,7 +430,7 @@ if(!file.exists("inputs/environment.Rdata")) {
     iycf_7e <- svDialogs::dlg_input(message= "Enter the name of the dark green leafy vegetables column","iycf_7e")$res
   }
 
-  iycf_7f <- names(iycf)[grepl("iycf_7f|cf_other_veg",names(iycf))]
+  iycf_7f <- names(iycf)[grepl("iycf_7f|other_veg",names(iycf))]
   if(length(iycf_7f) == 1){
     yes_no <- svDialogs::dlg_message(paste0("Is '", iycf_7f, "' the correct other vegetables column?"), type = "yesno")$res
     if (yes_no == "no") {
@@ -446,7 +446,7 @@ if(!file.exists("inputs/environment.Rdata")) {
   }
 
 
-  iycf_7g <- names(iycf)[grepl("iycf_7g|cf_orange_fruits",names(iycf))]
+  iycf_7g <- names(iycf)[grepl("iycf_7g|fruit",names(iycf))]
   if(length(iycf_7g) == 1){
     yes_no <- svDialogs::dlg_message(paste0("Is '", iycf_7g, "' the correct ripe mangoes/ripe papayas column?"), type = "yesno")$res
     if (yes_no == "no") {
@@ -461,7 +461,7 @@ if(!file.exists("inputs/environment.Rdata")) {
     iycf_7g <- svDialogs::dlg_input(message= "Enter the name of the ripe mangoes/ripe papayas column","iycf_7g")$res
   }
 
-  iycf_7h <- names(iycf)[grepl("iycf_7h|cf_other_fruits",names(iycf))]
+  iycf_7h <- names(iycf)[grepl("iycf_7h|other_fruit",names(iycf))]
   if(length(iycf_7h) == 1){
     yes_no <- svDialogs::dlg_message(paste0("Is '", iycf_7h, "' the correct other fruits column?"), type = "yesno")$res
     if (yes_no == "no") {
@@ -477,7 +477,7 @@ if(!file.exists("inputs/environment.Rdata")) {
   }
 
 
-  iycf_7i <- names(iycf)[grepl("iycf_7i|cf_organs",names(iycf))]
+  iycf_7i <- names(iycf)[grepl("iycf_7i|organs",names(iycf))]
   if(length(iycf_7i) == 1){
     yes_no <- svDialogs::dlg_message(paste0("Is '", iycf_7i, "' the correct liver/kidney/heart column?"), type = "yesno")$res
     if (yes_no == "no") {
@@ -492,7 +492,7 @@ if(!file.exists("inputs/environment.Rdata")) {
     iycf_7i <- svDialogs::dlg_input(message= "Enter the name of the liver/kidney/heart column","iycf_7i")$res
   }
 
-  iycf_7j <- names(iycf)[grepl("iycf_7j|cf_processed_meat",names(iycf))]
+  iycf_7j <- names(iycf)[grepl("iycf_7j|meat",names(iycf))]
   if(length(iycf_7j) == 1){
     yes_no <- svDialogs::dlg_message(paste0("Is '", iycf_7j, "' the correct sausage/hot dogs/ham/bacon/salami/canned meat column?"), type = "yesno")$res
     if (yes_no == "no") {
@@ -507,7 +507,7 @@ if(!file.exists("inputs/environment.Rdata")) {
     iycf_7j <- svDialogs::dlg_input(message= "Enter the name of the sausage/hot dogs/ham/bacon/salami/canned meat column","iycf_7j")$res
   }
 
-  iycf_7k <- names(iycf)[grepl("iycf_7k|cf_meat",names(iycf))]
+  iycf_7k <- names(iycf)[grepl("iycf_7k|other_meat",names(iycf))]
   if(length(iycf_7k) == 1){
     yes_no <- svDialogs::dlg_message(paste0("Is '", iycf_7k, "' the correct meat/beef/pork/lamb/goat/chicken/duck column?"), type = "yesno")$res
     if (yes_no == "no") {
@@ -523,7 +523,7 @@ if(!file.exists("inputs/environment.Rdata")) {
   }
 
 
-  iycf_7l <- names(iycf)[grepl("iycf_7l|cf_egg",names(iycf))]
+  iycf_7l <- names(iycf)[grepl("iycf_7l|egg",names(iycf))]
   if(length(iycf_7l) == 1){
     yes_no <- svDialogs::dlg_message(paste0("Is '", iycf_7l, "' the correct eggs column?"), type = "yesno")$res
     if (yes_no == "no") {
@@ -538,7 +538,7 @@ if(!file.exists("inputs/environment.Rdata")) {
     iycf_7l <- svDialogs::dlg_input(message= "Enter the name of the eggs column","iycf_7l")$res
   }
 
-  iycf_7m <- names(iycf)[grepl("iycf_7m|cf_fish",names(iycf))]
+  iycf_7m <- names(iycf)[grepl("iycf_7m|fish",names(iycf))]
   if(length(iycf_7m) == 1){
     yes_no <- svDialogs::dlg_message(paste0("Is '", iycf_7m, "' the correct fresh/dried/shell fish column?"), type = "yesno")$res
     if (yes_no == "no") {
@@ -553,7 +553,7 @@ if(!file.exists("inputs/environment.Rdata")) {
     iycf_7m <- svDialogs::dlg_input(message= "Enter the name of the fresh/dried/shell fish column","iycf_7m")$res
   }
 
-  iycf_7n <- names(iycf)[grepl("iycf_7n|cf_legumes",names(iycf))]
+  iycf_7n <- names(iycf)[grepl("iycf_7n|legumes",names(iycf))]
   if(length(iycf_7n) == 1){
     yes_no <- svDialogs::dlg_message(paste0("Is '", iycf_7n, "' the correct beans/peas/lentils/nuts/seeds column?"), type = "yesno")$res
     if (yes_no == "no") {
@@ -569,7 +569,7 @@ if(!file.exists("inputs/environment.Rdata")) {
   }
 
 
-  iycf_7o <- names(iycf)[grepl("iycf_7o|cf_cheese",names(iycf))]
+  iycf_7o <- names(iycf)[grepl("iycf_7o|cheese",names(iycf))]
   if(length(iycf_7o) == 1){
     yes_no <- svDialogs::dlg_message(paste0("Is '", iycf_7o, "' the correct hard/soft cheese column?"), type = "yesno")$res
     if (yes_no == "no") {
@@ -584,7 +584,7 @@ if(!file.exists("inputs/environment.Rdata")) {
     iycf_7o <- svDialogs::dlg_input(message= "Enter the name of the hard/soft cheese column","iycf_7o")$res
   }
 
-  iycf_7p <- names(iycf)[grepl("iycf_7p|cf_sweets",names(iycf))]
+  iycf_7p <- names(iycf)[grepl("iycf_7p|sweet",names(iycf))]
   if(length(iycf_7p) == 1){
     yes_no <- svDialogs::dlg_message(paste0("Is '", iycf_7p, "' the correct sweet foods column?"), type = "yesno")$res
     if (yes_no == "no") {
@@ -599,7 +599,7 @@ if(!file.exists("inputs/environment.Rdata")) {
     iycf_7p <- svDialogs::dlg_input(message= "Enter the name of the sweet foods column","iycf_7p")$res
   }
 
-  iycf_7q <- names(iycf)[grepl("iycf_7q|cf_crisps",names(iycf))]
+  iycf_7q <- names(iycf)[grepl("iycf_7q|crisps|fries",names(iycf))]
   if(length(iycf_7q) == 1){
     yes_no <- svDialogs::dlg_message(paste0("Is '", iycf_7q, "' the correct chips/crisps/puffs/french fries column?"), type = "yesno")$res
     if (yes_no == "no") {
@@ -614,7 +614,7 @@ if(!file.exists("inputs/environment.Rdata")) {
     iycf_7q <- svDialogs::dlg_input(message= "Enter the name of the chips/crisps/puffs/french fries column","iycf_7q")$res
   }
 
-  iycf_7r <- names(iycf)[grepl("iycf_7r|cf_other",names(iycf))]
+  iycf_7r <- names(iycf)[grepl("iycf_7r|other",names(iycf))]
   if(length(iycf_7r) == 1){
     yes_no <- svDialogs::dlg_message(paste0("Is '", iycf_7r, "' the correct other solid food column?"), type = "yesno")$res
     if (yes_no == "no") {
@@ -629,7 +629,7 @@ if(!file.exists("inputs/environment.Rdata")) {
     iycf_7r <- svDialogs::dlg_input(message= "Enter the name of the other solid food column","iycf_7r")$res
   }
 
-  iycf_8 <- names(iycf)[grepl("iycf_8|mealfreq",names(iycf))]
+  iycf_8 <- names(iycf)[grepl("iycf_8|mealfreq|solid",names(iycf))]
   if(length(iycf_8) == 1){
     yes_no <- svDialogs::dlg_message(paste0("Is '", iycf_8, "' the correct meal frequency column?"), type = "yesno")$res
     if (yes_no == "no") {
@@ -711,9 +711,23 @@ if(!file.exists("inputs/environment.Rdata")) {
   no_answer <- tcltk::tk_select.list(dplyr::pull(iycf[,yes_no_columns]) %>% unique, title = "No Value")
   dnk_answer <- tcltk::tk_select.list(dplyr::pull(iycf[,yes_no_columns]) %>% unique, title = "Don't Know Value")
   pnta_answer <- tcltk::tk_select.list(dplyr::pull(iycf[,yes_no_columns]) %>% unique, title = "Prefer Not To Answer Value")
-  iycf2_immediate_value <- tcltk::tk_select.list(dplyr::pull(iycf[,iycf_2]) %>% unique, title = "Immediately Value")
-  iycf2_lessday_value <- tcltk::tk_select.list(dplyr::pull(iycf[,iycf_2]) %>% unique, title = "Less Than A Day Value")
-  iycf2_moreday_value <- tcltk::tk_select.list(dplyr::pull(iycf[,iycf_2]) %>% unique, title = "More Than A Day Value")
+
+  if(!is.null(iycf_2)){
+    if(!is_empty_new(iycf_2)){
+      iycf2_immediate_value <- tcltk::tk_select.list(dplyr::pull(iycf[,iycf_2]) %>% unique, title = "Immediately Value")
+      iycf2_lessday_value <- tcltk::tk_select.list(dplyr::pull(iycf[,iycf_2]) %>% unique, title = "Less Than A Day Value")
+      iycf2_moreday_value <- tcltk::tk_select.list(dplyr::pull(iycf[,iycf_2]) %>% unique, title = "More Than A Day Value")
+    } else {
+      iycf2_immediate_value  <- NULL
+      iycf2_lessday_value  <- NULL
+      iycf2_moreday_value  <- NULL
+    }
+
+  } else {
+    iycf2_immediate_value  <- NULL
+    iycf2_lessday_value  <- NULL
+    iycf2_moreday_value  <- NULL
+  }
   if(!all(c(uuid_iycf,age_months) %in% names(iycf))) {
     svDialogs::dlg_message("Please check if the uuid or Age month column exist in the IYCF dataset")
     stop("Please check if the uuid or Age month column exist in the IYCF dataset")
@@ -764,7 +778,8 @@ if(!file.exists("inputs/environment.Rdata")) {
                             pna_value = pnta_answer,
                             iycf2_immediate_value = iycf2_immediate_value,
                             iycf2_lessday_value = iycf2_lessday_value,
-                            iycf2_moreday_value = iycf2_moreday_value)
+                            iycf2_moreday_value = iycf2_moreday_value,
+                            uuid = uuid_iycf)
   }
 } else {
   iycf <- iycf %>%

@@ -31,3 +31,9 @@ add_to_html.sub_title <- function(disaggregate.variable){
 tableFormat <-list(
   dom = 'T<"clear">lfrtip',
   scrollX = TRUE)
+
+### Detect empty variables
+is_empty_new <- function(x) {
+  obj <- get(x)
+  length(obj) == 0 || is.null(obj) ||  (is.character(obj) && all(obj == ""))
+}
