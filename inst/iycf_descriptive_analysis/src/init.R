@@ -219,7 +219,7 @@ daf_var_unames <- daf %>% mutate(uname = paste0(variable, "_", admin,
 daf$xlsx_name <- daf_var_unames
 
 ##Detect empty variables
-is_empty <- function(x) {
+is_empty_new <- function(x) {
   obj <- get(x)
   length(obj) == 0 || is.null(obj) ||  (is.character(obj) && all(obj == ""))
 }

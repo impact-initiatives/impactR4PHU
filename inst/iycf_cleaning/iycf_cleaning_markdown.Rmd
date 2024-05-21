@@ -770,9 +770,21 @@ if(!file.exists("inputs/environment.Rdata")) {
   no_answer <- tcltk::tk_select.list(dplyr::pull(raw.iycf[,yes_no_columns]) %>% unique, title = "No Value")
   dnk_answer <- tcltk::tk_select.list(dplyr::pull(raw.iycf[,yes_no_columns]) %>% unique, title = "Don't Know Value")
   pnta_answer <- tcltk::tk_select.list(dplyr::pull(raw.iycf[,yes_no_columns]) %>% unique, title = "Prefer Not To Answer Value")
-  iycf2_immediate_value <- tcltk::tk_select.list(dplyr::pull(raw.iycf[,iycf_2]) %>% unique, title = "Immediately Value")
-  iycf2_lessday_value <- tcltk::tk_select.list(dplyr::pull(raw.iycf[,iycf_2]) %>% unique, title = "Less Than A Day Value")
-  iycf2_moreday_value <- tcltk::tk_select.list(dplyr::pull(raw.iycf[,iycf_2]) %>% unique, title = "More Than A Day Value")
+  if(!is.null(iycf_2)) {
+    if(!is_empty_new(iycf_2)){
+      iycf2_immediate_value <- tcltk::tk_select.list(dplyr::pull(raw.iycf[,iycf_2]) %>% unique, title = "Immediately Value")
+      iycf2_lessday_value <- tcltk::tk_select.list(dplyr::pull(raw.iycf[,iycf_2]) %>% unique, title = "Less Than A Day Value")
+      iycf2_moreday_value <- tcltk::tk_select.list(dplyr::pull(raw.iycf[,iycf_2]) %>% unique, title = "More Than A Day Value")
+    } else {
+        iycf2_immediate_value <- NULL
+        iycf2_lessday_value <- NULL
+        iycf2_moreday_value <-  NULL
+    }
+  } else {
+      iycf2_immediate_value <- NULL
+      iycf2_lessday_value <- NULL
+      iycf2_moreday_value <-  NULL
+  }
   if(!all(c(uuid_iycf,age_months) %in% names(raw.iycf))) {
       svDialogs::dlg_message("Please check if the uuid or Age month column exist in the IYCF dataset")
       stop("Please check if the uuid or Age month column exist in the IYCF dataset")
@@ -823,7 +835,8 @@ if(!file.exists("inputs/environment.Rdata")) {
                               pna_value = pnta_answer,
                               iycf2_immediate_value = iycf2_immediate_value,
                               iycf2_lessday_value = iycf2_lessday_value,
-                              iycf2_moreday_value = iycf2_moreday_value)
+                              iycf2_moreday_value = iycf2_moreday_value,
+                              uuid = uuid_iycf)
     }
   } else {
    raw.iycf <- raw.iycf %>%
@@ -879,11 +892,7 @@ if(!file.exists("inputs/environment.Rdata")) {
  
 
   all_vars <- ls()
-    is_empty <- function(x) {
-  obj <- get(x)
-  length(obj) == 0 || is.null(obj) ||  (is.character(obj) && all(obj == ""))
-}
-  empty_vars <- all_vars[sapply(all_vars, is_empty)]
+  empty_vars <- all_vars[sapply(all_vars, is_empty_new)]
 
   for (i in empty_vars) {
     assign(i, NULL)
@@ -925,7 +934,8 @@ raw.flag.iycf <- raw.iycf %>%
                                 iycf_6b_num = iycf_6b,
                                 iycf_6c_num = iycf_6c,
                                 iycf_6d_num = iycf_6d,
-                                yes_value = yes_answer)
+                                yes_value = yes_answer,
+                                uuid = uuid_iycf)
 
   
 ###### CONTINUE HERE
