@@ -1306,7 +1306,8 @@ if(yes_no_team == "yes"){
   impactR4PHU::plot_age_distribution(raw.flag.iycf,
                                      year_or_month = "month",
                                      age_months = age_months,
-                                     breaks = 1)
+                                     breaks = 1,
+                                     max_age = 23)
 
 ```
 
@@ -1326,7 +1327,8 @@ if(yes_no_team == "yes"){
                                              dplyr::filter(!!rlang::sym(enumerator) == j),
                                      year_or_month = "month",
                                      age_months = age_months,
-                                     breaks = 1),
+                                     breaks = 1,
+                                     max_age = 23),
               fig_height = 8, fig_width = 10)
       }
     }
@@ -1335,7 +1337,8 @@ if(yes_no_team == "yes"){
                                      year_or_month = "month",
                                      age_months = age_months,
                                      by_group = enumerator,
-                                     breaks = 1),
+                                     breaks = 1,
+                                     max_age = 23),
               fig_height = 8, fig_width = 10)
 }
 
