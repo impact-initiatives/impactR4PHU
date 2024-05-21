@@ -46,8 +46,6 @@ if(file.exists("inputs/environment.Rdata")) {
 
 ## Introduction
 
-### TO UPDATE
-
 ```{r, results='asis'}
   cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",3), collapse=""), " ", "What is this tool?"))
   cat('\nThe FSL Data Cleaning Template serves as a crucial tool for assessing the data collection of FSL indicators across different assessments. This comprehensive tool is designed to identify and address potential issues within the data, ensuring that field teams are being followed up on potential issues detected in the data collection.\n\nThe report provides a detailed examination of the datasets, employing a variety of metrics and methodologies to evaluate data quality. This report aims to uncover any discrepancies, outliers, or anomalies that may suggest data collection, entry errors, or underlying issues that could impact the integrity of the findings.</p>')
