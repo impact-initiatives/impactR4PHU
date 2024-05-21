@@ -20,4 +20,4 @@ if(type_assessment == "Household") {
   rmarkdown::render("mort_cleaning_markdown_hh.Rmd",
                     output_file = paste0("output/", "Mort_Cleaning_", strings['out_date'],".html"))
 }
-cat("\n> Cleaning check completed! You can check your output folder.")
+cat("\n> Cleaning completed! You can check your output folder.")
