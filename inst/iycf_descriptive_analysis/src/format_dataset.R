@@ -713,7 +713,7 @@ if(!file.exists("inputs/environment.Rdata")) {
   pnta_answer <- tcltk::tk_select.list(dplyr::pull(iycf[,yes_no_columns]) %>% unique, title = "Prefer Not To Answer Value")
 
   if(!is.null(iycf_2)){
-    if(!is_empty_new(iycf_2)){
+    if(!is_empty_new("iycf_2")){
       iycf2_immediate_value <- tcltk::tk_select.list(dplyr::pull(iycf[,iycf_2]) %>% unique, title = "Immediately Value")
       iycf2_lessday_value <- tcltk::tk_select.list(dplyr::pull(iycf[,iycf_2]) %>% unique, title = "Less Than A Day Value")
       iycf2_moreday_value <- tcltk::tk_select.list(dplyr::pull(iycf[,iycf_2]) %>% unique, title = "More Than A Day Value")

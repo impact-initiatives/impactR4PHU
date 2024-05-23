@@ -165,10 +165,10 @@ create_mortality_long_df <- function (df_main, date_dc = "today", date_recall_ev
     df_main <- df_main %>% dplyr::mutate(admin2 = NA)
   }
   if (!all(c(date_dc, date_recall_event, enumerator) %in%
-           names(df_main))) {
+           names(df_main))|
+      setdiff(length(c(date_dc, date_recall_event, enumerator)),3) != 0) {
     stop("Check date_dc, date_recall_event, or enumerator arguments. Couldn't find in main data.")
-  }
-  else {
+  } else {
     main_to_join <- df_main %>% dplyr::rename(date_dc = !!rlang::sym(date_dc),
                                               date_recall_event = !!rlang::sym(date_recall_event),
                                               enumerator = !!rlang::sym(enumerator), cluster = !!rlang::sym(cluster),

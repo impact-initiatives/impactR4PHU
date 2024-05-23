@@ -58,8 +58,9 @@ check_anthro_flags <- function(.dataset,
   # combine all mfaz_cols together
   mfaz_cols <- c("mfaz","severe_mfaz","moderate_mfaz","global_mfaz")
 
-  ## Test if all columns are in the dataset
-  if(!all(mfaz_cols %in% names(.dataset))) {
+  missing_columns <- setdiff(mfaz_cols, names(.dataset))
+
+  if(length(missing_columns) > 0) {
     stop("Missing mfaz columns")
   } else{
     .dataset <- .dataset
@@ -80,8 +81,9 @@ check_anthro_flags <- function(.dataset,
   }
   # combine all muac_cols together
   muac_cols <- c(nut_muac_cm,"sam_muac","mam_muac","gam_muac")
-  ## Test if all columns are in the dataset
-  if(!all(muac_cols %in% names(.dataset))) {
+  missing_columns <- setdiff(muac_cols, names(.dataset))
+
+  if(length(missing_columns) > 0) {
     stop("Missing muac columns")
   } else{
     .dataset <- .dataset %>%
@@ -94,13 +96,15 @@ check_anthro_flags <- function(.dataset,
 
   }
   ## Test if all columns are in the dataset
-  if(!edema_confirm %in% names(.dataset)) {
-    stop("Missing edema_confirm columns")
-  } else{
-    .dataset <- .dataset %>%
-      dplyr::mutate(flag_edema_pitting = ifelse(is.na(!!rlang::sym(edema_confirm)), NA,
-                                                ifelse(!!rlang::sym(edema_confirm) == value_edema_confirm,1,0)))
+  if(!is.null(edema_confirm)){
+    if(!edema_confirm %in% names(.dataset)) {
+      stop("Missing edema_confirm columns")
+    } else{
+      .dataset <- .dataset %>%
+        dplyr::mutate(flag_edema_pitting = ifelse(is.na(!!rlang::sym(edema_confirm)), NA,
+                                                  ifelse(!!rlang::sym(edema_confirm) == value_edema_confirm,1,0)))
 
+    }
   }
 
   options(warn = 0)

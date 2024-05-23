@@ -11,7 +11,6 @@
 #'   add_persontime(df_mortality, smart = F)
 #' }
 add_persontime <- function(df_mortality, smart = FALSE) {
-
   if (smart == TRUE) {
     df_mortality <- df_mortality %>% dplyr::mutate(age_years = as.numeric(age_years),
                                                    join = ifelse(date_recall_date - date_join_date > 0, NA, join),
