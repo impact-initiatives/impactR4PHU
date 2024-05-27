@@ -275,9 +275,8 @@ check_fsl_flags <- function(.dataset,
   fcs_flag_columns <- c(fsl_fcs_cereal,fsl_fcs_legumes,fsl_fcs_dairy,fsl_fcs_meat,
                         fsl_fcs_veg,fsl_fcs_fruit,fsl_fcs_oil,fsl_fcs_sugar,fsl_fcs_score)
 
-  missing_columns <- setdiff(fcs_flag_columns, names(.dataset))
 
-  if(length(missing_columns) > 0) {
+  if(length(setdiff(length(fcs_flag_columns),9)) != 0) {
     warning("Missing fcs columns")
   } else{
     ## flag issues in data with FCS
@@ -304,9 +303,8 @@ check_fsl_flags <- function(.dataset,
 
   required_columns <- c(rcsi_flag_columns,fsl_fcs_cereal,fsl_fcs_dairy,
                         fsl_fcs_meat,fsl_fcs_score)
-  missing_columns <- setdiff(required_columns, names(.dataset))
 
-  if(length(missing_columns) > 0) {
+  if(length(setdiff(length(required_columns),10)) != 0) {
     warning("Missing rcsi or fsl_fcs_cereal/fsl_fcs_dairy/fsl_fcs_meat/fsl_fcs_score columns")
   } else {
     .dataset <- .dataset %>%
@@ -356,9 +354,8 @@ check_fsl_flags <- function(.dataset,
   hhs_flag_columns <- c(fsl_hhs_nofoodhh,fsl_hhs_nofoodhh_freq,fsl_hhs_sleephungry,
                         fsl_hhs_sleephungry_freq,fsl_hhs_alldaynight,fsl_hhs_alldaynight_freq,fsl_hhs_score,fsl_hhs_cat)
 
-  missing_columns <- setdiff(hhs_flag_columns, names(.dataset))
 
-  if(length(missing_columns) > 0) {
+  if(length(setdiff(length(hhs_flag_columns),8)) != 0) {
     warning("Missing hhs columns")
   } else {
     .dataset <- .dataset %>%
@@ -369,9 +366,8 @@ check_fsl_flags <- function(.dataset,
   lcs_flag_columns <- c(fsl_lcsi_stress1,fsl_lcsi_stress2,fsl_lcsi_stress3,fsl_lcsi_stress4,fsl_lcsi_crisis1,fsl_lcsi_crisis2,
                         fsl_lcsi_crisis3,fsl_lcsi_emergency1,fsl_lcsi_emergency2,fsl_lcsi_emergency3,fsl_lcsi_stress,
                         fsl_lcsi_crisis,fsl_lcsi_emergency,fsl_lcsi_cat_yes,fsl_lcsi_cat_exhaust,fsl_lcsi_cat)
-  missing_columns <- setdiff(lcs_flag_columns, names(.dataset))
 
-  if(length(missing_columns) > 0) {
+  if(length(setdiff(length(lcs_flag_columns),16)) != 0) {
     warning("Missing lcsi columns")
   } else {
     .dataset <- .dataset %>%
@@ -431,9 +427,8 @@ check_fsl_flags <- function(.dataset,
   }
 
   fc_phase_col <- c(fsl_fc_cell,fsl_fc_phase)
-  missing_columns <- setdiff(fc_phase_col, names(.dataset))
 
-  if(length(missing_columns) > 0) {
+  if(length(setdiff(length(fc_phase_col),2)) != 0) {
     warning("Missing fc_cell and fc_phase columns")
   } else {
     ## flag phase
@@ -446,9 +441,8 @@ check_fsl_flags <- function(.dataset,
                          fsl_hdds_meat,fsl_hdds_fish,fsl_hdds_dairy,fsl_hdds_eggs,fsl_hdds_sugar,
                          fsl_hdds_oil,fsl_hdds_condiments,fsl_hdds_cat,fsl_hdds_score)
 
-  missing_columns <- setdiff(hdds_flag_columns, names(.dataset))
 
-  if(length(missing_columns) > 0) {
+  if(length(setdiff(length(fc_phase_col),14)) != 0) {
     warning("Missing hdds columns")
   } else{
     .dataset <- .dataset %>%

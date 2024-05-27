@@ -250,9 +250,8 @@ add_iycf <- function(.dataset,
                    iycf_6f,iycf_6g,iycf_6h,iycf_6i,iycf_6j)
 
   required_columns <- c(ebf_foods, ebf_liquids, iycf_4)
-  missing_columns <- setdiff(required_columns, names(.dataset))
 
-  if(length(missing_columns) > 0) {
+  if(length(setdiff(length(required_columns),29)) != 0) {
     warning("Your dataset appears not to have all the foods/liquids from the standard IYCF 2021 question sequence.\nIt is advised you ask about all recommended foods/liquids or there is a risk of overestimating EBF.\nIYCF Indicator 4: Exclusive Breastfeeding not calculated ")
     warning(paste0("Missing the following variables ", setdiff(c(ebf_foods,ebf_liquids), names(.dataset))))
   } else {
@@ -290,9 +289,8 @@ add_iycf <- function(.dataset,
 
   # IYCF Indicator 5: Mixed Milk Feeding (MIxMF)
   required_columns <- c(iycf_4,iycf_6b,iycf_6c)
-  missing_columns <- setdiff(required_columns, names(.dataset))
 
-  if(length(missing_columns) > 0) {
+  if(length(setdiff(length(required_columns),3)) != 0) {
     warning("IYCF 4 or IYCF 6b or IYCF 6c not found in dataset.\nIYCF Indicator 5: Mixed Milk Feeding (MIxMF) not calculated")
   } else {
     .dataset <- .dataset %>%
@@ -327,9 +325,8 @@ add_iycf <- function(.dataset,
 
   # IYCF Indicator 7: Introduction of Solid, Semi-Solid, or Soft Foods (ISSSF)
   required_columns <- c(ebf_foods)
-  missing_columns <- setdiff(required_columns, names(.dataset))
 
-  if(length(missing_columns) > 0) {
+  if(length(setdiff(length(required_columns),18)) != 0) {
     warning("Your dataset appears not to have all the foods from the standard IYCF 2021 question sequence.\nIYCF Indicator 7: Introduction of Solid, Semi-Solid, or Soft Foods (ISSSF) not calculated")
     warning(paste0("Missing the following variables ", setdiff(ebf_foods, names(.dataset))))
   } else {
@@ -350,9 +347,8 @@ add_iycf <- function(.dataset,
                    iycf_7c,iycf_7d,iycf_7e,iycf_7f,iycf_7g,iycf_7h,
                    iycf_7i,iycf_7j,iycf_7k,iycf_7l,iycf_7m,iycf_7n,iycf_7o)
 
-  missing_columns <- setdiff(mdd_columns, names(.dataset))
 
-  if(length(missing_columns) > 0) {
+  if(length(setdiff(length(mdd_columns),19)) != 0) {
     warning("Minimum Dietary Diversity related columns not found in dataset.\nIYCF Indicator 8: Minimum Dietary Diversity 6-23 months (MDD) not calculated")
   } else {
     .dataset <- .dataset %>%
@@ -420,12 +416,11 @@ add_iycf <- function(.dataset,
   }
 
   # IYCF Indicator 9: Minimum Meal Frequency 6-23 months (MMF)
-  mmf_columns <- c(iycf_4,"iycf_6b_num","iycf_6c_num",
+  mmf_columns <- c(iycf_4,ebf_liquids,"iycf_6b_num","iycf_6c_num",
                    "iycf_6d_num",iycf_8)
 
-  missing_columns <- setdiff(mmf_columns, names(.dataset))
 
-  if(length(missing_columns) > 0) {
+  if(length(setdiff(length(mmf_columns),13)) != 0) {
     warning("Minimum Meal Frequency related columns not found in dataset.\nIYCF Indicator 9: Minimum Meal Frequency 6-23 months (MMF) not calculated")
   } else {
     .dataset <- .dataset %>%
@@ -475,11 +470,11 @@ add_iycf <- function(.dataset,
 
   # IYCF Indicator 10: Minimum Milk Feeding Frequency For Non-Breastfed Children 6-23 months (MMFF)
   mmff_columns <- c(iycf_4,"iycf_6b_num",
-                    "iycf_6c_num","iycf_6d_num","iycf_7a_num")
+                    "iycf_6c_num","iycf_6d_num","iycf_7a_num",
+                    ebf_liquids, ebf_foods)
 
-  missing_columns <- setdiff(mmff_columns, names(.dataset))
 
-  if(length(missing_columns) > 0) {
+  if(length(setdiff(length(mmff_columns),33)) != 0) {
     warning("Minimum Milk Feeding Frequency related columns not found in dataset.\nIYCF Indicator 10: Minimum Milk Feeding Frequency For Non-Breastfed Children 6-23 months (MMFF) not calculated")
   } else {
     .dataset <- .dataset %>%
@@ -498,11 +493,10 @@ add_iycf <- function(.dataset,
 
   # IYCF Indicator 11: Minimum Acceptable Diet 6-23 months (MAD)
 
-  ind_11_columns <- c(iycf_4, "iycf_mmf", "iycf_mdd_cat", "iycf_mmff")
+  ind_11_columns <- c(iycf_4, "iycf_mmf", "iycf_mdd_cat", "iycf_mmff",
+                      ebf_liquids, ebf_foods)
 
-  missing_columns <- setdiff(ind_11_columns, names(.dataset))
-
-  if(length(missing_columns) > 0) {
+  if(length(setdiff(length(ind_11_columns),32)) != 0) {
     warning("Minimum Acceptable Diet 6-23 months related columns not found in dataset.\nIYCF Indicator 11: Minimum Acceptable Diet 6-23 months (MAD) not calculated")
   } else {
     .dataset <- .dataset %>%
@@ -526,9 +520,8 @@ add_iycf <- function(.dataset,
                       iycf_7l,iycf_7m)
 
 
-  missing_columns <- setdiff(ind_12_columns, names(.dataset))
 
-  if(length(missing_columns) > 0) {
+  if(length(setdiff(length(ind_12_columns),5)) != 0) {
     warning("Eggs & Flesh Foods Consumption related columns not found in dataset.\nIYCF Indicator 12: Eggs & Flesh Foods Consumption 6-23 months (EFF) not calculated")
   } else {
     .dataset <- .dataset %>%
@@ -553,9 +546,8 @@ add_iycf <- function(.dataset,
 
   sweet_col <- c(iycf_6c_swt,iycf_6d_swt,iycf_6h_swt,iycf_6j_swt,
                  iycf_6e, iycf_6f,iycf_6g)
-  missing_columns <- setdiff(sweet_col, names(.dataset))
 
-  if(length(missing_columns) > 0) {
+  if(length(setdiff(length(sweet_col),7)) != 0) {
     warning("Sweet Beverage Consumption  related columns not found in dataset.\nIYCF Indicator 13: Sweet Beverage Consumption 6-23 months (SWB) not calculated")
   } else {
     .dataset <- .dataset %>%
@@ -581,9 +573,8 @@ add_iycf <- function(.dataset,
   }
 
   # IYCF Indicator 14: Unhealthy Food Consumption (UFC)
-    missing_columns <- setdiff(c(iycf_7p,iycf_7q), names(.dataset))
 
-    if(length(missing_columns) > 0) {
+    if(length(setdiff(length(c(iycf_7p,iycf_7q)),2)) != 0) {
     warning("Unhealthy Food Consumption related columns not found in dataset.\nIYCF Indicator 14: Unhealthy Food Consumption (UFC) not calculated")
   } else {
     .dataset <- .dataset %>%
@@ -600,10 +591,10 @@ add_iycf <- function(.dataset,
 
   # IYCF Indicator 15: Zero Vegetable or Fruit Consumption 6-23 months (ZVF)
   zero_columns <- c("iycf_7c_zero","iycf_7e_zero",
-                    "iycf_7f_zero","iycf_7g_zero","iycf_7h_zero")
-  missing_columns <- setdiff(zero_columns, names(.dataset))
+                    "iycf_7f_zero","iycf_7g_zero","iycf_7h_zero",
+                    ebf_liquids, ebf_foods)
 
-  if(length(missing_columns) > 0) {
+  if(length(setdiff(length(zero_columns),33)) != 0) {
     warning("Zero Vegetable or Fruit Consumption related columns not found in dataset.\nIYCF Indicator 15: Zero Vegetable or Fruit Consumption 6-23 months (ZVF) not calculated")
   } else {
     .dataset <- .dataset %>%

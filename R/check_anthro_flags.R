@@ -58,9 +58,7 @@ check_anthro_flags <- function(.dataset,
   # combine all mfaz_cols together
   mfaz_cols <- c("mfaz","severe_mfaz","moderate_mfaz","global_mfaz")
 
-  missing_columns <- setdiff(mfaz_cols, names(.dataset))
-
-  if(length(missing_columns) > 0) {
+  if(length(setdiff(length(mfaz_cols),4)) != 0) {
     stop("Missing mfaz columns")
   } else{
     .dataset <- .dataset
@@ -81,9 +79,8 @@ check_anthro_flags <- function(.dataset,
   }
   # combine all muac_cols together
   muac_cols <- c(nut_muac_cm,"sam_muac","mam_muac","gam_muac")
-  missing_columns <- setdiff(muac_cols, names(.dataset))
 
-  if(length(missing_columns) > 0) {
+  if(length(setdiff(length(muac_cols),4)) != 0) {
     stop("Missing muac columns")
   } else{
     .dataset <- .dataset %>%

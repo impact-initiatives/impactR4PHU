@@ -54,208 +54,209 @@ testthat::test_that("Check for missing columns", {
   load(testthat::test_path("testdata", "test_survey.rda"))
 
   testthat::expect_warning(check_fsl_flags(tool.survey = test_survey,
-    .dataset = test_df_with_calculation %>% dplyr::select(-fsl_fcs_cereal)
+    .dataset = test_df_with_calculation %>% dplyr::select(-fsl_fcs_cereal),
+    fsl_fcs_cereal = NULL
   ))
 
   testthat::expect_warning(check_fsl_flags(tool.survey = test_survey,
     .dataset = test_df_with_calculation %>% dplyr::select(-fsl_fcs_legumes),
-    fsl_fcs_legumes = "fsl_fcs_legumes"
+    fsl_fcs_legumes = NULL
   ))
 
   testthat::expect_warning(check_fsl_flags(tool.survey = test_survey,
     .dataset = test_df_with_calculation %>% dplyr::select(-fsl_fcs_veg),
-    fsl_fcs_veg = "fsl_fcs_veg"
+    fsl_fcs_veg = NULL
   ))
 
   testthat::expect_warning(check_fsl_flags(tool.survey = test_survey,
     .dataset = test_df_with_calculation %>% dplyr::select(-fsl_fcs_fruit),
-    fsl_fcs_fruit = "fsl_fcs_fruit"
+    fsl_fcs_fruit = NULL
   ))
 
   testthat::expect_warning(check_fsl_flags(tool.survey = test_survey,
     .dataset = test_df_with_calculation %>% dplyr::select(-fsl_fcs_meat),
-    fsl_fcs_meat = "fsl_fcs_meat"
+    fsl_fcs_meat = NULL
   ))
 
   testthat::expect_warning(check_fsl_flags(tool.survey = test_survey,
     .dataset = test_df_with_calculation %>% dplyr::select(-fsl_fcs_dairy),
-    fsl_fcs_dairy = "fsl_fcs_dairy"
+    fsl_fcs_dairy = NULL
   ))
 
   testthat::expect_warning(check_fsl_flags(tool.survey = test_survey,
     .dataset = test_df_with_calculation %>% dplyr::select(-fsl_fcs_sugar),
-    fsl_fcs_sugar = "fsl_fcs_sugar"
+    fsl_fcs_sugar = NULL
   ))
 
   testthat::expect_warning(check_fsl_flags(tool.survey = test_survey,
     .dataset = test_df_with_calculation %>% dplyr::select(-fsl_fcs_oil),
-    fsl_fcs_oil = "fsl_fcs_oil"
+    fsl_fcs_oil = NULL
   ))
 
 
   testthat::expect_warning(check_fsl_flags(tool.survey = test_survey,
     .dataset = test_df_with_calculation %>% dplyr::select(-fsl_hhs_nofoodhh),
-    fsl_hhs_nofoodhh = "fsl_hhs_nofoodhh"
+    fsl_hhs_nofoodhh = NULL
   ))
 
   testthat::expect_warning(check_fsl_flags(tool.survey = test_survey,
     .dataset = test_df_with_calculation %>% dplyr::select(-fsl_hhs_nofoodhh_freq),
-    fsl_hhs_nofoodhh_freq = "fsl_hhs_nofoodhh_freq"
+    fsl_hhs_nofoodhh_freq = NULL
   ))
 
   testthat::expect_warning(check_fsl_flags(tool.survey = test_survey,
     .dataset = test_df_with_calculation %>% dplyr::select(-fsl_hhs_sleephungry),
-    fsl_hhs_sleephungry = "fsl_hhs_sleephungry"
+    fsl_hhs_sleephungry = NULL
   ))
 
   testthat::expect_warning(check_fsl_flags(tool.survey = test_survey,
     .dataset = test_df_with_calculation %>% dplyr::select(-fsl_hhs_sleephungry_freq),
-    fsl_hhs_sleephungry_freq = "fsl_hhs_sleephungry_freq"
+    fsl_hhs_sleephungry_freq = NULL
   ))
 
   testthat::expect_warning(check_fsl_flags(tool.survey = test_survey,
     .dataset = test_df_with_calculation %>% dplyr::select(-fsl_hhs_alldaynight),
-    fsl_hhs_alldaynight = "fsl_hhs_alldaynight"
+    fsl_hhs_alldaynight = NULL
   ))
 
   testthat::expect_warning(check_fsl_flags(tool.survey = test_survey,
     .dataset = test_df_with_calculation %>% dplyr::select(-fsl_hhs_alldaynight_freq),
-    fsl_hhs_alldaynight_freq = "fsl_hhs_alldaynight_freq"
+    fsl_hhs_alldaynight_freq = NULL
   ))
 
   testthat::expect_warning(check_fsl_flags(tool.survey = test_survey,
     .dataset = test_df_with_calculation %>% dplyr::select(-fsl_rcsi_lessquality),
-    fsl_rcsi_lessquality = "fsl_rcsi_lessquality"
+    fsl_rcsi_lessquality = NULL
   ))
 
   testthat::expect_warning(check_fsl_flags(tool.survey = test_survey,
     .dataset = test_df_with_calculation %>% dplyr::select(-fsl_rcsi_borrow),
-    fsl_rcsi_borrow = "fsl_rcsi_borrow"
+    fsl_rcsi_borrow = NULL
   ))
 
   testthat::expect_warning(check_fsl_flags(tool.survey = test_survey,
     .dataset = test_df_with_calculation %>% dplyr::select(-fsl_rcsi_mealsize),
-    fsl_rcsi_mealsize = "fsl_rcsi_mealsize"
+    fsl_rcsi_mealsize = NULL
   ))
 
   testthat::expect_warning(check_fsl_flags(tool.survey = test_survey,
     .dataset = test_df_with_calculation %>% dplyr::select(-fsl_rcsi_mealadult),
-    fsl_rcsi_mealadult = "fsl_rcsi_mealadult"
+    fsl_rcsi_mealadult = NULL
   ))
 
   testthat::expect_warning(check_fsl_flags(tool.survey = test_survey,
     .dataset = test_df_with_calculation %>% dplyr::select(-fsl_rcsi_mealnb),
-    fsl_rcsi_mealnb = "fsl_rcsi_mealnb"
+    fsl_rcsi_mealnb = NULL
   ))
 
   testthat::expect_warning(check_fsl_flags(tool.survey = test_survey,
     .dataset = test_df_with_calculation %>% dplyr::select(-fsl_hdds_cereals),
-    fsl_hdds_cereals = "fsl_hdds_cereals"
+    fsl_hdds_cereals = NULL
   ))
 
   testthat::expect_warning(check_fsl_flags(tool.survey = test_survey,
     .dataset = test_df_with_calculation %>% dplyr::select(-fsl_hdds_tubers),
-    fsl_hdds_tubers = "fsl_hdds_tubers"
+    fsl_hdds_tubers = NULL
   ))
 
   testthat::expect_warning(check_fsl_flags(tool.survey = test_survey,
     .dataset = test_df_with_calculation %>% dplyr::select(-fsl_hdds_veg),
-    fsl_hdds_veg = "fsl_hdds_veg"
+    fsl_hdds_veg = NULL
   ))
 
   testthat::expect_warning(check_fsl_flags(tool.survey = test_survey,
     .dataset = test_df_with_calculation %>% dplyr::select(-fsl_hdds_fruit),
-    fsl_hdds_fruit = "fsl_hdds_fruit"
+    fsl_hdds_fruit = NULL
   ))
 
   testthat::expect_warning(check_fsl_flags(tool.survey = test_survey,
     .dataset = test_df_with_calculation %>% dplyr::select(-fsl_hdds_meat),
-    fsl_hdds_meat = "fsl_hdds_meat"
+    fsl_hdds_meat = NULL
   ))
 
   testthat::expect_warning(check_fsl_flags(tool.survey = test_survey,
     .dataset = test_df_with_calculation %>% dplyr::select(-fsl_hdds_eggs),
-    fsl_hdds_eggs = "fsl_hdds_eggs"
+    fsl_hdds_eggs = NULL
   ))
 
   testthat::expect_warning(check_fsl_flags(tool.survey = test_survey,
     .dataset = test_df_with_calculation %>% dplyr::select(-fsl_hdds_fish),
-    fsl_hdds_fish = "fsl_hdds_fish"
+    fsl_hdds_fish = NULL
   ))
 
   testthat::expect_warning(check_fsl_flags(tool.survey = test_survey,
     .dataset = test_df_with_calculation %>% dplyr::select(-fsl_hdds_legumes),
-    fsl_hdds_legumes = "fsl_hdds_legumes"
+    fsl_hdds_legumes = NULL
   ))
 
   testthat::expect_warning(check_fsl_flags(tool.survey = test_survey,
     .dataset = test_df_with_calculation %>% dplyr::select(-fsl_hdds_dairy),
-    fsl_hdds_dairy = "fsl_hdds_dairy"
+    fsl_hdds_dairy = NULL
   ))
 
   testthat::expect_warning(check_fsl_flags(tool.survey = test_survey,
     .dataset = test_df_with_calculation %>% dplyr::select(-fsl_hdds_oil),
-    fsl_hdds_oil = "fsl_hdds_oil"
+    fsl_hdds_oil = NULL
   ))
 
   testthat::expect_warning(check_fsl_flags(tool.survey = test_survey,
     .dataset = test_df_with_calculation %>% dplyr::select(-fsl_hdds_sugar),
-    fsl_hdds_sugar = "fsl_hdds_sugar"
+    fsl_hdds_sugar = NULL
   ))
 
   testthat::expect_warning(check_fsl_flags(tool.survey = test_survey,
     .dataset = test_df_with_calculation %>% dplyr::select(-fsl_hdds_condiments),
-    fsl_hdds_condiments = "fsl_hdds_condiments"
+    fsl_hdds_condiments = NULL
   ))
 
   testthat::expect_warning(check_fsl_flags(tool.survey = test_survey,
     .dataset = test_df_with_calculation %>% dplyr::select(-fsl_lcsi_stress1),
-    fsl_lcsi_stress1 = "fsl_lcsi_stress1"
+    fsl_lcsi_stress1 = NULL
   ))
 
   testthat::expect_warning(check_fsl_flags(tool.survey = test_survey,
     .dataset = test_df_with_calculation %>% dplyr::select(-fsl_lcsi_stress2),
-    fsl_lcsi_stress2 = "fsl_lcsi_stress2"
+    fsl_lcsi_stress2 = NULL
   ))
   testthat::expect_warning(check_fsl_flags(tool.survey = test_survey,
     .dataset = test_df_with_calculation %>% dplyr::select(-fsl_lcsi_stress3),
-    fsl_lcsi_stress3 = "fsl_lcsi_stress3"
+    fsl_lcsi_stress3 = NULL
   ))
   testthat::expect_warning(check_fsl_flags(tool.survey = test_survey,
     .dataset = test_df_with_calculation %>% dplyr::select(-fsl_lcsi_stress4),
-    fsl_lcsi_stress4 = "fsl_lcsi_stress4"
+    fsl_lcsi_stress4 = NULL
   ))
   testthat::expect_warning(check_fsl_flags(tool.survey = test_survey,
     .dataset = test_df_with_calculation %>% dplyr::select(-fsl_lcsi_crisis1),
-    fsl_lcsi_crisis1 = "fsl_lcsi_crisis1"
+    fsl_lcsi_crisis1 = NULL
   ))
   testthat::expect_warning(check_fsl_flags(tool.survey = test_survey,
     .dataset = test_df_with_calculation %>% dplyr::select(-fsl_lcsi_crisis2),
-    fsl_lcsi_crisis2 = "fsl_lcsi_crisis2"
+    fsl_lcsi_crisis2 = NULL
   ))
   testthat::expect_warning(check_fsl_flags(tool.survey = test_survey,
     .dataset = test_df_with_calculation %>% dplyr::select(-fsl_lcsi_crisis3),
-    fsl_lcsi_crisis3 = "fsl_lcsi_crisis3"
+    fsl_lcsi_crisis3 = NULL
   ))
   testthat::expect_warning(check_fsl_flags(tool.survey = test_survey,
     .dataset = test_df_with_calculation %>% dplyr::select(-fsl_lcsi_emergency1),
-    fsl_lcsi_emergency1 = "fsl_lcsi_emergency1"
+    fsl_lcsi_emergency1 = NULL
   ))
   testthat::expect_warning(check_fsl_flags(tool.survey = test_survey,
     .dataset = test_df_with_calculation %>% dplyr::select(-fsl_lcsi_emergency2),
-    fsl_lcsi_emergency2 = "fsl_lcsi_emergency2"
+    fsl_lcsi_emergency2 = NULL
   ))
   testthat::expect_warning(check_fsl_flags(tool.survey = test_survey,
     .dataset = test_df_with_calculation %>% dplyr::select(-fsl_lcsi_emergency3),
-    fsl_lcsi_emergency3 = "fsl_lcsi_emergency3"
+    fsl_lcsi_emergency3 = NULL
   ))
   testthat::expect_warning(check_fsl_flags(tool.survey = test_survey,
     .dataset = test_df_with_calculation %>% dplyr::select(-fc_cell),
-    fsl_fc_cell = "fc_cell"
+    fsl_fc_cell = NULL
   ))
   testthat::expect_warning(check_fsl_flags(tool.survey = test_survey,
     .dataset = test_df_with_calculation %>% dplyr::select(-fc_phase),
-    fsl_fc_phase = "fc_phase"
+    fsl_fc_phase = NULL
   ))
 })
 
