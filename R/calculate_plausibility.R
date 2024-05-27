@@ -341,6 +341,12 @@ calculate_plausibility <- function(.dataset){
                                                      plaus_fsl_score >= 20 & plaus_fsl_score < 30 ~ "Moderate",
                                                      plaus_fsl_score >= 30 ~ "Problematic"))
   }
+  if (c("sex_ratio.pvalue") %in% names(.dataset)) {
+    .dataset <- .dataset %>% dplyr::mutate(plaus_sexratio = ifelse(sex_ratio.pvalue > 0.1, 0,
+                                                                   ifelse(sex_ratio.pvalue > 0.05, 2,
+                                                                          ifelse(sex_ratio.pvalue > 0.001, 4,
+                                                                                 ifelse(sex_ratio.pvalue <= 0.001, 10, NA)))))
+  }
   if (c("mad_ratio.pvalue") %in% colnames(.dataset)) {
     .dataset <- .dataset %>% dplyr::mutate(plaus_mad_ratio.pvalue = ifelse(mad_ratio.pvalue > 0.05, 0,
                                                                ifelse(mad_ratio.pvalue > 0.001, 5,
