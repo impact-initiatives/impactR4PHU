@@ -152,9 +152,8 @@ check_iycf_flags <- function(.dataset,
              iycf_7m,iycf_7n,iycf_7o,iycf_7p,iycf_7q,iycf_7r)
 
   required_columns <- c(foods,liquids)
-  missing_columns <- setdiff(required_columns, names(.dataset))
 
-  if(length(missing_columns) > 0) {
+  if(length(setdiff(length(required_columns),28)) != 0) {
     warning("Your dataset appears not to have all the foods/liquids from the standard IYCF 2021 question sequence.\nIt is advised you ask about all recommended foods/liquids or there is a risk of overestimating EBF.")
   } else {
     .dataset <- .dataset %>%
@@ -168,9 +167,8 @@ check_iycf_flags <- function(.dataset,
   }
 
   required_columns <- c(iycf_4,foods,liquids)
-  missing_columns <- setdiff(required_columns, names(.dataset))
 
-  if(length(missing_columns) > 0) {
+  if(length(setdiff(length(required_columns),29)) != 0) {
     warning("Your dataset appears not to have either all the foods/liquids or the IYCF 4 from the standard IYCF 2021 question sequence.\nIt is advised you ask about all recommended foods/liquids or there is a risk of overestimating EBF.")
   } else {
     .dataset <- .dataset %>%
@@ -183,9 +181,8 @@ check_iycf_flags <- function(.dataset,
   }
 
   required_columns <- c(iycf_8,foods,liquids)
-  missing_columns <- setdiff(required_columns, names(.dataset))
 
-  if(length(missing_columns) > 0) {
+  if(length(setdiff(length(required_columns),29)) != 0) {
     warning("Your dataset appears not to have either all the foods/liquids or the IYCF 8 from the standard IYCF 2021 question sequence.\nIt is advised you ask about all recommended foods/liquids or there is a risk of overestimating EBF.")
   } else {
     .dataset <- .dataset %>%
@@ -201,9 +198,8 @@ check_iycf_flags <- function(.dataset,
 
   }
   required_columns <- c("iycf_mdd_score", iycf_8)
-  missing_columns <- setdiff(required_columns, names(.dataset))
 
-  if(length(missing_columns) > 0) {
+  if(length(setdiff(length(required_columns),2)) != 0) {
     warning("Your dataset appears not to have either the IYCF 8 or the iycf_mdd_score columns .\nMake sure that you have the add_iycf() before this function.")
   } else {
     .dataset <- .dataset %>%
@@ -214,9 +210,8 @@ check_iycf_flags <- function(.dataset,
 
   }
   required_columns <- c(iycf_4, iycf_6b_num, iycf_6c_num, iycf_6d_num)
-  missing_columns <- setdiff(required_columns, names(.dataset))
 
-  if(length(missing_columns) > 0) {
+  if(length(setdiff(length(required_columns),4)) != 0) {
     warning("Your dataset appears not to have either the IYCF 4 or iycf_6b/6c/6d_num columns .\nMake sure that you run the add_iycf() before this function.")
   } else {
     .dataset <- .dataset %>%
@@ -233,9 +228,8 @@ check_iycf_flags <- function(.dataset,
   }
 
   required_columns <- c(iycf_7b, iycf_7d, iycf_7i, iycf_7j, iycf_7k, iycf_7l, iycf_7m)
-  missing_columns <- setdiff(required_columns, names(.dataset))
 
-  if(length(missing_columns) > 0) {
+  if(length(setdiff(length(required_columns),7)) != 0) {
     warning("Your dataset appears not to have either the iycf_7b/iycf_7d/iycf_7i/iycf_7j/iycf_7k/iycf_7l/iycf_7m columns.\nIt is advised you ask about all recommended foods/liquids or there is a risk of overestimating EBF.\nMake sure also to run the add_iycf() before this function.")
   }else{
     .dataset <- .dataset %>%
