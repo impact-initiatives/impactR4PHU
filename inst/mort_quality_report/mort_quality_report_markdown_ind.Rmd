@@ -35,7 +35,7 @@ if(file.exists("inputs/environment.Rdata")) {
 
 path.raw <- svDialogs::dlg_open(multiple = F, title = "Please select your data excel file.")$res
 path.tool <- svDialogs::dlg_open(multiple = F, title = "Please select your Kobo tool file.")$res
-label_colname <- tcltk::tk_select.list(names(tool.survey)[grepl("label",names(tool.survey))], title = "Label column to choose", multiple = F)
+label_colname <- tcltk::tk_select.list(names(readxl::read_excel(path.tool))[grepl("label",names(readxl::read_excel(path.tool)))], title = "Label column to choose", multiple = F)
 tool.survey <- load.tool.survey(path.tool)
 tool.choices <- load.tool.choices(path.tool)
 collected_df_left <- tcltk::tk_select.list(c(TRUE,FALSE), title = "Did you collect info about leavers? (1 for Yes, 0 for No")
