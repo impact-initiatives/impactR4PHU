@@ -416,11 +416,11 @@ add_iycf <- function(.dataset,
   }
 
   # IYCF Indicator 9: Minimum Meal Frequency 6-23 months (MMF)
-  mmf_columns <- c(iycf_4,"iycf_6b_num","iycf_6c_num",
+  mmf_columns <- c(iycf_4,ebf_liquids,"iycf_6b_num","iycf_6c_num",
                    "iycf_6d_num",iycf_8)
 
 
-  if(length(setdiff(length(mmf_columns),5)) != 0) {
+  if(length(setdiff(length(mmf_columns),13)) != 0) {
     warning("Minimum Meal Frequency related columns not found in dataset.\nIYCF Indicator 9: Minimum Meal Frequency 6-23 months (MMF) not calculated")
   } else {
     .dataset <- .dataset %>%
@@ -470,10 +470,11 @@ add_iycf <- function(.dataset,
 
   # IYCF Indicator 10: Minimum Milk Feeding Frequency For Non-Breastfed Children 6-23 months (MMFF)
   mmff_columns <- c(iycf_4,"iycf_6b_num",
-                    "iycf_6c_num","iycf_6d_num","iycf_7a_num")
+                    "iycf_6c_num","iycf_6d_num","iycf_7a_num",
+                    ebf_liquids, ebf_foods)
 
 
-  if(length(setdiff(length(mmff_columns),5)) != 0) {
+  if(length(setdiff(length(mmff_columns),33)) != 0) {
     warning("Minimum Milk Feeding Frequency related columns not found in dataset.\nIYCF Indicator 10: Minimum Milk Feeding Frequency For Non-Breastfed Children 6-23 months (MMFF) not calculated")
   } else {
     .dataset <- .dataset %>%
@@ -492,9 +493,10 @@ add_iycf <- function(.dataset,
 
   # IYCF Indicator 11: Minimum Acceptable Diet 6-23 months (MAD)
 
-  ind_11_columns <- c(iycf_4, "iycf_mmf", "iycf_mdd_cat", "iycf_mmff")
+  ind_11_columns <- c(iycf_4, "iycf_mmf", "iycf_mdd_cat", "iycf_mmff",
+                      ebf_liquids, ebf_foods)
 
-  if(length(setdiff(length(ind_11_columns),4)) != 0) {
+  if(length(setdiff(length(ind_11_columns),32)) != 0) {
     warning("Minimum Acceptable Diet 6-23 months related columns not found in dataset.\nIYCF Indicator 11: Minimum Acceptable Diet 6-23 months (MAD) not calculated")
   } else {
     .dataset <- .dataset %>%
@@ -589,9 +591,10 @@ add_iycf <- function(.dataset,
 
   # IYCF Indicator 15: Zero Vegetable or Fruit Consumption 6-23 months (ZVF)
   zero_columns <- c("iycf_7c_zero","iycf_7e_zero",
-                    "iycf_7f_zero","iycf_7g_zero","iycf_7h_zero")
+                    "iycf_7f_zero","iycf_7g_zero","iycf_7h_zero",
+                    ebf_liquids, ebf_foods)
 
-  if(length(setdiff(length(zero_columns),5)) != 0) {
+  if(length(setdiff(length(zero_columns),33)) != 0) {
     warning("Zero Vegetable or Fruit Consumption related columns not found in dataset.\nIYCF Indicator 15: Zero Vegetable or Fruit Consumption 6-23 months (ZVF) not calculated")
   } else {
     .dataset <- .dataset %>%
