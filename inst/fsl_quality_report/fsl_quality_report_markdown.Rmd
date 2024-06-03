@@ -1342,6 +1342,7 @@ result_fsl_pivot <- result_fsl_enum %>%
   filter(stringr::str_starts(Criteria,"plaus_"))
 if(yes_no_team == "yes"){
   list_teams <- raw.main[[team]] %>% unique()
+  list_teams <- list_teams[!is.na(list_teams)]
   for (i in list_teams) {
     cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",5), collapse=""), " ", "<strong>",i,"</strong> {.tabset .tabset-fade}"))
     list_enum <- raw.main %>% 
