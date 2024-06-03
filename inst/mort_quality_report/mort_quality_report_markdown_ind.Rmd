@@ -1333,6 +1333,7 @@ impactR4PHU::plot_age_pyramid(df_mortality_long %>%
 ```{r, results='asis', echo=FALSE}
 if(yes_no_team == "yes"){
     list_teams <- raw.main[[team]] %>% unique()
+    list_teams <- list_teams[!is.na(list_teams)]
     for (i in list_teams) {
       cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",5), collapse=""), " ", "<strong>",i,"</strong> {.tabset .tabset-fade}"))
       list_enum <- raw.main %>% 
