@@ -420,7 +420,7 @@ add_iycf <- function(.dataset,
                    "iycf_6d_num",iycf_8)
 
 
-  if(length(setdiff(length(mmf_columns),13)) != 0) {
+  if(length(setdiff(length(mmf_columns),15)) != 0) {
     warning("Minimum Meal Frequency related columns not found in dataset.\nIYCF Indicator 9: Minimum Meal Frequency 6-23 months (MMF) not calculated")
   } else {
     .dataset <- .dataset %>%
