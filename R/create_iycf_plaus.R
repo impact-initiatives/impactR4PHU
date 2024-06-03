@@ -138,7 +138,7 @@ create_iycf_plaus <- function(df_iycf,
   }
 
 
-  if(length(setdiff(length(sex),1)) != 0) {
+  if(length(setdiff(length(sex),1)) == 0) {
 
     df2 <- df_iycf %>%
       dplyr::group_by(group) %>%
@@ -172,7 +172,7 @@ create_iycf_plaus <- function(df_iycf,
   }
 
 
-  if(length(setdiff(length(iycf_8),1)) != 0) {
+  if(length(setdiff(length(iycf_8),1)) == 0) {
 
     df2 <- df_iycf %>%
       dplyr::group_by(group) %>%
@@ -243,7 +243,7 @@ create_iycf_plaus <- function(df_iycf,
     if(!exists("results")) {results <- df2} else {results <- merge(results, df2)}
   }
 
-  if(length(setdiff(length(iycf_caregiver),1)) != 0) {
+  if(length(setdiff(length(iycf_caregiver),1)) == 0) {
 
     df2 <- df_iycf %>%
       dplyr::mutate(total_iycf_caregiver = ifelse(!is.na(!!rlang::sym(iycf_caregiver)), 1, 0),
