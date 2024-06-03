@@ -1217,7 +1217,7 @@
       "RemoteRepo": "impactR4PHU",
       "RemoteUsername": "impact-initiatives",
       "RemoteRef": "HEAD",
-      "RemoteSha": "ccd031c7e84c63ac77bf56fda86b6a90ce932ee2",
+      "RemoteSha": "9c7a1e5f6b64c918c449475ebbb49a734df38a16",
       "Requirements": [
         "GGally",
         "R",
@@ -1238,7 +1238,7 @@
         "writexl",
         "zscorer"
       ],
-      "Hash": "fdc83e406f7f7ec7751d4ee46a4b5dc4"
+      "Hash": "7b243c9a64a2d2292de9b0763c370f0c"
     },
     "isoband": {
       "Package": "isoband",
@@ -1273,7 +1273,7 @@
     },
     "knitr": {
       "Package": "knitr",
-      "Version": "1.46",
+      "Version": "1.47",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
@@ -1285,7 +1285,7 @@
         "xfun",
         "yaml"
       ],
-      "Hash": "6e008ab1d696a5283c79765fa7b56b47"
+      "Hash": "7c99b2d55584b982717fcc0950378612"
     },
     "koboquest": {
       "Package": "koboquest",
@@ -2183,15 +2183,16 @@
     },
     "textshaping": {
       "Package": "textshaping",
-      "Version": "0.3.7",
+      "Version": "0.4.0",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
         "R",
         "cpp11",
+        "lifecycle",
         "systemfonts"
       ],
-      "Hash": "997aac9ad649e0ef3b97f96cddd5622b"
+      "Hash": "5142f8bc78ed3d819d26461b641627ce"
     },
     "tibble": {
       "Package": "tibble",
