@@ -169,7 +169,7 @@ if(!file.exists("inputs/environment.Rdata")) {
   }
 
   ## Detect sex_roster column
-  sex_roster <- names(raw.hh_roster)[grepl("sex",names(raw.hh_roster))]
+  sex_roster <- names(raw.hh_roster)[grepl("sex|gender",names(raw.hh_roster))]
 
   if(length(sex_roster) == 1){
     yes_no <- svDialogs::dlg_message(paste0("Is '", sex_roster, "' the correct sex roster column?"), type = "yesno")$res
@@ -185,7 +185,7 @@ if(!file.exists("inputs/environment.Rdata")) {
 
 
   ## Detect age_roster column
-  age_roster <- names(raw.hh_roster)[grepl("final",names(raw.hh_roster))]
+  age_roster <- names(raw.hh_roster)[grepl("final|age",names(raw.hh_roster))]
 
   if(length(age_roster) == 1){
     yes_no <- svDialogs::dlg_message(paste0("Is '", age_roster, "' the correct age roster column?"), type = "yesno")$res
@@ -219,7 +219,7 @@ if(!file.exists("inputs/environment.Rdata")) {
   }
 
   ## Detect birth_roster column
-  birth_roster <- names(raw.hh_roster)[grepl("born",names(raw.hh_roster))]
+  birth_roster <- names(raw.hh_roster)[grepl("born|birth|dob",names(raw.hh_roster))]
 
   if(length(birth_roster) == 1){
     yes_no <- svDialogs::dlg_message(paste0("Is '", birth_roster, "' the correct birth roster column?"), type = "yesno")$res
@@ -304,7 +304,7 @@ if(!file.exists("inputs/environment.Rdata")) {
     }
 
     ## Detect sex_left column
-    sex_left <- names(raw.left_member)[grepl("sex",names(raw.left_member))]
+    sex_left <- names(raw.left_member)[grepl("sex|gender",names(raw.left_member))]
 
     if(length(sex_left) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", sex_left, "' the correct sex left column?"), type = "yesno")$res
@@ -321,7 +321,7 @@ if(!file.exists("inputs/environment.Rdata")) {
     }
 
     ## Detect age_left column
-    age_left <- names(raw.left_member)[grepl("final",names(raw.left_member))]
+    age_left <- names(raw.left_member)[grepl("final|age",names(raw.left_member))]
 
     if(length(age_left) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", age_left, "' the correct age left column?"), type = "yesno")$res
@@ -338,7 +338,7 @@ if(!file.exists("inputs/environment.Rdata")) {
     }
 
     ## Detect birth_left column
-    birth_left <- names(raw.left_member)[grepl("born",names(raw.left_member))]
+    birth_left <- names(raw.left_member)[grepl("born|birth",names(raw.left_member))]
 
     if(length(birth_left) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", birth_left, "' the correct birth column?"), type = "yesno")$res
@@ -440,7 +440,7 @@ if(!file.exists("inputs/environment.Rdata")) {
   }
 
   ## Detect sex_died column
-  sex_died <- names(raw.died_member)[grepl("sex",names(raw.died_member))]
+  sex_died <- names(raw.died_member)[grepl("sex|gender",names(raw.died_member))]
 
   if(length(sex_died) == 1){
     yes_no <- svDialogs::dlg_message(paste0("Is '", sex_died, "' the correct sex died column?"), type = "yesno")$res
@@ -457,7 +457,7 @@ if(!file.exists("inputs/environment.Rdata")) {
   }
 
   ## Detect age_died column
-  age_died <- names(raw.died_member)[grepl("final",names(raw.died_member))]
+  age_died <- names(raw.died_member)[grepl("final|age",names(raw.died_member))]
 
   if(length(age_died) == 1){
     yes_no <- svDialogs::dlg_message(paste0("Is '", age_died, "' the correct age died column?"), type = "yesno")$res
@@ -474,7 +474,7 @@ if(!file.exists("inputs/environment.Rdata")) {
   }
 
   ## Detect birth_died column
-  birth_died <- names(raw.died_member)[grepl("born",names(raw.died_member))]
+  birth_died <- names(raw.died_member)[grepl("born|birth|dob",names(raw.died_member))]
 
   if(length(birth_died) == 1){
     yes_no <- svDialogs::dlg_message(paste0("Is '", birth_died, "' the correct birth column?"), type = "yesno")$res
