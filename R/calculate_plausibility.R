@@ -64,11 +64,11 @@ calculate_plausibility <- function(.dataset){
     print(paste0("Not all necessary variables for anthropometric plausibility score and classification. Skipping this step. The dataframe is missing "))
     print(setdiff(anthro_plaus_vars, names(.dataset)))
   }
-  mort_plaus_vars <- c("plaus_cdr", "plaus_hh_multiple_death",
+  mort_plaus_vars <- c("plaus_overall_cdr", "plaus_hh_multiple_death",
                        "plaus_sex_ratio", "plaus_age0to4_5plus_ratio",
                        "plaus_age0to1_2to4_ratio", "plaus_age0to4_5to10_ratio")
   if (c("cdr") %in% names(.dataset)) {
-    .dataset <- .dataset %>% dplyr::mutate(plaus_cdr = ifelse(cdr < 1, 0,
+    .dataset <- .dataset %>% dplyr::mutate(plaus_overall_cdr = ifelse(cdr < 1, 0,
                                                   ifelse(cdr < 2, 5,
                                                          ifelse(cdr < 3.5, 10,
                                                                 ifelse(cdr >= 3.5, 20, 0)))))
@@ -123,7 +123,7 @@ calculate_plausibility <- function(.dataset){
   }
 
   if (length(setdiff(mort_plaus_vars, names(.dataset))) == 0) {
-    .dataset <- .dataset %>% dplyr::mutate(plaus_mort_score = plaus_cdr + plaus_hh_multiple_death + plaus_sex_ratio +
+    .dataset <- .dataset %>% dplyr::mutate(plaus_mort_score = plaus_overall_cdr + plaus_hh_multiple_death + plaus_sex_ratio +
                                  plaus_age0to4_5plus_ratio + plaus_age0to1_2to4_ratio + plaus_age0to4_5to10_ratio,
                                plaus_mort_cat = ifelse(plaus_mort_score >= 0 & plaus_mort_score < 10, "Excellent (0-<10)",
                                                        ifelse(plaus_mort_score >= 10 & plaus_mort_score < 20, "Good (10-<20)",

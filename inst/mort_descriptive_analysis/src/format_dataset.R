@@ -4,10 +4,15 @@
 
 # create shorthands to make working with the data easier:
 raw.main <- data.list$main
-raw.hh_roster <- data.list$hh_roster
-raw.left_member <- data.list$left_member
-raw.died_member <- data.list$died_member
 collected_df_left <- tcltk::tk_select.list(c(TRUE,FALSE), title = "Did you collect info about leavers? (1 for Yes, 0 for No")
+roster_Sheet <- tcltk::tk_select.list(names(data.list), title = "Select HH Roster sheet")
+if (collected_df_left){
+  left_Sheet <- tcltk::tk_select.list(names(data.list), title = "Select Left Roster sheet")
+  raw.left_member <- data.list[[left_Sheet]]
+}
+died_Sheet <- tcltk::tk_select.list(names(data.list), title = "Select Death Roster sheet")
+raw.hh_roster <- data.list[[roster_Sheet]]
+raw.died_member <- data.list[[died_Sheet]]
 if(file.exists("inputs/environment.Rdata")) {
   load("inputs/environment.Rdata")
 }

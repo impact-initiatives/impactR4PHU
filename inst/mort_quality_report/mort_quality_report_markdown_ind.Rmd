@@ -701,8 +701,6 @@ if(!file.exists("inputs/environment.Rdata")) {
     }
   }
   
-  
-  
   all_vars <- ls()
   is_empty <- function(x) {
   obj <- get(x)
