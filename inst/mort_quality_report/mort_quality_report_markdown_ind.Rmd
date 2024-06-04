@@ -252,6 +252,24 @@ if(!file.exists("inputs/environment.Rdata")) {
       age_roster <- svDialogs::dlg_input(message= "Enter the name of the age roster column","age_roster")$res
     }
     
+    ## Detect age_roster column
+    age_roster_month <- names(raw.hh_roster)[grepl("month",names(raw.hh_roster))]
+    
+    if(length(age_roster_month) == 1){
+      yes_no <- svDialogs::dlg_message(paste0("Is '", age_roster_month, "' the correct age roster month column?"), type = "yesno")$res
+      if(yes_no == "no"){
+        age_roster_month <- svDialogs::dlg_input(message= "Enter the name of the age roster column","age_roster_month")$res
+      }
+    } else if (length(age_roster_month) > 1){
+      age_roster_month <- tcltk::tk_select.list(age_roster_month, title = "Age Month Column [Roster Data]")
+      if(age_roster_month == ""){
+        age_roster_month <- svDialogs::dlg_input(message= "Enter the name of the age roster column","age_roster_month")$res
+      }
+    } else if (length(age_roster_month) == 0) {
+      age_roster_month <- svDialogs::dlg_input(message= "Enter the name of the age roster column","age_roster_month")$res
+    }
+    
+    
     ## Detect birth_roster column
     birth_roster <- names(raw.hh_roster)[grepl("born",names(raw.hh_roster))]
     
@@ -1199,8 +1217,8 @@ df_mortality_long <- impactR4PHU::create_mortality_long_df(df_main = raw.main,
                      "path.sheet.with.roster","path.sheet.with.leavers","path.sheet.with.death", "dates_collected",
                      "male","female","date_dc_reformat","date_recall_reformat","date_join_reformat",
                      "date_birth_reformat","date_left_reformat","date_death_reformat","yes_no_team","team",
-                     "unknown", "injury_trauma", "illness", "no_demo_values", "yes_demo_values",
-                     "current_location","during_migration","last_place","other_place")
+                     "unknown", "injury_trauma", "illness", "no_demo_values", "yes_demo_values","age_roster_month",
+                     "current_location","during_migration","last_place","other_place","smart")
   } else {
     list_of_var <- c("date_dc","date_recall_event","enumerator","admin1","admin2","cluster",
                      "uuid_main","uuid_roster","sex_roster","age_roster","joined_roster","joined_date_roster",
@@ -1209,11 +1227,11 @@ df_mortality_long <- impactR4PHU::create_mortality_long_df(df_main = raw.main,
                      "joined_date_died","date_death","death_cause","death_location","cause_death_f",
                      "exp_sex_ratio","exp_ratio_0_4","exp_ratio_2_5","exp_ratio_5_10","exp_hh_size",
                      "label_colname","path.sheet.with.main","collect_num_join_left","num_join","num_left",
-                     "path.sheet.with.roster","path.sheet.with.death", "dates_collected",
+                     "path.sheet.with.roster","path.sheet.with.death", "dates_collected","age_roster_month",
                      "male","female","date_dc_reformat","date_recall_reformat","date_join_reformat",
                      "date_birth_reformat","date_left_reformat","date_death_reformat","yes_no_team","team",
                      "unknown", "injury_trauma", "illness", "no_demo_values", "yes_demo_values",
-                     "current_location","during_migration","last_place","other_place")
+                     "current_location","during_migration","last_place","other_place","smart")
   }
   
   if(!file.exists("inputs/environment.Rdata")){
@@ -1268,7 +1286,7 @@ overall_mort_plaus <- openxlsx::read.xlsx("resources/overall_plaus.xlsx", fillMe
                                                         exp_ratio_2_5 = exp_ratio_2_5,
                                                         exp_ratio_5_10 = exp_ratio_5_10,
                                                         exp_hh_size = exp_hh_size)
-      
+    
     results_mort_enum <- impactR4PHU::create_mortality_plaus(df_mortality = df_mortality_long,
                                                              df_main = raw.main,
                                                              uuid_main = uuid_main,
@@ -1414,6 +1432,7 @@ if(yes_no_team == "yes"){
 ```{r, fig.width = 10, warning=FALSE, message=FALSE}
   impactR4PHU::plot_age_distribution(raw.hh_roster,
                                      year_or_month = "month",
+                                     age_months = age_roster_month,
                                      breaks = 1)
 
 ```
@@ -1440,9 +1459,10 @@ if(yes_no_team == "yes"){
         subch(impactR4PHU::plot_age_distribution(plot_raw.hh_roster %>%
                                              dplyr::left_join(select(plot_raw.main, c("uuid", enumerator))) %>%
                                              dplyr::filter(!!rlang::sym(enumerator) == j),
-                                           year_or_month = "month",
-                                           by_group = enumerator,
-                                           breaks = 1),
+                                             year_or_month = "month",
+                                             age_months = age_roster_month,
+                                             by_group = enumerator,
+                                             breaks = 1),
               fig_height = 8, fig_width = 10)
       }
     }
@@ -1456,6 +1476,7 @@ if(yes_no_team == "yes"){
                                        dplyr::left_join(select(plot_raw.main, c("uuid", enumerator))),
                                      year_or_month = "month",
                                      by_group = enumerator,
+                                     age_months = age_roster_month,
                                      breaks = 1),
               fig_height = 8, fig_width = 10)
 }

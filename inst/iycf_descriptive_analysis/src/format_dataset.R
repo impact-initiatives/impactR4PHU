@@ -887,3 +887,7 @@ if(!file.exists("inputs/environment.Rdata")){
 if(!file.exists("inputs/environment.Rdata")){
   save(list = list_of_var, file = "inputs/environment.Rdata")
 }
+
+## Create IYCF Tables for EACH CALCULATED IYCF
+
+

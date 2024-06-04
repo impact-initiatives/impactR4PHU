@@ -113,21 +113,27 @@ create_mortality_long_df <- function (df_main, date_dc = "today", date_recall_ev
                                       joined_date_died = "date_join_final_death",
                                       birthdate_died = "dob_died", uuid_died = NULL) {
   options(warn = -1)
+
   if (is.null(date_recall_event)) {
     stop("A date for recall event is required. Please input a character date with a format like dd/mm/yyyy. E.g 28/12/2020. Please check your input.")
   }
+
   if (!is.data.frame(df_main)) {
     stop("Main data should be a dataframe")
   }
+
   if (nrow(df_main) == 0) {
     stop("Main data is empty")
   }
+
   if (!is.data.frame(df_roster)) {
     stop("Roster Data should be a dataframe")
   }
+
   if (nrow(df_roster) == 0) {
     stop("Roster Data is empty")
   }
+
   if(collected_df_left) {
     if (!is.data.frame(df_left)) {
       stop("Left Data should be a dataframe")
@@ -136,43 +142,82 @@ create_mortality_long_df <- function (df_main, date_dc = "today", date_recall_ev
       stop("Left Data is empty")
     }
   }
+
   if (!is.data.frame(df_died)) {
     stop("Died Data should be a dataframe")
   }
+
   if (nrow(df_died) == 0) {
     stop("Died Data is empty")
   }
-  if (!uuid_main %in% names(df_main))
-    stop("uuid argument incorrect, or not available in the main dataset")
-  if (!uuid_roster %in% names(df_roster))
-    stop("uuid argument incorrect, or not available in the roster")
+
+  if(!is.null(uuid_main)){
+    if (!uuid_main %in% names(df_main))
+      stop("uuid argument incorrect, or not available in the main dataset")
+  }
+
+  if(!is.null(uuid_roster)){
+    if (!uuid_roster %in% names(df_roster))
+      stop("uuid argument incorrect, or not available in the roster")
+  }
+
   if(collected_df_left){
     if (!uuid_left %in% names(df_left))
       stop("uuid argument incorrect, or not available in the left data")
   }
-  if (!uuid_died %in% names(df_died))
-    stop("uuid argument incorrect, or not available in the died data")
-  if (!cluster %in% names(df_main)) {
+
+  if(!is.null(uuid_died)){
+    if (!uuid_died %in% names(df_died))
+      stop("uuid argument incorrect, or not available in the died data")
+  }
+
+  if(!is.null(cluster)) {
+    if (!cluster %in% names(df_main)) {
+      warning("Cluster was not find in the main data. Creating a cluster column with NA.")
+      df_main <- df_main %>% dplyr::mutate(cluster = NA)
+      cluster <- "cluster"
+    }
+  } else {
     warning("Cluster was not find in the main data. Creating a cluster column with NA.")
     df_main <- df_main %>% dplyr::mutate(cluster = NA)
+    cluster <- "cluster"
   }
-  if (!admin1 %in% names(df_main)) {
+
+  if(!is.null(admin1)){
+    if (!admin1 %in% names(df_main)) {
+      warning("Admin1 was not find in the main data. Creating a admin1 column with NA.")
+      df_main <- df_main %>% dplyr::mutate(admin1 = NA)
+      admin1 <- "admin1"
+    }
+  }else{
     warning("Admin1 was not find in the main data. Creating a admin1 column with NA.")
     df_main <- df_main %>% dplyr::mutate(admin1 = NA)
+    admin1 <- "admin1"
   }
-  if (!admin2 %in% names(df_main)) {
-    warning("Admin2 was not find in the main data. Creating a admin2 column with NA.")
+
+  if(!is.null(admin2)){
+    if (!admin2 %in% names(df_main)) {
+      warning("Admin2 was not find in the main data. Creating a admin2 column with NA.")
+      df_main <- df_main %>% dplyr::mutate(admin2 = NA)
+      admin2 <- "admin2"
+    }
+  }else {
+    warning("Cluster was not find in the main data. Creating a cluster column with NA.")
     df_main <- df_main %>% dplyr::mutate(admin2 = NA)
+    admin2 <- "admin2"
   }
+
   if (!all(c(date_dc, date_recall_event, enumerator) %in%
            names(df_main))|
-      setdiff(length(c(date_dc, date_recall_event, enumerator)),3) != 0) {
+      length(c(date_dc, date_recall_event, enumerator))- 3 != 0) {
     stop("Check date_dc, date_recall_event, or enumerator arguments. Couldn't find in main data.")
   } else {
     main_to_join <- df_main %>% dplyr::rename(date_dc = !!rlang::sym(date_dc),
                                               date_recall_event = !!rlang::sym(date_recall_event),
-                                              enumerator = !!rlang::sym(enumerator), cluster = !!rlang::sym(cluster),
-                                              admin1 = !!rlang::sym(admin1), admin2 = !!rlang::sym(admin2),
+                                              enumerator = !!rlang::sym(enumerator),
+                                              cluster = !!rlang::sym(cluster),
+                                              admin1 = !!rlang::sym(admin1),
+                                              admin2 = !!rlang::sym(admin2),
                                               uuid = uuid_main) %>% dplyr::select(uuid, date_dc,
                                                                                   date_recall_event, enumerator, cluster, admin1,
                                                                                   admin2)
@@ -516,3 +561,4 @@ create_mortality_long_df <- function (df_main, date_dc = "today", date_recall_ev
 
   return(df_mortality)
 }
+

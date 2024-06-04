@@ -183,22 +183,6 @@ if(!file.exists("inputs/environment.Rdata")) {
   }
 
 
-  ## Detect sex_roster column
-  sex_roster <- names(raw.hh_roster)[grepl("sex",names(raw.hh_roster))]
-
-  if(length(sex_roster) == 1){
-    yes_no <- svDialogs::dlg_message(paste0("Is '", sex_roster, "' the correct sex roster column?"), type = "yesno")$res
-    if(yes_no == "no"){
-      sex_roster <- svDialogs::dlg_input(message= "Enter the name of the sex roster column","sex_roster")$res
-    }
-  } else if (length(sex_roster) > 1){
-    sex_roster <- tcltk::tk_select.list(sex_roster, title = "Sex Column [Roster Data]")
-    if(sex_roster == "") {
-      sex_roster <- svDialogs::dlg_input(message= "Enter the name of the sex roster column","sex_roster")$res
-    }
-  } else if (length(sex_roster) == 0) {
-    sex_roster <- svDialogs::dlg_input(message= "Enter the name of the sex roster column","sex_roster")$res
-  }
 
   ## Detect age_roster column
   age_roster <- names(raw.hh_roster)[grepl("final",names(raw.hh_roster))]
@@ -215,6 +199,23 @@ if(!file.exists("inputs/environment.Rdata")) {
     }
   } else if (length(age_roster) == 0) {
     age_roster <- svDialogs::dlg_input(message= "Enter the name of the age roster column","age_roster")$res
+  }
+
+  ## Detect age_roster column
+  age_roster_month <- names(raw.hh_roster)[grepl("month",names(raw.hh_roster))]
+
+  if(length(age_roster_month) == 1){
+    yes_no <- svDialogs::dlg_message(paste0("Is '", age_roster_month, "' the correct age roster month  column?"), type = "yesno")$res
+    if(yes_no == "no"){
+      age_roster_month <- svDialogs::dlg_input(message= "Enter the name of the age roster column","age_roster_month")$res
+    }
+  } else if (length(age_roster_month) > 1){
+    age_roster_month <- tcltk::tk_select.list(age_roster_month, title = "Age Month Column [Roster Data]")
+    if(age_roster_month == ""){
+      age_roster_month <- svDialogs::dlg_input(message= "Enter the name of the age roster column","age_roster_month")$res
+    }
+  } else if (length(age_roster_month) == 0) {
+    age_roster_month <- svDialogs::dlg_input(message= "Enter the name of the age roster column","age_roster_month")$res
   }
 
   ## Detect birth_roster column
@@ -1214,7 +1215,7 @@ if(collected_df_left){
                    "label_colname","collect_num_join_left","num_join","num_left", "dates_collected",
                    "male","female","date_dc_reformat","date_recall_reformat","date_join_reformat",
                    "date_birth_reformat","date_left_reformat","date_death_reformat","yes_no_team","team",
-                   "unknown", "injury_trauma", "illness", "no_demo_values", "yes_demo_values",
+                   "unknown", "injury_trauma", "illness", "no_demo_values", "yes_demo_values","age_roster_month",
                    "current_location","during_migration","last_place","other_place")
 } else {
   list_of_var <- c("date_dc","date_recall_event","enumerator","admin1","admin2","cluster",
@@ -1226,7 +1227,7 @@ if(collected_df_left){
                    "label_colname","collect_num_join_left","num_join","num_left", "dates_collected",
                    "male","female","date_dc_reformat","date_recall_reformat","date_join_reformat",
                    "date_birth_reformat","date_left_reformat","date_death_reformat","yes_no_team","team",
-                   "unknown", "injury_trauma", "illness", "no_demo_values", "yes_demo_values",
+                   "unknown", "injury_trauma", "illness", "no_demo_values", "yes_demo_values","age_roster_month",
                    "current_location","during_migration","last_place","other_place")
 }
 if(!file.exists("inputs/environment.Rdata")){
