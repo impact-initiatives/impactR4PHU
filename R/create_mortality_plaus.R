@@ -327,7 +327,7 @@ create_mortality_plaus <- function(df_mortality,
                     n_hh, n_hh_under_5, sex_ratio, sex_ratio.pvalue, age_ratio_0_5,
                     age_ratio_0_5.pvalue, age_ratio_2_5, age_ratio_2_5.pvalue, age_ratio_5_10, age_ratio_5_10.pvalue,
                     joins, prop_join_people, lefts, prop_left_people, births,
-                    plaus_cdr,  plaus_hh_multiple_death, plaus_sex_ratio,
+                    plaus_overall_cdr,  plaus_hh_multiple_death, plaus_sex_ratio,
                     plaus_age0to4_5plus_ratio, plaus_age0to1_2to4_ratio, plaus_age0to4_5to10_ratio,
                     plaus_mort_score, plaus_mort_cat))
 
@@ -336,7 +336,7 @@ create_mortality_plaus <- function(df_mortality,
     df4 <- df4 %>%
       dplyr::select(1,cdr_ci,u5dr_ci,birth_rate, birth_rate_ci,deaths, deaths_under5, prop_hh_flag_deaths,
                     sex_ratio.pvalue, age_ratio_0_5.pvalue,prop_join_people,prop_left_people,
-                    plaus_cdr,  plaus_hh_multiple_death, plaus_sex_ratio,
+                    plaus_overall_cdr,  plaus_hh_multiple_death, plaus_sex_ratio,
                     plaus_age0to4_5plus_ratio, plaus_age0to1_2to4_ratio, plaus_age0to4_5to10_ratio,
                     plaus_mort_score, plaus_mort_cat)
   }
