@@ -217,20 +217,6 @@ if(!file.exists("inputs/environment.Rdata")) {
      uuid_roster <- svDialogs::dlg_input(message= "Enter the name of the HH UUID Column in roster data","uuid_roster")$res
   }
     
-    ## Detect sex_roster column
-    sex_roster <- names(raw.hh_roster)[grepl("sex",names(raw.hh_roster))]
-    
-    if(length(sex_roster) == 1){
-      yes_no <- svDialogs::dlg_message(paste0("Is '", sex_roster, "' the correct sex roster column?"), type = "yesno")$res
-      if(yes_no == "no"){
-        sex_roster <- svDialogs::dlg_input(message= "Enter the name of the sex roster column","sex_roster")$res
-      }
-    } else if (length(sex_roster) > 1){
-      sex_roster <- tcltk::tk_select.list(sex_roster, title = "Sex Column [Roster Data]")
-    } else if (length(sex_roster) == 0) {
-      sex_roster <- svDialogs::dlg_input(message= "Enter the name of the sex roster column","sex_roster")$res
-    }
-    
       
     ## Detect sex_roster column
     sex_roster <- names(raw.hh_roster)[grepl("sex|gender",names(raw.hh_roster))]
@@ -250,7 +236,7 @@ if(!file.exists("inputs/environment.Rdata")) {
     }
     
     ## Detect age_roster column
-    age_roster <- names(raw.hh_roster)[grepl("final",names(raw.hh_roster))]
+    age_roster <- names(raw.hh_roster)[grepl("final|age",names(raw.hh_roster))]
     
     if(length(age_roster) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", age_roster, "' the correct age roster column?"), type = "yesno")$res
@@ -284,7 +270,7 @@ if(!file.exists("inputs/environment.Rdata")) {
     }
     
     ## Detect birthdate_roster column
-    birthdate_roster <- names(raw.hh_roster)[grepl("dob",names(raw.hh_roster))]
+    birthdate_roster <- names(raw.hh_roster)[grepl("dob|birth",names(raw.hh_roster))]
     
     if(length(birthdate_roster) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", birthdate_roster, "' the correct birth date roster column?"), type = "yesno")$res
