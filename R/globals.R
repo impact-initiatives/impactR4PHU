@@ -74,6 +74,7 @@ globalVariables(unique(c(
   "fsl_fcs_score","n","fsl_fc_phase","flag_fsl_fc_cell","fsl_fc_cell",
   "p1","p2","p3","p4","p5",  "fsl_fcs_score_notna",
   "fsl_rcsi_score_notna","fsl_hhs_score_notna","fsl_hdds_score_notna",
+  "plaus_overall_cdr",
   # get.label:
   "name",
   # create_mortality_long_df
