@@ -2,7 +2,7 @@ pandoc: 3.1.11
 pkgdown: 2.0.9
 pkgdown_sha: ~
 articles: {}
-last_built: 2024-06-05T13:59Z
+last_built: 2024-06-05T14:45Z
 urls:
   reference: https://impact-initiatives.github.io/impactR4PHU/reference
   article: https://impact-initiatives.github.io/impactR4PHU/articles
