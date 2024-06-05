@@ -255,12 +255,18 @@ add_iycf <- function(.dataset,
     warning("Your dataset appears not to have all the foods/liquids from the standard IYCF 2021 question sequence.\nIt is advised you ask about all recommended foods/liquids or there is a risk of overestimating EBF.\nIYCF Indicator 4: Exclusive Breastfeeding not calculated ")
     warning(paste0("Missing the following variables ", setdiff(c(ebf_foods,ebf_liquids), names(.dataset))))
   } else {
+    if(length(setdiff(length(ebf_liquids),10)) == 0){
+      .dataset <- .dataset %>%
+        dplyr::mutate(iycf_6b_num = as.numeric(!!rlang::sym(iycf_6b)),
+                      iycf_6c_num = as.numeric(!!rlang::sym(iycf_6c)),
+                      iycf_6d_num = as.numeric(!!rlang::sym(iycf_6d)))
+    }
+    if(!is.null(iycf_7a)){
+      .dataset <- .dataset %>%
+        dplyr::mutate(iycf_7a_num = as.numeric(!!rlang::sym(iycf_7a)))
+    }
     .dataset <- .dataset %>%
-      dplyr::mutate(iycf_6b_num = as.numeric(!!rlang::sym(iycf_6b)),
-                    iycf_6c_num = as.numeric(!!rlang::sym(iycf_6c)),
-                    iycf_6d_num = as.numeric(!!rlang::sym(iycf_6d)),
-                    iycf_7a_num = as.numeric(!!rlang::sym(iycf_7a)),
-                    iycf_7c_zero = !!rlang::sym(iycf_7c),
+      dplyr::mutate(iycf_7c_zero = !!rlang::sym(iycf_7c),
                     iycf_7e_zero = !!rlang::sym(iycf_7e),
                     iycf_7f_zero = !!rlang::sym(iycf_7f),
                     iycf_7g_zero = !!rlang::sym(iycf_7g),
