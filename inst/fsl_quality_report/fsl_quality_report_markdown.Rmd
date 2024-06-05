@@ -29,14 +29,14 @@ htmltools::img(src = knitr::image_uri("resources/Logo_Reach_RGB_1.png"),
 ```
 
 ```{r, include=FALSE, eval=TRUE}
-path.raw.main <- svDialogs::dlg_open(multiple = F, title = "Please select your data excel file.")$res
+path.raw.main <- svDialogs::dlg_open(multiple = F, title = "Please select your raw data excel file.")$res
 path.tool <- svDialogs::dlg_open(multiple = F, title = "Please select your Kobo tool file.")$res
 main.sheets <- readxl::excel_sheets(path.raw.main)
 path.sheet.with.fsl <- tcltk::tk_select.list(main.sheets, title = "FSL indicators sheet", multiple = F)
 raw.main <- readxl::read_excel(path.raw.main, path.sheet.with.fsl)
-tool.survey <- readxl::read_excel(path.tool, "survey")
-tool.choices <- readxl::read_excel(path.tool, "choices")
-label_colname <- tcltk::tk_select.list(names(tool.survey)[grepl("label",names(tool.survey))], title = "Label column to choose", multiple = F)
+label_colname <- tcltk::tk_select.list(names(readxl::read_excel(path.tool,"survey"))[grepl("label",names(readxl::read_excel(path.tool,"survey")))], title = "Label column to choose", multiple = F)
+tool.survey <- load.tool.survey(path.tool)
+tool.choices <- load.tool.choices(path.tool)
 if(file.exists("inputs/environment.Rdata")) {
   load("inputs/environment.Rdata")
 }
