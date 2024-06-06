@@ -109,7 +109,7 @@ create_iycf_plaus <- function(df_iycf,
                     is_6to23m = ifelse(is.na(!!rlang::sym(age_months)), NA, ifelse(!!rlang::sym(age_months) > 5 & !!rlang::sym(age_months) < 24, 1, NA))) %>%
       dplyr::group_by(group) %>%
       dplyr::summarize(age_ratio_under6m_6to23m = sum(!is.na(is_under6m)) / sum(!is.na(is_6to23m)),
-                       age_ratio_under6m_6to23m.pvalue = stats::chisq.test(x = c(sum(!is.na(is_under6m)), sum(!is.na(is_6to23m))), p = age_under6m_23m_ratio)[3])
+                       age_ratio_under6m_6to23m.pvalue = ifelse(is.nan(age_ratio_under6m_6to23m),NA,stats::chisq.test(x = c(sum(!is.na(is_under6m)), sum(!is.na(is_6to23m))), p = age_under6m_23m_ratio)[3]))
 
     if(!exists("results")) {results <- df2} else {results <- merge(results, df2)}
 
@@ -131,7 +131,7 @@ create_iycf_plaus <- function(df_iycf,
                        mad_ratio = sum(!is.na(is_mad)) / sum(!is.na(is_not_mad)),
                        sum_is_mad = sum(!is.na(is_mad)),
                        sum_is_not_mad = sum(!is.na(is_not_mad)),
-                       mad_ratio.pvalue = stats::chisq.test(x = c(sum_is_mad, sum_is_not_mad), p = c(left, right))[3])
+                       mad_ratio.pvalue = ifelse(is.nan(mad_ratio),NA,stats::chisq.test(x = c(sum_is_mad, sum_is_not_mad), p = c(left, right))[3]))
 
     if(!exists("results")) {results <- df2} else {results <- merge(results, df2)}
 
