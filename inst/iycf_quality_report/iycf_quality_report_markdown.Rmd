@@ -784,16 +784,16 @@ if(!file.exists("inputs/environment.Rdata")) {
   yes_no_columns <- c(iycf_7b,iycf_7c,iycf_7d,iycf_7e,iycf_7f,iycf_7g,iycf_7h,iycf_7i,iycf_7j,
                       iycf_7k,iycf_7l,iycf_7m,iycf_7n,iycf_7o,iycf_7p,iycf_7q)
   
-  yes_answer <- tcltk::tk_select.list(dplyr::pull(raw.iycf[,yes_no_columns]) %>% unique, title = "Yes Value")
-  no_answer <- tcltk::tk_select.list(dplyr::pull(raw.iycf[,yes_no_columns]) %>% unique, title = "No Value")
-  dnk_answer <- tcltk::tk_select.list(dplyr::pull(raw.iycf[,yes_no_columns]) %>% unique, title = "Don't Know Value")
-  pnta_answer <- tcltk::tk_select.list(dplyr::pull(raw.iycf[,yes_no_columns]) %>% unique, title = "Prefer Not To Answer Value")
+  yes_answer <- tcltk::tk_select.list(unique(unlist(raw.iycf[,yes_no_columns])), title = "Yes Value")
+  no_answer <- tcltk::tk_select.list(unique(unlist(raw.iycf[,yes_no_columns])) %>% unique, title = "No Value")
+  dnk_answer <- tcltk::tk_select.list(unique(unlist(raw.iycf[,yes_no_columns])) %>% unique, title = "Don't Know Value")
+  pnta_answer <- tcltk::tk_select.list(unique(unlist(raw.iycf[,yes_no_columns])) %>% unique, title = "Prefer Not To Answer Value")
   
   if(!is.null(iycf_2)){
     if(!is_empty_new("iycf_2")){
-      iycf2_immediate_value <- tcltk::tk_select.list(dplyr::pull(raw.iycf[,iycf_2]) %>% unique, title = "Immediately Value")
-      iycf2_lessday_value <- tcltk::tk_select.list(dplyr::pull(raw.iycf[,iycf_2]) %>% unique, title = "Less Than A Day Value")
-      iycf2_moreday_value <- tcltk::tk_select.list(dplyr::pull(raw.iycf[,iycf_2]) %>% unique, title = "More Than A Day Value")
+      iycf2_immediate_value <- tcltk::tk_select.list(unique(unlist(raw.iycf[,iycf_2])) %>% unique, title = "Immediately Value")
+      iycf2_lessday_value <- tcltk::tk_select.list(unique(unlist(raw.iycf[,iycf_2])) %>% unique, title = "Less Than A Day Value")
+      iycf2_moreday_value <- tcltk::tk_select.list(unique(unlist(raw.iycf[,iycf_2])) %>% unique, title = "More Than A Day Value")
     } else {
       iycf2_immediate_value  <- NULL
       iycf2_lessday_value  <- NULL

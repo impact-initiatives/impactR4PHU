@@ -412,11 +412,11 @@ if(!file.exists("inputs/environment.Rdata")) {
       svDialogs::dlg_message("Please check if the HHS columns selected are correct and available in the dataset")
       stop("Please check if the HHS columns selected are correct and available in the dataset")
     } else{
-      yes_answer <- tcltk::tk_select.list(dplyr::pull(main[,hhs_check_columns]) %>% unique, title = "Yes Value")
-      no_answer <- tcltk::tk_select.list(dplyr::pull(main[,hhs_check_columns]) %>% unique, title = "No Value")
-      rarely_answer <- tcltk::tk_select.list(dplyr::pull(main[,hhs_check_columns_freq]) %>% unique, title = "Rarely Value")
-      sometimes_answer <- tcltk::tk_select.list(dplyr::pull(main[,hhs_check_columns_freq]) %>% unique, title = "Sometimes Value")
-      often_answer <- tcltk::tk_select.list(dplyr::pull(main[,hhs_check_columns_freq]) %>% unique, title = "Often Value")
+      yes_answer <- tcltk::tk_select.list(unique(unlist(main[,hhs_check_columns])), title = "Yes Value")
+      no_answer <- tcltk::tk_select.list(unique(unlist(main[,hhs_check_columns])), title = "No Value")
+      rarely_answer <- tcltk::tk_select.list(unique(unlist(main[,hhs_check_columns_freq])), title = "Rarely Value")
+      sometimes_answer <- tcltk::tk_select.list(unique(unlist(main[,hhs_check_columns_freq])), title = "Sometimes Value")
+      often_answer <- tcltk::tk_select.list(unique(unlist(main[,hhs_check_columns_freq])), title = "Often Value")
       main <- main %>%
         dplyr::mutate_at(vars(hhs_check_columns),~case_when(. == yes_answer ~ yes_answer,
                                                             . == no_answer ~ no_answer,
@@ -636,10 +636,10 @@ if(!file.exists("inputs/environment.Rdata")) {
       svDialogs::dlg_message("Please check if the LCSI columns selected are correct and available in the dataset")
       stop("Please check if the LCSI columns selected are correct and available in the dataset")
     } else{
-      yes_val <- tcltk::tk_select.list(dplyr::pull(main[,lcsi_check_columns]) %>% unique, title = "Yes Value")
-      no_val <- tcltk::tk_select.list(dplyr::pull(main[,lcsi_check_columns]) %>% unique, title = "No Value")
-      exhausted_val <- tcltk::tk_select.list(dplyr::pull(main[,lcsi_check_columns]) %>% unique, title = "Exhausted Value")
-      not_applicable_val <- tcltk::tk_select.list(dplyr::pull(main[,lcsi_check_columns]) %>% unique, title = "Not Applicable Value")
+      yes_val <- tcltk::tk_select.list(unique(unlist(main[,lcsi_check_columns])), title = "Yes Value")
+      no_val <- tcltk::tk_select.list(unique(unlist(main[,lcsi_check_columns])), title = "No Value")
+      exhausted_val <- tcltk::tk_select.list(unique(unlist(main[,lcsi_check_columns])), title = "Exhausted Value")
+      not_applicable_val <- tcltk::tk_select.list(unique(unlist(main[,lcsi_check_columns])), title = "Not Applicable Value")
       main <- main %>%
         dplyr::mutate_at(vars(lcsi_check_columns),~case_when(. == yes_val ~ yes_val,
                                                              . == no_val ~ no_val,
@@ -891,8 +891,8 @@ if(!file.exists("inputs/environment.Rdata")) {
       svDialogs::dlg_message("Please check if the HDDS columns selected are correct and available in the dataset")
       stop("Please check if the HDDS columns selected are correct and available in the dataset")
     } else {
-      yes_val <- tcltk::tk_select.list(dplyr::pull(main[,hdds_check_columns]) %>% unique, title = "Yes Value")
-      no_val <- tcltk::tk_select.list(dplyr::pull(main[,hdds_check_columns]) %>% unique, title = "No Value")
+      yes_val <- tcltk::tk_select.list(unique(unlist(main[,hdds_check_columns])), title = "Yes Value")
+      no_val <- tcltk::tk_select.list(unique(unlist(main[,hdds_check_columns])), title = "No Value")
       main <- main %>%
         dplyr::mutate_at(vars(lcsi_check_columns),~case_when(. == yes_val ~ yes_val,
                                                              . == no_val ~ no_val,

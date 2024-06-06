@@ -1066,7 +1066,7 @@ df_mortality_long <- df_mortality_long  %>%
 
 
 if(!file.exists("inputs/environment.Rdata")) {
-  cause_death_f <- tcltk::tk_select.list(dplyr::pull(df_mortality_long[,"death_cause"]) %>% unique, title = "Cause Death related to Women",multiple = T)
+  cause_death_f <- tcltk::tk_select.list(unique(unlist(df_mortality_long[,"death_cause"])), title = "Cause Death related to Women",multiple = T)
 }
 
 
