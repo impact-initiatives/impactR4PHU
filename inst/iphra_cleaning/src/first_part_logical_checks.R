@@ -48,9 +48,26 @@ fcs_check_columns <- c("fsl_fcs_cereal",
                        "fsl_fcs_sugar",
                        "fsl_fcs_oil")
 
-if(all(fcs_check_columns %in% names(raw.main))) {
+if(all(fcs_check_columns %in% names(raw.flag))) {
   raw.flag <- raw.flag %>% 
     impactR4PHU::add_fcs(cutoffs = "normal")
+  fsl_fcs_cereal <- "fsl_fcs_cereal"
+  fsl_fcs_legumes <- "fsl_fcs_legumes"
+  fsl_fcs_veg <- "fsl_fcs_veg"
+  fsl_fcs_fruit <- "fsl_fcs_fruit"
+  fsl_fcs_meat <- "fsl_fcs_meat"
+  fsl_fcs_dairy <- "fsl_fcs_dairy"
+  fsl_fcs_sugar <- "fsl_fcs_sugar"
+  fsl_fcs_oil <- "fsl_fcs_oil"
+} else {
+  fsl_fcs_cereal <- NULL
+  fsl_fcs_legumes <- NULL
+  fsl_fcs_veg <- NULL
+  fsl_fcs_fruit <- NULL
+  fsl_fcs_meat <- NULL
+  fsl_fcs_dairy <- NULL
+  fsl_fcs_sugar <- NULL
+  fsl_fcs_oil <- NULL
 }
 
 rcsi_check_columns <- c("fsl_rcsi_lessquality",
@@ -59,9 +76,20 @@ rcsi_check_columns <- c("fsl_rcsi_lessquality",
                         "fsl_rcsi_mealadult",
                         "fsl_rcsi_mealnb")
 
-if(all(rcsi_check_columns %in% names(raw.main))) {
+if(all(rcsi_check_columns %in% names(raw.flag))) {
   raw.flag <- raw.flag %>% 
     impactR4PHU::add_rcsi()
+  fsl_rcsi_lessquality <- "fsl_rcsi_lessquality"
+  fsl_rcsi_borrow  <- "fsl_rcsi_borrow"
+  fsl_rcsi_mealsize  <- "fsl_rcsi_mealsize"
+  fsl_rcsi_mealadult <- "fsl_rcsi_mealadult"
+  fsl_rcsi_mealnb  <- "fsl_rcsi_mealnb"
+} else{
+  fsl_rcsi_lessquality <- NULL
+  fsl_rcsi_borrow  <- NULL
+  fsl_rcsi_mealsize  <- NULL
+  fsl_rcsi_mealadult <- NULL
+  fsl_rcsi_mealnb  <- NULL
 }
 
 hhs_check_columns <- c("fsl_hhs_nofoodhh",
@@ -71,87 +99,172 @@ hhs_check_columns <- c("fsl_hhs_nofoodhh",
                        "fsl_hhs_alldaynight",
                        "fsl_hhs_alldaynight_freq")
 
-if(all(hhs_check_columns %in% names(raw.main))) {
+if(all(hhs_check_columns %in% names(raw.flag))) {
   raw.flag <- raw.flag %>% 
     impactR4PHU::add_hhs()
+  fsl_hhs_nofoodhh <- "fsl_hhs_nofoodhh"
+  fsl_hhs_nofoodhh_freq <- "fsl_hhs_nofoodhh_freq"
+  fsl_hhs_sleephungry <- "fsl_hhs_sleephungry"
+  fsl_hhs_sleephungry_freq <- "fsl_hhs_sleephungry_freq"
+  fsl_hhs_alldaynight <- "fsl_hhs_alldaynight"
+  fsl_hhs_alldaynight_freq <- "fsl_hhs_alldaynight_freq"
+} else {
+  fsl_hhs_nofoodhh <- NULL
+  fsl_hhs_nofoodhh_freq <- NULL
+  fsl_hhs_sleephungry <- NULL
+  fsl_hhs_sleephungry_freq <- NULL
+  fsl_hhs_alldaynight <- NULL
+  fsl_hhs_alldaynight_freq <- NULL
 }
 
-lcsi_check_columns <- c("fsl_lcsi_stress1",
-                        "fsl_lcsi_stress2",
-                        "fsl_lcsi_stress3",
-                        "fsl_lcsi_stress4",
-                        "fsl_lcsi_crisis1",
-                        "fsl_lcsi_crisis2",
-                        "fsl_lcsi_crisis3",
-                        "fsl_lcsi_emergency1",
-                        "fsl_lcsi_emergency2",
-                        "fsl_lcsi_emergency3")
+lcsi_check_columns <- c("fsl_lcsi_stress1","fsl_lcsi_stress2","fsl_lcsi_stress3","fsl_lcsi_stress4",
+                        "fsl_lcsi_crisis1","fsl_lcsi_crisis2","fsl_lcsi_crisis3",
+                        "fsl_lcsi_emergency1","fsl_lcsi_emergency2","fsl_lcsi_emergency3")
 
-if(all(lcsi_check_columns %in% names(raw.main))) {
+if(all(lcsi_check_columns %in% names(raw.flag))) {
   raw.flag <- raw.flag %>% 
     impactR4PHU::add_lcsi()
+  fsl_lcsi_stress1 <- "fsl_lcsi_stress1"
+  fsl_lcsi_stress2 <- "fsl_lcsi_stress2"
+  fsl_lcsi_stress3 <- "fsl_lcsi_stress3"
+  fsl_lcsi_stress4 <- "fsl_lcsi_stress4"
+  fsl_lcsi_crisis1 <- "fsl_lcsi_crisis1"
+  fsl_lcsi_crisis2 <- "fsl_lcsi_crisis2"
+  fsl_lcsi_crisis3 <- "fsl_lcsi_crisis3"
+  fsl_lcsi_emergency1 <- "fsl_lcsi_emergency1"
+  fsl_lcsi_emergency2 <- "fsl_lcsi_emergency2"
+  fsl_lcsi_emergency3 <- "fsl_lcsi_emergency3"
+} else {
+  fsl_lcsi_stress1 <- NULL
+  fsl_lcsi_stress2 <- NULL
+  fsl_lcsi_stress3 <- NULL
+  fsl_lcsi_stress4 <- NULL
+  fsl_lcsi_crisis1 <- NULL
+  fsl_lcsi_crisis2 <- NULL
+  fsl_lcsi_crisis3 <- NULL
+  fsl_lcsi_emergency1 <- NULL
+  fsl_lcsi_emergency2 <- NULL
+  fsl_lcsi_emergency3 <- NULL
 }
 
-hdds_check_columns <- c("fsl_hdds_cereals",
-                        "fsl_hdds_tubers",
-                        "fsl_hdds_veg",
-                        "fsl_hdds_fruit",
-                        "fsl_hdds_meat",
-                        "fsl_hdds_eggs",
-                        "fsl_hdds_fish",
-                        "fsl_hdds_legumes",
-                        "fsl_hdds_dairy",
-                        "fsl_hdds_oil",
-                        "fsl_hdds_sugar",
-                        "fsl_hdds_condiments")
+hdds_check_columns <- c("fsl_hdds_cereals","fsl_hdds_tubers","fsl_hdds_veg","fsl_hdds_fruit","fsl_hdds_meat",
+                        "fsl_hdds_eggs","fsl_hdds_fish","fsl_hdds_legumes","fsl_hdds_dairy","fsl_hdds_oil",
+                        "fsl_hdds_sugar","fsl_hdds_condiments")
 
-if(all(hdds_check_columns %in% names(raw.main))) {
+if(all(hdds_check_columns %in% names(raw.flag))) {
   raw.flag <- raw.flag %>% 
     impactR4PHU::add_hdds()
+  fsl_hdds_cereals <- "fsl_hdds_cereals"
+  fsl_hdds_tubers <- "fsl_hdds_tubers"
+  fsl_hdds_veg <- "fsl_hdds_veg"
+  fsl_hdds_fruit <- "fsl_hdds_fruit"
+  fsl_hdds_meat <- "fsl_hdds_meat"
+  fsl_hdds_eggs <- "fsl_hdds_eggs"
+  fsl_hdds_fish <- "fsl_hdds_fish"
+  fsl_hdds_legumes <- "fsl_hdds_legumes"
+  fsl_hdds_dairy <- "fsl_hdds_dairy"
+  fsl_hdds_oil <- "fsl_hdds_oil"
+  fsl_hdds_sugar <- "fsl_hdds_sugar"
+  fsl_hdds_condiments <- "fsl_hdds_condiments"
+} else {
+  fsl_hdds_cereals <- NULL
+  fsl_hdds_tubers <- NULL
+  fsl_hdds_veg <- NULL
+  fsl_hdds_fruit <- NULL
+  fsl_hdds_meat <- NULL
+  fsl_hdds_eggs <- NULL
+  fsl_hdds_fish <- NULL
+  fsl_hdds_legumes <- NULL
+  fsl_hdds_dairy <- NULL
+  fsl_hdds_oil <- NULL
+  fsl_hdds_sugar <- NULL
+  fsl_hdds_condiments <- NULL
 }
 
-fcm_check_1_columns <- c("fsl_fcs_score",
-                         "fsl_rcsi_score")
+fcm_check_1_columns <- c("fsl_fcs_cat",
+                         "fsl_rcsi_cat")
 
-fcm_check_2_columns <- c("fsl_hdds_score",
-                         "fsl_rcsi_score")
+fcm_check_2_columns <- c("fsl_hdds_cat",
+                         "fsl_rcsi_cat")
 
-fcm_check_3_columns <- c("fsl_fcs_score",
-                         "fsl_hhs_score")
+fcm_check_3_columns <- c("fsl_fcs_cat",
+                         "fsl_hhs_cat")
 
-fcm_check_4_columns <- c("fsl_hdds_score",
-                         "fsl_hhs_score")
+fcm_check_4_columns <- c("fsl_hdds_cat",
+                         "fsl_hhs_cat")
 
-fcm_check_5_columns <- c("fsl_hdds_score",
-                         "fsl_rcsi_score",
-                         "fsl_hhs_score")
+fcm_check_5_columns <- c("fsl_hdds_cat",
+                         "fsl_rcsi_cat",
+                         "fsl_hhs_cat")
 
-fcm_check_6_columns <- c("fsl_fcs_score",
-                         "fsl_rcsi_score",
-                         "fsl_hhs_score")
+fcm_check_6_columns <- c("fsl_fcs_cat",
+                         "fsl_rcsi_cat",
+                         "fsl_hhs_cat")
 
 
 
-if(all(fcm_check_1_columns %in% names(raw.main)) |
-   all(fcm_check_2_columns %in% names(raw.main)) |
-   all(fcm_check_3_columns %in% names(raw.main)) |
-   all(fcm_check_4_columns %in% names(raw.main))|
-   all(fcm_check_5_columns %in% names(raw.main)) |
-   all(fcm_check_6_columns %in% names(raw.main))) {
+if(all(fcm_check_1_columns %in% names(raw.flag)) |
+   all(fcm_check_2_columns %in% names(raw.flag)) |
+   all(fcm_check_3_columns %in% names(raw.flag)) |
+   all(fcm_check_4_columns %in% names(raw.flag)) |
+   all(fcm_check_5_columns %in% names(raw.flag)) |
+   all(fcm_check_6_columns %in% names(raw.flag))) {
   raw.flag <- raw.flag %>% 
     impactR4PHU::add_fcm_phase()
 }
 
 fclcm_check_columns <- c("fsl_fc_phase",
                          "fsl_lcsi_cat")
-if(all(fclcm_check_columns %in% names(raw.main))) {
+if(all(fclcm_check_columns %in% names(raw.flag))) {
   raw.flag <- raw.flag %>% 
     impactR4PHU::add_fclcm_phase()
 }
 
 ## FCS
-raw.flag.fcs <- raw.flag %>% 
-  impactR4PHU::check_fsl_flags(tool.survey = tool.survey) ## CHANGE by removing date_dc_date
+raw.flag.fcs <- raw.flag %>%
+  impactR4PHU::check_fsl_flags( fsl_fcs_cereal = fsl_fcs_cereal,
+                                fsl_fcs_legumes = fsl_fcs_legumes,
+                                fsl_fcs_dairy = fsl_fcs_dairy,
+                                fsl_fcs_meat = fsl_fcs_meat,
+                                fsl_fcs_veg = fsl_fcs_veg,
+                                fsl_fcs_fruit = fsl_fcs_fruit,
+                                fsl_fcs_oil = fsl_fcs_oil,
+                                fsl_fcs_sugar = fsl_fcs_sugar,
+                                fsl_rcsi_lessquality = fsl_rcsi_lessquality,
+                                fsl_rcsi_borrow = fsl_rcsi_borrow,
+                                fsl_rcsi_mealsize = fsl_rcsi_mealsize,
+                                fsl_rcsi_mealadult = fsl_rcsi_mealadult,
+                                fsl_rcsi_mealnb = fsl_rcsi_mealnb,
+                                fsl_hhs_nofoodhh = fsl_hhs_nofoodhh,
+                                fsl_hhs_nofoodhh_freq = fsl_hhs_nofoodhh_freq,
+                                fsl_hhs_sleephungry = fsl_hhs_sleephungry,
+                                fsl_hhs_sleephungry_freq = fsl_hhs_sleephungry_freq,
+                                fsl_hhs_alldaynight = fsl_hhs_alldaynight,
+                                fsl_hhs_alldaynight_freq = fsl_hhs_alldaynight_freq,
+                                fsl_hdds_cereals = fsl_hdds_cereals,
+                                fsl_hdds_tubers = fsl_hdds_tubers,
+                                fsl_hdds_legumes = fsl_hdds_legumes,
+                                fsl_hdds_veg = fsl_hdds_veg,
+                                fsl_hdds_fruit = fsl_hdds_fruit,
+                                fsl_hdds_meat = fsl_hdds_meat,
+                                fsl_hdds_fish = fsl_hdds_fish,
+                                fsl_hdds_dairy = fsl_hdds_dairy,
+                                fsl_hdds_eggs = fsl_hdds_eggs,
+                                fsl_hdds_sugar = fsl_hdds_sugar,
+                                fsl_hdds_oil = fsl_hdds_oil,
+                                fsl_hdds_condiments = fsl_hdds_condiments,
+                                fsl_hdds_yes_value = fsl_hdds_yes_value,
+                                fsl_lcsi_stress1 = fsl_lcsi_stress1,
+                                fsl_lcsi_stress2 = fsl_lcsi_stress2,
+                                fsl_lcsi_stress3 = fsl_lcsi_stress3,
+                                fsl_lcsi_stress4 = fsl_lcsi_stress4,
+                                fsl_lcsi_crisis1 = fsl_lcsi_crisis1,
+                                fsl_lcsi_crisis2 = fsl_lcsi_crisis2,
+                                fsl_lcsi_crisis3 = fsl_lcsi_crisis3,
+                                fsl_lcsi_emergency1 = fsl_lcsi_emergency1,
+                                fsl_lcsi_emergency2 = fsl_lcsi_emergency2,
+                                fsl_lcsi_emergency3 = fsl_lcsi_emergency3,
+                                tool.survey = tool.survey)
 
 ## WASH
 if(!is.null(raw.water_count_loop)){

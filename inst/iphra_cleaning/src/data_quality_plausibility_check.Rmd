@@ -269,7 +269,7 @@ if(!is.null(raw.died_member)){
   filter(!is.na(loop_count))
 
 }else {
-  loop_counts_main_5 <- data.frame()
+  loop_counts_main_6 <- data.frame()
 }
 ```
 
@@ -363,17 +363,20 @@ table_age_pyramide <- raw.hh_roster %>%
 #### Age Group / Sex Distribution
 
 ```{r}
-(impactR4PHU::plot_age_pyramid(table_age_pyramide,
+(impactR4PHU::plot_age_pyramid(table_age_pyramide %>% 
+                                 dplyr::mutate(calc_final_age_years = as.numeric(calc_final_age_years)),
                                age_years = "calc_final_age_years"))
 ```
 
 #### Age Years Distibution (0 - 10)
 
 ```{r}
-(impactR4PHU::plot_age_distribution(table_age_pyramide,
+(impactR4PHU::plot_age_distribution(table_age_pyramide %>% 
+                                      dplyr::mutate(calc_final_age_years = as.numeric(calc_final_age_years)),
                                     year_or_month = "year",
                                     age_years = "calc_final_age_years",
-                                    min_age = 0, max_age = 10))
+                                    min_age = 0,
+                                    max_age = 10))
 ```
 
 ## FSL {.tabset .tabset-fade}
@@ -391,6 +394,23 @@ fcs_check_columns <- c("fsl_fcs_cereal",
 if(all(fcs_check_columns %in% names(raw.main))) {
   raw.main <- raw.main %>% 
     impactR4PHU::add_fcs(cutoffs = "normal")
+  fsl_fcs_cereal <- "fsl_fcs_cereal"
+  fsl_fcs_legumes <- "fsl_fcs_legumes"
+  fsl_fcs_veg <- "fsl_fcs_veg"
+  fsl_fcs_fruit <- "fsl_fcs_fruit"
+  fsl_fcs_meat <- "fsl_fcs_meat"
+  fsl_fcs_dairy <- "fsl_fcs_dairy"
+  fsl_fcs_sugar <- "fsl_fcs_sugar"
+  fsl_fcs_oil <- "fsl_fcs_oil"
+} else {
+    fsl_fcs_cereal <- NULL
+    fsl_fcs_legumes <- NULL
+    fsl_fcs_veg <- NULL
+    fsl_fcs_fruit <- NULL
+    fsl_fcs_meat <- NULL
+    fsl_fcs_dairy <- NULL
+    fsl_fcs_sugar <- NULL
+    fsl_fcs_oil <- NULL
 }
 
 rcsi_check_columns <- c("fsl_rcsi_lessquality",
@@ -402,6 +422,17 @@ rcsi_check_columns <- c("fsl_rcsi_lessquality",
 if(all(rcsi_check_columns %in% names(raw.main))) {
   raw.main <- raw.main %>% 
     impactR4PHU::add_rcsi()
+  fsl_rcsi_lessquality <- "fsl_rcsi_lessquality"
+  fsl_rcsi_borrow  <- "fsl_rcsi_borrow"
+  fsl_rcsi_mealsize  <- "fsl_rcsi_mealsize"
+  fsl_rcsi_mealadult <- "fsl_rcsi_mealadult"
+  fsl_rcsi_mealnb  <- "fsl_rcsi_mealnb"
+} else{
+    fsl_rcsi_lessquality <- NULL
+    fsl_rcsi_borrow  <- NULL
+    fsl_rcsi_mealsize  <- NULL
+    fsl_rcsi_mealadult <- NULL
+    fsl_rcsi_mealnb  <- NULL
 }
 
 hhs_check_columns <- c("fsl_hhs_nofoodhh",
@@ -414,6 +445,19 @@ hhs_check_columns <- c("fsl_hhs_nofoodhh",
 if(all(hhs_check_columns %in% names(raw.main))) {
   raw.main <- raw.main %>% 
     impactR4PHU::add_hhs()
+  fsl_hhs_nofoodhh <- "fsl_hhs_nofoodhh"
+  fsl_hhs_nofoodhh_freq <- "fsl_hhs_nofoodhh_freq"
+  fsl_hhs_sleephungry <- "fsl_hhs_sleephungry"
+  fsl_hhs_sleephungry_freq <- "fsl_hhs_sleephungry_freq"
+  fsl_hhs_alldaynight <- "fsl_hhs_alldaynight"
+  fsl_hhs_alldaynight_freq <- "fsl_hhs_alldaynight_freq"
+} else {
+    fsl_hhs_nofoodhh <- NULL
+    fsl_hhs_nofoodhh_freq <- NULL
+    fsl_hhs_sleephungry <- NULL
+    fsl_hhs_sleephungry_freq <- NULL
+    fsl_hhs_alldaynight <- NULL
+    fsl_hhs_alldaynight_freq <- NULL
 }
 
 lcsi_check_columns <- c("fsl_lcsi_stress1","fsl_lcsi_stress2","fsl_lcsi_stress3","fsl_lcsi_stress4",
@@ -423,6 +467,27 @@ lcsi_check_columns <- c("fsl_lcsi_stress1","fsl_lcsi_stress2","fsl_lcsi_stress3"
 if(all(lcsi_check_columns %in% names(raw.main))) {
   raw.main <- raw.main %>% 
     impactR4PHU::add_lcsi()
+  fsl_lcsi_stress1 <- "fsl_lcsi_stress1"
+  fsl_lcsi_stress2 <- "fsl_lcsi_stress2"
+  fsl_lcsi_stress3 <- "fsl_lcsi_stress3"
+  fsl_lcsi_stress4 <- "fsl_lcsi_stress4"
+  fsl_lcsi_crisis1 <- "fsl_lcsi_crisis1"
+  fsl_lcsi_crisis2 <- "fsl_lcsi_crisis2"
+  fsl_lcsi_crisis3 <- "fsl_lcsi_crisis3"
+  fsl_lcsi_emergency1 <- "fsl_lcsi_emergency1"
+  fsl_lcsi_emergency2 <- "fsl_lcsi_emergency2"
+  fsl_lcsi_emergency3 <- "fsl_lcsi_emergency3"
+} else {
+    fsl_lcsi_stress1 <- NULL
+    fsl_lcsi_stress2 <- NULL
+    fsl_lcsi_stress3 <- NULL
+    fsl_lcsi_stress4 <- NULL
+    fsl_lcsi_crisis1 <- NULL
+    fsl_lcsi_crisis2 <- NULL
+    fsl_lcsi_crisis3 <- NULL
+    fsl_lcsi_emergency1 <- NULL
+    fsl_lcsi_emergency2 <- NULL
+    fsl_lcsi_emergency3 <- NULL
 }
 
 hdds_check_columns <- c("fsl_hdds_cereals","fsl_hdds_tubers","fsl_hdds_veg","fsl_hdds_fruit","fsl_hdds_meat",
@@ -432,6 +497,31 @@ hdds_check_columns <- c("fsl_hdds_cereals","fsl_hdds_tubers","fsl_hdds_veg","fsl
 if(all(hdds_check_columns %in% names(raw.main))) {
   raw.main <- raw.main %>% 
     impactR4PHU::add_hdds()
+  fsl_hdds_cereals <- "fsl_hdds_cereals"
+  fsl_hdds_tubers <- "fsl_hdds_tubers"
+  fsl_hdds_veg <- "fsl_hdds_veg"
+  fsl_hdds_fruit <- "fsl_hdds_fruit"
+  fsl_hdds_meat <- "fsl_hdds_meat"
+  fsl_hdds_eggs <- "fsl_hdds_eggs"
+  fsl_hdds_fish <- "fsl_hdds_fish"
+  fsl_hdds_legumes <- "fsl_hdds_legumes"
+  fsl_hdds_dairy <- "fsl_hdds_dairy"
+  fsl_hdds_oil <- "fsl_hdds_oil"
+  fsl_hdds_sugar <- "fsl_hdds_sugar"
+  fsl_hdds_condiments <- "fsl_hdds_condiments"
+} else {
+    fsl_hdds_cereals <- NULL
+    fsl_hdds_tubers <- NULL
+    fsl_hdds_veg <- NULL
+    fsl_hdds_fruit <- NULL
+    fsl_hdds_meat <- NULL
+    fsl_hdds_eggs <- NULL
+    fsl_hdds_fish <- NULL
+    fsl_hdds_legumes <- NULL
+    fsl_hdds_dairy <- NULL
+    fsl_hdds_oil <- NULL
+    fsl_hdds_sugar <- NULL
+    fsl_hdds_condiments <- NULL
 }
 
 fcm_check_1_columns <- c("fsl_fcs_cat",
@@ -475,7 +565,49 @@ if(all(fclcm_check_columns %in% names(raw.main))) {
 
 ## FCS
 raw.flag.fcs <- raw.main %>%
-  impactR4PHU::check_fsl_flags(tool.survey = tool.survey)
+  impactR4PHU::check_fsl_flags( fsl_fcs_cereal = fsl_fcs_cereal,
+                                fsl_fcs_legumes = fsl_fcs_legumes,
+                                fsl_fcs_dairy = fsl_fcs_dairy,
+                                fsl_fcs_meat = fsl_fcs_meat,
+                                fsl_fcs_veg = fsl_fcs_veg,
+                                fsl_fcs_fruit = fsl_fcs_fruit,
+                                fsl_fcs_oil = fsl_fcs_oil,
+                                fsl_fcs_sugar = fsl_fcs_sugar,
+                                fsl_rcsi_lessquality = fsl_rcsi_lessquality,
+                                fsl_rcsi_borrow = fsl_rcsi_borrow,
+                                fsl_rcsi_mealsize = fsl_rcsi_mealsize,
+                                fsl_rcsi_mealadult = fsl_rcsi_mealadult,
+                                fsl_rcsi_mealnb = fsl_rcsi_mealnb,
+                                fsl_hhs_nofoodhh = fsl_hhs_nofoodhh,
+                                fsl_hhs_nofoodhh_freq = fsl_hhs_nofoodhh_freq,
+                                fsl_hhs_sleephungry = fsl_hhs_sleephungry,
+                                fsl_hhs_sleephungry_freq = fsl_hhs_sleephungry_freq,
+                                fsl_hhs_alldaynight = fsl_hhs_alldaynight,
+                                fsl_hhs_alldaynight_freq = fsl_hhs_alldaynight_freq,
+                                fsl_hdds_cereals = fsl_hdds_cereals,
+                                fsl_hdds_tubers = fsl_hdds_tubers,
+                                fsl_hdds_legumes = fsl_hdds_legumes,
+                                fsl_hdds_veg = fsl_hdds_veg,
+                                fsl_hdds_fruit = fsl_hdds_fruit,
+                                fsl_hdds_meat = fsl_hdds_meat,
+                                fsl_hdds_fish = fsl_hdds_fish,
+                                fsl_hdds_dairy = fsl_hdds_dairy,
+                                fsl_hdds_eggs = fsl_hdds_eggs,
+                                fsl_hdds_sugar = fsl_hdds_sugar,
+                                fsl_hdds_oil = fsl_hdds_oil,
+                                fsl_hdds_condiments = fsl_hdds_condiments,
+                                fsl_hdds_yes_value = fsl_hdds_yes_value,
+                                fsl_lcsi_stress1 = fsl_lcsi_stress1,
+                                fsl_lcsi_stress2 = fsl_lcsi_stress2,
+                                fsl_lcsi_stress3 = fsl_lcsi_stress3,
+                                fsl_lcsi_stress4 = fsl_lcsi_stress4,
+                                fsl_lcsi_crisis1 = fsl_lcsi_crisis1,
+                                fsl_lcsi_crisis2 = fsl_lcsi_crisis2,
+                                fsl_lcsi_crisis3 = fsl_lcsi_crisis3,
+                                fsl_lcsi_emergency1 = fsl_lcsi_emergency1,
+                                fsl_lcsi_emergency2 = fsl_lcsi_emergency2,
+                                fsl_lcsi_emergency3 = fsl_lcsi_emergency3,
+                                tool.survey = tool.survey)
 ```
 
 ```{r, include = FALSE}
@@ -842,37 +974,45 @@ if(!is.null(raw.child_nutrition)){
 
 
 ```{r}
-if(all(c("nut_muac_cm","nut_edema_confirm") %in% names(raw.child_nutrition))){
-  cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",4), collapse=""), " ", "Age Month Distribution per Enumerator"))
-  (impactR4PHU::plot_age_distribution(raw.flag.nut,
-                                      year_or_month = "month",
-                                      age_months = "child_age_months",
-                                      age_min = 6, age_max = 59,
-                                      by_group = "enumerator"))
+if(!is.null(raw.child_nutrition)){
+  if(all(c("nut_muac_cm","nut_edema_confirm") %in% names(raw.child_nutrition))){
+    cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",4), collapse=""), " ", "Age Month Distribution per Enumerator"))
+    (impactR4PHU::plot_age_distribution(raw.flag.nut,
+                                        year_or_month = "month",
+                                        age_months = "child_age_months",
+                                        age_min = 6, age_max = 59,
+                                        by_group = "enumerator"))
+  }
 }
 ```
 
 
 ```{r}
-if(all(c("nut_muac_cm","nut_edema_confirm") %in% names(raw.child_nutrition))){
-  cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",4), collapse=""), " ", "Age Distribution Anthro"))
-  (plot_anthro_age_distribution_phu(df = raw.flag.nut, index = "mfaz"))
+if(!is.null(raw.child_nutrition)){
+  if(all(c("nut_muac_cm","nut_edema_confirm") %in% names(raw.child_nutrition))){
+    cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",4), collapse=""), " ", "Age Distribution Anthro"))
+    (plot_anthro_age_distribution_phu(df = raw.flag.nut, index = "mfaz"))
+  }
 }
 ```
 
 
 ```{r}
-if(all(c("nut_muac_cm","nut_edema_confirm") %in% names(raw.child_nutrition))){
-  cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",4), collapse=""), " ", "Cumulative Distribution MUAC without Flag"))
-  (plot_cumulative_distribution_phu(df = raw.flag.nut, index = "nut_muac_cm", flags = "no"))
+if(!is.null(raw.child_nutrition)){
+  if(all(c("nut_muac_cm","nut_edema_confirm") %in% names(raw.child_nutrition))){
+    cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",4), collapse=""), " ", "Cumulative Distribution MUAC without Flag"))
+    (plot_cumulative_distribution_phu(df = raw.flag.nut, index = "nut_muac_cm", flags = "no"))
+  }
 }
 ```
 
 
 ```{r}
-if(all(c("nut_muac_cm","nut_edema_confirm") %in% names(raw.child_nutrition))){
-  cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",4), collapse=""), " ", "Cumulative Distribution MUAC with Flag per Enumerator"))
-  (plot_cumulative_distribution_phu(df = raw.flag.nut, index = "nut_muac_cm", flags = "yes", grouping = "enumerator"))
+if(!is.null(raw.child_nutrition)){
+  if(all(c("nut_muac_cm","nut_edema_confirm") %in% names(raw.child_nutrition))){
+    cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",4), collapse=""), " ", "Cumulative Distribution MUAC with Flag per Enumerator"))
+    (plot_cumulative_distribution_phu(df = raw.flag.nut, index = "nut_muac_cm", flags = "yes", grouping = "enumerator"))
+  }
 }
 ```
 

@@ -108,7 +108,7 @@ res.soft_duplicates <- find.similar.surveys(raw.main %>% filter(respondent_conse
 if(nrow(res.soft_duplicates) > 0){
   openxlsx::write.xlsx(res.soft_duplicates, paste0("output/checking/audit/",dataset.name.short, "_soft_duplicates_", strings['out_date'],".xlsx"))
   res.soft_duplicates <- res.soft_duplicates %>% 
-    select(uuid,enum_colname,num_different_columns) %>% 
+    select(uuid,enum_colname,number_different_columns) %>% 
     mutate(reason = "Soft duplicates to check - num different columns less than 12.")
 }
 
@@ -122,36 +122,39 @@ rm(audits, data.audit)
 res.inconsistency <- data.frame()
 
 # hh_roster
-counts_loop1 <- raw.hh_roster %>%
-  group_by(uuid) %>%
-  summarize(loop_count = n())
-loop_counts_main <- raw.main %>% select(uuid, !!sym(enum_colname), num_hh) %>% left_join(counts_loop1) %>%
-  mutate(main_count = ifelse(num_hh == "999", NA, as.numeric(num_hh)),
-         reason = "hh_roster loops count not matching with num_hh",
-         variable = "num_hh")%>%
-  filter(loop_count %!=na% (main_count)) %>% 
-  select(uuid, enum_colname,variable, main_count,loop_count, reason)
-
-if(nrow(loop_counts_main) > 0){
-  # find loops for inconsistent uuids:
-  res.inconsistency <- bind_rows(res.inconsistency,loop_counts_main)
+if(!is.null(raw.hh_roster)){
+  counts_loop1 <- raw.hh_roster %>%
+    group_by(uuid) %>%
+    summarize(loop_count = n())
+  loop_counts_main <- raw.main %>% select(uuid, !!sym(enum_colname), num_hh) %>% left_join(counts_loop1) %>%
+    mutate(main_count = ifelse(num_hh == "999", NA, as.numeric(num_hh)),
+           reason = "hh_roster loops count not matching with num_hh",
+           variable = "num_hh")%>%
+    filter(loop_count %!=na% (main_count)) %>% 
+    select(uuid, enum_colname,variable, main_count,loop_count, reason)
+  
+  if(nrow(loop_counts_main) > 0){
+    # find loops for inconsistent uuids:
+    res.inconsistency <- bind_rows(res.inconsistency,loop_counts_main)
+  }
 }
-
 # ind_health
-counts_loop2 <- raw.ind_health %>%
-  group_by(uuid) %>%
-  summarize(loop_count = n())
-
-loop_counts_main <- raw.main %>% select(uuid, !!sym(enum_colname), num_hh) %>% left_join(counts_loop2) %>%
-  mutate(main_count = ifelse(num_hh == "999", NA, as.numeric(num_hh)),
-         reason = "ind_health loops count not matching with num_hh",
-         variable = "num_hh")%>%
-  filter(loop_count %!=na% (main_count)) %>% 
-  select(uuid, enum_colname,variable, main_count,loop_count, reason)
-
-if(nrow(loop_counts_main) > 0){
-  # find loops for inconsistent uuids:
-  res.inconsistency <- bind_rows(res.inconsistency,loop_counts_main)
+if(!is.null(raw.ind_health)){
+  counts_loop2 <- raw.ind_health %>%
+    group_by(uuid) %>%
+    summarize(loop_count = n())
+  
+  loop_counts_main <- raw.main %>% select(uuid, !!sym(enum_colname), num_hh) %>% left_join(counts_loop2) %>%
+    mutate(main_count = ifelse(num_hh == "999", NA, as.numeric(num_hh)),
+           reason = "ind_health loops count not matching with num_hh",
+           variable = "num_hh")%>%
+    filter(loop_count %!=na% (main_count)) %>% 
+    select(uuid, enum_colname,variable, main_count,loop_count, reason)
+  
+  if(nrow(loop_counts_main) > 0){
+    # find loops for inconsistent uuids:
+    res.inconsistency <- bind_rows(res.inconsistency,loop_counts_main)
+}
 }
 
 if(!is.null(raw.water_count_loop)){
@@ -172,22 +175,23 @@ if(!is.null(raw.water_count_loop)){
   }
 }
 # child_nutrition
-counts_loop4 <- raw.child_nutrition %>%
-  group_by(uuid) %>%
-  summarize(loop_count = n())
-
-loop_counts_main <- raw.main %>% select(uuid, !!sym(enum_colname), num_hh, num_children) %>% 
-  filter(as.numeric(num_children) > 0) %>% left_join(counts_loop4) %>%
-  mutate(main_count = ifelse(num_hh == "999", NA, as.numeric(num_hh)),
-         reason = "child_nutrition loops count not matching with num_hh",
-         variable = "num_hh")%>%
-  filter(loop_count %!=na% (main_count))%>% 
-  select(uuid, enum_colname,variable, main_count,loop_count, reason)
-
-if(nrow(loop_counts_main) > 0){
-  res.inconsistency <- bind_rows(res.inconsistency,loop_counts_main)
+if(!is.null(raw.child_nutrition)){
+  counts_loop4 <- raw.child_nutrition %>%
+    group_by(uuid) %>%
+    summarize(loop_count = n())
+  
+  loop_counts_main <- raw.main %>% select(uuid, !!sym(enum_colname), num_hh, num_children) %>% 
+    filter(as.numeric(num_children) > 0) %>% left_join(counts_loop4) %>%
+    mutate(main_count = ifelse(num_hh == "999", NA, as.numeric(num_hh)),
+           reason = "child_nutrition loops count not matching with num_hh",
+           variable = "num_hh")%>%
+    filter(loop_count %!=na% (main_count))%>% 
+    select(uuid, enum_colname,variable, main_count,loop_count, reason)
+  
+  if(nrow(loop_counts_main) > 0){
+    res.inconsistency <- bind_rows(res.inconsistency,loop_counts_main)
+  }
 }
-
 # women
 if(!is.null(raw.women)){
   counts_loop5 <- raw.women %>%
@@ -226,7 +230,8 @@ if(!is.null(raw.died_member)){
 
 
 if(nrow(res.inconsistency)>0){
-  res.inconsistency <- res.inconsistency %>% 
+  res.inconsistency <- res.inconsistency %>%
+    filter(!is.na(loop_count)) %>% 
     select(uuid,enum_colname,variable, main_count, loop_count,reason)
 }
 # DECISION: what to do with these inconsistencies?
