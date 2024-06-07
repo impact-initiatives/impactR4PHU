@@ -37,7 +37,6 @@ htmltools::img(src = knitr::image_uri("./../resources/Logo_Reach_RGB_1.png"),
   raw.child_nutrition <- data.list$child_nutrition
   raw.women <- data.list$women
   raw.died_member <- data.list$died_member
-  
 ```
 
 # {.tabset .tabset-fade}
