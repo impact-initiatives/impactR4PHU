@@ -8,17 +8,21 @@ if(!is.null(raw.died_member)){
                             cleaning.log.other,
                             cleaning.log.trans,
                             cleaning.log.checks.direct,
-                            cleaning.log.followups,
+                            cleaning.log.followups %>% 
+                              mutate_all(.,as.character),
                             cleaning.log.dependency,
-                            cleaning.log.outliers,
+                            cleaning.log.outliers %>% 
+                              mutate_all(.,as.character),
                             cleaning.log.dependency.outlier)
 } else {
   cleaning.log <- bind_rows(cleaning.log.deletion,
                             cleaning.log.other,
                             cleaning.log.checks.direct,
-                            cleaning.log.followups,
+                            cleaning.log.followups%>% 
+                              mutate_all(.,as.character),
                             cleaning.log.dependency,
-                            cleaning.log.outliers,
+                            cleaning.log.outliers%>% 
+                              mutate_all(.,as.character),
                             cleaning.log.dependency.outlier)
 }
 # finalize cleaning log:
@@ -32,11 +36,12 @@ pii.to.remove_main <- c(
   "deviceid",
   "audit",
   "audit_URL",
-  "gps",
-  "_gps_latitude",
-  "_gps_longitude",
-  "_gps_altitude",
-  "_gps_precision")
+  "household_geopoint",
+  "_household_geopoint_latitude",
+  "_household_geopoint_longitude",
+  "_household_geopoint_altitude",
+  "_household_geopoint_precision"
+)
 raw.main.removed  <- raw.main %>% select(-any_of(pii.to.remove_main))
 raw.main.no.consent <- raw.main.no.consent %>% select(-any_of(pii.to.remove_main))
 raw.main <- rbind(raw.main,raw.main.no.consent)

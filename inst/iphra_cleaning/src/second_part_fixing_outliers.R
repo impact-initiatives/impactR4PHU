@@ -112,84 +112,41 @@ if(nrow(check)>0){
   cleaning.log.dependency.outlier <- rbind(cleaning.log.dependency.outlier,check_new)
 }
 # water_interuption_num_days
-check <- raw.main %>% 
-  filter(is.na(wash_water_interuption_num_days)) %>% 
-  dplyr::mutate(flag = ifelse(wash_water_interuption == "yes", 1, 0)) %>% 
-  filter(flag == 1)
-
-if(nrow(check)>0){
-  check_new <- check %>% 
-    dplyr::mutate(variable = "wash_water_interuption",
-                  old.value = wash_water_interuption,
-                  loop_index = NA,
-                  new.value = NA,
-                  issue = "Dependency") %>% 
-    dplyr::select(uuid, loop_index, variable, old.value, new.value, issue)
-  cleaning.log.dependency.outlier <- rbind(cleaning.log.dependency.outlier,check_new)
+if("wash_water_interuption_num_days" %in% names(raw.main)){
+  check <- raw.main %>% 
+    filter(is.na(wash_water_interuption_num_days)) %>% 
+    dplyr::mutate(flag = ifelse(wash_water_interuption == "yes", 1, 0)) %>% 
+    filter(flag == 1)
+  
+  if(nrow(check)>0){
+    check_new <- check %>% 
+      dplyr::mutate(variable = "wash_water_interuption",
+                    old.value = wash_water_interuption,
+                    loop_index = NA,
+                    new.value = NA,
+                    issue = "Dependency") %>% 
+      dplyr::select(uuid, loop_index, variable, old.value, new.value, issue)
+    cleaning.log.dependency.outlier <- rbind(cleaning.log.dependency.outlier,check_new)
+  }
 }
-# num_share_toilet
-check <- raw.main %>% 
-  filter(is.na(wash_num_share_toilet)) %>% 
-  dplyr::mutate(flag = ifelse(wash_share_toilet_facility == "yes", 1, 0)) %>% 
-  filter(flag == 1)
-
-if(nrow(check)>0){
-  check_new <- check %>% 
-    dplyr::mutate(variable = "wash_share_toilet_facility",
-                  old.value = wash_share_toilet_facility,
-                  loop_index = NA,
-                  new.value = NA,
-                  issue = "Dependency") %>% 
-    dplyr::select(uuid, loop_index, variable, old.value, new.value, issue)
-  cleaning.log.dependency.outlier <- rbind(cleaning.log.dependency.outlier,check_new)
-}
-# length_long
-check <- raw.main %>% 
-  filter(is.na(length_long)) %>% 
-  dplyr::mutate(flag = ifelse(rect_info_area == "yes", 1, 0)) %>% 
-  filter(flag == 1)
-
-if(nrow(check)>0){
-  check_new <- check %>% 
-    dplyr::mutate(variable = "rect_info_area",
-                  old.value = rect_info_area,
-                  loop_index = NA,
-                  new.value = NA,
-                  issue = "Dependency") %>% 
-    dplyr::select(uuid, loop_index, variable, old.value, new.value, issue)
-  cleaning.log.dependency.outlier <- rbind(cleaning.log.dependency.outlier,check_new)
-}
-# width_larg
-check <- raw.main %>% 
-  filter(is.na(width_larg)) %>% 
-  dplyr::mutate(flag = ifelse(rect_info_area == "yes", 1, 0)) %>% 
-  filter(flag == 1)
-
-if(nrow(check)>0){
-  check_new <- check %>% 
-    dplyr::mutate(variable = "rect_info_area",
-                  old.value = rect_info_area,
-                  loop_index = NA,
-                  new.value = NA,
-                  issue = "Dependency") %>% 
-    dplyr::select(uuid, loop_index, variable, old.value, new.value, issue)
-  cleaning.log.dependency.outlier <- rbind(cleaning.log.dependency.outlier,check_new)
-}
-# diameter
-check <- raw.main %>% 
-  filter(is.na(diameter)) %>% 
-  dplyr::mutate(flag = ifelse(circ_info_area == "yes", 1, 0)) %>% 
-  filter(flag == 1)
-
-if(nrow(check)>0){
-  check_new <- check %>% 
-    dplyr::mutate(variable = "circ_info_area",
-                  old.value = circ_info_area,
-                  loop_index = NA,
-                  new.value = NA,
-                  issue = "Dependency") %>% 
-    dplyr::select(uuid, loop_index, variable, old.value, new.value, issue)
-  cleaning.log.dependency.outlier <- rbind(cleaning.log.dependency.outlier,check_new)
+if("wash_num_share_toilet" %in% names(raw.main)){
+  
+  # num_share_toilet
+  check <- raw.main %>% 
+    filter(is.na(wash_num_share_toilet)) %>% 
+    dplyr::mutate(flag = ifelse(wash_share_toilet_facility == "yes", 1, 0)) %>% 
+    filter(flag == 1)
+  
+  if(nrow(check)>0){
+    check_new <- check %>% 
+      dplyr::mutate(variable = "wash_share_toilet_facility",
+                    old.value = wash_share_toilet_facility,
+                    loop_index = NA,
+                    new.value = NA,
+                    issue = "Dependency") %>% 
+      dplyr::select(uuid, loop_index, variable, old.value, new.value, issue)
+    cleaning.log.dependency.outlier <- rbind(cleaning.log.dependency.outlier,check_new)
+  }
 }
 if(!is.null(raw.water_count_loop)){
   # container_journey_collection
@@ -224,52 +181,60 @@ if(!is.null(raw.water_count_loop)){
     cleaning.log.dependency.outlier <- rbind(cleaning.log.dependency.outlier,check_new)
   }
 }
-# num_days_water_last
-check <- raw.child_nutrition %>% 
-  filter(is.na(nut_muac_cm)) %>% 
-  dplyr::mutate(flag = ifelse(!is.na(nut_muac_mm), 1, 0)) %>% 
-  filter(flag == 1)
-
-if(nrow(check)>0){
-  check_new <- check %>% 
-    dplyr::mutate(variable = "nut_muac_mm",
-                  old.value = nut_muac_mm,
-                  new.value = NA,
-                  issue = "Dependency") %>% 
-    dplyr::select(uuid, loop_index, variable, old.value, new.value, issue)
-  cleaning.log.dependency.outlier <- rbind(cleaning.log.dependency.outlier,check_new)
+if(!is.null(raw.child_nutrition)){
+  if("nut_muac_cm" %in% names(raw.child_nutrition)){
+    # num_days_water_last
+    check <- raw.child_nutrition %>% 
+      filter(is.na(nut_muac_cm)) %>% 
+      dplyr::mutate(flag = ifelse(!is.na(nut_muac_mm), 1, 0)) %>% 
+      filter(flag == 1)
+    
+    if(nrow(check)>0){
+      check_new <- check %>% 
+        dplyr::mutate(variable = "nut_muac_mm",
+                      old.value = nut_muac_mm,
+                      new.value = NA,
+                      issue = "Dependency") %>% 
+        dplyr::select(uuid, loop_index, variable, old.value, new.value, issue)
+      cleaning.log.dependency.outlier <- rbind(cleaning.log.dependency.outlier,check_new)
+    }
+  }
 }
 if(!is.null(raw.women)){
   # num_days_water_last
-  check <- raw.women %>% 
-    filter(is.na(woman_muac_cm)) %>% 
-    dplyr::mutate(flag = ifelse(!is.na(woman_muac_mm), 1, 0)) %>% 
-    filter(flag == 1)
-  
-  if(nrow(check)>0){
-    check_new <- check %>% 
-      dplyr::mutate(variable = "woman_muac_mm",
-                    old.value = woman_muac_mm,
-                    new.value = NA,
-                    issue = "Dependency") %>% 
-      dplyr::select(uuid, loop_index, variable, old.value, new.value, issue)
-    cleaning.log.dependency.outlier <- rbind(cleaning.log.dependency.outlier,check_new)
+  if("woman_muac_cm" %in% names(raw.women)){
+ 
+    check <- raw.women %>% 
+      filter(is.na(woman_muac_cm)) %>% 
+      dplyr::mutate(flag = ifelse(!is.na(woman_muac_mm), 1, 0)) %>% 
+      filter(flag == 1)
+    
+    if(nrow(check)>0){
+      check_new <- check %>% 
+        dplyr::mutate(variable = "woman_muac_mm",
+                      old.value = woman_muac_mm,
+                      new.value = NA,
+                      issue = "Dependency") %>% 
+        dplyr::select(uuid, loop_index, variable, old.value, new.value, issue)
+      cleaning.log.dependency.outlier <- rbind(cleaning.log.dependency.outlier,check_new)
+    }
   }
 }
-
-raw.main <- raw.main %>% 
-  apply.changes(cleaning.log.dependency.outlier)
-
-raw.child_nutrition <- raw.child_nutrition %>% 
-  apply.changes(cleaning.log.dependency.outlier, is.loop = T)
-
-if(!is.null(raw.women)){
-  raw.women <- raw.women %>% 
+if(nrow(cleaning.log.dependency.outlier)>0){
+  raw.main <- raw.main %>% 
+    apply.changes(cleaning.log.dependency.outlier)
+  
+  raw.child_nutrition <- raw.child_nutrition %>% 
     apply.changes(cleaning.log.dependency.outlier, is.loop = T)
-}
-if(!is.null(raw.water_count_loop)){
-  raw.water_count_loop <- raw.water_count_loop %>% 
-    apply.changes(cleaning.log.dependency.outlier, is.loop = T)
+  
+  if(!is.null(raw.women)){
+    raw.women <- raw.women %>% 
+      apply.changes(cleaning.log.dependency.outlier, is.loop = T)
+  }
+  if(!is.null(raw.water_count_loop)){
+    raw.water_count_loop <- raw.water_count_loop %>% 
+      apply.changes(cleaning.log.dependency.outlier, is.loop = T)
+  }
 }
 
 
