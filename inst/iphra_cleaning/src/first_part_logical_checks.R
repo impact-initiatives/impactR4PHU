@@ -222,49 +222,49 @@ if(all(fclcm_check_columns %in% names(raw.flag))) {
 
 ## FCS
 raw.flag.fcs <- raw.flag %>%
-  impactR4PHU::check_fsl_flags( fsl_fcs_cereal = fsl_fcs_cereal,
-                                fsl_fcs_legumes = fsl_fcs_legumes,
-                                fsl_fcs_dairy = fsl_fcs_dairy,
-                                fsl_fcs_meat = fsl_fcs_meat,
-                                fsl_fcs_veg = fsl_fcs_veg,
-                                fsl_fcs_fruit = fsl_fcs_fruit,
-                                fsl_fcs_oil = fsl_fcs_oil,
-                                fsl_fcs_sugar = fsl_fcs_sugar,
-                                fsl_rcsi_lessquality = fsl_rcsi_lessquality,
-                                fsl_rcsi_borrow = fsl_rcsi_borrow,
-                                fsl_rcsi_mealsize = fsl_rcsi_mealsize,
-                                fsl_rcsi_mealadult = fsl_rcsi_mealadult,
-                                fsl_rcsi_mealnb = fsl_rcsi_mealnb,
-                                fsl_hhs_nofoodhh = fsl_hhs_nofoodhh,
-                                fsl_hhs_nofoodhh_freq = fsl_hhs_nofoodhh_freq,
-                                fsl_hhs_sleephungry = fsl_hhs_sleephungry,
-                                fsl_hhs_sleephungry_freq = fsl_hhs_sleephungry_freq,
-                                fsl_hhs_alldaynight = fsl_hhs_alldaynight,
-                                fsl_hhs_alldaynight_freq = fsl_hhs_alldaynight_freq,
-                                fsl_hdds_cereals = fsl_hdds_cereals,
-                                fsl_hdds_tubers = fsl_hdds_tubers,
-                                fsl_hdds_legumes = fsl_hdds_legumes,
-                                fsl_hdds_veg = fsl_hdds_veg,
-                                fsl_hdds_fruit = fsl_hdds_fruit,
-                                fsl_hdds_meat = fsl_hdds_meat,
-                                fsl_hdds_fish = fsl_hdds_fish,
-                                fsl_hdds_dairy = fsl_hdds_dairy,
-                                fsl_hdds_eggs = fsl_hdds_eggs,
-                                fsl_hdds_sugar = fsl_hdds_sugar,
-                                fsl_hdds_oil = fsl_hdds_oil,
-                                fsl_hdds_condiments = fsl_hdds_condiments,
-                                fsl_hdds_yes_value = fsl_hdds_yes_value,
-                                fsl_lcsi_stress1 = fsl_lcsi_stress1,
-                                fsl_lcsi_stress2 = fsl_lcsi_stress2,
-                                fsl_lcsi_stress3 = fsl_lcsi_stress3,
-                                fsl_lcsi_stress4 = fsl_lcsi_stress4,
-                                fsl_lcsi_crisis1 = fsl_lcsi_crisis1,
-                                fsl_lcsi_crisis2 = fsl_lcsi_crisis2,
-                                fsl_lcsi_crisis3 = fsl_lcsi_crisis3,
-                                fsl_lcsi_emergency1 = fsl_lcsi_emergency1,
-                                fsl_lcsi_emergency2 = fsl_lcsi_emergency2,
-                                fsl_lcsi_emergency3 = fsl_lcsi_emergency3,
-                                tool.survey = tool.survey)
+  impactR4PHU::check_fsl_flags(fsl_fcs_cereal = fsl_fcs_cereal,
+                              fsl_fcs_legumes = fsl_fcs_legumes,
+                              fsl_fcs_dairy = fsl_fcs_dairy,
+                              fsl_fcs_meat = fsl_fcs_meat,
+                              fsl_fcs_veg = fsl_fcs_veg,
+                              fsl_fcs_fruit = fsl_fcs_fruit,
+                              fsl_fcs_oil = fsl_fcs_oil,
+                              fsl_fcs_sugar = fsl_fcs_sugar,
+                              fsl_rcsi_lessquality = fsl_rcsi_lessquality,
+                              fsl_rcsi_borrow = fsl_rcsi_borrow,
+                              fsl_rcsi_mealsize = fsl_rcsi_mealsize,
+                              fsl_rcsi_mealadult = fsl_rcsi_mealadult,
+                              fsl_rcsi_mealnb = fsl_rcsi_mealnb,
+                              fsl_hhs_nofoodhh = fsl_hhs_nofoodhh,
+                              fsl_hhs_nofoodhh_freq = fsl_hhs_nofoodhh_freq,
+                              fsl_hhs_sleephungry = fsl_hhs_sleephungry,
+                              fsl_hhs_sleephungry_freq = fsl_hhs_sleephungry_freq,
+                              fsl_hhs_alldaynight = fsl_hhs_alldaynight,
+                              fsl_hhs_alldaynight_freq = fsl_hhs_alldaynight_freq,
+                              fsl_hdds_cereals = fsl_hdds_cereals,
+                              fsl_hdds_tubers = fsl_hdds_tubers,
+                              fsl_hdds_legumes = fsl_hdds_legumes,
+                              fsl_hdds_veg = fsl_hdds_veg,
+                              fsl_hdds_fruit = fsl_hdds_fruit,
+                              fsl_hdds_meat = fsl_hdds_meat,
+                              fsl_hdds_fish = fsl_hdds_fish,
+                              fsl_hdds_dairy = fsl_hdds_dairy,
+                              fsl_hdds_eggs = fsl_hdds_eggs,
+                              fsl_hdds_sugar = fsl_hdds_sugar,
+                              fsl_hdds_oil = fsl_hdds_oil,
+                              fsl_hdds_condiments = fsl_hdds_condiments,
+                              fsl_hdds_yes_value = fsl_hdds_yes_value,
+                              fsl_lcsi_stress1 = fsl_lcsi_stress1,
+                              fsl_lcsi_stress2 = fsl_lcsi_stress2,
+                              fsl_lcsi_stress3 = fsl_lcsi_stress3,
+                              fsl_lcsi_stress4 = fsl_lcsi_stress4,
+                              fsl_lcsi_crisis1 = fsl_lcsi_crisis1,
+                              fsl_lcsi_crisis2 = fsl_lcsi_crisis2,
+                              fsl_lcsi_crisis3 = fsl_lcsi_crisis3,
+                              fsl_lcsi_emergency1 = fsl_lcsi_emergency1,
+                              fsl_lcsi_emergency2 = fsl_lcsi_emergency2,
+                              fsl_lcsi_emergency3 = fsl_lcsi_emergency3,
+                              tool.survey = tool.survey)
 
 ## WASH
 if(!is.null(raw.water_count_loop)){
@@ -276,12 +276,14 @@ if(!is.null(raw.water_count_loop)){
 }
 
 ## NUTRITION
-if(all(c("nut_muac_cm","nut_edema_confirm") %in% names(raw.child_nutrition))){
-  raw.flag.nut <- raw.child_nutrition %>% 
-    impactR4PHU::add_muac(nut_muac_cm = "nut_muac_cm",
-                          edema_confirm = "nut_edema_confirm") %>%
-    impactR4PHU::add_mfaz(nut_muac_cm = "nut_muac_cm",edema_confirm = "nut_edema_confirm") %>% 
-    impactR4PHU::check_anthro_flags()
+if(!is.null(raw.child_nutrition)){
+  if(all(c("nut_muac_cm","nut_edema_confirm") %in% names(raw.child_nutrition))){
+    raw.flag.nut <- raw.child_nutrition %>% 
+      impactR4PHU::add_muac(nut_muac_cm = "nut_muac_cm",
+                            edema_confirm = "nut_edema_confirm") %>%
+      impactR4PHU::add_mfaz(nut_muac_cm = "nut_muac_cm",edema_confirm = "nut_edema_confirm") %>% 
+      impactR4PHU::check_anthro_flags()
+  }
 }
 #### FCS
 ### FCS score is 0. 
@@ -467,7 +469,8 @@ if(!is.null(raw.water_count_loop)){
     for (i in 1:nrow(check)) {
       cl <- recode.set.NA.if(check[i,], "wash_num_containers", check[i,"wash_num_containers"], "replacing container info to NA if num of containers higher than 20", ignore_case = F) %>% 
         filter(!is.na(old.value)) %>% 
-        mutate(old.value = as.character(old.value))
+        mutate(old.value = as.character(old.value),
+               new.value = as.character(new.value))
       cl_high_container_main <- bind_rows(cl_high_container_main,cl)
     }
     cleaning.log.checks.direct <- bind_rows(cleaning.log.checks.direct, cl_high_container_main)

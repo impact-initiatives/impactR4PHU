@@ -6,6 +6,10 @@ options(warn=-1)
 
 fu.edited <- load.requests(dir.responses, "followup", sheet = "Follow-up")
 
+if(!"loop_index" %in% names(fu.edited)){
+  fu.edited <- fu.edited %>% 
+    dplyr::mutate(loop_index = NA)
+}
 if(is.data.frame(fu.edited)){
   
   fu.edited <- fu.edited %>%
@@ -212,37 +216,41 @@ if(is.data.frame(fu.edited)){
   }
   
   # Dependency related to nut_edema_confirm Turned to NA and change all edema to NA (CHECK_5)
-  
-  check <- raw.child_nutrition %>% 
-    filter(is.na(nut_edema_confirm)) %>% 
-    dplyr::mutate(flag = ifelse(nut_edema != "no", 1, 0)) %>% 
-    filter(flag == 1)
-  
-  if(nrow(check)>0){
-    check_new <- check %>% 
-      dplyr::mutate(variable = "nut_edema",
-             old.value = nut_edema,
-             new.value = NA,
-             issue = "Dependency") %>% 
-      dplyr::select(uuid, loop_index, variable, old.value, new.value, issue)
-    cleaning.log.dependency <- rbind(cleaning.log.dependency,check_new)
-  }
-  
-  # Dependency related to nut_edema_confirm Turned to NA and change all edema to NA (CHECK_5)
-  
-  check <- raw.child_nutrition %>% 
-    filter(is.na(nut_edema_confirm)) %>% 
-    dplyr::mutate(flag = ifelse(nut_muac_cm >= 12.5 & !is.na(nut_cmam_enrollment), 1, 0)) %>% 
-    filter(flag == 1)
-  
-  if(nrow(check)>0){
-    check_new <- check %>% 
-      dplyr::mutate(variable = "nut_cmam_enrollment",
-                    old.value = nut_cmam_enrollment,
-                    new.value = NA,
-                    issue = "Dependency") %>% 
-      dplyr::select(uuid, loop_index, variable, old.value, new.value, issue)
-    cleaning.log.dependency <- rbind(cleaning.log.dependency,check_new)
+  if(!is.null(raw.child_nutrition)){
+    if(all(c("nut_edema_confirm","nut_edema","nut_muac_cm") %in% names(raw.child_nutrition))){
+      
+      check <- raw.child_nutrition %>% 
+        filter(is.na(nut_edema_confirm)) %>% 
+        dplyr::mutate(flag = ifelse(nut_edema != "no", 1, 0)) %>% 
+        filter(flag == 1)
+      
+      if(nrow(check)>0){
+        check_new <- check %>% 
+          dplyr::mutate(variable = "nut_edema",
+                 old.value = nut_edema,
+                 new.value = NA,
+                 issue = "Dependency") %>% 
+          dplyr::select(uuid, loop_index, variable, old.value, new.value, issue)
+        cleaning.log.dependency <- rbind(cleaning.log.dependency,check_new)
+      }
+      
+      # Dependency related to nut_edema_confirm Turned to NA and change all edema to NA (CHECK_5)
+      
+      check <- raw.child_nutrition %>% 
+        filter(is.na(nut_edema_confirm)) %>% 
+        dplyr::mutate(flag = ifelse(nut_muac_cm >= 12.5 & !is.na(nut_cmam_enrollment), 1, 0)) %>% 
+        filter(flag == 1)
+      
+      if(nrow(check)>0){
+        check_new <- check %>% 
+          dplyr::mutate(variable = "nut_cmam_enrollment",
+                        old.value = nut_cmam_enrollment,
+                        new.value = NA,
+                        issue = "Dependency") %>% 
+          dplyr::select(uuid, loop_index, variable, old.value, new.value, issue)
+        cleaning.log.dependency <- rbind(cleaning.log.dependency,check_new)
+      }
+    }
   }
   
   # Dependency related to Num_Died Turned to NA and change all loop of raw.died_member to NA (CHECK_6)
@@ -288,15 +296,16 @@ if(is.data.frame(fu.edited)){
       cleaning.log.dependency <- rbind(cleaning.log.dependency,check_new)
       }
   }
-  
-  raw.main <- raw.main %>% 
-    apply.changes(cleaning.log.dependency)
-  
-  raw.child_nutrition <- raw.child_nutrition %>% 
-    apply.changes(cleaning.log.dependency, is.loop = T)
-  if(!is.null(raw.died_member)){
-    raw.died_member <- raw.died_member %>% 
+  if(nrow(cleaning.log.dependency)>0){
+    raw.main <- raw.main %>% 
+      apply.changes(cleaning.log.dependency)
+    
+    raw.child_nutrition <- raw.child_nutrition %>% 
       apply.changes(cleaning.log.dependency, is.loop = T)
+    if(!is.null(raw.died_member)){
+      raw.died_member <- raw.died_member %>% 
+        apply.changes(cleaning.log.dependency, is.loop = T)
+    }
   }
   
   save.image("output/data_log/final_logical.rda")
