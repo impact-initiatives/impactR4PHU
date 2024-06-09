@@ -387,7 +387,7 @@ if(exists("results.summary_bySex")){
 ```
 
 ```{r, include = FALSE}
-if(!is.null(data.list$child_nutrition)){
+if(!is.null(nut)){
   cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",2), collapse=""), " ", "MUAC / NUTRITION"))
   nut <- nut %>% 
     mutate(fpc = nrow(hh_roster)/as.numeric(strings['population_estimation']))
@@ -571,7 +571,7 @@ if(!is.null(data.list$child_nutrition)){
 
 
 ```{r, results='asis'}
-if(!is.null(data.list$child_nutrition)){
+if(!is.null(nut)){
   cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",3), collapse=""), " ", "Prevalence of acute malnutrition based on MUAC cut off's (and/or oedema) and by sex"))
   subch(DT::datatable(results_prop_final))
 }
@@ -579,7 +579,7 @@ if(!is.null(data.list$child_nutrition)){
 
 
 ```{r, results='asis'}
-if(!is.null(data.list$child_nutrition)){
+if(!is.null(nut)){
   cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",3), collapse=""), " ", "Prevalence of acute malnutrition based on MUAC cut off's (and/or oedema) and by Age Group"))
   subch(DT::datatable(results_prop_age_group_final))
 }
@@ -587,16 +587,15 @@ if(!is.null(data.list$child_nutrition)){
 
 
 ```{r, results='asis'}
-if(!is.null(data.list$child_nutrition)){
+if(!is.null(nut)){
   cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",3), collapse=""), " ", "Prevalence of acute malnutrition based on MUAC-for-age z-score cut off's (and/or oedema) and by sex"))
   subch(DT::datatable(results_prop_final_mfaz))
 }
 ```
 
-### 
 
 ```{r, results='asis'}
-if(!is.null(data.list$child_nutrition)){
+if(!is.null(nut)){
   cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",3), collapse=""), " ", "Mean (MFAZ and MUAC)"))
   subch(DT::datatable(results_mean))
 }
@@ -604,46 +603,59 @@ if(!is.null(data.list$child_nutrition)){
 
 
 ```{r, include=FALSE}
-if(!is.null(data.list$child_nutrition)){
-  nut_assessment <- nut %>% 
-    mutate(oedema_less_2 = ifelse(nut_edema_confirm == "yes"& age_months < 24,1,0),
-           muac_115_less_2 = ifelse(nut_muac_cm<11.5 & age_months < 24,1,0),
-           muac_115_124_less_2 = ifelse(nut_muac_cm>=11.5&nut_muac_cm<=12.4& age_months < 24,1,0),
-           muac_125_less_2 = ifelse(nut_muac_cm>12.4& age_months < 24,1,0),
-           oedema_more_2 = ifelse(nut_edema_confirm == "yes"& age_months >= 24,1,0),
-           muac_115_more_2 = ifelse(nut_muac_cm<11.5 & age_months >= 24,1,0),
-           muac_115_124_more_2 = ifelse(nut_muac_cm>=11.5&nut_muac_cm<=12.4& age_months >= 24,1,0),
-           muac_125_more_2 = ifelse(nut_muac_cm>12.4& age_months >= 24,1,0),
-           sex = case_when(sex == 1 ~ "Male",
-                           sex == 2 ~ "Female")) %>% 
-    group_by(sex) %>% 
-    summarise(
-      oedema_less_2 = sum(oedema_less_2,na.rm=T),
-              muac_115_less_2 = sum(muac_115_less_2,na.rm=T),
-              muac_115_124_less_2 = sum(muac_115_124_less_2,na.rm=T),
-              muac_125_less_2 = sum(muac_125_less_2,na.rm=T),
-              oedema_more_2 = sum(oedema_more_2,na.rm=T),
-              muac_115_more_2 = sum(muac_115_more_2,na.rm=T),
-              muac_115_124_more_2 = sum(muac_115_124_more_2,na.rm=T),
-              muac_125_more_2 = sum(muac_125_more_2,na.rm=T)) 
-  
-  trans_nut_assessment <- data.frame(t(nut_assessment))
-  names(trans_nut_assessment) <- trans_nut_assessment[1,]
-  trans_nut_assessment <- trans_nut_assessment %>% 
-    relocate(Male,.before=1)
-  trans_nut_assessment <- trans_nut_assessment[-1,] %>% 
-    mutate_at(vars(c(Male,Female)),as.numeric)
+if(!is.null(nut)){
+  if(all(c("nut_edema_confirm","nut_muac_cm") %in% names(nut))){
+    nut_assessment <- nut %>% 
+      mutate(oedema_less_2 = ifelse(nut_edema_confirm == "yes"& age_months < 24,1,0),
+             muac_115_less_2 = ifelse(nut_muac_cm<11.5 & age_months < 24,1,0),
+             muac_115_124_less_2 = ifelse(nut_muac_cm>=11.5&nut_muac_cm<=12.4& age_months < 24,1,0),
+             muac_125_less_2 = ifelse(nut_muac_cm>12.4& age_months < 24,1,0),
+             oedema_more_2 = ifelse(nut_edema_confirm == "yes"& age_months >= 24,1,0),
+             muac_115_more_2 = ifelse(nut_muac_cm<11.5 & age_months >= 24,1,0),
+             muac_115_124_more_2 = ifelse(nut_muac_cm>=11.5&nut_muac_cm<=12.4& age_months >= 24,1,0),
+             muac_125_more_2 = ifelse(nut_muac_cm>12.4& age_months >= 24,1,0),
+             sex = case_when(sex == 1 ~ "Male",
+                             sex == 2 ~ "Female")) %>% 
+      group_by(sex) %>% 
+      summarise(
+        oedema_less_2 = sum(oedema_less_2,na.rm=T),
+                muac_115_less_2 = sum(muac_115_less_2,na.rm=T),
+                muac_115_124_less_2 = sum(muac_115_124_less_2,na.rm=T),
+                muac_125_less_2 = sum(muac_125_less_2,na.rm=T),
+                oedema_more_2 = sum(oedema_more_2,na.rm=T),
+                muac_115_more_2 = sum(muac_115_more_2,na.rm=T),
+                muac_115_124_more_2 = sum(muac_115_124_more_2,na.rm=T),
+                muac_125_more_2 = sum(muac_125_more_2,na.rm=T)) 
+    
+    trans_nut_assessment <- data.frame(t(nut_assessment))
+    names(trans_nut_assessment) <- trans_nut_assessment[1,]
+    trans_nut_assessment <- trans_nut_assessment %>% 
+      relocate(Male,.before=1)
+    trans_nut_assessment <- trans_nut_assessment[-1,] %>% 
+      mutate_at(vars(c(Male,Female)),as.numeric)
+  } else {
+    trans_nut_assessment <- NULL
+  }
+} else {
+  trans_nut_assessment <- NULL
 }
 ```
 
 ```{r message=TRUE, warning=FALSE, include=FALSE}
-CONTINUE HERE
-list_muac <- list("Prevalence of acute malnutrition based on MUAC cut off's (and/or oedema) and by sex" = results_prop_final,
-                  "Prevalence of acute malnutrition based on MUAC cut off's (and/or oedema) and by Age Group" = results_prop_age_group_final,
-                  "Prevalence of acute malnutrition based on MUAC-for-age z-score cut off's (and/or oedema) and by sex" = results_prop_final_mfaz,
-                  "Mean (MFAZ and MUAC)" = results_mean)
+if(!is.null(nut)){
+  list_muac <- list("Prevalence of acute malnutrition based on MUAC cut off's (and/or oedema) and by sex" = results_prop_final,
+                    "Prevalence of acute malnutrition based on MUAC cut off's (and/or oedema) and by Age Group" = results_prop_age_group_final,
+                    "Prevalence of acute malnutrition based on MUAC-for-age z-score cut off's (and/or oedema) and by sex" = results_prop_final_mfaz,
+                    "Mean (MFAZ and MUAC)" = results_mean)
+} else {
+  list_muac <- NULL
+}
 ## output XLSX files
-
+if(!is.null(nut)){
+  use_template <- T
+} else {
+  use_template <- F
+}
 file.list <- list.files(path = params['combine_folder'], pattern = "*.xlsx")
 file.list <- setNames(file.list, paste0(params['combine_folder'], file.list))
 df <- lapply(names(file.list), readxl::read_excel)
@@ -651,7 +663,7 @@ names(df) <- stringr::str_remove(file.list, ".xlsx")
 
 sorted_df <- df
 
-save.dfs(sorted_df,list_muac,trans_nut_assessment, paste0("./../output/", strings['dataset.name.short'], "_combined_analysis_toc_", strings['out_date'], ".xlsx"), use_template = T)
+save.dfs(sorted_df,list_muac,trans_nut_assessment, paste0("./../output/", strings['dataset.name.short'], "_combined_analysis_toc_", strings['out_date'], ".xlsx"), use_template = use_template)
 
 for (i in 1:length(names(sorted_df))){
   if (nchar(names(sorted_df)[i]) > 31){

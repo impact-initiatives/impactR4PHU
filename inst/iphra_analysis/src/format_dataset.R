@@ -605,7 +605,11 @@ if(!is.null(died_member)){
 if(!is.null(child_nutrition_data)){
   if(all(c("nut_muac_cm","nut_edema_confirm") %in% names(child_nutrition_data))){
     nut <- check_nut_flags(child_nutrition_data)
+  } else {
+    nut <- NULL
   }
+} else {
+  nut <- NULL
 }
 
 
