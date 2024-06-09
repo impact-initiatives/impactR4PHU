@@ -19,56 +19,67 @@ hh_roster <- hh_roster %>%
                                 breaks = c(-1,2,5,10,18,59, Inf),
                                 labels = c("00-02", "03-05", "06-10", "11-18",
                                            "19-59","59+"))))
-
-ind_health <- ind_health %>% 
-  dplyr::mutate(age_group = as.character(cut(as.numeric(health_ind_age_years), 
-                                breaks = c(-1,2,5,10,18,59, Inf),
-                                labels = c("00-02", "03-05", "06-10", "11-18",
-                                           "19-59","59+"))),
-                health_ind_sex = dplyr::case_when(health_ind_sex =="m"~"Male",
-                                                  health_ind_sex =="f"~"Female"))
-
-child_nutrition_data <- child_nutrition %>% 
-  dplyr::mutate(age_group_nut = as.character(cut(as.numeric(child_age_months), 
-                                breaks = c(5,23,59),
-                                labels = c("06-23", "24-59"))),
-                child_sex = dplyr::case_when(child_sex =="m"~"Male",
-                                             child_sex =="f"~"Female"))
-women <- women %>% 
-  mutate(woman_bf = dplyr::case_when(woman_bf =="bf_child_under_23m"~"Breastfeeding child under 23 month",
-                                     woman_bf =="bf_child_under_6m"~"Breastfeeding child under 6 month",
-                                     woman_bf =="current_pregnant"~"Currently pregnant",
-                                     woman_bf =="none"~"None",
-                                     TRUE ~ NA_character_))
+if(!is.null(ind_health)){
+  ind_health <- ind_health %>% 
+    dplyr::mutate(age_group = as.character(cut(as.numeric(health_ind_age_years), 
+                                  breaks = c(-1,2,5,10,18,59, Inf),
+                                  labels = c("00-02", "03-05", "06-10", "11-18",
+                                             "19-59","59+"))),
+                  health_ind_sex = dplyr::case_when(health_ind_sex =="m"~"Male",
+                                                    health_ind_sex =="f"~"Female"))
+}
+if(!is.null(child_nutrition)){
+  child_nutrition_data <- child_nutrition %>% 
+    dplyr::mutate(age_group_nut = as.character(cut(as.numeric(child_age_months), 
+                                  breaks = c(5,23,59),
+                                  labels = c("06-23", "24-59"))),
+                  child_sex = dplyr::case_when(child_sex =="m"~"Male",
+                                               child_sex =="f"~"Female"))
+}
+if(!is.null(women)){
+  women <- women %>% 
+    mutate(woman_bf = dplyr::case_when(woman_bf =="bf_child_under_23m"~"Breastfeeding child under 23 month",
+                                       woman_bf =="bf_child_under_6m"~"Breastfeeding child under 6 month",
+                                       woman_bf =="current_pregnant"~"Currently pregnant",
+                                       woman_bf =="none"~"None",
+                                       TRUE ~ NA_character_))
+}
 
 ################################################################################
 # residency_Status
 
 residency_status <- main %>% 
   dplyr::select(uuid,residency_status)
+
 hh_roster <- hh_roster %>% 
   dplyr::left_join(residency_status)
 
-ind_health <- ind_health %>% 
-  dplyr::left_join(residency_status)
+if(!is.null(ind_health)){
+  ind_health <- ind_health %>% 
+    dplyr::left_join(residency_status)
+}
 
-child_nutrition_data <- child_nutrition_data %>% 
-  dplyr::left_join(residency_status)
+if(!is.null(child_nutrition_data)){
+  child_nutrition_data <- child_nutrition_data %>% 
+    dplyr::left_join(residency_status)
+}
 
 
 ################################################################################
 # unmet_needs
 
-unmet_needs <- ind_health %>% 
-  mutate(unmet_needs = case_when(health_ind_received_healthcare == "no"~1,
-                                 health_ind_received_healthcare %in% c("yes", "dont_know")~0,
-                                 TRUE ~ NA)) %>% 
-  group_by(uuid) %>% 
-  summarise(unmet_needs = sum(unmet_needs, na.rm = T))
-
-main <- main %>% 
-  left_join(unmet_needs) %>% 
-  mutate(unmet_needs = ifelse(unmet_needs > 0, "HH with Unmet Needs","HH without unmet Needs"))
+if(!is.null(ind_health)){
+  unmet_needs <- ind_health %>% 
+    mutate(unmet_needs = case_when(health_ind_received_healthcare == "no"~1,
+                                   health_ind_received_healthcare %in% c("yes", "dont_know")~0,
+                                   TRUE ~ NA)) %>% 
+    group_by(uuid) %>% 
+    summarise(unmet_needs = sum(unmet_needs, na.rm = T))
+  
+  main <- main %>% 
+    left_join(unmet_needs) %>% 
+    mutate(unmet_needs = ifelse(unmet_needs > 0, "HH with Unmet Needs","HH without unmet Needs"))
+}
 ################################################################################
 # FSL
 ### Food Security Direct changes
@@ -84,6 +95,23 @@ fcs_check_columns <- c("fsl_fcs_cereal",
 if(all(fcs_check_columns %in% names(main))) {
   main <- main %>% 
     impactR4PHU::add_fcs(cutoffs = "normal")
+  fsl_fcs_cereal <- "fsl_fcs_cereal"
+  fsl_fcs_legumes <- "fsl_fcs_legumes"
+  fsl_fcs_veg <- "fsl_fcs_veg"
+  fsl_fcs_fruit <- "fsl_fcs_fruit"
+  fsl_fcs_meat <- "fsl_fcs_meat"
+  fsl_fcs_dairy <- "fsl_fcs_dairy"
+  fsl_fcs_sugar <- "fsl_fcs_sugar"
+  fsl_fcs_oil <- "fsl_fcs_oil"
+} else {
+  fsl_fcs_cereal <- NULL
+  fsl_fcs_legumes <- NULL
+  fsl_fcs_veg <- NULL
+  fsl_fcs_fruit <- NULL
+  fsl_fcs_meat <- NULL
+  fsl_fcs_dairy <- NULL
+  fsl_fcs_sugar <- NULL
+  fsl_fcs_oil <- NULL
 }
 
 rcsi_check_columns <- c("fsl_rcsi_lessquality",
@@ -95,6 +123,17 @@ rcsi_check_columns <- c("fsl_rcsi_lessquality",
 if(all(rcsi_check_columns %in% names(main))) {
   main <- main %>% 
     impactR4PHU::add_rcsi()
+  fsl_rcsi_lessquality <- "fsl_rcsi_lessquality"
+  fsl_rcsi_borrow  <- "fsl_rcsi_borrow"
+  fsl_rcsi_mealsize  <- "fsl_rcsi_mealsize"
+  fsl_rcsi_mealadult <- "fsl_rcsi_mealadult"
+  fsl_rcsi_mealnb  <- "fsl_rcsi_mealnb"
+} else{
+  fsl_rcsi_lessquality <- NULL
+  fsl_rcsi_borrow  <- NULL
+  fsl_rcsi_mealsize  <- NULL
+  fsl_rcsi_mealadult <- NULL
+  fsl_rcsi_mealnb  <- NULL
 }
 
 hhs_check_columns <- c("fsl_hhs_nofoodhh",
@@ -107,62 +146,104 @@ hhs_check_columns <- c("fsl_hhs_nofoodhh",
 if(all(hhs_check_columns %in% names(main))) {
   main <- main %>% 
     impactR4PHU::add_hhs()
+  fsl_hhs_nofoodhh <- "fsl_hhs_nofoodhh"
+  fsl_hhs_nofoodhh_freq <- "fsl_hhs_nofoodhh_freq"
+  fsl_hhs_sleephungry <- "fsl_hhs_sleephungry"
+  fsl_hhs_sleephungry_freq <- "fsl_hhs_sleephungry_freq"
+  fsl_hhs_alldaynight <- "fsl_hhs_alldaynight"
+  fsl_hhs_alldaynight_freq <- "fsl_hhs_alldaynight_freq"
+} else {
+  fsl_hhs_nofoodhh <- NULL
+  fsl_hhs_nofoodhh_freq <- NULL
+  fsl_hhs_sleephungry <- NULL
+  fsl_hhs_sleephungry_freq <- NULL
+  fsl_hhs_alldaynight <- NULL
+  fsl_hhs_alldaynight_freq <- NULL
 }
 
-lcsi_check_columns <- c("fsl_lcsi_stress1",
-                        "fsl_lcsi_stress2",
-                        "fsl_lcsi_stress3",
-                        "fsl_lcsi_stress4",
-                        "fsl_lcsi_crisis1",
-                        "fsl_lcsi_crisis2",
-                        "fsl_lcsi_crisis3",
-                        "fsl_lcsi_emergency1",
-                        "fsl_lcsi_emergency2",
-                        "fsl_lcsi_emergency3")
+lcsi_check_columns <- c("fsl_lcsi_stress1","fsl_lcsi_stress2","fsl_lcsi_stress3","fsl_lcsi_stress4",
+                        "fsl_lcsi_crisis1","fsl_lcsi_crisis2","fsl_lcsi_crisis3",
+                        "fsl_lcsi_emergency1","fsl_lcsi_emergency2","fsl_lcsi_emergency3")
 
 if(all(lcsi_check_columns %in% names(main))) {
   main <- main %>% 
     impactR4PHU::add_lcsi()
+  fsl_lcsi_stress1 <- "fsl_lcsi_stress1"
+  fsl_lcsi_stress2 <- "fsl_lcsi_stress2"
+  fsl_lcsi_stress3 <- "fsl_lcsi_stress3"
+  fsl_lcsi_stress4 <- "fsl_lcsi_stress4"
+  fsl_lcsi_crisis1 <- "fsl_lcsi_crisis1"
+  fsl_lcsi_crisis2 <- "fsl_lcsi_crisis2"
+  fsl_lcsi_crisis3 <- "fsl_lcsi_crisis3"
+  fsl_lcsi_emergency1 <- "fsl_lcsi_emergency1"
+  fsl_lcsi_emergency2 <- "fsl_lcsi_emergency2"
+  fsl_lcsi_emergency3 <- "fsl_lcsi_emergency3"
+} else {
+  fsl_lcsi_stress1 <- NULL
+  fsl_lcsi_stress2 <- NULL
+  fsl_lcsi_stress3 <- NULL
+  fsl_lcsi_stress4 <- NULL
+  fsl_lcsi_crisis1 <- NULL
+  fsl_lcsi_crisis2 <- NULL
+  fsl_lcsi_crisis3 <- NULL
+  fsl_lcsi_emergency1 <- NULL
+  fsl_lcsi_emergency2 <- NULL
+  fsl_lcsi_emergency3 <- NULL
 }
 
-hdds_check_columns <- c("fsl_hdds_cereals",
-                        "fsl_hdds_tubers",
-                        "fsl_hdds_veg",
-                        "fsl_hdds_fruit",
-                        "fsl_hdds_meat",
-                        "fsl_hdds_eggs",
-                        "fsl_hdds_fish",
-                        "fsl_hdds_legumes",
-                        "fsl_hdds_dairy",
-                        "fsl_hdds_oil",
-                        "fsl_hdds_sugar",
-                        "fsl_hdds_condiments")
+hdds_check_columns <- c("fsl_hdds_cereals","fsl_hdds_tubers","fsl_hdds_veg","fsl_hdds_fruit","fsl_hdds_meat",
+                        "fsl_hdds_eggs","fsl_hdds_fish","fsl_hdds_legumes","fsl_hdds_dairy","fsl_hdds_oil",
+                        "fsl_hdds_sugar","fsl_hdds_condiments")
 
 if(all(hdds_check_columns %in% names(main))) {
   main <- main %>% 
     impactR4PHU::add_hdds()
+  fsl_hdds_cereals <- "fsl_hdds_cereals"
+  fsl_hdds_tubers <- "fsl_hdds_tubers"
+  fsl_hdds_veg <- "fsl_hdds_veg"
+  fsl_hdds_fruit <- "fsl_hdds_fruit"
+  fsl_hdds_meat <- "fsl_hdds_meat"
+  fsl_hdds_eggs <- "fsl_hdds_eggs"
+  fsl_hdds_fish <- "fsl_hdds_fish"
+  fsl_hdds_legumes <- "fsl_hdds_legumes"
+  fsl_hdds_dairy <- "fsl_hdds_dairy"
+  fsl_hdds_oil <- "fsl_hdds_oil"
+  fsl_hdds_sugar <- "fsl_hdds_sugar"
+  fsl_hdds_condiments <- "fsl_hdds_condiments"
+} else {
+  fsl_hdds_cereals <- NULL
+  fsl_hdds_tubers <- NULL
+  fsl_hdds_veg <- NULL
+  fsl_hdds_fruit <- NULL
+  fsl_hdds_meat <- NULL
+  fsl_hdds_eggs <- NULL
+  fsl_hdds_fish <- NULL
+  fsl_hdds_legumes <- NULL
+  fsl_hdds_dairy <- NULL
+  fsl_hdds_oil <- NULL
+  fsl_hdds_sugar <- NULL
+  fsl_hdds_condiments <- NULL
 }
 
-fcm_check_1_columns <- c("fsl_fcs_score",
-                         "fsl_rcsi_score")
+fcm_check_1_columns <- c("fsl_fcs_cat",
+                         "fsl_rcsi_cat")
 
-fcm_check_2_columns <- c("fsl_hdds_score",
-                         "fsl_rcsi_score")
+fcm_check_2_columns <- c("fsl_hdds_cat",
+                         "fsl_rcsi_cat")
 
-fcm_check_3_columns <- c("fsl_fcs_score",
-                         "fsl_hhs_score")
+fcm_check_3_columns <- c("fsl_fcs_cat",
+                         "fsl_hhs_cat")
 
-fcm_check_4_columns <- c("fsl_hdds_score",
-                         "fsl_hhs_score")
+fcm_check_4_columns <- c("fsl_hdds_cat",
+                         "fsl_hhs_cat")
 
-fcm_check_5_columns <- c("fsl_hdds_score",
-                         "fsl_rcsi_score",
-                         "fsl_hhs_score")
+fcm_check_5_columns <- c("fsl_hdds_cat",
+                         "fsl_rcsi_cat",
+                         "fsl_hhs_cat")
 
-fcm_check_6_columns <- c("fsl_fcs_score",
-                         "fsl_rcsi_score",
-                         "fsl_hhs_score")
-
+fcm_check_6_columns <- c("fsl_fcs_cat",
+                         "fsl_rcsi_cat",
+                         "fsl_hhs_cat")
 
 
 
@@ -176,13 +257,12 @@ if(all(fcm_check_1_columns %in% names(main)) |
     impactR4PHU::add_fcm_phase()
 }
 
-fclcm_check_columns <- c("fc_phase",
+fclcm_check_columns <- c("fsl_fc_phase",
                          "fsl_lcsi_cat")
 if(all(fclcm_check_columns %in% names(main))) {
   main <- main %>% 
     impactR4PHU::add_fclcm_phase()
 }
-
 ################################################################################
 ## FSL
 if(all(hdds_check_columns %in% names(main))) {
@@ -394,9 +474,10 @@ if(all(fcm_check_1_columns %in% names(main)) |
    all(fcm_check_5_columns %in% names(main)) |
    all(fcm_check_6_columns %in% names(main))) {
   # FC_PHASE
-  fc_phase_table <- lcsi_survey %>% 
-    filter(!is.na(fc_phase)) %>% 
-    group_by(fc_phase, .add = T) %>% 
+  fc_phase_survey <- srvyr::as_survey_design(main)
+  fc_phase_table <- fc_phase_survey %>% 
+    filter(!is.na(fsl_fc_phase)) %>% 
+    group_by(fsl_fc_phase, .add = T) %>% 
     summarise(num_samples = n(), 
               prop = srvyr::survey_prop(na.rm = T, vartype = "var"))%>% 
     mutate(Percentage = paste0(round(prop,2) *100,"%")) %>% 
@@ -404,8 +485,9 @@ if(all(fcm_check_1_columns %in% names(main)) |
 }
 
 if(all(fclcm_check_columns %in% names(main))) {
+  fclcm_phase_survey <- srvyr::as_survey_design(main)
   # FCLCM_PHASE
-  fclcm_phase_table <- lcsi_survey %>% 
+  fclcm_phase_table <- fclcm_phase_survey %>% 
     filter(!is.na(fclcm_phase)) %>% 
     group_by(fclcm_phase, .add = T) %>% 
     summarise(num_samples = n(), 
@@ -520,7 +602,15 @@ if(!is.null(died_member)){
 
 ################################################################################
 # NUT
-nut <- check_nut_flags(child_nutrition)
+if(!is.null(child_nutrition_data)){
+  if(all(c("nut_muac_cm","nut_edema_confirm") %in% names(child_nutrition_data))){
+    nut <- check_nut_flags(child_nutrition_data)
+  } else {
+    nut <- NULL
+  }
+} else {
+  nut <- NULL
+}
 
 
 ################################################################################
@@ -528,9 +618,10 @@ nut <- check_nut_flags(child_nutrition)
 if(!is.null(water_count_loop)){
   raw.water_count_loop <- water_count_loop
   water <- main %>% 
-    check_WASH_flags(is.loop = T)
-main <- main %>% 
-  left_join(select(water,c(uuid, litre_per_day_per_person)))
+    impactR4PHU::check_wash_flags(data_container_loop = raw.water_count_loop)
+  
+  main <- main %>% 
+    left_join(select(water,c(uuid, litre_per_day_per_person)))
 } 
 
 
