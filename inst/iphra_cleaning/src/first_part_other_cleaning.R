@@ -15,30 +15,32 @@ if(!is.null(raw.died_member)) {
 
 language <- strings['language_other']
 
-if(language == "French") {
-  lang <- "fr"
-} else if (language == "Spanish"){
-  lang <- "es"
-} else {
+if (language == "French"){
+  lang <-  "fr"
+} else if( language == "Spanish"){
+  lang <- "sp"
+} else if( language == "Arabic"){
   lang <- "ar"
-} 
+} else {
+  lang <- "en"
+}
 
-other.responses <- rbind(find.responses(raw.main, other.db.main, values_to = paste0("response.",lang)),
-                         find.responses(raw.hh_roster, other.db.hh_roster, values_to = paste0("response.",lang),is.loop = T),
-                         find.responses(raw.ind_health, other.db.ind_health, values_to = paste0("response.",lang),is.loop = T))
+other.responses <- rbind(find.responses(raw.main, other.db.main, values_to = "response"),
+                         find.responses(raw.hh_roster, other.db.hh_roster, values_to = "response",is.loop = T),
+                         find.responses(raw.ind_health, other.db.ind_health, values_to = "response",is.loop = T))
 
 if(!is.null(raw.died_member)){
   other.responses <- rbind(other.responses,
-                           find.responses(raw.died_member, other.db.died_member, values_to = paste0("response.",lang),is.loop = T))
+                           find.responses(raw.died_member, other.db.died_member, values_to = "response",is.loop = T))
 }
 
 if(strings['api'] == "No Api"){
   other.responses.j <- other.responses %>%
-    mutate(!!sym(paste0("response.",lang,".en")) := NA)
+    mutate(response_translate = NA)
   save.other.requests(create.translate.requests(other.db, other.responses.j, is.loop = T),
                       paste0(dataset.name.short, "_other_requests_",strings["out_date"]), use_template = T)
 } else{
-  other.responses.j <- other.responses %>% translate.responses_iphra(api_key = as.character(strings['api_key']), api = as.character(strings['api']),  values_from = paste0("response.",lang), language_codes = lang)
+  other.responses.j <- other.responses %>% translate.responses_iphra(api_key = as.character(strings['api_key']), api = as.character(strings['api']),  values_from = "response", language_codes = lang)
   
   save.other.requests(create.translate.requests(other.db, other.responses.j, is.loop = T),
                       paste0(dataset.name.short, "_other_requests_",strings["out_date"]), use_template = T)
@@ -49,13 +51,13 @@ if(strings['api'] == "No Api"){
 # Translation
 if(!is.null(raw.died_member)){
   trans.db <- get.trans.db()
-  trans.responses <- find.responses(raw.died_member, trans.db, values_to = paste0("response.",lang), is.loop = T)
+  trans.responses <- find.responses(raw.died_member, trans.db, values_to = "response.", is.loop = T)
   if(strings['api'] == "No Api"){
     trans.responses.j <- trans.responses %>%
-      mutate(!!sym(paste0("response.",lang,".en")) := NA)
+      mutate(response_translate = NA)
     save.trans.requests(create.translate.requests(trans.db, trans.responses.j, is.loop = T), paste0(dataset.name.short, "_translate_requests_",strings["out_date"]), use_template = T)
   } else{
-    trans.responses.j <- trans.responses %>% translate.responses_iphra(api_key = as.character(strings['api_key']), api = as.character(strings['api']),  values_from = paste0("response.",lang), language_codes = lang)
+    trans.responses.j <- trans.responses %>% translate.responses_iphra(api_key = as.character(strings['api_key']), api = as.character(strings['api']),  values_from = "response", language_codes = lang)
     save.trans.requests(create.translate.requests(trans.db, trans.responses.j, is.loop = T), paste0(dataset.name.short, "_translate_requests_",strings["out_date"]), use_template = T)
   } 
 }
