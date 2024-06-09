@@ -80,6 +80,8 @@ save.other.requests <- function(df, wb_name, use_template = F){
   openxlsx::addStyle(wb, "Sheet2", style.col.green.bold, rows = 1, cols = ncol(df)-1, stack = T)
   openxlsx::addStyle(wb, "Sheet2", style.col.green.bold, rows = 1, cols = ncol(df), stack = T)
   openxlsx::addWorksheet(wb, "Sheet3", visible = F)
+  openxlsx::addWorksheet(wb, "Sheet4", visible = F)
+  openxlsx::writeData(wb, "Sheet4", x = c(NA,"yes"))
   openxlsx::writeData(wb, "Sheet3", x = tool.choices)
   ##Adding data validation
   for (i in 1:nrow(df)){
@@ -87,7 +89,9 @@ save.other.requests <- function(df, wb_name, use_template = F){
     range_min <- min(which(tool.choices$list_name %in% list_name)) + 1
     range_max <- max(which(tool.choices$list_name %in% list_name)) + 1
     validate <- paste0("'Sheet3'!$C",range_min,":$C",range_max)
+    validate_invalid <- paste0("'Sheet4'!$A:$A")
     openxlsx::dataValidation(wb, "Sheet2", cols = ncol(df)-1, rows = 1 + i, type = "list", value = validate)
+    openxlsx::dataValidation(wb, "Sheet2", cols = ncol(df), rows = 1 + i, type = "list", value = validate_invalid)
   }
   filename <- paste0(dir.requests, wb_name, ".xlsm")
   openxlsx::saveWorkbook(wb, filename, overwrite=TRUE)
@@ -1230,7 +1234,7 @@ add.to.cleaning.log.trans.remove <- function(data, x){
   issue <- "Invalid other response"
   # remove text of the response
   df <- data.frame(uuid=x$uuid, variable=x$name, issue=issue,
-                   old.value=x$response.uk, new.value=NA)
+                   old.value=x$response, new.value=NA)
   cleaning.log.trans <<- rbind(cleaning.log.trans, df)
 }
 
@@ -1348,7 +1352,7 @@ create.deletion.log <- function(data, col_enum, reason){
 # FIND & TRANSLATE RESPONSES
 # ------------------------------------------------------------------------------------------
 
-find.responses <- function(data, questions.db, values_to="response.uk", is.loop = F){
+find.responses <- function(data, questions.db, values_to="response", is.loop = F){
   #' Look up a raw Kobo dataframe to find all responses to a given set of questions.
   #'
   #' The dataframe `questions.db` needs to contain a column `name` (like a subset of `tool.survey`) which will be used to look up `data`.
@@ -1397,7 +1401,7 @@ find.responses <- function(data, questions.db, values_to="response.uk", is.loop 
   return(responses.j)
 }
 
-translate.responses <- function(responses, values_from = "response.uk", language_codes = 'uk', target_lang = "en", threshold = 200000){
+translate.responses <- function(responses, values_from = "response", language_codes = 'uk', target_lang = "en", threshold = 200000){
 
   #' Translate a vector from a given dataframe.
   #'
@@ -1441,7 +1445,7 @@ translate.responses <- function(responses, values_from = "response.uk", language
   if(yes_no == "YES"){
     if(length(input_vec) > 0){
       for (code in language_codes) {
-        col_name <- paste0("response.",target_lang, ".from.",code)
+        col_name <- "response_translate"
         # relevant_colnames <- append(relevant_colnames, col_name)  # this line may be bugged??
         
         temp_resp <- tibble(input_vec)

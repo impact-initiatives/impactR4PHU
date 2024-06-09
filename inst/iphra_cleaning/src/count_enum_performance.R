@@ -13,9 +13,13 @@ deletion.log <- load.requests("output/deletion_log/","deletion_log")
 cleaning.log <- load.requests("output/cleaning_log/","cleaning_log")
 
 
-create.count_collected_enu(kobo.raw,     enum_colname)
-create.count_deleted_enu(deletion.log, enum_colname)
-create.count_enu_cleaning(cleaning.log, enum_colname)
+create.count_collected_enu(kobo.raw,enum_colname)
+if(nrow(deletion.log)>0){
+  create.count_deleted_enu(deletion.log, enum_colname)
+}
+if(nrow(cleaning.log)>0){
+  create.count_enu_cleaning(cleaning.log, enum_colname)
+}
 if(language_assessment == "English"){
   cat("\nDone. Created 3 files in output/enum_performance.")
 }else {

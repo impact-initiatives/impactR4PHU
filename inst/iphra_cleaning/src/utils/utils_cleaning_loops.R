@@ -16,8 +16,10 @@ add.to.cleaning.log.other.recode.LOOP <- function(data, x){
 add.to.cleaning.log.other.remove.LOOP <- function(data, x){
   issue <- "Invalid other response"
   # remove text of the response
+  data <- raw.ind_health
+  x <- or.remove[r,]
   df <- data.frame(uuid=x$uuid, loop_index=x$loop_index, variable=x$name, issue=issue,
-                   old.value=x$response.fr, new.value=NA)
+                   old.value=x$response, new.value=NA)
   cleaning.log.other <<- rbind(cleaning.log.other, df)
   # remove relative entries
   if (x$ref.type[1]=="select_one"){
@@ -59,7 +61,7 @@ add.to.cleaning.log.other.recode.multiple.LOOP <- function(data, x){
   issue <- "Recoding other response"
   # remove text of the response
   df <- data.frame(uuid=x$uuid, loop_index=x$loop_index, variable=x$name, issue=issue,
-                   old.value=x$response.fr, new.value=NA)
+                   old.value=x$response, new.value=NA)
   cleaning.log.other <<- rbind(cleaning.log.other, df)
   # get list of choices from other response
   if (str_detect(x$existing.other, ";")) {
@@ -129,7 +131,7 @@ add.to.cleaning.log.other.recode.one.LOOP <- function(x){
   issue <- "Recoding other response"
   # remove text of the response
   df <- data.frame(uuid=x$uuid,loop_index=x$loop_index, variable=x$name, issue=issue,
-                   old.value=x$response.fr, new.value=NA)
+                   old.value=x$response, new.value=NA)
 
   cleaning.log.other <<- rbind(cleaning.log.other, df)
   # # get list of choices from other response
@@ -196,7 +198,7 @@ add.to.cleaning.log.trans.remove.LOOP <- function(data, x){
   issue <- "Invalid text responses"
   # remove text of the response
   df <- data.frame(uuid=x$uuid,loop_index=x$loop_index, variable=x$name, issue=issue,
-                   old.value=x$response.fr, new.value=NA)
+                   old.value=x$response, new.value=NA)
   cleaning.log.trans <<- rbind(cleaning.log.trans, df)
 }
 
