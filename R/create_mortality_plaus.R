@@ -259,11 +259,12 @@ create_mortality_plaus <- function(df_mortality,
                        sex_ratio = round(as.numeric(nipnTK::sexRatioTest(sex, codes = c("1", "2"), pop = sx_ratio)[1]),3),
                        sex_ratio.pvalue = round(as.numeric(nipnTK::sexRatioTest(sex, codes = c("1", "2"), pop = sx_ratio)[5]),2),
                        age_ratio_0_5 = sum(!is.na(age_0to5)) / sum(!is.na(age_5plus)),
-                       age_ratio_0_5.pvalue = ifelse(is.nan(age_ratio_0_5),NA,stats::chisq.test(x = c(sum(!is.na(age_0to5)), sum(!is.na(age_5plus))), p = age_under5_ratio)[3]),
+                       age_ratio_0_5 = ifelse(is.nan(age_ratio_0_5), NA, age_ratio_0_5),
+                       age_ratio_0_5.pvalue = try(stats::chisq.test(x = c(sum(!is.na(age_0to5)), sum(!is.na(age_5plus))), p = age_under5_ratio)[3], silent = T),
                        age_ratio_2_5 = sum(!is.na(age_0to2)) / sum(!is.na(age_2to5)),
-                       age_ratio_2_5.pvalue = ifelse(is.nan(age_ratio_2_5),NA,stats::chisq.test(x = c(sum(!is.na(age_0to2)), sum(!is.na(age_2to5))), p = age_under2to5_ratio)[3]),
+                       age_ratio_2_5.pvalue = try(stats::chisq.test(x = c(sum(!is.na(age_0to2)), sum(!is.na(age_2to5))), p = age_under2to5_ratio)[3], silent = T),
                        age_ratio_5_10 = sum(!is.na(under_5)) / sum(!is.na(age_5to10)),
-                       age_ratio_5_10.pvalue = ifelse(is.nan(age_ratio_5_10),stats::chisq.test(x = c(sum(!is.na(under_5)), sum(!is.na(age_5to10))), p = age_under5to10_ratio)[3])
+                       age_ratio_5_10.pvalue = try(stats::chisq.test(x = c(sum(!is.na(under_5)), sum(!is.na(age_5to10))), p = age_under5to10_ratio)[3], silent = T)
       ) %>%
       dplyr::mutate(cdr = deaths / (total_persontime + total_persontime_out - total_persontime_in),
                     cdr_se = sqrt((cdr * (1 - cdr)) / (total_persontime + total_persontime_out - total_persontime_in)),
@@ -302,10 +303,24 @@ create_mortality_plaus <- function(df_mortality,
                      total_flag_deaths = ifelse(sum(!is.na(death))>1, 1, 0)) %>%
     dplyr::mutate(is_hh = ifelse(is.na(uuid), NA, 1),
                   is_hh_under5 = ifelse(is.na(uuid), NA, ifelse(total_under5 > 0, 1, 0)),
-                  is_hh_flag_deaths = ifelse(is.na(uuid), NA, ifelse(total_flag_deaths > 0, 1, 0))) %>%
+                  is_hh_flag_deaths = ifelse(is.na(uuid), NA, ifelse(total_flag_deaths > 0, 1, 0)))
+
+  df_selected <- df3 %>% dplyr::group_by(group) %>%
+    dplyr::summarise(n = dplyr::n()) %>%
+    dplyr::select(group)
+
+  filtered_group <- df3 %>%
+    dplyr::mutate(hh_size_notna = ifelse(!is.na(hh_size),1,0)) %>%
+    dplyr::group_by(group) %>%
+    dplyr::summarise(hh_size_notna = sum(hh_size_notna, na.rm = T)) %>%
+    dplyr::filter(hh_size_notna >= 3) %>%
+    dplyr::pull(group)
+
+  draft_df3 <- df3 %>%
+    dplyr::filter(group %in% filtered_group) %>%
     dplyr::group_by(group) %>%
     dplyr::summarise(mean_hh_size = mean(hh_size, na.rm = TRUE),
-                     mean_hh_size.pvalue = round(as.numeric(stats::t.test(x = hh_size, mu = expected_hh_size, alternative = "two.sided")[3]),2),
+                     mean_hh_size.pvalue = round(as.numeric(try(stats::t.test(x = hh_size, mu = expected_hh_size, alternative = "two.sided"),silent = T)[3]),2),
                      mean_num_under5 = mean(total_under5, na.rm = TRUE),
                      mean_deaths_per_hh = mean(num_deaths, na.rm = TRUE),
                      n_hh = sum(is_hh, na.rm = TRUE),
@@ -314,9 +329,15 @@ create_mortality_plaus <- function(df_mortality,
     ) %>%
     dplyr::mutate(prop_hh_under5 = round((n_hh_under_5 / n_hh),2),
                   prop_hh_flag_deaths = round((n_hh_flag_deaths / n_hh), 2))
+  df_selected <- df_selected %>%
+    dplyr::left_join(draft_df3)
 
-  df4 <- merge(df3, df2, all.x = TRUE)
 
+  df4 <- merge(df_selected, df2, all.x = TRUE)
+
+  df4 <- df4 %>%
+    dplyr::rowwise() %>%
+    dplyr::mutate_all(.,~ifelse(is.null(.),NA,.))
 
   df4 <- impactR4PHU::calculate_plausibility(df4)
 
@@ -330,7 +351,6 @@ create_mortality_plaus <- function(df_mortality,
                     plaus_overall_cdr,  plaus_hh_multiple_death, plaus_sex_ratio,
                     plaus_age0to4_5plus_ratio, plaus_age0to1_2to4_ratio, plaus_age0to4_5to10_ratio,
                     plaus_mort_score, plaus_mort_cat))
-
 
   if(short_report == TRUE) {
     df4 <- df4 %>%
