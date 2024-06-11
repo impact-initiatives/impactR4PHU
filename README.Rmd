@@ -34,6 +34,7 @@ knitr::opts_chunk$set(echo = TRUE)
   - [Descriptive Analysis](#descriptive-analysis)
     - FSL
     - Mortality
+- [Potential Errors and How to fix them](#potential-errors-and-how-to-fix-them)
 - [Standalone Functions](#standalone-functions)
   - [FSL ADD INDICATORS](#fsl-add-indicators)
   - [Nutrition ADD INDICATORS](#nutrition-add-indicators)
@@ -60,6 +61,12 @@ To access these projects, follow the following instructions.
 ![Select New Directory](./man/figures/projects_2.png)
 
 ![Scroll to find the respective projects](./man/figures/projects_3.png)
+
+![Select all the lines and click run](./man/figures/projects_4.png)
+
+## Potential Errors and How to fix them
+
+
 
 ### Data Quality
 
