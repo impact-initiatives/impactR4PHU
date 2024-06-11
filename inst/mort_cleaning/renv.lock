@@ -583,14 +583,14 @@
     },
     "evaluate": {
       "Package": "evaluate",
-      "Version": "0.23",
+      "Version": "0.24.0",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
         "R",
         "methods"
       ],
-      "Hash": "daf4a1246be12c1fa8c7705a0935c1a0"
+      "Hash": "a1066cbc05caee9a4bf6d90f194ff4da"
     },
     "fansi": {
       "Package": "fansi",
@@ -1055,7 +1055,7 @@
       "RemoteRepo": "impactR4PHU",
       "RemoteUsername": "impact-initiatives",
       "RemoteRef": "HEAD",
-      "RemoteSha": "a56837228816654e56917df4145169a1092452f5",
+      "RemoteSha": "29a450c1347514ccd46bd9d991ee22af73712467",
       "Requirements": [
         "GGally",
         "R",
@@ -1076,7 +1076,7 @@
         "writexl",
         "zscorer"
       ],
-      "Hash": "bf7b0bb3c1654c4678e92445a1fe363a"
+      "Hash": "24e5c0798984e6f48edd8033f3f6b6e2"
     },
     "isoband": {
       "Package": "isoband",
@@ -1647,7 +1647,7 @@
         "R",
         "utils"
       ],
-      "Hash": "42548638fae05fd9a9b5f3f437fbbbe2"
+      "Hash": "3eec01f8b1dee337674b2e34ab1f9bc1"
     },
     "rmarkdown": {
       "Package": "rmarkdown",
