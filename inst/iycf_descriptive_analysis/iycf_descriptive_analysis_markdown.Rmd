@@ -216,6 +216,10 @@ for (i in 1:length(names(sorted_df))){
 
 ```{r, results='asis'}
 
+Combine by age ranges in tables
+
+Show the n number in the output with the proportions
+
 ```
 
 
