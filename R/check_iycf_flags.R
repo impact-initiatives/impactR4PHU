@@ -158,7 +158,7 @@ check_iycf_flags <- function(.dataset,
   } else {
     .dataset <- .dataset %>%
       dplyr::mutate(
-        flag_yes_foods = ifelse(is.na(count_foods),NA
+        flag_yes_foods = ifelse(is.na(count_foods),NA,
                                 ifelse(count_foods == 18, 1, 0)),
         flag_yes_liquids = ifelse(is.na(count_liquids),NA,
                                   ifelse(count_liquids == 10, 1, 0)),
