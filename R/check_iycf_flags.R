@@ -158,12 +158,14 @@ check_iycf_flags <- function(.dataset,
   } else {
     .dataset <- .dataset %>%
       dplyr::mutate(
-        sum_foods = rowSums(dplyr::across(c(foods))),
-        sum_liquids = rowSums(dplyr::across(c(liquids))),
-        flag_yes_foods = ifelse(sum_foods == 18, 1, 0),
-        flag_yes_liquids = ifelse(sum_liquids == 10, 1, 0),
-        flag_no_foods = ifelse(sum_foods == 0, 1, 0),
-        flag_no_liquids = ifelse(sum_liquids == 0, 1, 0))
+        flag_yes_foods = ifelse(is.na(count_foods),NA,
+                                ifelse(count_foods == 18, 1, 0)),
+        flag_yes_liquids = ifelse(is.na(count_liquids),NA,
+                                  ifelse(count_liquids == 10, 1, 0)),
+        flag_no_foods = ifelse(is.na(count_foods),NA,
+                               ifelse(count_foods == 0, 1, 0)),
+        flag_no_liquids = ifelse(is.na(count_liquids),NA,
+                                 ifelse(count_liquids == 0, 1, 0)))
   }
 
   required_columns <- c(iycf_4,foods,liquids)
@@ -191,8 +193,8 @@ check_iycf_flags <- function(.dataset,
                                              as.numeric(!!rlang::sym(age_months)) > 5, 1, 0),
                     flag_all_foods_no_meal = ifelse(flag_yes_foods == 1 &
                                                       as.numeric(!!rlang::sym(iycf_8)) == 0, 1, 0),
-                    flag_some_foods_no_meal = ifelse(sum_foods > 0 &
-                                                       sum_foods < 18 &
+                    flag_some_foods_no_meal = ifelse(count_foods > 0 &
+                                                       count_foods < 18 &
                                                        as.numeric(!!rlang::sym(iycf_8)) == 0 &
                                                        as.numeric(!!rlang::sym(age_months)) > 5, 1, 0))
 
