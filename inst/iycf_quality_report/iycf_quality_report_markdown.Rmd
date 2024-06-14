@@ -1035,6 +1035,15 @@ if(!is.null(yes_no_team)){
     raw.flag.iycf <- raw.flag.iycf %>% 
       dplyr::rename(uuid = uuid_iycf) %>% 
       dplyr::left_join(uuid_raw_main)
+  }else {
+  uuid_raw_main <- raw.main %>% 
+    dplyr::select(uuid_main, enumerator) %>% 
+    dplyr::rename(uuid = uuid_main)
+  
+  
+  raw.flag.iycf <- raw.flag.iycf %>% 
+    dplyr::rename(uuid = uuid_iycf) %>% 
+    dplyr::left_join(uuid_raw_main)
   }
 } else {
   uuid_raw_main <- raw.main %>% 
@@ -1291,7 +1300,9 @@ if(yes_no_team == "yes"){
       }
     }
 } else {
-    list_enum <- df_mortality_long[["enumerator"]]%>% unique
+     list_enum <- raw.main %>% 
+        dplyr::pull(!!rlang::sym(enumerator))%>% 
+        unique()
     for (i in list_enum) {
        subch(impactR4PHU::plot_age_pyramid(raw.flag.iycf %>% 
                                 dplyr::mutate(age_group = cut(as.numeric(!!rlang::sym(age_months)),
