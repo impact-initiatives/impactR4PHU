@@ -29,7 +29,27 @@ if(!file.exists("inputs/environment.Rdata")) {
   } else if (length(uuid_main) == 0) {
     uuid_main <- svDialogs::dlg_input(message= "Enter the name of the HH UUID Column in main data","uuid_main")$res
   }
+  ## Detect Team column
+  yes_no_team <- svDialogs::dlg_message(paste0("Is there teams of enumerators?"), type = "yesno")$res
+  if(yes_no_team == "yes"){
+    team <- names(main)[grepl("team|organization|organisation",names(main))]
 
+    if(length(team) == 1){
+      yes_no <- svDialogs::dlg_message(paste0("Is '", team, "' the correct team/organization column?"), type = "yesno")$res
+      if(yes_no == "no"){
+        team <- svDialogs::dlg_input(message= "Enter the name of the team/organization Column","enumerator")$res
+      }
+    } else if (length(team) > 1){
+      team <- tcltk::tk_select.list(team, title = "Team/Organization Columns")
+      if(team == ""){
+        team <- svDialogs::dlg_input(message= "Enter the name of the team/organization Column","team")$res
+      }
+    } else if (length(team) == 0) {
+      team <- svDialogs::dlg_input(message= "Enter the name of the team/organization Column","team")$res
+    }
+  } else {
+    team <- NULL
+  }
   ## Detect Enumerator column
   enumerator <- names(main)[grepl("enum|team",names(main))]
 
@@ -832,6 +852,17 @@ if(!file.exists("inputs/environment.Rdata")) {
                           uuid = uuid_iycf)
 }
 
+
+enum_iycf <- main %>%
+  dplyr::select(uuid_main,enumerator) %>%
+  dplyr::rename(uuid = uuid_main)
+
+iycf <- iycf %>%
+  dplyr::rename(uuid = uuid_iycf) %>%
+  dplyr::left_join(enum_iycf)
+
+
+
 data.list[[path.sheet.with.main]] <- main
 data.list[[path.sheet.with.iycf]] <- iycf
 
@@ -875,8 +906,8 @@ if(yes_no_weight == "yes"){
 list_of_var <- c("uuid_main","enumerator","iycf_caregiver",
                  "age_months","iycf_1","iycf_2","iycf_3","iycf_4","iycf_5","iycf_6a",
                  "iycf_6b","iycf_6c","iycf_6d","iycf_6e","iycf_6f","iycf_6g","iycf_6h","iycf_6i",
-                 "iycf_6j","iycf_7a","iycf_7b","iycf_7c","iycf_7d","iycf_7e","iycf_7f","sex",
-                 "iycf_7g","iycf_7h","iycf_7i","iycf_7j","iycf_7k","iycf_7l","iycf_7m",
+                 "iycf_6j","iycf_7a","iycf_7b","iycf_7c","iycf_7d","iycf_7e","iycf_7f","sex","team",
+                 "iycf_7g","iycf_7h","iycf_7i","iycf_7j","iycf_7k","iycf_7l","iycf_7m","yes_no_team",
                  "iycf_7n","iycf_7o","iycf_7p","iycf_7q","iycf_7r","iycf_8","yes_no_weight","weight",
                  "iycf_6c_swt","iycf_6d_swt","iycf_6h_swt","iycf_6j_swt","yes_answer","no_answer","dnk_answer","male","female",
                  "pnta_answer","iycf2_immediate_value","iycf2_lessday_value","iycf2_moreday_value","uuid_iycf")
@@ -884,10 +915,168 @@ list_of_var <- c("uuid_main","enumerator","iycf_caregiver",
 if(!file.exists("inputs/environment.Rdata")){
   save(list = list_of_var, file = "inputs/environment.Rdata")
 }
-if(!file.exists("inputs/environment.Rdata")){
-  save(list = list_of_var, file = "inputs/environment.Rdata")
-}
 
 ## Create IYCF Tables for EACH CALCULATED IYCF
 
+##### 0 to 23 month
+
+zero_to_23 <- iycf %>%
+  dplyr::select(uuid_iycf,
+                sex,
+                iycf_evbf,
+                iycf_eibf,
+                iycf_ebf2d,
+                iycf_bof)
+
+total_zero_to_23 <- nrow(filter(iycf, as.numeric(!!rlang::sym(age_months)) < 24))
+
+overall_zero_to_23 <- zero_to_23 %>%
+  dplyr::group_by() %>%
+  dplyr::summarise(`Ever Breastfed` = sum(iycf_evbf, na.rm = T),
+                   `Early Initiation of Breastfeeding` = sum(iycf_eibf, na.rm = T),
+                   `Exclusive Breastfeeding First 2 Days After Birth` = sum(iycf_ebf2d, na.rm = T),
+                   `Bottle Feeding` = sum(iycf_bof, na.rm = T)) %>%
+  # dplyr::mutate_all(.,as.character) %>%
+  pivot_longer(cols = everything()) %>%
+  dplyr::mutate(prop = paste0(round((value/total_zero_to_23)*100,2), " %"))
+
+gender_zero_to_23 <- zero_to_23 %>%
+  dplyr::group_by(!!rlang::sym(sex)) %>%
+  dplyr::summarise(`Ever Breastfed` = sum(iycf_evbf, na.rm = T),
+                   `Early Initiation of Breastfeeding` = sum(iycf_eibf, na.rm = T),
+                   `Exclusive Breastfeeding First 2 Days After Birth` = sum(iycf_ebf2d, na.rm = T),
+                   `Bottle Feeding` = sum(iycf_bof, na.rm = T)) %>%
+  # dplyr::mutate_all(.,as.character) %>%
+  pivot_longer(cols = -sex) %>%
+  mutate(prop = paste0(round((value/total_zero_to_23)*100,2), " %"))%>%
+  dplyr::mutate(!!rlang::sym(sex) := case_when(!!rlang::sym(sex) == male ~ "Male",
+                                               !!rlang::sym(sex) == female ~ "Female")) %>%
+  pivot_wider(names_from = sex, values_from = c(value, prop))
+
+
+
+zero_to_6 <- iycf %>%
+  dplyr::select(uuid_iycf,
+                sex,
+                iycf_ebf,
+                iycf_mixmf)
+
+total_zero_to_6 <-  nrow(filter(iycf, as.numeric(!!rlang::sym(age_months)) < 7))
+
+overall_zero_to_6 <- zero_to_6 %>%
+  dplyr::group_by() %>%
+  dplyr::summarise(`Exclusive Breastfeeding` = sum(iycf_ebf, na.rm = T),
+                   `Mixed Milk Feeding` = sum(iycf_mixmf, na.rm = T)) %>%
+  # dplyr::mutate_all(.,as.character) %>%
+  pivot_longer(cols = everything()) %>%
+  dplyr::mutate(prop = paste0(round((value/total_zero_to_23)*100,2), " %"))
+
+gender_zero_to_6 <- zero_to_6 %>%
+  dplyr::group_by(!!rlang::sym(sex)) %>%
+  dplyr::summarise(`Exclusive Breastfeeding` = sum(iycf_ebf, na.rm = T),
+                   `Mixed Milk Feeding` = sum(iycf_mixmf, na.rm = T)) %>%
+  # dplyr::mutate_all(.,as.character) %>%
+  pivot_longer(cols = -sex) %>%
+  mutate(prop = paste0(round((value/total_zero_to_23)*100,2), " %"))%>%
+  dplyr::mutate(!!rlang::sym(sex) := case_when(!!rlang::sym(sex) == male ~ "Male",
+                                               !!rlang::sym(sex) == female ~ "Female")) %>%
+  pivot_wider(names_from = sex, values_from = c(value, prop))
+
+
+twelve_to_23 <- iycf %>%
+  dplyr::select(uuid_iycf,
+                sex,
+                iycf_cbf)
+
+total_twelve_to_23 <-  nrow(filter(iycf, as.numeric(!!rlang::sym(age_months)) > 11 &
+                                     as.numeric(!!rlang::sym(age_months)) < 24))
+
+overall_twelve_to_23 <- twelve_to_23 %>%
+  dplyr::group_by() %>%
+  dplyr::summarise(`Continued Breastfeeding` = sum(iycf_cbf, na.rm = T)) %>%
+  # dplyr::mutate_all(.,as.character) %>%
+  pivot_longer(cols = everything()) %>%
+  dplyr::mutate(prop = paste0(round((value/total_zero_to_23)*100,2), " %"))
+
+gender_twelve_to_23 <- twelve_to_23 %>%
+  dplyr::group_by(!!rlang::sym(sex)) %>%
+  dplyr::summarise(`Continued Breastfeeding` = sum(iycf_cbf, na.rm = T)) %>%
+  # dplyr::mutate_all(.,as.character) %>%
+  pivot_longer(cols = -sex) %>%
+  mutate(prop = paste0(round((value/total_zero_to_23)*100,2), " %"))%>%
+  dplyr::mutate(!!rlang::sym(sex) := case_when(!!rlang::sym(sex) == male ~ "Male",
+                                               !!rlang::sym(sex) == female ~ "Female")) %>%
+  pivot_wider(names_from = sex, values_from = c(value, prop))
+
+
+six_to_8 <- iycf %>%
+  dplyr::select(uuid_iycf,
+                sex,
+                iycf_isssf)
+
+total_six_to_8 <-  nrow(filter(iycf, as.numeric(!!rlang::sym(age_months)) > 5 &
+                                 as.numeric(!!rlang::sym(age_months)) < 9))
+
+overall_six_to_8 <- six_to_8 %>%
+  dplyr::group_by() %>%
+  dplyr::summarise(`Introduction of Solid, Semi-Solid, or Soft Foods` = sum(iycf_isssf, na.rm = T)) %>%
+  # dplyr::mutate_all(.,as.character) %>%
+  pivot_longer(cols = everything()) %>%
+  dplyr::mutate(prop = paste0(round((value/total_zero_to_23)*100,2), " %"))
+
+gender_six_to_8 <- six_to_8 %>%
+  dplyr::group_by(!!rlang::sym(sex)) %>%
+  dplyr::summarise(`Introduction of Solid, Semi-Solid, or Soft Foods` = sum(iycf_isssf, na.rm = T)) %>%
+  # dplyr::mutate_all(.,as.character) %>%
+  pivot_longer(cols = -sex) %>%
+  mutate(prop = paste0(round((value/total_zero_to_23)*100,2), " %"))%>%
+  dplyr::mutate(!!rlang::sym(sex) := case_when(!!rlang::sym(sex) == male ~ "Male",
+                                               !!rlang::sym(sex) == female ~ "Female")) %>%
+  pivot_wider(names_from = sex, values_from = c(value, prop))
+
+six_to_23 <- iycf %>%
+  dplyr::select(uuid_iycf,
+                sex,
+                iycf_mdd_cat,
+                iycf_mmf,
+                iycf_mmff,
+                iycf_mad,
+                iycf_eff,
+                iycf_swb,
+                iycf_ufc,
+                iycf_zvf)
+
+total_six_to_23 <-  nrow(filter(iycf, as.numeric(!!rlang::sym(age_months)) > 5 &
+                                  as.numeric(!!rlang::sym(age_months)) < 24))
+
+overall_six_to_23 <- six_to_23 %>%
+  dplyr::group_by() %>%
+  dplyr::summarise(`Minimum Dietary Diversity` = sum(iycf_mdd_cat, na.rm = T),
+                   `Minimum Meal Frequency` = sum(iycf_mmf, na.rm = T),
+                   `Minimum Milk Feeding Frequency For Non-Breastfed Children` = sum(iycf_mmff, na.rm = T),
+                   `Minimum Acceptable Diet` = sum(iycf_mad, na.rm = T),
+                   `Eggs & Flesh Foods Consumption` = sum(iycf_eff, na.rm = T),
+                   `Sweet Beverage Consumption` = sum(iycf_swb, na.rm = T),
+                   `Unhealthy Food Consumption` = sum(iycf_ufc, na.rm = T),
+                   `Zero Vegetable or Fruit Consumption` = sum(iycf_zvf, na.rm = T)) %>%
+  # dplyr::mutate_all(.,as.character) %>%
+  pivot_longer(cols = everything()) %>%
+  dplyr::mutate(prop = paste0(round((value/total_zero_to_23)*100,2), " %"))
+
+gender_six_to_23 <- six_to_23 %>%
+  dplyr::group_by(!!rlang::sym(sex)) %>%
+  dplyr::summarise(`Minimum Dietary Diversity` = sum(iycf_mdd_cat, na.rm = T),
+                   `Minimum Meal Frequency` = sum(iycf_mmf, na.rm = T),
+                   `Minimum Milk Feeding Frequency For Non-Breastfed Children` = sum(iycf_mmff, na.rm = T),
+                   `Minimum Acceptable Diet` = sum(iycf_mad, na.rm = T),
+                   `Eggs & Flesh Foods Consumption` = sum(iycf_eff, na.rm = T),
+                   `Sweet Beverage Consumption` = sum(iycf_swb, na.rm = T),
+                   `Unhealthy Food Consumption` = sum(iycf_ufc, na.rm = T),
+                   `Zero Vegetable or Fruit Consumption` = sum(iycf_zvf, na.rm = T)) %>%
+  # dplyr::mutate_all(.,as.character) %>%
+  pivot_longer(cols = -sex) %>%
+  mutate(prop = paste0(round((value/total_zero_to_23)*100,2), " %"))%>%
+  dplyr::mutate(!!rlang::sym(sex) := case_when(!!rlang::sym(sex) == male ~ "Male",
+                                               !!rlang::sym(sex) == female ~ "Female")) %>%
+  pivot_wider(names_from = sex, values_from = c(value, prop))
 
