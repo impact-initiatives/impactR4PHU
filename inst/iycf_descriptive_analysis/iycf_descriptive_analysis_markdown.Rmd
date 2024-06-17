@@ -212,14 +212,167 @@ for (i in 1:length(names(sorted_df))){
 
 ```
 
-## IYCF_Part2
+## IYCF_Part2 {.tabset .tabset-fade}
 
-```{r, results='asis'}
+### Plots {.tabset .tabset-fade}
 
-Combine by age ranges in tables
+#### Age pyramid in months disaggregated by gender 
 
-Show the n number in the output with the proportions
+```{r, message=FALSE}
+impactR4PHU::plot_age_pyramid(iycf %>% 
+                                dplyr::mutate(age_group = cut(as.numeric(!!rlang::sym(age_months)),
+                                    breaks = c(-1,1,3,5,7,9,11,13,15,17,19,21,Inf),
+                                    labels = c("0-1", "2-3", "4-5", "6-7", "8-9",
+                                               "10-11", "12-13", "14-15", "16-17","18-19", "20-21", "22-23"))),
+                              sex_column = sex,
+                              age_years = age_months,
+                              age_grouping = T)
 
 ```
 
 
+#### Age pyramid in months disaggregated by gender per Team
+
+```{r, results='asis', echo=FALSE}
+if(yes_no_team == "yes"){
+    list_teams <- data.list$main[[team]] %>% unique()
+    list_teams <- list_teams[!is.na(list_teams)]
+    for (i in list_teams) {
+      cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",5), collapse=""), " ", "<strong>",i,"</strong> {.tabset .tabset-fade}"))
+      list_enum <- data.list$main %>% 
+        dplyr::filter(!!rlang::sym(team) %in% i) %>% 
+        dplyr::pull(!!rlang::sym(enumerator))%>% 
+        unique()
+      for (j in list_enum){
+        cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",6), collapse=""), " ", "<strong>",j,"</strong>"))
+        subch(impactR4PHU::plot_age_pyramid(iycf %>% 
+                                dplyr::mutate(age_group = cut(as.numeric(!!rlang::sym(age_months)),
+                                    breaks = c(-1,1,3,5,7,9,11,13,15,17,19,21,Inf),
+                                    labels = c("0-1", "2-3", "4-5", "6-7", "8-9",
+                                               "10-11", "12-13", "14-15", "16-17","18-19", "20-21", "22-23"))) %>% 
+                                dplyr::filter(!!rlang::sym(enumerator) %in% j),
+                              sex_column = sex,
+                              age_years = age_months,
+                              age_grouping = T))
+      }
+    }
+} else {
+     list_enum <- data.list$main %>% 
+        dplyr::pull(!!rlang::sym(enumerator))%>% 
+        unique()
+    for (i in list_enum) {
+       subch(impactR4PHU::plot_age_pyramid(iycf %>% 
+                                dplyr::mutate(age_group = cut(as.numeric(!!rlang::sym(age_months)),
+                                    breaks = c(-1,1,3,5,7,9,11,13,15,17,19,21,Inf),
+                                    labels = c("0-1", "2-3", "4-5", "6-7", "8-9",
+                                               "10-11", "12-13", "14-15", "16-17","18-19", "20-21", "22-23"))) %>% 
+                                dplyr::filter(!!rlang::sym(enumerator) %in% i),
+                              sex_column = sex,
+                              age_years = age_months,
+                              age_grouping = T))
+    }
+  }
+
+```
+
+
+#### Histogram of age in months
+
+```{r, fig.width = 10, warning=FALSE, message=FALSE}
+  impactR4PHU::plot_age_distribution(iycf,
+                                     year_or_month = "month",
+                                     age_months = age_months,
+                                     breaks = 1,
+                                     max_age = 23)
+
+```
+
+#### Histogram of age in months per Team
+
+```{r, results='asis',  warning=FALSE}
+if(yes_no_team == "yes"){
+    for (i in list_teams) {
+      cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",5), collapse=""), " ", "<strong>",i,"</strong> {.tabset .tabset-fade}"))
+      list_enum <- data.list$main %>% 
+        dplyr::filter(!!rlang::sym(team) %in% i) %>% 
+        dplyr::pull(!!rlang::sym(enumerator))%>% 
+        unique()
+      for (j in list_enum){
+        cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",6), collapse=""), " ", "<strong>",j,"</strong>"))
+        subch(impactR4PHU::plot_age_distribution(iycf %>%
+                                             dplyr::filter(!!rlang::sym(enumerator) == j),
+                                     year_or_month = "month",
+                                     age_months = age_months,
+                                     breaks = 1,
+                                     max_age = 23),
+              fig_height = 8, fig_width = 10)
+      }
+    }
+} else {
+ subch(impactR4PHU::plot_age_distribution(iycf,
+                                     year_or_month = "month",
+                                     age_months = age_months,
+                                     by_group = enumerator,
+                                     breaks = 1,
+                                     max_age = 23),
+              fig_height = 8, fig_width = 10)
+}
+
+```
+
+### Results {.tabset .tabset-fade}
+
+#### 0 to 23 months
+
+Total number of children between 0 and 23 months: `r if(exists("total_zero_to_23")) {total_zero_to_23}`
+
+```{r, results='asis'}
+cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",5), collapse=""), " ", "<strong>Overall</strong>"))
+subch(DT::datatable(overall_zero_to_23))
+cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",5), collapse=""), " ", "<strong>By Gender</strong>"))
+subch(DT::datatable(gender_zero_to_23))
+```
+
+#### 0 to 6 months
+
+Total number of children between 0 and 6 months: `r if(exists("total_zero_to_6")) {total_zero_to_6}`
+
+```{r, results='asis'}
+cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",5), collapse=""), " ", "<strong>Overall</strong>"))
+subch(DT::datatable(overall_zero_to_6))
+cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",5), collapse=""), " ", "<strong>By Gender</strong>"))
+subch(DT::datatable(gender_zero_to_6))
+```
+
+#### 12 to 23 months
+
+Total number of children between 12 and 23 months: `r if(exists("total_twelve_to_23")) {total_twelve_to_23}`
+
+```{r, results='asis'}
+cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",5), collapse=""), " ", "<strong>Overall</strong>"))
+subch(DT::datatable(overall_twelve_to_23))
+cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",5), collapse=""), " ", "<strong>By Gender</strong>"))
+subch(DT::datatable(gender_twelve_to_23))
+```
+
+#### 6 to 8 months
+
+Total number of children between 6 and 8 months: `r if(exists("total_six_to_8")) {total_six_to_8}`
+
+```{r, results='asis'}
+cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",5), collapse=""), " ", "<strong>Overall</strong>"))
+subch(DT::datatable(overall_six_to_8))
+cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",5), collapse=""), " ", "<strong>By Gender</strong>"))
+subch(DT::datatable(gender_six_to_8))
+```
+
+#### 6 to 23 months
+
+Total number of children between 6 and 23 months: `r if(exists("total_six_to_23")) {total_six_to_23}`
+
+```{r, results='asis'}
+cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",5), collapse=""), " ", "<strong>Overall</strong>"))
+subch(DT::datatable(overall_six_to_23))
+cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",5), collapse=""), " ", "<strong>By Gender</strong>"))
+subch(DT::datatable(gender_six_to_23))
+```
