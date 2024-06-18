@@ -1007,21 +1007,25 @@ load.entry <- function(analysis.plan.row){
 }
 
 # load all DFs to one sheet
-save.dfs <- function(df, filename,use_template = F){
+save.dfs.iycf <- function(df,iycf_tables_over,iycf_tables_gend, filename,use_template = F){
   if(use_template) wb <- openxlsx::loadWorkbook("./../resources/analysis_template.xlsx")
   else wb <- openxlsx::createWorkbook()
   openxlsx::addWorksheet(wb, "Table_of_content")
   openxlsx::addWorksheet(wb, "Data")
+  openxlsx::addWorksheet(wb, "Result_Overall")
+  openxlsx::addWorksheet(wb, "Result_Gender")
   count_sh1 <- 2
   count_sh2 <- 1
   openxlsx::writeData(wb, sheet = "Table_of_content", x = "Table of Content", startCol = 1, startRow = 1)
+  openxlsx::writeData(wb, sheet = "Result_Overall", x = iycf_tables_over, startCol = 1, startRow = 1)
+  openxlsx::writeData(wb, sheet = "Result_Gender", x = iycf_tables_gend, startCol = 1, startRow = 1)
   for (i in 1:length(df)){
     openxlsx::writeFormula(wb, "Table_of_content",
-                 startRow = count_sh1,
-                 x = openxlsx::makeHyperlinkString(
-                   sheet = "Data", row = count_sh2, col = 1,
-                   text = names(df[i])
-                 ))
+                           startRow = count_sh1,
+                           x = openxlsx::makeHyperlinkString(
+                             sheet = "Data", row = count_sh2, col = 1,
+                             text = names(df[i])
+                           ))
     count_sh1 <- count_sh1 + 1
     openxlsx::writeData(wb, sheet = "Data", names(df[i]), startCol = 1, startRow = count_sh2)
     count_sh2 <- count_sh2 + 1
