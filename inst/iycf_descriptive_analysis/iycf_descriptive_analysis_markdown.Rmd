@@ -198,8 +198,36 @@ df <- lapply(names(file.list), readxl::read_excel)
 names(df) <- stringr::str_remove(file.list, ".xlsx")
 
 sorted_df <- df
+iycf_tables_over <- data.frame()
+iycf_tables_gend <- data.frame()
 
-save.dfs(sorted_df,paste0("output/IYCF_combined_analysis_toc_", strings['out_date'], ".xlsx"), use_template = F)
+if(exists("total_zero_to_23")){
+  iycf_tables_over <- bind_rows(iycf_tables_over,overall_zero_to_23)
+  iycf_tables_gend <- bind_rows(iycf_tables_gend,gender_zero_to_23)
+}
+
+if(exists("total_zero_to_6")){
+  iycf_tables_over <- bind_rows(iycf_tables_over,overall_zero_to_6)
+  iycf_tables_gend <- bind_rows(iycf_tables_gend,gender_zero_to_6)
+}
+
+if(exists("total_twelve_to_23")){
+  iycf_tables_over <- bind_rows(iycf_tables_over,overall_twelve_to_23)
+  iycf_tables_gend <- bind_rows(iycf_tables_gend,gender_twelve_to_23)
+}
+
+if(exists("total_six_to_8")){
+  iycf_tables_over <- bind_rows(iycf_tables_over,overall_six_to_8)
+  iycf_tables_gend <- bind_rows(iycf_tables_gend,gender_six_to_8)
+}
+
+if(exists("total_six_to_23")){
+  iycf_tables_over <- bind_rows(iycf_tables_over, overall_six_to_23)
+  iycf_tables_gend <- bind_rows(iycf_tables_gend, gender_six_to_23)
+}
+
+
+save.dfs.iycf(sorted_df,iycf_tables_over,iycf_tables_gend,paste0("output/IYCF_combined_analysis_toc_", strings['out_date'], ".xlsx"), use_template = F)
 
 for (i in 1:length(names(sorted_df))){
   if (nchar(names(sorted_df)[i]) > 31){
@@ -376,3 +404,5 @@ subch(DT::datatable(overall_six_to_23))
 cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",5), collapse=""), " ", "<strong>By Gender</strong>"))
 subch(DT::datatable(gender_six_to_23))
 ```
+
+
