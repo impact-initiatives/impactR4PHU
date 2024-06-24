@@ -1409,8 +1409,7 @@ if(yes_no_team == "yes"){
                                                       is.na(death),
                                                       !!rlang::sym("enumerator") %in% j),
                                              year_or_month = "year",
-                                             max_age = 10,
-                                             by_group = "enumerator"),
+                                             max_age = 10),
                 fig_height = 8)
        }
     }
@@ -1459,7 +1458,7 @@ if(yes_no_team == "yes"){
                                              dplyr::filter(!!rlang::sym(enumerator) == j),
                                              year_or_month = "month",
                                              age_months = age_roster_month,
-                                             by_group = enumerator,
+                                             # by_group = enumerator,
                                              breaks = 1),
               fig_height = 8, fig_width = 10)
       }

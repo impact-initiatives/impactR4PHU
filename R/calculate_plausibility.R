@@ -75,33 +75,33 @@ calculate_plausibility <- function(.dataset){
   }
   if (c("prop_hh_flag_deaths") %in% names(.dataset)) {
     .dataset <- .dataset %>% dplyr::mutate(plaus_hh_multiple_death = ifelse(prop_hh_flag_deaths < 0.005, 0,
-                                                                  ifelse(prop_hh_flag_deaths < 0.01, 2,
-                                                                         ifelse(prop_hh_flag_deaths < 0.015, 5,
-                                                                                ifelse(prop_hh_flag_deaths >= 1.5, 10, 0)))))
+                                                                  ifelse(prop_hh_flag_deaths < 0.01, 5,
+                                                                         ifelse(prop_hh_flag_deaths < 0.015, 10,
+                                                                                ifelse(prop_hh_flag_deaths >= 1.5, 20, 0)))))
   }
   if (length(setdiff(c("sex_ratio.pvalue", "cdr"), names(.dataset))) == 0) {
     .dataset <- .dataset %>% dplyr::mutate(plaus_sex_ratio = ifelse(sex_ratio.pvalue > 0.05, 0,
                                                                ifelse(sex_ratio.pvalue > 0.001, 2,
-                                                                      ifelse(sex_ratio.pvalue > 1e-04, 5,
+                                                                      ifelse(sex_ratio.pvalue > 1e-04, 4,
                                                                              ifelse(sex_ratio.pvalue <= 1e-04, 10, 0)))))
   }
   if (c("age_ratio_0_5.pvalue") %in% names(.dataset)) {
     .dataset <- .dataset %>% dplyr::mutate(plaus_age0to4_5plus_ratio = ifelse(age_ratio_0_5.pvalue > 0.1, 0,
-                                                                   ifelse(age_ratio_0_5.pvalue > 0.05, 2,
-                                                                          ifelse(age_ratio_0_5.pvalue > 0.001, 5,
-                                                                                 ifelse(age_ratio_0_5.pvalue <= 0.001, 10, 0)))))
+                                                                   ifelse(age_ratio_0_5.pvalue > 0.05, 1,
+                                                                          ifelse(age_ratio_0_5.pvalue > 0.001, 3,
+                                                                                 ifelse(age_ratio_0_5.pvalue <= 0.001, 5, 0)))))
   }
   if (c("age_ratio_2_5.pvalue") %in% names(.dataset)) {
     .dataset <- .dataset %>% dplyr::mutate(plaus_age0to1_2to4_ratio = ifelse(age_ratio_2_5.pvalue > 0.1, 0,
-                                                                   ifelse(age_ratio_2_5.pvalue > 0.05, 2,
-                                                                          ifelse(age_ratio_2_5.pvalue > 0.001, 5,
-                                                                                 ifelse(age_ratio_2_5.pvalue <= 0.001, 10, 0)))))
+                                                                   ifelse(age_ratio_2_5.pvalue > 0.05, 1,
+                                                                          ifelse(age_ratio_2_5.pvalue > 0.001, 3,
+                                                                                 ifelse(age_ratio_2_5.pvalue <= 0.001, 5, 0)))))
   }
   if (c("age_ratio_5_10.pvalue") %in% names(.dataset)) {
     .dataset <- .dataset %>% dplyr::mutate(plaus_age0to4_5to10_ratio = ifelse(age_ratio_5_10.pvalue > 0.1, 0,
-                                                                    ifelse(age_ratio_5_10.pvalue > 0.05, 2,
-                                                                           ifelse(age_ratio_5_10.pvalue > 0.001, 5,
-                                                                                  ifelse(age_ratio_5_10.pvalue <= 0.001, 10, 0)))))
+                                                                    ifelse(age_ratio_5_10.pvalue > 0.05, 1,
+                                                                           ifelse(age_ratio_5_10.pvalue > 0.001, 3,
+                                                                                  ifelse(age_ratio_5_10.pvalue <= 0.001, 5, 0)))))
   }
   if (c("mean_hh_size.pvalue") %in% names(.dataset)) {
     .dataset <- .dataset %>% dplyr::mutate(plaus_mean_hh_size = ifelse(mean_hh_size.pvalue > 0.05, 0,
