@@ -482,7 +482,7 @@
     },
     "crayon": {
       "Package": "crayon",
-      "Version": "1.5.2",
+      "Version": "1.5.3",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
@@ -490,7 +490,7 @@
         "methods",
         "utils"
       ],
-      "Hash": "e8a1e41acf02548751f45c718d55aa6a"
+      "Hash": "859d96e65ef198fd43e82b9628d593ef"
     },
     "crosstalk": {
       "Package": "crosstalk",
@@ -993,7 +993,7 @@
       "RemoteRepo": "impactR4PHU",
       "RemoteUsername": "impact-initiatives",
       "RemoteRef": "HEAD",
-      "RemoteSha": "e90eb944feb37ac9acdcd4c253151b70d9eb99f3",
+      "RemoteSha": "611f540c18179f23d7fa13d779213b9ba4835cdc",
       "Requirements": [
         "GGally",
         "R",
@@ -1014,7 +1014,7 @@
         "writexl",
         "zscorer"
       ],
-      "Hash": "43f7aad1a10b91ae7229a0e7ca85b2eb"
+      "Hash": "fd2ed39293bfc1d627c425010533b732"
     },
     "isoband": {
       "Package": "isoband",
