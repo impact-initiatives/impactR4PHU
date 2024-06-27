@@ -1451,16 +1451,29 @@ if(yes_no_team == "yes"){
         dplyr::filter(!!rlang::sym(team) %in% i) %>% 
         dplyr::pull(!!rlang::sym(enumerator))%>% 
         unique()
-      for (j in list_enum){
-        cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",6), collapse=""), " ", "<strong>",j,"</strong>"))
-        subch(impactR4PHU::plot_age_distribution(plot_raw.hh_roster %>%
-                                             dplyr::left_join(select(plot_raw.main, c("uuid", enumerator))) %>%
-                                             dplyr::filter(!!rlang::sym(enumerator) == j),
-                                             year_or_month = "month",
-                                             age_months = age_roster_month,
-                                             # by_group = enumerator,
-                                             breaks = 1),
-              fig_height = 8, fig_width = 10)
+      if(enumerator %in% names(plot_raw.hh_roster)){
+        for (j in list_enum){
+          cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",6), collapse=""), " ", "<strong>",j,"</strong>"))
+          subch(impactR4PHU::plot_age_distribution(plot_raw.hh_roster  %>%
+                                               dplyr::filter(!!rlang::sym(enumerator) == j),
+                                               year_or_month = "month",
+                                               age_months = age_roster_month,
+                                               # by_group = enumerator,
+                                               breaks = 1),
+                fig_height = 8, fig_width = 10)
+        }
+      } else {
+        for (j in list_enum){
+          cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",6), collapse=""), " ", "<strong>",j,"</strong>"))
+          subch(impactR4PHU::plot_age_distribution(plot_raw.hh_roster %>%
+                                               dplyr::left_join(select(plot_raw.main, c("uuid", enumerator))) %>%
+                                               dplyr::filter(!!rlang::sym(enumerator) == j),
+                                               year_or_month = "month",
+                                               age_months = age_roster_month,
+                                               # by_group = enumerator,
+                                               breaks = 1),
+                fig_height = 8, fig_width = 10)
+        }
       }
     }
 } else {
@@ -1468,14 +1481,22 @@ if(yes_no_team == "yes"){
     dplyr::rename(uuid = uuid_roster)
   plot_raw.main <- raw.main %>%
     dplyr::rename(uuid = uuid_main)
-
-  subch(impactR4PHU::plot_age_distribution(plot_raw.hh_roster %>%
-                                       dplyr::left_join(select(plot_raw.main, c("uuid", enumerator))),
-                                     year_or_month = "month",
-                                     by_group = enumerator,
-                                     age_months = age_roster_month,
-                                     breaks = 1),
-              fig_height = 8, fig_width = 10)
+  if(enumerator %in% names(plot_raw.hh_roster)){
+    subch(impactR4PHU::plot_age_distribution(plot_raw.hh_roster,
+                                             year_or_month = "month",
+                                             by_group = enumerator,
+                                             age_months = age_roster_month,
+                                             breaks = 1),
+          fig_height = 8, fig_width = 10)
+  } else {
+    subch(impactR4PHU::plot_age_distribution(plot_raw.hh_roster %>%
+                                               dplyr::left_join(select(plot_raw.main, c("uuid", enumerator))),
+                                             year_or_month = "month",
+                                             by_group = enumerator,
+                                             age_months = age_roster_month,
+                                             breaks = 1),
+          fig_height = 8, fig_width = 10)
+  }
 }
 
 ```
