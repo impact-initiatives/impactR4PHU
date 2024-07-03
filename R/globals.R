@@ -112,5 +112,7 @@ globalVariables(unique(c(
   "flag_no_foods","flag_all_foods_no_meal","flag_some_foods_no_meal",
   "flag_yes_liquids","flag_no_anything","total_iycf_caregiver",
   #create_iycf_plaus
-  "flag_high_mdd_low_mmf","age_ratio_under6m_6to23m"
+  "flag_high_mdd_low_mmf","age_ratio_under6m_6to23m",
+  #check_iycf_flags
+  "count_foods", "count_liquids","hh_size_notna"
 )))
