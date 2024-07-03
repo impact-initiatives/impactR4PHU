@@ -4,8 +4,7 @@ ipc_loa <- data.frame(analysis_var = c(),
                       analysis_type = c(),
                       group_var = c())
 
-if ("FCS" %in% FSL_indicators){
-  fcs_cat_bit <-  data.frame(analysis_var = c("fsl_fcs_cat",
+fcs_cat_bit <-  data.frame(analysis_var = c("fsl_fcs_cat",
                                               fsl_fcs_cereal,
                                               fsl_fcs_legumes,
                                               fsl_fcs_dairy,
@@ -45,11 +44,9 @@ if ("FCS" %in% FSL_indicators){
                                                "mean"),
                              group_var = c(NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,
                                            NA,NA,NA,NA,NA,NA,NA,NA,NA))
-  ipc_loa <- bind_rows(ipc_loa, fcs_cat_bit)
-}
+ipc_loa <- bind_rows(ipc_loa, fcs_cat_bit)
 
-if ("rCSI" %in% FSL_indicators){
-  rcsi_cat_bit <-  data.frame(analysis_var = c("fsl_rcsi_cat",
+rcsi_cat_bit <-  data.frame(analysis_var = c("fsl_rcsi_cat",
                                                fsl_rcsi_lessquality,
                                                fsl_rcsi_borrow,
                                                fsl_rcsi_mealsize,
@@ -73,10 +70,10 @@ if ("rCSI" %in% FSL_indicators){
                                                "mean"),
                              group_var = c(NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA))
   ipc_loa <- bind_rows(ipc_loa, rcsi_cat_bit)
-}
 
-if ("LCSI" %in% FSL_indicators){
-  lcsi_cat_bit <-  data.frame(analysis_var = c("fsl_lcsi_cat",
+
+
+lcsi_cat_bit <-  data.frame(analysis_var = c("fsl_lcsi_cat",
                                                fsl_lcsi_stress1,
                                                fsl_lcsi_stress2,
                                                fsl_lcsi_stress3,
@@ -100,10 +97,10 @@ if ("LCSI" %in% FSL_indicators){
                                                "prop_select_one"),
                              group_var = c(NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA))
   ipc_loa <- bind_rows(ipc_loa, lcsi_cat_bit)
-}
 
-if ("HHS" %in% FSL_indicators){
-  hhs_cat_bit <-  data.frame(analysis_var = c("fsl_hhs_cat_ipc",
+
+
+hhs_cat_bit <-  data.frame(analysis_var = c("fsl_hhs_cat_ipc",
                                               fsl_hhs_nofoodhh,
                                               fsl_hhs_nofoodhh_freq,
                                               fsl_hhs_sleephungry,
@@ -119,10 +116,9 @@ if ("HHS" %in% FSL_indicators){
                                                "prop_select_one"),
                              group_var = c(NA,NA,NA,NA,NA,NA,NA))
   ipc_loa <- bind_rows(ipc_loa, hhs_cat_bit)
-}
 
-if ("HDDS" %in% FSL_indicators){
-  hdds_cat_bit <-  data.frame(analysis_var = c("fsl_hdds_cat",
+
+hdds_cat_bit <-  data.frame(analysis_var = c("fsl_hdds_cat",
                                                fsl_hdds_cereals,
                                                fsl_hdds_tubers,
                                                fsl_hdds_veg,
@@ -151,7 +147,7 @@ if ("HDDS" %in% FSL_indicators){
                              group_var = c(NA,NA,NA,NA,NA,NA,NA,NA,
                                            NA,NA,NA,NA,NA))
   ipc_loa <- bind_rows(ipc_loa, hdds_cat_bit)
-}
+
 main <- data.list$main %>%
   mutate_at(vars(fsl_fcs_cereal, fsl_fcs_legumes, fsl_fcs_dairy,
                  fsl_fcs_meat, fsl_fcs_veg, fsl_fcs_fruit,
@@ -199,5 +195,5 @@ example_ipc <-  presentresults::create_ipc_table(
 
 example_ipc %>%
  presentresults::create_xlsx_group_x_variable(table_name = "ipc_table",
-                               file_path = "output/ipc_table.xlsx",
+                               file_path = "./../output/ipc_table.xlsx",
                                overwrite = T)

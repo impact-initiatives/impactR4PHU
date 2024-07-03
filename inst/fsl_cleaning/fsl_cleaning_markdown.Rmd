@@ -1291,8 +1291,16 @@ if("flag_lcsi_na" %in% names(raw.flag.fcs)) {
   cl_lcsi_all_na <- data.frame()
 }
 
-lcs_variables <- c("fsl_lcsi_stress1","fsl_lcsi_stress2","fsl_lcsi_stress3","fsl_lcsi_stress4","fsl_lcsi_crisis1",
-                   "fsl_lcsi_crisis2","fsl_lcsi_crisis3","fsl_lcsi_emergency1","fsl_lcsi_emergency2","fsl_lcsi_emergency3")
+lcs_variables <- c(fsl_lcsi_stress1,
+                   fsl_lcsi_stress2,
+                   fsl_lcsi_stress3,
+                   fsl_lcsi_stress4,
+                   fsl_lcsi_crisis1,
+                   fsl_lcsi_crisis2,
+                   fsl_lcsi_crisis3,
+                   fsl_lcsi_emergency1,
+                   fsl_lcsi_emergency2,
+                   fsl_lcsi_emergency3)
 
 ### LCSI Displaced but HH not displaced
 if("flag_lcsi_displ" %in% names(raw.flag.fcs)){
