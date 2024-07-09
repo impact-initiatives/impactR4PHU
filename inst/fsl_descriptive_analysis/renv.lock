@@ -1217,7 +1217,7 @@
       "RemoteRepo": "impactR4PHU",
       "RemoteUsername": "impact-initiatives",
       "RemoteRef": "HEAD",
-      "RemoteSha": "e6ee915740fd49c1cbefdceb1fcccb42a039f7ae",
+      "RemoteSha": "aecaf2d501cf02a77dd6b0d437d212ce0b2302b6",
       "Requirements": [
         "GGally",
         "R",
@@ -1238,7 +1238,7 @@
         "writexl",
         "zscorer"
       ],
-      "Hash": "3878173a73eee63d40efe6d030ae19c5"
+      "Hash": "0353848c475c9144e647e4f3270ed74a"
     },
     "isoband": {
       "Package": "isoband",
@@ -1273,7 +1273,7 @@
     },
     "knitr": {
       "Package": "knitr",
-      "Version": "1.47",
+      "Version": "1.48",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
@@ -1285,7 +1285,7 @@
         "xfun",
         "yaml"
       ],
-      "Hash": "7c99b2d55584b982717fcc0950378612"
+      "Hash": "acf380f300c721da9fde7df115a5f86f"
     },
     "koboquest": {
       "Package": "koboquest",
@@ -2530,10 +2530,10 @@
     },
     "yaml": {
       "Package": "yaml",
-      "Version": "2.3.8",
+      "Version": "2.3.9",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "29240487a071f535f5e5d5a323b7afbd"
+      "Hash": "9cb28d11799d93c953f852083d55ee9e"
     },
     "zip": {
       "Package": "zip",
