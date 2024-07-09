@@ -1,192 +1,66 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://impact-initiatives.github.io/impactR4PHU/404.html</loc>
-  </url>
-  <url>
-    <loc>https://impact-initiatives.github.io/impactR4PHU/CODE_OF_CONDUCT.html</loc>
-  </url>
-  <url>
-    <loc>https://impact-initiatives.github.io/impactR4PHU/LICENSE-text.html</loc>
-  </url>
-  <url>
-    <loc>https://impact-initiatives.github.io/impactR4PHU/LICENSE.html</loc>
-  </url>
-  <url>
-    <loc>https://impact-initiatives.github.io/impactR4PHU/authors.html</loc>
-  </url>
-  <url>
-    <loc>https://impact-initiatives.github.io/impactR4PHU/index.html</loc>
-  </url>
-  <url>
-    <loc>https://impact-initiatives.github.io/impactR4PHU/reference/add_fclcm_phase.html</loc>
-  </url>
-  <url>
-    <loc>https://impact-initiatives.github.io/impactR4PHU/reference/add_fcm_phase.html</loc>
-  </url>
-  <url>
-    <loc>https://impact-initiatives.github.io/impactR4PHU/reference/add_fcs.html</loc>
-  </url>
-  <url>
-    <loc>https://impact-initiatives.github.io/impactR4PHU/reference/add_hdds.html</loc>
-  </url>
-  <url>
-    <loc>https://impact-initiatives.github.io/impactR4PHU/reference/add_hhs.html</loc>
-  </url>
-  <url>
-    <loc>https://impact-initiatives.github.io/impactR4PHU/reference/add_iycf.html</loc>
-  </url>
-  <url>
-    <loc>https://impact-initiatives.github.io/impactR4PHU/reference/add_lcsi.html</loc>
-  </url>
-  <url>
-    <loc>https://impact-initiatives.github.io/impactR4PHU/reference/add_mfaz.html</loc>
-  </url>
-  <url>
-    <loc>https://impact-initiatives.github.io/impactR4PHU/reference/add_muac.html</loc>
-  </url>
-  <url>
-    <loc>https://impact-initiatives.github.io/impactR4PHU/reference/add_persontime.html</loc>
-  </url>
-  <url>
-    <loc>https://impact-initiatives.github.io/impactR4PHU/reference/add_rcsi.html</loc>
-  </url>
-  <url>
-    <loc>https://impact-initiatives.github.io/impactR4PHU/reference/calculate_plausibility.html</loc>
-  </url>
-  <url>
-    <loc>https://impact-initiatives.github.io/impactR4PHU/reference/check_anthro_flags.html</loc>
-  </url>
-  <url>
-    <loc>https://impact-initiatives.github.io/impactR4PHU/reference/check_fsl_flags.html</loc>
-  </url>
-  <url>
-    <loc>https://impact-initiatives.github.io/impactR4PHU/reference/check_health_flags.html</loc>
-  </url>
-  <url>
-    <loc>https://impact-initiatives.github.io/impactR4PHU/reference/check_iycf_flags.html</loc>
-  </url>
-  <url>
-    <loc>https://impact-initiatives.github.io/impactR4PHU/reference/check_mortality_flags.html</loc>
-  </url>
-  <url>
-    <loc>https://impact-initiatives.github.io/impactR4PHU/reference/check_wash_flags.html</loc>
-  </url>
-  <url>
-    <loc>https://impact-initiatives.github.io/impactR4PHU/reference/create_fsl_cleaning_template.html</loc>
-  </url>
-  <url>
-    <loc>https://impact-initiatives.github.io/impactR4PHU/reference/create_fsl_descriptive_analysis_template.html</loc>
-  </url>
-  <url>
-    <loc>https://impact-initiatives.github.io/impactR4PHU/reference/create_fsl_plaus.html</loc>
-  </url>
-  <url>
-    <loc>https://impact-initiatives.github.io/impactR4PHU/reference/create_fsl_quality_report_template.html</loc>
-  </url>
-  <url>
-    <loc>https://impact-initiatives.github.io/impactR4PHU/reference/create_iphra_analysis_template.html</loc>
-  </url>
-  <url>
-    <loc>https://impact-initiatives.github.io/impactR4PHU/reference/create_iphra_cleaning_template.html</loc>
-  </url>
-  <url>
-    <loc>https://impact-initiatives.github.io/impactR4PHU/reference/create_iycf_cleaning_template.html</loc>
-  </url>
-  <url>
-    <loc>https://impact-initiatives.github.io/impactR4PHU/reference/create_iycf_descriptive_analysis_template.html</loc>
-  </url>
-  <url>
-    <loc>https://impact-initiatives.github.io/impactR4PHU/reference/create_iycf_plaus.html</loc>
-  </url>
-  <url>
-    <loc>https://impact-initiatives.github.io/impactR4PHU/reference/create_iycf_quality_report_template.html</loc>
-  </url>
-  <url>
-    <loc>https://impact-initiatives.github.io/impactR4PHU/reference/create_mort_cleaning_template.html</loc>
-  </url>
-  <url>
-    <loc>https://impact-initiatives.github.io/impactR4PHU/reference/create_mort_descriptive_analysis_template.html</loc>
-  </url>
-  <url>
-    <loc>https://impact-initiatives.github.io/impactR4PHU/reference/create_mort_quality_report_template.html</loc>
-  </url>
-  <url>
-    <loc>https://impact-initiatives.github.io/impactR4PHU/reference/create_mortality_long_df.html</loc>
-  </url>
-  <url>
-    <loc>https://impact-initiatives.github.io/impactR4PHU/reference/create_mortality_plaus.html</loc>
-  </url>
-  <url>
-    <loc>https://impact-initiatives.github.io/impactR4PHU/reference/create_plaus_table_fsl.html</loc>
-  </url>
-  <url>
-    <loc>https://impact-initiatives.github.io/impactR4PHU/reference/create_plaus_table_iycf.html</loc>
-  </url>
-  <url>
-    <loc>https://impact-initiatives.github.io/impactR4PHU/reference/create_plaus_table_nut_mort.html</loc>
-  </url>
-  <url>
-    <loc>https://impact-initiatives.github.io/impactR4PHU/reference/get.label.html</loc>
-  </url>
-  <url>
-    <loc>https://impact-initiatives.github.io/impactR4PHU/reference/grapes-notin-grapes.html</loc>
-  </url>
-  <url>
-    <loc>https://impact-initiatives.github.io/impactR4PHU/reference/impactR4PHU_MSNA_template_data.html</loc>
-  </url>
-  <url>
-    <loc>https://impact-initiatives.github.io/impactR4PHU/reference/impactR4PHU_choice_template.html</loc>
-  </url>
-  <url>
-    <loc>https://impact-initiatives.github.io/impactR4PHU/reference/impactR4PHU_data_health_template.html</loc>
-  </url>
-  <url>
-    <loc>https://impact-initiatives.github.io/impactR4PHU/reference/impactR4PHU_data_mort_template.html</loc>
-  </url>
-  <url>
-    <loc>https://impact-initiatives.github.io/impactR4PHU/reference/impactR4PHU_data_nut_template.html</loc>
-  </url>
-  <url>
-    <loc>https://impact-initiatives.github.io/impactR4PHU/reference/impactR4PHU_data_roster_template.html</loc>
-  </url>
-  <url>
-    <loc>https://impact-initiatives.github.io/impactR4PHU/reference/impactR4PHU_data_template.html</loc>
-  </url>
-  <url>
-    <loc>https://impact-initiatives.github.io/impactR4PHU/reference/impactR4PHU_data_wash_template.html</loc>
-  </url>
-  <url>
-    <loc>https://impact-initiatives.github.io/impactR4PHU/reference/impactR4PHU_data_women_template.html</loc>
-  </url>
-  <url>
-    <loc>https://impact-initiatives.github.io/impactR4PHU/reference/impactR4PHU_iycf_template_data.html</loc>
-  </url>
-  <url>
-    <loc>https://impact-initiatives.github.io/impactR4PHU/reference/impactR4PHU_survey_template.html</loc>
-  </url>
-  <url>
-    <loc>https://impact-initiatives.github.io/impactR4PHU/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>https://impact-initiatives.github.io/impactR4PHU/reference/load.label_colname.html</loc>
-  </url>
-  <url>
-    <loc>https://impact-initiatives.github.io/impactR4PHU/reference/pipe.html</loc>
-  </url>
-  <url>
-    <loc>https://impact-initiatives.github.io/impactR4PHU/reference/plot_age_distribution.html</loc>
-  </url>
-  <url>
-    <loc>https://impact-initiatives.github.io/impactR4PHU/reference/plot_age_pyramid.html</loc>
-  </url>
-  <url>
-    <loc>https://impact-initiatives.github.io/impactR4PHU/reference/plot_correlogram.html</loc>
-  </url>
-  <url>
-    <loc>https://impact-initiatives.github.io/impactR4PHU/reference/plot_ridge_distribution.html</loc>
-  </url>
-  <url>
-    <loc>https://impact-initiatives.github.io/impactR4PHU/reference/reformat_mortality.html</loc>
-  </url>
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>https://impact-initiatives.github.io/impactR4PHU/404.html</loc></url>
+<url><loc>https://impact-initiatives.github.io/impactR4PHU/CODE_OF_CONDUCT.html</loc></url>
+<url><loc>https://impact-initiatives.github.io/impactR4PHU/LICENSE-text.html</loc></url>
+<url><loc>https://impact-initiatives.github.io/impactR4PHU/LICENSE.html</loc></url>
+<url><loc>https://impact-initiatives.github.io/impactR4PHU/authors.html</loc></url>
+<url><loc>https://impact-initiatives.github.io/impactR4PHU/index.html</loc></url>
+<url><loc>https://impact-initiatives.github.io/impactR4PHU/reference/add_fclcm_phase.html</loc></url>
+<url><loc>https://impact-initiatives.github.io/impactR4PHU/reference/add_fcm_phase.html</loc></url>
+<url><loc>https://impact-initiatives.github.io/impactR4PHU/reference/add_fcs.html</loc></url>
+<url><loc>https://impact-initiatives.github.io/impactR4PHU/reference/add_hdds.html</loc></url>
+<url><loc>https://impact-initiatives.github.io/impactR4PHU/reference/add_hhs.html</loc></url>
+<url><loc>https://impact-initiatives.github.io/impactR4PHU/reference/add_iycf.html</loc></url>
+<url><loc>https://impact-initiatives.github.io/impactR4PHU/reference/add_lcsi.html</loc></url>
+<url><loc>https://impact-initiatives.github.io/impactR4PHU/reference/add_mfaz.html</loc></url>
+<url><loc>https://impact-initiatives.github.io/impactR4PHU/reference/add_muac.html</loc></url>
+<url><loc>https://impact-initiatives.github.io/impactR4PHU/reference/add_persontime.html</loc></url>
+<url><loc>https://impact-initiatives.github.io/impactR4PHU/reference/add_rcsi.html</loc></url>
+<url><loc>https://impact-initiatives.github.io/impactR4PHU/reference/calculate_plausibility.html</loc></url>
+<url><loc>https://impact-initiatives.github.io/impactR4PHU/reference/check_anthro_flags.html</loc></url>
+<url><loc>https://impact-initiatives.github.io/impactR4PHU/reference/check_fsl_flags.html</loc></url>
+<url><loc>https://impact-initiatives.github.io/impactR4PHU/reference/check_health_flags.html</loc></url>
+<url><loc>https://impact-initiatives.github.io/impactR4PHU/reference/check_iycf_flags.html</loc></url>
+<url><loc>https://impact-initiatives.github.io/impactR4PHU/reference/check_mortality_flags.html</loc></url>
+<url><loc>https://impact-initiatives.github.io/impactR4PHU/reference/check_wash_flags.html</loc></url>
+<url><loc>https://impact-initiatives.github.io/impactR4PHU/reference/create_fsl_cleaning_template.html</loc></url>
+<url><loc>https://impact-initiatives.github.io/impactR4PHU/reference/create_fsl_descriptive_analysis_template.html</loc></url>
+<url><loc>https://impact-initiatives.github.io/impactR4PHU/reference/create_fsl_plaus.html</loc></url>
+<url><loc>https://impact-initiatives.github.io/impactR4PHU/reference/create_fsl_quality_report_template.html</loc></url>
+<url><loc>https://impact-initiatives.github.io/impactR4PHU/reference/create_iphra_analysis_template.html</loc></url>
+<url><loc>https://impact-initiatives.github.io/impactR4PHU/reference/create_iphra_cleaning_template.html</loc></url>
+<url><loc>https://impact-initiatives.github.io/impactR4PHU/reference/create_iycf_cleaning_template.html</loc></url>
+<url><loc>https://impact-initiatives.github.io/impactR4PHU/reference/create_iycf_descriptive_analysis_template.html</loc></url>
+<url><loc>https://impact-initiatives.github.io/impactR4PHU/reference/create_iycf_plaus.html</loc></url>
+<url><loc>https://impact-initiatives.github.io/impactR4PHU/reference/create_iycf_quality_report_template.html</loc></url>
+<url><loc>https://impact-initiatives.github.io/impactR4PHU/reference/create_mort_cleaning_template.html</loc></url>
+<url><loc>https://impact-initiatives.github.io/impactR4PHU/reference/create_mort_descriptive_analysis_template.html</loc></url>
+<url><loc>https://impact-initiatives.github.io/impactR4PHU/reference/create_mort_quality_report_template.html</loc></url>
+<url><loc>https://impact-initiatives.github.io/impactR4PHU/reference/create_mortality_long_df.html</loc></url>
+<url><loc>https://impact-initiatives.github.io/impactR4PHU/reference/create_mortality_plaus.html</loc></url>
+<url><loc>https://impact-initiatives.github.io/impactR4PHU/reference/create_plaus_table_fsl.html</loc></url>
+<url><loc>https://impact-initiatives.github.io/impactR4PHU/reference/create_plaus_table_iycf.html</loc></url>
+<url><loc>https://impact-initiatives.github.io/impactR4PHU/reference/create_plaus_table_nut_mort.html</loc></url>
+<url><loc>https://impact-initiatives.github.io/impactR4PHU/reference/get.label.html</loc></url>
+<url><loc>https://impact-initiatives.github.io/impactR4PHU/reference/grapes-notin-grapes.html</loc></url>
+<url><loc>https://impact-initiatives.github.io/impactR4PHU/reference/impactR4PHU_MSNA_template_data.html</loc></url>
+<url><loc>https://impact-initiatives.github.io/impactR4PHU/reference/impactR4PHU_choice_template.html</loc></url>
+<url><loc>https://impact-initiatives.github.io/impactR4PHU/reference/impactR4PHU_data_health_template.html</loc></url>
+<url><loc>https://impact-initiatives.github.io/impactR4PHU/reference/impactR4PHU_data_mort_template.html</loc></url>
+<url><loc>https://impact-initiatives.github.io/impactR4PHU/reference/impactR4PHU_data_nut_template.html</loc></url>
+<url><loc>https://impact-initiatives.github.io/impactR4PHU/reference/impactR4PHU_data_roster_template.html</loc></url>
+<url><loc>https://impact-initiatives.github.io/impactR4PHU/reference/impactR4PHU_data_template.html</loc></url>
+<url><loc>https://impact-initiatives.github.io/impactR4PHU/reference/impactR4PHU_data_wash_template.html</loc></url>
+<url><loc>https://impact-initiatives.github.io/impactR4PHU/reference/impactR4PHU_data_women_template.html</loc></url>
+<url><loc>https://impact-initiatives.github.io/impactR4PHU/reference/impactR4PHU_iycf_template_data.html</loc></url>
+<url><loc>https://impact-initiatives.github.io/impactR4PHU/reference/impactR4PHU_survey_template.html</loc></url>
+<url><loc>https://impact-initiatives.github.io/impactR4PHU/reference/index.html</loc></url>
+<url><loc>https://impact-initiatives.github.io/impactR4PHU/reference/load.label_colname.html</loc></url>
+<url><loc>https://impact-initiatives.github.io/impactR4PHU/reference/pipe.html</loc></url>
+<url><loc>https://impact-initiatives.github.io/impactR4PHU/reference/plot_age_distribution.html</loc></url>
+<url><loc>https://impact-initiatives.github.io/impactR4PHU/reference/plot_age_pyramid.html</loc></url>
+<url><loc>https://impact-initiatives.github.io/impactR4PHU/reference/plot_correlogram.html</loc></url>
+<url><loc>https://impact-initiatives.github.io/impactR4PHU/reference/plot_ridge_distribution.html</loc></url>
+<url><loc>https://impact-initiatives.github.io/impactR4PHU/reference/reformat_mortality.html</loc></url>
 </urlset>
+
