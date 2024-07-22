@@ -156,6 +156,106 @@ if(!file.exists("inputs/environment.Rdata")) {
     uuid_main <- svDialogs::dlg_input(message= "Enter the name of the HH UUID Column in main data","uuid_main")$res
   }
 
+  ## Detect population group column
+  population_group <- names(raw.main)[grepl("status",names(raw.main))]
+
+  if(length(population_group) == 1){
+    yes_no <- svDialogs::dlg_message(paste0("Is '", population_group, "' the correct population_group column?"), type = "yesno")$res
+    if(yes_no == "no"){
+      population_group <- svDialogs::dlg_input(message= "Enter the name of the population group Column","population_group")$res
+    }
+  } else if (length(population_group) > 1){
+    population_group <- tcltk::tk_select.list(population_group, title = "Population group Column")
+    if(population_group == "") {
+      population_group <- svDialogs::dlg_input(message= "Enter the name of the population group Column","population_group")$res
+    }
+  } else if (length(population_group) == 0) {
+    population_group <- svDialogs::dlg_input(message= "Enter the name of the population group Column","population_group")$res
+  }
+
+  ## Detect Income columns
+  income_sources <- names(raw.main)[grepl("income",names(raw.main))]
+
+  if(length(income_sources) == 1){
+    yes_no <- svDialogs::dlg_message(paste0("Is '", income_sources, "' the correct income_sources column?"), type = "yesno")$res
+    if(yes_no == "no"){
+      income_sources <- svDialogs::dlg_input(message= "Enter the name of the income sources Column","income_sources")$res
+    }
+  } else if (length(income_sources) > 1){
+    income_sources <- tcltk::tk_select.list(income_sources, title = "Income Sources Columns", multiple = TRUE)
+  } else if (length(income_sources) == 0) {
+    income_sources <- svDialogs::dlg_input(message= "Enter the name of the income sources Columnw","income_sources")$res
+  }
+
+  ## Detect population group column
+  yes_no_gender <-  svDialogs::dlg_message(paste0("Do you have more than one column for Head of Household Gender"), type = "yesno")$res
+
+  if (yes_no_gender == "yes"){
+    resp_gender <- names(raw.main)[grepl("resp|gender",names(raw.main))]
+    if(length(resp_gender) == 1){
+      yes_no <- svDialogs::dlg_message(paste0("Is '", resp_gender, "' the correct respondent gender column?"), type = "yesno")$res
+      if(yes_no == "no"){
+        resp_gender <- svDialogs::dlg_input(message= "Enter the name of the respondent gender Column","resp_gender")$res
+      }
+    } else if (length(resp_gender) > 1){
+      resp_gender <- tcltk::tk_select.list(resp_gender, title = "Respondent gender Column")
+      if(resp_gender == "") {
+        resp_gender <- svDialogs::dlg_input(message= "Enter the name of the respondent gender Column","resp_gender")$res
+      }
+    } else if (length(resp_gender) == 0) {
+      resp_gender <- svDialogs::dlg_input(message= "Enter the name of the respondent gender Column","resp_gender")$res
+    }
+    hoh_yes_no <- names(raw.main)[grepl("hoh|resp",names(raw.main))]
+    if(length(hoh_yes_no) == 1){
+      yes_no <- svDialogs::dlg_message(paste0("Is '", hoh_yes_no, "' the correct respondent head of household column?"), type = "yesno")$res
+      if(yes_no == "no"){
+        hoh_yes_no <- svDialogs::dlg_input(message= "Enter the name of the respondent head of household Column","hoh_yes_no")$res
+      }
+    } else if (length(hoh_yes_no) > 1){
+      hoh_yes_no <- tcltk::tk_select.list(hoh_yes_no, title = "Respondent is hoh Column")
+      if(hoh_yes_no == "") {
+        hoh_yes_no <- svDialogs::dlg_input(message= "Enter the name of the respondent head of household Column","hoh_yes_no")$res
+      }
+    } else if (length(hoh_yes_no) == 0) {
+      hoh_yes_no <- svDialogs::dlg_input(message= "Enter the name of the respondent head of household Column","hoh_yes_no")$res
+    }
+
+    resp_hoh_yes <- tcltk::tk_select.list(raw.main[[hoh_yes_no]] %>% unique, title = "Yes answer for respondent is hoh")
+    resp_hoh_no <- tcltk::tk_select.list(raw.main[[hoh_yes_no]] %>% unique, title = "No answer for respondent is hoh")
+
+    hoh_gender <- names(raw.main)[grepl("hoh|gender",names(raw.main))]
+    if(length(hoh_gender) == 1){
+      yes_no <- svDialogs::dlg_message(paste0("Is '", hoh_gender, "' the correct hoh gender column?"), type = "yesno")$res
+      if(yes_no == "no"){
+        cluster <- svDialogs::dlg_input(message= "Enter the name of the hoh gender Column","hoh_gender")$res
+      }
+    } else if (length(hoh_gender) > 1){
+      hoh_gender <- tcltk::tk_select.list(hoh_gender, title = "Head of Household Gender Column")
+      if(hoh_gender == "") {
+        hoh_gender <- svDialogs::dlg_input(message= "Enter the name of the hoh gender Column","hoh_gender")$res
+      }
+    } else if (length(hoh_gender) == 0) {
+      hoh_gender <- svDialogs::dlg_input(message= "Enter the name of the hoh gender Column","hoh_gender")$res
+    }
+
+  } else {
+    hoh_gender <- names(raw.main)[grepl("hoh|gender",names(raw.main))]
+    if(length(hoh_gender) == 1){
+      yes_no <- svDialogs::dlg_message(paste0("Is '", hoh_gender, "' the correct hoh gender column?"), type = "yesno")$res
+      if(yes_no == "no"){
+        cluster <- svDialogs::dlg_input(message= "Enter the name of the hoh gender Column","hoh_gender")$res
+      }
+    } else if (length(hoh_gender) > 1){
+      hoh_gender <- tcltk::tk_select.list(hoh_gender, title = "Head of Household Gender Column")
+      if(hoh_gender == "") {
+        hoh_gender <- svDialogs::dlg_input(message= "Enter the name of the hoh gender Column","hoh_gender")$res
+      }
+    } else if (length(hoh_gender) == 0) {
+      hoh_gender <- svDialogs::dlg_input(message= "Enter the name of the hoh gender Column","hoh_gender")$res
+    }
+  }
+
+
   ## Detect uuid_roster column
   uuid_roster <- names(raw.hh_roster)[grepl("uuid",names(raw.hh_roster))]
 
@@ -1121,6 +1221,39 @@ if(!file.exists("inputs/environment.Rdata")) {
 df_mortality_long <- impactR4PHU::add_persontime(df_mortality_long,
                                                  smart = smart)
 
+popu_group_df <- raw.main %>%
+  dplyr::select(uuid_main,population_group) %>%
+  dplyr::rename("uuid" = uuid_main)
+
+
+inco_sour_df <- raw.main %>%
+  dplyr::mutate_at(vars(income_sources), ~ifelse(as.numeric(.)<0,0,.)) %>%
+  dplyr::mutate(total_income = rowSums(dplyr::across(income_sources, .fns = as.numeric), na.rm = T))
+
+median_inco_source <- median(inco_sour_df$total_income)
+
+inco_sour_df <- inco_sour_df %>%
+  dplyr::mutate(income_source_category = dplyr::case_when((total_income / median_inco_source) < 0.2 ~ "Below 20%",
+                                                          (total_income / median_inco_source) < 0.4 ~ "20% - 40%",
+                                                          (total_income / median_inco_source) < 0.6 ~ "40% - 60%",
+                                                          (total_income / median_inco_source) < 0.8 ~ "60% - 80%",
+                                                          (total_income / median_inco_source) >= 0.8 ~ "Above 80%")) %>%
+  dplyr::select(uuid_main, total_income,income_source_category) %>%
+  dplyr::rename("uuid" = uuid_main)
+
+if(yes_no_gender == "yes") {
+  raw.main <- raw.main %>%
+    dplyr::mutate(hoh_gender = ifelse(!!rlang::sym(hoh_yes_no) == resp_hoh_yes, !!rlang::sym(resp_gender),!!rlang::sym(hoh_gender)))
+
+  hoh_gender_df <- raw.main %>%
+    dplyr::select(uuid_main, hoh_gender)%>%
+    dplyr::rename("uuid" = uuid_main)
+} else {
+  hoh_gender_df <- raw.main %>%
+    dplyr::select(uuid_main, hoh_gender)%>%
+    dplyr::rename("uuid" = uuid_main)
+}
+
 if(collect_num_join_left == "yes") {
   results_mort <- impactR4PHU::create_mortality_plaus(df_mortality = df_mortality_long,
                                                       df_main = raw.main,
@@ -1150,6 +1283,131 @@ if(collect_num_join_left == "yes") {
                                                            exp_ratio_5_10 = exp_ratio_5_10,
                                                            exp_hh_size = exp_hh_size,
                                                            grouping = "enumerator")
+
+  results_mort_gender <- impactR4PHU::create_mortality_plaus(df_mortality = df_mortality_long %>%
+                                                               filter(!is.na(sex)),
+                                                             exp_sex_ratio = exp_sex_ratio,
+                                                             exp_ratio_0_4 = exp_ratio_0_4,
+                                                             exp_ratio_2_5 = exp_ratio_2_5,
+                                                             exp_ratio_5_10 = exp_ratio_5_10,
+                                                             exp_hh_size = exp_hh_size,
+                                                             grouping = "sex")
+
+
+  results_mort_age_group <- impactR4PHU::create_mortality_plaus(df_mortality = df_mortality_long %>%
+                                                                  dplyr::mutate(age_group_2 = cut(as.numeric(age_years),
+                                                                                                  breaks = c(-1, 17, 59, Inf),
+                                                                                                  labels = c("0-17", "18-59", "60+"))),
+                                                                exp_sex_ratio = exp_sex_ratio,
+                                                                exp_ratio_0_4 = exp_ratio_0_4,
+                                                                exp_ratio_2_5 = exp_ratio_2_5,
+                                                                exp_ratio_5_10 = exp_ratio_5_10,
+                                                                exp_hh_size = exp_hh_size,
+                                                                grouping = "age_group_2")
+
+  results_mort_pop_group <- impactR4PHU::create_mortality_plaus(df_mortality = df_mortality_long %>%
+                                                                  dplyr::left_join(popu_group_df),
+                                                                df_main = raw.main,
+                                                                uuid_main = uuid_main,
+                                                                date_dc = date_dc,
+                                                                date_recall_event = date_recall_event,
+                                                                num_join = num_join,
+                                                                num_left = num_left,
+                                                                enumerator = enumerator,
+                                                                exp_sex_ratio = exp_sex_ratio,
+                                                                exp_ratio_0_4 = exp_ratio_0_4,
+                                                                exp_ratio_2_5 = exp_ratio_2_5,
+                                                                exp_ratio_5_10 = exp_ratio_5_10,
+                                                                exp_hh_size = exp_hh_size,
+                                                                grouping = population_group)
+
+  results_mort_admin1 <- impactR4PHU::create_mortality_plaus(df_mortality = df_mortality_long,
+                                                             df_main = raw.main %>%
+                                                               dplyr::rename("admin1" = admin1),
+                                                             uuid_main = uuid_main,
+                                                             date_dc = date_dc,
+                                                             date_recall_event = date_recall_event,
+                                                             num_join = num_join,
+                                                             num_left = num_left,
+                                                             enumerator = enumerator,
+                                                             exp_sex_ratio = exp_sex_ratio,
+                                                             exp_ratio_0_4 = exp_ratio_0_4,
+                                                             exp_ratio_2_5 = exp_ratio_2_5,
+                                                             exp_ratio_5_10 = exp_ratio_5_10,
+                                                             exp_hh_size = exp_hh_size,
+                                                             grouping = "admin1")
+  results_mort_admin1_pop_group <- impactR4PHU::create_mortality_plaus(df_mortality = df_mortality_long %>%
+                                                                         dplyr::left_join(popu_group_df) %>%
+                                                                         dplyr::mutate(new_group = paste0(admin1,"_",!!rlang::sym(population_group))),
+                                                                       df_main = raw.main %>%
+                                                                         dplyr::mutate(new_group = paste0(!!rlang::sym(admin1),"_",!!rlang::sym(population_group))),
+                                                                       uuid_main = uuid_main,
+                                                                       date_dc = date_dc,
+                                                                       date_recall_event = date_recall_event,
+                                                                       num_join = num_join,
+                                                                       num_left = num_left,
+                                                                       enumerator = enumerator,
+                                                                       exp_sex_ratio = exp_sex_ratio,
+                                                                       exp_ratio_0_4 = exp_ratio_0_4,
+                                                                       exp_ratio_2_5 = exp_ratio_2_5,
+                                                                       exp_ratio_5_10 = exp_ratio_5_10,
+                                                                       exp_hh_size = exp_hh_size,
+                                                                       grouping = "new_group")
+
+  results_mort_admin2 <- impactR4PHU::create_mortality_plaus(df_mortality = df_mortality_long,
+                                                             df_main = raw.main %>%
+                                                               dplyr::rename("admin2" = admin2),
+                                                             uuid_main = uuid_main,
+                                                             date_dc = date_dc,
+                                                             date_recall_event = date_recall_event,
+                                                             num_join = num_join,
+                                                             num_left = num_left,
+                                                             enumerator = enumerator,
+                                                             exp_sex_ratio = exp_sex_ratio,
+                                                             exp_ratio_0_4 = exp_ratio_0_4,
+                                                             exp_ratio_2_5 = exp_ratio_2_5,
+                                                             exp_ratio_5_10 = exp_ratio_5_10,
+                                                             exp_hh_size = exp_hh_size,
+                                                             grouping = "admin2")
+
+  results_mort_hoh_gender <- impactR4PHU::create_mortality_plaus(df_mortality = df_mortality_long %>%
+                                                                   dplyr::left_join(hoh_gender_df),
+                                                                 df_main = raw.main,
+                                                                 uuid_main = uuid_main,
+                                                                 date_dc = date_dc,
+                                                                 date_recall_event = date_recall_event,
+                                                                 num_join = num_join,
+                                                                 num_left = num_left,
+                                                                 enumerator = enumerator,
+                                                                 exp_sex_ratio = exp_sex_ratio,
+                                                                 exp_ratio_0_4 = exp_ratio_0_4,
+                                                                 exp_ratio_2_5 = exp_ratio_2_5,
+                                                                 exp_ratio_5_10 = exp_ratio_5_10,
+                                                                 exp_hh_size = exp_hh_size,
+                                                                 grouping = "hoh_gender")
+
+  results_mort_income_source <- impactR4PHU::create_mortality_plaus(df_mortality = df_mortality_long %>%
+                                                                      dplyr::left_join(inco_sour_df),
+                                                                    df_main = raw.main %>%
+                                                                      dplyr::mutate_at(vars(income_sources), ~ifelse(as.numeric(.)<0,0,.)) %>%
+                                                                      dplyr::mutate(total_income = rowSums(dplyr::across(income_sources, .fns = as.numeric), na.rm = T))  %>%
+                                                                      dplyr::mutate(income_source_category = dplyr::case_when((total_income / median_inco_source) < 0.2 ~ "Below 20%",
+                                                                                                                              (total_income / median_inco_source) < 0.4 ~ "20% - 40%",
+                                                                                                                              (total_income / median_inco_source) < 0.6 ~ "40% - 60%",
+                                                                                                                              (total_income / median_inco_source) < 0.8 ~ "60% - 80%",
+                                                                                                                              (total_income / median_inco_source) >= 0.8 ~ "Above 80%")),
+                                                                    uuid_main = uuid_main,
+                                                                    date_dc = date_dc,
+                                                                    date_recall_event = date_recall_event,
+                                                                    num_join = num_join,
+                                                                    num_left = num_left,
+                                                                    enumerator = enumerator,
+                                                                    exp_sex_ratio = exp_sex_ratio,
+                                                                    exp_ratio_0_4 = exp_ratio_0_4,
+                                                                    exp_ratio_2_5 = exp_ratio_2_5,
+                                                                    exp_ratio_5_10 = exp_ratio_5_10,
+                                                                    exp_hh_size = exp_hh_size,
+                                                                    grouping = "income_source_category")
 } else {
   results_mort <- impactR4PHU::create_mortality_plaus(df_mortality = df_mortality_long,
                                                       exp_sex_ratio = exp_sex_ratio,
@@ -1165,6 +1423,79 @@ if(collect_num_join_left == "yes") {
                                                            exp_ratio_5_10 = exp_ratio_5_10,
                                                            exp_hh_size = exp_hh_size,
                                                            grouping = "enumerator")
+
+  results_mort_gender <- impactR4PHU::create_mortality_plaus(df_mortality = df_mortality_long %>%
+                                                               filter(!is.na(sex)),
+                                                             exp_sex_ratio = exp_sex_ratio,
+                                                             exp_ratio_0_4 = exp_ratio_0_4,
+                                                             exp_ratio_2_5 = exp_ratio_2_5,
+                                                             exp_ratio_5_10 = exp_ratio_5_10,
+                                                             exp_hh_size = exp_hh_size,
+                                                             grouping = "sex")
+
+  results_mort_age_group <- impactR4PHU::create_mortality_plaus(df_mortality = df_mortality_long %>%
+                                                                  dplyr::mutate(age_group_2 = cut(as.numeric(age_years),
+                                                                                                  breaks = c(-1, 17, 59, Inf),
+                                                                                                  labels = c("0-17", "18-59", "60+"))),
+                                                                exp_sex_ratio = exp_sex_ratio,
+                                                                exp_ratio_0_4 = exp_ratio_0_4,
+                                                                exp_ratio_2_5 = exp_ratio_2_5,
+                                                                exp_ratio_5_10 = exp_ratio_5_10,
+                                                                exp_hh_size = exp_hh_size,
+                                                                grouping = "age_group_2")
+
+  results_mort_pop_group <- impactR4PHU::create_mortality_plaus(df_mortality = df_mortality_long %>%
+                                                                  dplyr::left_join(popu_group_df),
+                                                                exp_sex_ratio = exp_sex_ratio,
+                                                                exp_ratio_0_4 = exp_ratio_0_4,
+                                                                exp_ratio_2_5 = exp_ratio_2_5,
+                                                                exp_ratio_5_10 = exp_ratio_5_10,
+                                                                exp_hh_size = exp_hh_size,
+                                                                grouping = population_group)
+
+  results_mort_admin1 <- impactR4PHU::create_mortality_plaus(df_mortality = df_mortality_long,
+                                                             exp_sex_ratio = exp_sex_ratio,
+                                                             exp_ratio_0_4 = exp_ratio_0_4,
+                                                             exp_ratio_2_5 = exp_ratio_2_5,
+                                                             exp_ratio_5_10 = exp_ratio_5_10,
+                                                             exp_hh_size = exp_hh_size,
+                                                             grouping = "admin1")
+
+  results_mort_admin1_pop_group <- impactR4PHU::create_mortality_plaus(df_mortality = df_mortality_long %>%
+                                                                         dplyr::left_join(popu_group_df) %>%
+                                                                         dplyr::mutate(new_group = paste0(admin1,"_",!!rlang::sym(population_group))),
+                                                                       exp_sex_ratio = exp_sex_ratio,
+                                                                       exp_ratio_0_4 = exp_ratio_0_4,
+                                                                       exp_ratio_2_5 = exp_ratio_2_5,
+                                                                       exp_ratio_5_10 = exp_ratio_5_10,
+                                                                       exp_hh_size = exp_hh_size,
+                                                                       grouping = "new_group")
+
+  results_mort_admin2 <- impactR4PHU::create_mortality_plaus(df_mortality = df_mortality_long,
+                                                             exp_sex_ratio = exp_sex_ratio,
+                                                             exp_ratio_0_4 = exp_ratio_0_4,
+                                                             exp_ratio_2_5 = exp_ratio_2_5,
+                                                             exp_ratio_5_10 = exp_ratio_5_10,
+                                                             exp_hh_size = exp_hh_size,
+                                                             grouping = "admin2")
+
+  results_mort_hoh_gender <- impactR4PHU::create_mortality_plaus(df_mortality = df_mortality_long %>%
+                                                                   dplyr::left_join(hoh_gender_df),
+                                                                 exp_sex_ratio = exp_sex_ratio,
+                                                                 exp_ratio_0_4 = exp_ratio_0_4,
+                                                                 exp_ratio_2_5 = exp_ratio_2_5,
+                                                                 exp_ratio_5_10 = exp_ratio_5_10,
+                                                                 exp_hh_size = exp_hh_size,
+                                                                 grouping = "hoh_gender")
+
+  results_mort_income_source <- impactR4PHU::create_mortality_plaus(df_mortality = df_mortality_long %>%
+                                                                      dplyr::left_join(inco_sour_df),
+                                                                    exp_sex_ratio = exp_sex_ratio,
+                                                                    exp_ratio_0_4 = exp_ratio_0_4,
+                                                                    exp_ratio_2_5 = exp_ratio_2_5,
+                                                                    exp_ratio_5_10 = exp_ratio_5_10,
+                                                                    exp_hh_size = exp_hh_size,
+                                                                    grouping = "income_source_category")
 }
 
 result_mort_pivot <- results_mort %>%
@@ -1213,11 +1544,12 @@ if(collected_df_left){
   list_of_var <- c("date_dc","date_recall_event","enumerator","admin1","admin2","cluster",
                    "uuid_main","uuid_roster","sex_roster","age_roster","joined_roster","joined_date_roster",
                    "birth_roster","birthdate_roster","uuid_left","sex_left","age_left","birth_left",
-                   "birthdate_left","joined_left","joined_date_left","left_date_left","uuid_died",
+                   "birthdate_left","joined_left","joined_date_left","left_date_left","uuid_died", "smart",
                    "sex_died","age_died","birth_died","birthdate_died","joined_died","weight","yes_no_weight",
                    "joined_date_died","date_death","death_cause","death_location","cause_death_f",
-                   "exp_sex_ratio","exp_ratio_0_4","exp_ratio_2_5","exp_ratio_5_10","exp_hh_size",
-                   "label_colname","collect_num_join_left","num_join","num_left", "dates_collected",
+                   "yes_no_gender","hoh_gender","resp_gender","hoh_yes_no","resp_hoh_yes","resp_hoh_no",
+                   "exp_sex_ratio","exp_ratio_0_4","exp_ratio_2_5","exp_ratio_5_10","exp_hh_size","income_sources",
+                   "label_colname","collect_num_join_left","num_join","num_left", "dates_collected","population_group",
                    "male","female","date_dc_reformat","date_recall_reformat","date_join_reformat",
                    "date_birth_reformat","date_left_reformat","date_death_reformat","yes_no_team","team",
                    "unknown", "injury_trauma", "illness", "no_demo_values", "yes_demo_values","age_roster_month",
@@ -1225,9 +1557,10 @@ if(collected_df_left){
 } else {
   list_of_var <- c("date_dc","date_recall_event","enumerator","admin1","admin2","cluster",
                    "uuid_main","uuid_roster","sex_roster","age_roster","joined_roster","joined_date_roster",
-                   "birth_roster","birthdate_roster","uuid_died","weight","yes_no_weight",
-                   "sex_died","age_died","birth_died","birthdate_died","joined_died",
+                   "birth_roster","birthdate_roster","uuid_died","weight","yes_no_weight","population_group",
+                   "sex_died","age_died","birth_died","birthdate_died","joined_died", "smart","income_sources",
                    "joined_date_died","date_death","death_cause","death_location","cause_death_f",
+                   "yes_no_gender","hoh_gender","resp_gender","hoh_yes_no","resp_hoh_yes","resp_hoh_no",
                    "exp_sex_ratio","exp_ratio_0_4","exp_ratio_2_5","exp_ratio_5_10","exp_hh_size",
                    "label_colname","collect_num_join_left","num_join","num_left", "dates_collected",
                    "male","female","date_dc_reformat","date_recall_reformat","date_join_reformat",
