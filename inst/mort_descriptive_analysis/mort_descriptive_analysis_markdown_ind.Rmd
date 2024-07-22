@@ -649,7 +649,25 @@ under5_admin1 <- results_mort_admin1 %>%
   dplyr::mutate(variable = "u5mr")
 
 results.summary_admin1 <- rbind(crude_admin1,under5_admin1) %>%
-  dplyr::relocate(variable, .before = 1)
+  dplyr::relocate(variable, .before = 1) 
+
+admin1_df <- df_mortality_long %>% 
+  dplyr::group_by(!!rlang::sym(admin1)) %>% 
+  dplyr::summarise(cmr = sum(as.numeric(death),na.rm=T),
+                   u5mr=sum(as.numeric(death_under5),na.rm=T)) %>% 
+  tidyr::pivot_longer(-!!rlang::sym(admin1), names_to = "variable") %>% 
+  dplyr::rename("group" = admin1) %>% 
+  dplyr::group_by(variable) %>% 
+  dplyr::mutate(prob = value / sum(value)) %>% 
+  dplyr::ungroup() %>% 
+  dplyr::select(group,variable,prob)
+
+results.summary_admin1 <- results.summary_admin1 %>% 
+  dplyr::left_join(admin1_df) %>% 
+  dplyr::mutate(se = (`95%uci` - `95%lci`) /( 2 * 1.96),
+                deff = (se/prob)^2,
+                `Design Effect` = ifelse(is.nan(deff),0,deff)) %>% 
+  dplyr::select(group,variable,`point.est`,`95%lci`,`95%uci`, `Design Effect`)
 ```
 
 ```{r, results='asis'}
