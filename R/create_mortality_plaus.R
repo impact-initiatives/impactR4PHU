@@ -207,11 +207,14 @@ create_mortality_plaus <- function(df_mortality,
                        sex_ratio = round(as.numeric(nipnTK::sexRatioTest(sex, codes = c("1", "2"), pop = sx_ratio)[1]),3),
                        sex_ratio.pvalue = round(as.numeric(nipnTK::sexRatioTest(sex, codes = c("1", "2"), pop = sx_ratio)[5]),2),
                        age_ratio_0_5 = sum(!is.na(age_0to5)) / sum(!is.na(age_5plus)),
-                       age_ratio_0_5.pvalue = ifelse(is.nan(age_ratio_0_5),NA,stats::chisq.test(x = c(sum(!is.na(age_0to5)), sum(!is.na(age_5plus))), p = age_under5_ratio)[3]),
+                       age_ratio_0_5 = ifelse(is.nan(age_ratio_0_5), NA, age_ratio_0_5),
+                       age_ratio_0_5.pvalue = ifelse(is.na(age_ratio_0_5),NA,try(stats::chisq.test(x = c(sum(!is.na(age_0to5)), sum(!is.na(age_5plus))), p = age_under5_ratio)[3], silent = T)),
                        age_ratio_2_5 = sum(!is.na(age_0to2)) / sum(!is.na(age_2to5)),
-                       age_ratio_2_5.pvalue = ifelse(is.nan(age_ratio_2_5),NA,stats::chisq.test(x = c(sum(!is.na(age_0to2)), sum(!is.na(age_2to5))), p = age_under2to5_ratio)[3]),
+                       age_ratio_2_5 = ifelse(is.nan(age_ratio_2_5), NA, age_ratio_2_5),
+                       age_ratio_2_5.pvalue = ifelse(is.na(age_ratio_2_5),NA,try(stats::chisq.test(x = c(sum(!is.na(age_0to2)), sum(!is.na(age_2to5))), p = age_under2to5_ratio)[3], silent = T)),
                        age_ratio_5_10 = sum(!is.na(under_5)) / sum(!is.na(age_5to10)),
-                       age_ratio_5_10.pvalue = ifelse(is.nan(age_ratio_5_10),NA,stats::chisq.test(x = c(sum(!is.na(under_5)), sum(!is.na(age_5to10))), p = age_under5to10_ratio)[3])
+                       age_ratio_5_10 = ifelse(is.nan(age_ratio_5_10), NA, age_ratio_0_5),
+                       age_ratio_5_10.pvalue = ifelse(is.na(age_ratio_5_10),NA,try(stats::chisq.test(x = c(sum(!is.na(under_5)), sum(!is.na(age_5to10))), p = age_under5to10_ratio)[3], silent = T))
       ) %>%
       dplyr::left_join(df_main_join) %>%
       dplyr::mutate(cdr = deaths / (total_persontime + pt_left - pt_join),
@@ -260,11 +263,13 @@ create_mortality_plaus <- function(df_mortality,
                        sex_ratio.pvalue = round(as.numeric(nipnTK::sexRatioTest(sex, codes = c("1", "2"), pop = sx_ratio)[5]),2),
                        age_ratio_0_5 = sum(!is.na(age_0to5)) / sum(!is.na(age_5plus)),
                        age_ratio_0_5 = ifelse(is.nan(age_ratio_0_5), NA, age_ratio_0_5),
-                       age_ratio_0_5.pvalue = try(stats::chisq.test(x = c(sum(!is.na(age_0to5)), sum(!is.na(age_5plus))), p = age_under5_ratio)[3], silent = T),
+                       age_ratio_0_5.pvalue = ifelse(is.na(age_ratio_0_5),NA,try(stats::chisq.test(x = c(sum(!is.na(age_0to5)), sum(!is.na(age_5plus))), p = age_under5_ratio)[3], silent = T)),
                        age_ratio_2_5 = sum(!is.na(age_0to2)) / sum(!is.na(age_2to5)),
-                       age_ratio_2_5.pvalue = try(stats::chisq.test(x = c(sum(!is.na(age_0to2)), sum(!is.na(age_2to5))), p = age_under2to5_ratio)[3], silent = T),
+                       age_ratio_2_5 = ifelse(is.nan(age_ratio_2_5), NA, age_ratio_2_5),
+                       age_ratio_2_5.pvalue = ifelse(is.na(age_ratio_2_5),NA,try(stats::chisq.test(x = c(sum(!is.na(age_0to2)), sum(!is.na(age_2to5))), p = age_under2to5_ratio)[3], silent = T)),
                        age_ratio_5_10 = sum(!is.na(under_5)) / sum(!is.na(age_5to10)),
-                       age_ratio_5_10.pvalue = try(stats::chisq.test(x = c(sum(!is.na(under_5)), sum(!is.na(age_5to10))), p = age_under5to10_ratio)[3], silent = T)
+                       age_ratio_5_10 = ifelse(is.nan(age_ratio_5_10), NA, age_ratio_0_5),
+                       age_ratio_5_10.pvalue = ifelse(is.na(age_ratio_5_10),NA,try(stats::chisq.test(x = c(sum(!is.na(under_5)), sum(!is.na(age_5to10))), p = age_under5to10_ratio)[3], silent = T))
       ) %>%
       dplyr::mutate(cdr = deaths / (total_persontime + total_persontime_out - total_persontime_in),
                     cdr_se = sqrt((cdr * (1 - cdr)) / (total_persontime + total_persontime_out - total_persontime_in)),
