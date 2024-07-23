@@ -1739,4 +1739,3 @@ plot_results.summary.birth <- ggplot2::ggplot(results.summary.birth, ggplot2::ae
 ```{r}
 plot_results.summary.birth
 ```
-
