@@ -85,7 +85,6 @@ create_mortality_plaus <- function(df_mortality,
     sx_ratio <- c(left, right)
 
   } else {
-    print("No expected sex ratio given, defaulting to 1:1 (male:female).")
     sx_ratio <- c(1,1)
   }
 
@@ -99,7 +98,6 @@ create_mortality_plaus <- function(df_mortality,
     age_under5_ratio <- c(left, right)
 
   } else {
-    print("No expected age ratio given, defaulting to 0.25 (or 20% of individuals are <5 years of age.")
     age_under5_ratio <- c(.2,.8)
   }
 
@@ -112,7 +110,6 @@ create_mortality_plaus <- function(df_mortality,
 
     age_under2to5_ratio <- c(left, right)
   } else {
-    print("No expected age ratio given, defaulting to 0.7 (or approx. 41% of individuals are <2 years of age of all children <5 years.")
     age_under2to5_ratio <- c(0.4118, 0.5882)
   }
 
@@ -125,7 +122,6 @@ create_mortality_plaus <- function(df_mortality,
 
     age_under5to10_ratio <- c(left, right)
   } else {
-    print("No expected age ratio given, defaulting to 1.1 (or approx. 52% of individuals are <5 years of age out all children <10 years.")
     age_under5to10_ratio <- c(0.5238, 0.4762)
   }
 
@@ -135,7 +131,6 @@ create_mortality_plaus <- function(df_mortality,
     expected_hh_size <- exp_hh_size
 
   } else {
-    print("No expected household size given, defaulting to 5 people per household. Advised to use a value from secondary data instead.")
     expected_hh_size <- 5
   }
 
@@ -187,7 +182,6 @@ create_mortality_plaus <- function(df_mortality,
   }
 
   if(nrow(df_main_join) > 0){
-    print("I AM HERE")
     df2 <- df_mortality %>%
       dplyr::group_by(group) %>%
       dplyr::summarize(total_people = sum(!is.na(person_time), na.rm = TRUE),
