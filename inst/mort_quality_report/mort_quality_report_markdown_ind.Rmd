@@ -1524,11 +1524,6 @@ final_table
 ```
 
 ```{r, results='asis'}
-result_mort_pivot_enum <- results_mort_enum %>%
-    dplyr::mutate_all(., as.character) %>%
-    tidyr::pivot_longer(-group,names_to = "Criteria",
-                 values_to = "Score") %>%
-    filter(stringr::str_starts(Criteria,"plaus_"))
 if(yes_no_team == "yes"){
   for (i in list_teams) {
     cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",5), collapse=""), " ", "<strong>",i,"</strong> {.tabset .tabset-fade}"))
@@ -1538,11 +1533,48 @@ if(yes_no_team == "yes"){
       unique()
     for (j in list_enum) {
       cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",6), collapse=""), " ", "<strong>",j,"</strong>"))
+        if(collect_num_join_left == "yes") {
+          results_mort_enum <- impactR4PHU::create_mortality_plaus(df_mortality = df_mortality_long %>% 
+                                                                     dplyr::filter(enumerator == j,
+                                                                                   !!rlang::sym(team) == i),
+                                                                   df_main = raw.main%>% 
+                                                                     dplyr::filter(!!rlang::sym(enumerator) == j,
+                                                                                   !!rlang::sym(team) == i),
+                                                                   uuid_main = uuid_main,
+                                                                   date_dc = date_dc,
+                                                                   date_recall_event = date_recall_event,
+                                                                   num_join = num_join,
+                                                                   num_left = num_left,
+                                                                   enumerator = enumerator,
+                                                                   exp_sex_ratio = exp_sex_ratio,
+                                                                   exp_ratio_0_4 = exp_ratio_0_4,
+                                                                   exp_ratio_2_5 = exp_ratio_2_5,
+                                                                   exp_ratio_5_10 = exp_ratio_5_10,
+                                                                   exp_hh_size = exp_hh_size,
+                                                                   grouping = "enumerator")
+        } else {
+          results_mort_enum <- impactR4PHU::create_mortality_plaus(df_mortality = df_mortality_long%>% 
+                                                                     dplyr::filter(enumerator == j,
+                                                                                   !!rlang::sym(team) == i),
+                                                                   exp_sex_ratio = exp_sex_ratio,
+                                                                   exp_ratio_0_4 = exp_ratio_0_4,
+                                                                   exp_ratio_2_5 = exp_ratio_2_5,
+                                                                   exp_ratio_5_10 = exp_ratio_5_10,
+                                                                   exp_hh_size = exp_hh_size,
+                                                                   grouping = "enumerator")
+        }
+      
+      result_mort_pivot_enum <- results_mort_enum %>%
+          dplyr::mutate_all(., as.character) %>%
+          tidyr::pivot_longer(-group,names_to = "Criteria",
+                       values_to = "Score") %>%
+          filter(stringr::str_starts(Criteria,"plaus_"))
+      
       overall_mort_plaus_enum <- overall_mort_plaus %>%
-        dplyr::left_join(result_mort_pivot_enum %>% filter(group == j), by = c("flag_name"="Criteria")) %>%
+        dplyr::left_join(result_mort_pivot_enum, by = c("flag_name"="Criteria")) %>%
         dplyr::mutate_all(., ~ifelse(is.na(.),"NA",.)) %>%
         dplyr::select(-group)
-
+ # %>% filter(group == j)
       mort <- flextable::flextable(overall_mort_plaus_enum)
 
       final_table_mort_enum <- impactR4PHU::create_plaus_table_nut_mort(mort)
@@ -1571,11 +1603,12 @@ if(yes_no_team == "yes"){
 flag_description <- readxl::read_excel("resources/flag_description.xlsx", sheet = "MORT")
 
 flags_mort_columns <- names(flag_mortality)[stringr::str_starts(names(flag_mortality),"flag_")]
-
+flag_mortality <- flag_mortality %>% 
+  dplyr::left_join(teams_df)
 overall_flag <- tibble()
 
 for(flag in flags_mort_columns) {
-  flag_overall <- flag_mortality %>%
+  flag_overall <- flag_mortality %>% 
     dplyr::select(enumerator, !!rlang::sym(flag)) %>%
     filter(!is.na(!!rlang::sym(flag))) %>%
     dplyr::mutate(flag := flag) %>%
@@ -1596,39 +1629,76 @@ subch(DT::datatable(overall_flag,
                     lengthMenu = list(c(50),
                                       c('All')),
                     paging = T)))
-
-for(flag in flags_mort_columns) {
-  flag_rational <- flag_description %>%
-    filter(flag_name %in% flag) %>%
-    dplyr::pull(Rationale)
-  flag_action <- flag_description %>%
-    filter(flag_name %in% flag) %>%
-    dplyr::pull(Action)
-  flag_by_enum <- flag_mortality %>%
-    dplyr::select(enumerator, !!rlang::sym(flag)) %>%
-    filter(!is.na(!!rlang::sym(flag))) %>%
-    dplyr::mutate(flag := flag) %>%
-    dplyr::group_by(flag,enumerator) %>%
-    dplyr::summarise(num_samples = n(),
-              flagged = sum(!!rlang::sym(flag))) %>%
-    dplyr::mutate(percentage_flagged = paste0(round((flagged/num_samples)*100,2),"%")) %>%
-    dplyr::ungroup() %>%
-    dplyr::select(-1)
-  if(nrow(flag_by_enum)>0){
-    add_to_html.title(flag)
-    cat("\n")
-    cat(paste("<em><strong>Rational</strong>: ",flag_rational,"</em>\n"))
-    if(!is.null(flag_action)){
+if(yes_no_team == "yes"){
+  
+  for(flag in flags_mort_columns) {
+    flag_rational <- flag_description %>%
+      filter(flag_name %in% flag) %>%
+      dplyr::pull(Rationale)
+    flag_action <- flag_description %>%
+      filter(flag_name %in% flag) %>%
+      dplyr::pull(Action)
+    flag_by_enum <- flag_mortality %>%
+      dplyr::select(enumerator,!!rlang::sym(team), !!rlang::sym(flag)) %>%
+      filter(!is.na(!!rlang::sym(flag))) %>%
+      dplyr::mutate(flag := flag) %>%
+      dplyr::group_by(flag,enumerator, !!rlang::sym(team)) %>%
+      dplyr::summarise(num_samples = n(),
+                flagged = sum(!!rlang::sym(flag))) %>%
+      dplyr::mutate(percentage_flagged = paste0(round((flagged/num_samples)*100,2),"%")) %>%
+      dplyr::ungroup() %>%
+      dplyr::select(-1)
+    if(nrow(flag_by_enum)>0){
+      add_to_html.title(flag)
       cat("\n")
-      cat(paste("<em><strong>Action</strong>: ",flag_action,"</em>\n"))
+      cat(paste("<em><strong>Rational</strong>: ",flag_rational,"</em>\n"))
+      if(!is.null(flag_action)){
+        cat("\n")
+        cat(paste("<em><strong>Action</strong>: ",flag_action,"</em>\n"))
+      }
+      subch(DT::datatable(flag_by_enum,
+                    extensions = 'Buttons', options = list(
+                      dom = 'Blfrtip',
+                      buttons = c('copy', 'csv', 'excel', 'pdf'),
+                      lengthMenu = list(c(50),
+                                        c('All')),
+                      paging = T)))
     }
-    subch(DT::datatable(flag_by_enum,
-                  extensions = 'Buttons', options = list(
-                    dom = 'Blfrtip',
-                    buttons = c('copy', 'csv', 'excel', 'pdf'),
-                    lengthMenu = list(c(50),
-                                      c('All')),
-                    paging = T)))
+  }
+} else {
+  for(flag in flags_mort_columns) {
+    flag_rational <- flag_description %>%
+      filter(flag_name %in% flag) %>%
+      dplyr::pull(Rationale)
+    flag_action <- flag_description %>%
+      filter(flag_name %in% flag) %>%
+      dplyr::pull(Action)
+    flag_by_enum <- flag_mortality %>%
+      dplyr::select(enumerator, !!rlang::sym(flag)) %>%
+      filter(!is.na(!!rlang::sym(flag))) %>%
+      dplyr::mutate(flag := flag) %>%
+      dplyr::group_by(flag,enumerator) %>%
+      dplyr::summarise(num_samples = n(),
+                flagged = sum(!!rlang::sym(flag))) %>%
+      dplyr::mutate(percentage_flagged = paste0(round((flagged/num_samples)*100,2),"%")) %>%
+      dplyr::ungroup() %>%
+      dplyr::select(-1)
+    if(nrow(flag_by_enum)>0){
+      add_to_html.title(flag)
+      cat("\n")
+      cat(paste("<em><strong>Rational</strong>: ",flag_rational,"</em>\n"))
+      if(!is.null(flag_action)){
+        cat("\n")
+        cat(paste("<em><strong>Action</strong>: ",flag_action,"</em>\n"))
+      }
+      subch(DT::datatable(flag_by_enum,
+                    extensions = 'Buttons', options = list(
+                      dom = 'Blfrtip',
+                      buttons = c('copy', 'csv', 'excel', 'pdf'),
+                      lengthMenu = list(c(50),
+                                        c('All')),
+                      paging = T)))
+    }
   }
 }
 
@@ -1641,7 +1711,7 @@ for(flag in flags_mort_columns) {
 ```{r, results='asis'}
 if(yes_no_team == "yes"){
   for (i in list_teams) {
-    cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",5), collapse=""), " ", "<strong>",i,"</strong> {.tabset .tabset-fade}"))
+    cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",5), collapse=""), " ", "<strong>",i,"</strong> {.tabset}"))
     table_djl_enum <- df_mortality_long %>%
       dplyr::filter(!!rlang::sym(team) %in% i) %>% 
       dplyr::group_by(enumerator) %>%
@@ -1664,6 +1734,7 @@ if(yes_no_team == "yes"){
       dplyr::relocate(enumerator, .before = 1)
       
     table_djl_enum <- bind_rows(table_djl_enum, total)
+    subch(DT::datatable(table_djl_enum))
   }
 } else {
     table_djl_enum <- df_mortality_long %>%
@@ -1687,9 +1758,10 @@ if(yes_no_team == "yes"){
       dplyr::relocate(enumerator, .before = 1)
       
     table_djl_enum <- bind_rows(table_djl_enum, total)
+    DT::datatable(table_djl_enum)
 }
 
-DT::datatable(table_djl_enum)
+
 ```
 
 #### Mortality Rates

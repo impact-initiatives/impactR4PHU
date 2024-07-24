@@ -76,12 +76,6 @@ htmltools::img(src = knitr::image_uri("resources/Logo_Reach_RGB_1.png"),
 
   srvyr.designs  <- list()
   
-  if(yes_no_weight == "no"){
-    for(sheet in names(data.list)){
-      data.list[[sheet]]$weight <- weight
-    }
-  }
-  
   for(sheet in names(data.list)){
     daf_vars <- daf %>% filter(var_type != "select_multiple" & datasheet == sheet) %>% pull(variable)
   
@@ -215,6 +209,9 @@ for (i in 1:length(names(sorted_df))){
     names(sorted_df) <- names(sorted_df)
   }
 }
+weight_df <- data.list$main %>% 
+  dplyr::select(uuid_main, weight) %>% 
+  dplyr::rename("uuid" = uuid_main)
 
 ```
 
@@ -246,7 +243,8 @@ if(yes_no_team == "yes"){
         subch(impactR4PHU::plot_age_pyramid(df_mortality_long %>% 
                                               dplyr::filter(is.na(left),
                                                             is.na(death),
-                                                            !!rlang::sym("enumerator") %in% j)),
+                                                            !!rlang::sym("enumerator") %in% j,
+                                                            !!rlang::sym(team) %in% i)),
             fig_height = 5, fig_width = 7)
       }
     }
@@ -292,7 +290,8 @@ if(yes_no_team == "yes"){
           subch(impactR4PHU::plot_age_distribution(df_mortality_long %>%
                                                filter(is.na(left),
                                                       is.na(death),
-                                                      !!rlang::sym("enumerator") %in% j),
+                                                      !!rlang::sym("enumerator") %in% j,
+                                                      !!rlang::sym(team) %in% i),
                                              year_or_month = "year",
                                              max_age = 10,
                                              by_group = "enumerator"),
@@ -341,10 +340,10 @@ if(yes_no_team == "yes"){
         for (j in list_enum){
           cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",6), collapse=""), " ", "<strong>",j,"</strong>"))
           subch(impactR4PHU::plot_age_distribution(plot_raw.hh_roster  %>%
-                                               dplyr::filter(!!rlang::sym(enumerator) == j),
+                                               dplyr::filter(!!rlang::sym(enumerator) == j,
+                                                            !!rlang::sym(team) %in% i),
                                                year_or_month = "month",
                                                age_months = age_roster_month,
-                                               # by_group = enumerator,
                                                breaks = 1),
                 fig_height = 8, fig_width = 10)
         }
@@ -356,7 +355,6 @@ if(yes_no_team == "yes"){
                                                dplyr::filter(!!rlang::sym(enumerator) == j),
                                                year_or_month = "month",
                                                age_months = age_roster_month,
-                                               # by_group = enumerator,
                                                breaks = 1),
                 fig_height = 8, fig_width = 10)
         }
@@ -390,32 +388,60 @@ if(yes_no_team == "yes"){
 
 #### Number of Death/Joiners/Leavers & Person Time per Enumerator
 
-```{r, include=FALSE}
-table_djl_enum <- df_mortality_long %>%
-  dplyr::group_by(enumerator) %>%
-  dplyr::summarise(Leavers = sum(as.numeric(left), na.rm = T),
-                   Joiners = sum(as.numeric(join), na.rm = T),
-                   Death = sum(as.numeric(death), na.rm = T),
-                   `Death Under 5` = sum(as.numeric(death_under5), na.rm = T),
-                   `Person Time` = sum(as.numeric(person_time), na.rm = T),
-                   `Person Time Under 5` = sum(as.numeric(under_5_pt), na.rm = T))
-
-total <- table_djl_enum %>%
-  dplyr::group_by() %>%
-  dplyr::summarise(Leavers = sum(as.numeric(Leavers), na.rm = T),
-                   Joiners = sum(as.numeric(Joiners), na.rm = T),
-                   Death = sum(as.numeric(Death), na.rm = T),
-                   `Death Under 5` = sum(as.numeric(`Death Under 5`), na.rm = T),
-                   `Person Time` = sum(as.numeric(`Person Time`), na.rm = T),
-                   `Person Time Under 5` = sum(as.numeric(`Person Time Under 5`), na.rm = T)) %>%
-  dplyr::mutate(enumerator = "Total") %>%
-  dplyr::relocate(enumerator, .before = 1)
-
-table_djl_enum <- bind_rows(table_djl_enum, total)
-```
-
 ```{r, results='asis'}
-DT::datatable(table_djl_enum)
+if(yes_no_team == "yes"){
+  for (i in list_teams) {
+    cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",5), collapse=""), " ", "<strong>",i,"</strong> {.tabset}"))
+    table_djl_enum <- df_mortality_long %>%
+      dplyr::filter(!!rlang::sym(team) %in% i) %>% 
+      dplyr::group_by(enumerator) %>%
+      dplyr::summarise(Leavers = sum(as.numeric(left), na.rm = T),
+                       Joiners = sum(as.numeric(join), na.rm = T),
+                       Death = sum(as.numeric(death), na.rm = T),
+                       `Death Under 5` = sum(as.numeric(death_under5), na.rm = T),
+                       `Person Time` = sum(as.numeric(person_time), na.rm = T),
+                       `Person Time Under 5` = sum(as.numeric(under_5_pt), na.rm = T))
+
+    total <- table_djl_enum %>%
+      dplyr::group_by() %>%
+      dplyr::summarise(Leavers = sum(as.numeric(Leavers), na.rm = T),
+                       Joiners = sum(as.numeric(Joiners), na.rm = T),
+                       Death = sum(as.numeric(Death), na.rm = T),
+                       `Death Under 5` = sum(as.numeric(`Death Under 5`), na.rm = T),
+                       `Person Time` = sum(as.numeric(`Person Time`), na.rm = T),
+                       `Person Time Under 5` = sum(as.numeric(`Person Time Under 5`), na.rm = T)) %>%
+      dplyr::mutate(enumerator = "Total") %>%
+      dplyr::relocate(enumerator, .before = 1)
+      
+    table_djl_enum <- bind_rows(table_djl_enum, total)
+    subch(DT::datatable(table_djl_enum))
+  }
+} else {
+    table_djl_enum <- df_mortality_long %>%
+      dplyr::group_by(enumerator) %>%
+      dplyr::summarise(Leavers = sum(as.numeric(left), na.rm = T),
+                       Joiners = sum(as.numeric(join), na.rm = T),
+                       Death = sum(as.numeric(death), na.rm = T),
+                       `Death Under 5` = sum(as.numeric(death_under5), na.rm = T),
+                       `Person Time` = sum(as.numeric(person_time), na.rm = T),
+                       `Person Time Under 5` = sum(as.numeric(under_5_pt), na.rm = T))
+
+    total <- table_djl_enum %>%
+      dplyr::group_by() %>%
+      dplyr::summarise(Leavers = sum(as.numeric(Leavers), na.rm = T),
+                       Joiners = sum(as.numeric(Joiners), na.rm = T),
+                       Death = sum(as.numeric(Death), na.rm = T),
+                       `Death Under 5` = sum(as.numeric(`Death Under 5`), na.rm = T),
+                       `Person Time` = sum(as.numeric(`Person Time`), na.rm = T),
+                       `Person Time Under 5` = sum(as.numeric(`Person Time Under 5`), na.rm = T)) %>%
+      dplyr::mutate(enumerator = "Total") %>%
+      dplyr::relocate(enumerator, .before = 1)
+      
+    table_djl_enum <- bind_rows(table_djl_enum, total)
+    DT::datatable(table_djl_enum)
+}
+
+
 ```
 
 #### Rates {.tabset .tabset-fade}
@@ -423,9 +449,7 @@ DT::datatable(table_djl_enum)
 ##### Overall Mortality
 
 ```{r, include=FALSE}
-weight_df <- data.list$main %>% 
-  dplyr::select(uuid_main, weight) %>% 
-  dplyr::rename("uuid" = uuid_main)
+
 srvey_mortality <- srvyr::as_survey_design(df_mortality_long %>%
                                                              dplyr::mutate(death = ifelse(is.na(death),0,as.numeric(death)),
                                                                            person_time = as.numeric(person_time),
@@ -688,7 +712,7 @@ if(is.null(cluster)){
                                              ids = cluster)
   
   crude_admin1 <- srvey_mortality %>%
-    dplyr::group_by(!!rlang::sym(admin1)) %>%
+    dplyr::group_by(admin1) %>%
     srvyr::summarise(x = srvyr::survey_ratio(numerator = death * 10000,
                                              denominator = person_time,
                                              vartype = "ci",
@@ -696,7 +720,7 @@ if(is.null(cluster)){
     dplyr::mutate_at(vars(c(x,x_low,x_upp,x_deff)),~round(.,2)) %>%
     dplyr::mutate(variable = "cmr")
   under_5_admin1 <- srvey_mortality %>%
-    dplyr::group_by(!!rlang::sym(admin1)) %>%
+    dplyr::group_by(admin1) %>%
     srvyr::summarise(x = srvyr::survey_ratio(numerator = death_under5 * 10000,
                                              denominator = under_5_pt,
                                              vartype = "ci",
