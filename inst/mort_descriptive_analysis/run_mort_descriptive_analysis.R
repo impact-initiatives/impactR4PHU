@@ -16,13 +16,11 @@ params  <- c(
 )
 
 type_assessment <- tcltk::tk_select.list(c("Household",
-                                           "Individual"), title = "Asessment Level")
+                                           "Individual"), title = "Assessment Level")
 if(type_assessment == "Individual"){
 rmarkdown::render("mort_descriptive_analysis_markdown_ind.Rmd",
                   output_file = paste0("output/", "Mort_descriptive_analysis_", strings['out_date'],".html"))
-}
-
-if(type_assessment == "Household") {
+} else if(type_assessment == "Household") {
   rmarkdown::render("mort_descriptive_analysis_markdown_hh.Rmd",
                     output_file = paste0("output/", "Mort_descriptive_analysis_", strings['out_date'],".html"))
 }

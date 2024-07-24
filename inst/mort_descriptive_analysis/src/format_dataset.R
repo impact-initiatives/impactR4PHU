@@ -1507,7 +1507,7 @@ result_mort_pivot <- results_mort %>%
 
 yes_no_weight <- svDialogs::dlg_message("Is your data weighted?", type = "yesno")$res
 if(yes_no_weight == "yes"){
-  weight <- names(data.list[[path.sheet.with.main]])[grepl("weight",names(data.list[[path.sheet.with.main]]))]
+  weight <- names(raw.main)[grepl("weight",names(raw.main))]
   if(length(weight) == 1){
     yes_no <- svDialogs::dlg_message(paste0("Is '", weight, "' the correct weight column?"), type = "yesno")$res
     if (yes_no == "no") {
@@ -1528,7 +1528,7 @@ if(yes_no_weight == "yes"){
   for(sheet in names(data.list)){
     data.list[[sheet]] <- data.list[[sheet]] %>%
       mutate(overall = "overall",
-             weight = !!rlang::sym(weight)) %>%
+             weight = as.numeric(!!rlang::sym(weight))) %>%
       mutate_at(vars(everything()),~ifelse(. == "",NA,.))
   }
 } else {
