@@ -2,7 +2,7 @@ rm(list = ls())
 chooseCRANmirror(ind = 1)
 utils::install.packages("renv")
 options(renv.consent = TRUE)
-renv::restore(prompt = F)
+renv::update(prompt = F)
 source("src/init.R")
 library(tidyverse)
 strings <- c(
