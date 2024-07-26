@@ -1534,7 +1534,7 @@ if(yes_no_team == "yes"){
     for (j in list_enum) {
       cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",6), collapse=""), " ", "<strong>",j,"</strong>"))
         if(collect_num_join_left == "yes") {
-          results_mort_enum <- impactR4PHU::create_mortality_plaus(df_mortality = df_mortality_long %>% 
+          results_mort_enum <- impactR4PHU::create_mortality_plaus(df_mortality_long %>%
                                                                      dplyr::filter(enumerator == j,
                                                                                    !!rlang::sym(team) == i),
                                                                    df_main = raw.main%>% 
