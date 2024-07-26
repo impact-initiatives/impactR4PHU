@@ -1582,6 +1582,11 @@ if(yes_no_team == "yes"){
     }
   }
 } else {
+  result_mort_pivot_enum <- results_mort_enum %>%
+        dplyr::mutate_all(., as.character) %>%
+        tidyr::pivot_longer(-group,names_to = "Criteria",
+                     values_to = "Score") %>%
+        filter(stringr::str_starts(Criteria,"plaus_"))
   list_enum <- results_mort_enum$group %>% unique
   for (i in list_enum) {
     cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",5), collapse=""), " ", "<strong>",i,"</strong>"))
