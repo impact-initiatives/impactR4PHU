@@ -301,7 +301,61 @@ to respective tables through the first sheet “Table of Contents”.
 
 ### IPHRA
 
+Integrated Public Health Rapid Assessment (TO CONTINUE EXPLAINING IPHRA
+AND MENTION CLEANING AND ANALYSIS PART.)
+
+#### Cleaning
+
+#### Analysis
+
 ## Potential Errors and How to fix them
+
+During the run of the integrated projects, some errors might occur. <br>
+Please see some of these errors that were already caught and the way to
+solve them.
+
+### lazy-load Error
+
+![Lazy Load Error](./man/figures/just_restart.png) This error usually
+appears after the scripts taking some time (5-10 mins) to load due to
+the upload of the packages. <br> To solve this issue, only restart the
+session or R by going to the tab part -\> Session -\> Restart R (or
+CTRL + SHIFT + F10), and rerun the script again.
+
+### ‘make’ not found
+
+![make not found](./man/figures/make_error.png) This error usually
+appears during the installation of packages the first time you are
+running the scripts. The projects are wrapped within something called R
+Environment that automatically install and load the necessary packages
+for the project. Some of these packages are constantly maintained by
+their owners and new versions are deployed regularly. The script try to
+check for any updates in the package and upload the newest. However, if
+the error still shows, specially with <strong>Error: Error Installing
+package ‘XXXX’</strong>, you have two options.
+<ul>
+<li>
+If you are comfortable handling some debugging, please try to find the
+latest version of the mentioned package in the error in the web, usually
+searching (PACKAGE NAME latest version in r) show you something called
+the CRAN where you can see the latest version. Then, open renv.lock, and
+target the actual package (attention, not where it is mentioned as
+dependency to another package), then replace the version with the latest
+one. Please do contact Abraham Azar (<abraham.azar@impact-initiatives>)
+or the PHU team (<impact.geneva.phu@impact-initiatives.org>) mentioning
+the updated package name and the version.
+</li>
+<li>
+If the first point was gibberish to you, directly contact Abraham Azar
+(<abraham.azar@impact-initiatives>) or the PHU team
+(<impact.geneva.phu@impact-initiatives.org>) with the error.
+</li>
+</ul>
+
+If any other error is hindering you to run the whole script, or any
+other semantic issues (output do not make any sense), please contact
+Abraham Azar (<abraham.azar@impact-initiatives>) or the PHU team
+(<impact.geneva.phu@impact-initiatives.org>) with the error/issue.
 
 ## Standalone Functions (for both Analysis or Quality checks)
 
