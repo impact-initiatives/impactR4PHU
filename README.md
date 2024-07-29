@@ -33,6 +33,7 @@ Livelihoods, WASH, Nutrition and Health Sectors.
     - Mortality
     - IYCF
   - [IPHRA](#iphra)
+    - Quality Report and Plausibility Checks
     - Cleaning
     - Analysis
 - [Potential Errors and How to fix
@@ -301,12 +302,57 @@ to respective tables through the first sheet “Table of Contents”.
 
 ### IPHRA
 
-Integrated Public Health Rapid Assessment (TO CONTINUE EXPLAINING IPHRA
-AND MENTION CLEANING AND ANALYSIS PART.)
+The use case for this toolkit is intended to be in acute crises where
+there is a realistic possibility of deterioration of public health
+outcomes in the population to be assessed. This is not intended to be an
+urgent rapid assessment done within the first 72 hours, which tend to be
+more qualitative, but instead the intended timeline should be after an
+initial stabilization of a situation and population movements, maybe one
+month after an initial shock or hazard, depending on the situation. The
+general objective and purpose of an IPHRA assessment is “to assess the
+severity of the public health situation and identify initial public
+health priorities for response to mitigate excess morbidity,
+malnutrition, and mortality.”
+
+Please follow the instructions provided in the recorded training
+sessions in the
+<a href = "https://acted.sharepoint.com/sites/IMPACT-Public_health/SitePages/Toolkits.aspx">PHU
+Intranet Page</a> to learn how to run the scripts.
+
+#### Quality Report and Plausibility Checks
+
+The Data Quality and Plausibility Report serves as a crucial tool for
+assessing the reliability and accuracy of the IPHRA data collection
+across different sectors such as Nutrition, Mortality, Water, Sanitation
+and Hygiene (WASH), Food Security, and Livelihoods. This comprehensive
+analysis is designed to identify and address potential issues within the
+data, ensuring that field teams are being informed on potential issues
+detected in the data collection.each of these sectors, the report
+provides a detailed examination of the datasets, employing a variety of
+metrics and methodologies to evaluate data quality and plausibility.
+This includes checks for completeness, consistency, and accuracy of the
+data collected. This report aims to uncover any discrepancies, outliers,
+or anomalies that may suggest data collection, entry errors, or
+underlying issues that could impact the integrity of the findings.
 
 #### Cleaning
 
+The IPHRA Cleaning toolkit is a tailored project to clean the collected
+data following IMPACT’s guidance of quantitative data cleaning. The
+project is divided in batches files that can be ran outside of R Studio
+to reduce the interactions with R and allow any person run the scripts.
+You are required to have R Tools and RStudio installed on your device to
+be able to run the scripts.
+
 #### Analysis
+
+The IPHRA Tabular Analysis is an analytical platform that presents a
+multitude of quantitative data tables. It encompasses a wide range of
+indicators collected through the IPHRA assessment process, empowering
+users to examine and interpret complex datasets effectively. This tool
+is structured to support understanding the distribution of your data and
+support you writing your factsheets/outputs/reports, and create other
+visualizations.
 
 ## Potential Errors and How to fix them
 
@@ -316,22 +362,16 @@ solve them.
 
 ### lazy-load Error
 
-<figure>
-<img src="./man/figures/just_restart.png" alt="Select New Directory" />
-<figcaption aria-hidden="true">Lazy Load Error</figcaption>
-</figure>
-This error usually appears after the scripts taking some time (5-10 mins) to load due to
+![Lazy Load Error](./man/figures/just_restart.png) This error usually
+appears after the scripts taking some time (5-10 mins) to load due to
 the upload of the packages. <br> To solve this issue, only restart the
 session or R by going to the tab part -\> Session -\> Restart R (or
 CTRL + SHIFT + F10), and rerun the script again.
 
 ### ‘make’ not found
 
-<figure>
-<img src="./man/figures/make_error.png" alt="Select New Directory" />
-<figcaption aria-hidden="true">make not found</figcaption>
-</figure>
-This error usuallyappears during the installation of packages the first time you are
+![make not found](./man/figures/make_error.png) This error usually
+appears during the installation of packages the first time you are
 running the scripts. The projects are wrapped within something called R
 Environment that automatically install and load the necessary packages
 for the project. Some of these packages are constantly maintained by
