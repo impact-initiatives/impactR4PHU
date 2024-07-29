@@ -295,11 +295,40 @@ The Excel file includes 2 sheets. The first 2 are all the tables that you see in
 <div class="section level3">
 <h3 id="iphra">IPHRA<a class="anchor" aria-label="anchor" href="#iphra"></a>
 </h3>
+<p>Integrated Public Health Rapid Assessment (TO CONTINUE EXPLAINING IPHRA AND MENTION CLEANING AND ANALYSIS PART.)</p>
+<div class="section level4">
+<h4 id="cleaning-1">Cleaning<a class="anchor" aria-label="anchor" href="#cleaning-1"></a>
+</h4>
+</div>
+<div class="section level4">
+<h4 id="analysis">Analysis<a class="anchor" aria-label="anchor" href="#analysis"></a>
+</h4>
+</div>
 </div>
 </div>
 <div class="section level2">
 <h2 id="potential-errors-and-how-to-fix-them">Potential Errors and How to fix them<a class="anchor" aria-label="anchor" href="#potential-errors-and-how-to-fix-them"></a>
 </h2>
+<p>During the run of the integrated projects, some errors might occur. <br> Please see some of these errors that were already caught and the way to solve them.</p>
+<div class="section level3">
+<h3 id="lazy-load-error">lazy-load Error<a class="anchor" aria-label="anchor" href="#lazy-load-error"></a>
+</h3>
+<p><img src="./reference/figures/just_restart.png" alt="Lazy Load Error"> This error usually appears after the scripts taking some time (5-10 mins) to load due to the upload of the packages. <br> To solve this issue, only restart the session or R by going to the tab part -&gt; Session -&gt; Restart R (or CTRL + SHIFT + F10), and rerun the script again.</p>
+</div>
+<div class="section level3">
+<h3 id="make-not-found">‘make’ not found<a class="anchor" aria-label="anchor" href="#make-not-found"></a>
+</h3>
+<img src="./reference/figures/make_error.png" alt="make not found"> This error usually appears during the installation of packages the first time you are running the scripts. The projects are wrapped within something called R Environment that automatically install and load the necessary packages for the project. Some of these packages are constantly maintained by their owners and new versions are deployed regularly. The script try to check for any updates in the package and upload the newest. However, if the error still shows, specially with <strong>Error: Error Installing package ‘XXXX’</strong>, you have two options.
+<ul>
+<li>
+If you are comfortable handling some debugging, please try to find the latest version of the mentioned package in the error in the web, usually searching (PACKAGE NAME latest version in r) show you something called the CRAN where you can see the latest version. Then, open renv.lock, and target the actual package (attention, not where it is mentioned as dependency to another package), then replace the version with the latest one. Please do contact Abraham Azar (<a href="mailto:abraham.azar@impact-initiatives" class="email">abraham.azar@impact-initiatives</a>) or the PHU team (<a href="mailto:impact.geneva.phu@impact-initiatives.org" class="email">impact.geneva.phu@impact-initiatives.org</a>) mentioning the updated package name and the version.
+</li>
+<li>
+If the first point was gibberish to you, directly contact Abraham Azar (<a href="mailto:abraham.azar@impact-initiatives" class="email">abraham.azar@impact-initiatives</a>) or the PHU team (<a href="mailto:impact.geneva.phu@impact-initiatives.org" class="email">impact.geneva.phu@impact-initiatives.org</a>) with the error.
+</li>
+</ul>
+<p>If any other error is hindering you to run the whole script, or any other semantic issues (output do not make any sense), please contact Abraham Azar (<a href="mailto:abraham.azar@impact-initiatives" class="email">abraham.azar@impact-initiatives</a>) or the PHU team (<a href="mailto:impact.geneva.phu@impact-initiatives.org" class="email">impact.geneva.phu@impact-initiatives.org</a>) with the error/issue.</p>
+</div>
 </div>
 <div class="section level2">
 <h2 id="standalone-functions-for-both-analysis-or-quality-checks">Standalone Functions (for both Analysis or Quality checks)<a class="anchor" aria-label="anchor" href="#standalone-functions-for-both-analysis-or-quality-checks"></a>
