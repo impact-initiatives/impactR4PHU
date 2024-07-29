@@ -316,16 +316,22 @@ solve them.
 
 ### lazy-load Error
 
-![Lazy Load Error](./man/figures/just_restart.png) This error usually
-appears after the scripts taking some time (5-10 mins) to load due to
+<figure>
+<img src="./man/figures/just_restart.png" alt="Select New Directory" />
+<figcaption aria-hidden="true">Lazy Load Error</figcaption>
+</figure>
+This error usually appears after the scripts taking some time (5-10 mins) to load due to
 the upload of the packages. <br> To solve this issue, only restart the
 session or R by going to the tab part -\> Session -\> Restart R (or
 CTRL + SHIFT + F10), and rerun the script again.
 
 ### ‘make’ not found
 
-![make not found](./man/figures/make_error.png) This error usually
-appears during the installation of packages the first time you are
+<figure>
+<img src="./man/figures/make_error.png" alt="Select New Directory" />
+<figcaption aria-hidden="true">make not found</figcaption>
+</figure>
+This error usuallyappears during the installation of packages the first time you are
 running the scripts. The projects are wrapped within something called R
 Environment that automatically install and load the necessary packages
 for the project. Some of these packages are constantly maintained by
