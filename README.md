@@ -40,7 +40,17 @@ Livelihoods, WASH, Nutrition and Health Sectors.
   them](#potential-errors-and-how-to-fix-them)
 - [Standalone Functions](#standalone-functions)
   - [FSL ADD INDICATORS](#fsl-add-indicators)
+    - FCS: Food Consumption Score
+    - HHS: Household Hunger Scale
+    - rCSI: Reduced Coping Strategy Index
+    - LCSI: Livelihood Coping Strategy Index
+    - HDDS: Household Dietary Diversity Score
+    - FCM: Food Consumption Matrix
+    - FCLCM: Food Consumption Livelihood Matrix
   - [Nutrition ADD INDICATORS](#nutrition-add-indicators)
+    - MUAC: Mid-Upper Arm Circumference
+    - MFAZ: MUAC for Age z-score
+    - IYCF: Infant and Young Child Feeding Scores
   - [Checking Flags](#checking-flags)
 
 ## Installation
