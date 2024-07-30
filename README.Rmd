@@ -16,8 +16,6 @@ knitr::opts_chunk$set(echo = TRUE)
 [![codecov](https://codecov.io/gh/impact-initiatives/impactR4PHU/graph/badge.svg?token=BG57ECHOYX)](https://codecov.io/gh/impact-initiatives/impactR4PHU)
 <!-- badges: end -->
 
-
-
 ## Overview
 `impactR4PHU` is designed for creating quality check reports, cleaning, analysing and outputing results of core outcome indicators of Public Health Unit. This package will target mainly Food Security and Livelihoods, WASH, Nutrition and Health Sectors. 
 
@@ -45,7 +43,17 @@ knitr::opts_chunk$set(echo = TRUE)
 - [Potential Errors and How to fix them](#potential-errors-and-how-to-fix-them)
 - [Standalone Functions](#standalone-functions)
   - [FSL ADD INDICATORS](#fsl-add-indicators)
+    - FCS: Food Consumption Score
+    - HHS: Household Hunger Scale
+    - rCSI: Reduced Coping Strategy Index
+    - LCSI: Livelihood Coping Strategy Index
+    - HDDS: Household Dietary Diversity Score
+    - FCM: Food Consumption Matrix
+    - FCLCM: Food Consumption Livelihood Matrix
   - [Nutrition ADD INDICATORS](#nutrition-add-indicators)
+    - MUAC: Mid-Upper Arm Circumference 
+    - MFAZ: MUAC for Age z-score
+    - IYCF: Infant and Young Child Feeding Scores
   - [Checking Flags](#checking-flags)
 
 ## Installation
@@ -403,7 +411,6 @@ df_with_fclcm <- df_with_fcm_1 %>% ## Taken from previous Example
 df_nut <- impactR4PHU_data_nut_template
 ```
 
-
 #### Example:: Add MUAC
 
 ``` {r eval=T,warning=F}
@@ -417,7 +424,6 @@ df_with_muac <- df_nut %>%
 df_with_mfaz <- df_with_muac %>% 
   add_mfaz()
 ```
-
 
 #### Example:: Add IYCF
 
