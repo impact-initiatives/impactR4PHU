@@ -397,20 +397,20 @@ searching (PACKAGE NAME latest version in r) show you something called
 the CRAN where you can see the latest version. Then, open renv.lock, and
 target the actual package (attention, not where it is mentioned as
 dependency to another package), then replace the version with the latest
-one. Please do contact Abraham Azar (<abraham.azar@impact-initiatives>)
+one. Please do contact Abraham Azar (<abraham.azar@impact-initiatives.org>)
 or the PHU team (<impact.geneva.phu@impact-initiatives.org>) mentioning
 the updated package name and the version.
 </li>
 <li>
 If the first point was gibberish to you, directly contact Abraham Azar
-(<abraham.azar@impact-initiatives>) or the PHU team
+(<abraham.azar@impact-initiatives.org>) or the PHU team
 (<impact.geneva.phu@impact-initiatives.org>) with the error.
 </li>
 </ul>
 
 If any other error is hindering you to run the whole script, or any
 other semantic issues (output do not make any sense), please contact
-Abraham Azar (<abraham.azar@impact-initiatives>) or the PHU team
+Abraham Azar (<abraham.azar@impact-initiatives>.org) or the PHU team
 (<impact.geneva.phu@impact-initiatives.org>) with the error/issue.
 
 ## Standalone Functions (for both Analysis or Quality checks)
