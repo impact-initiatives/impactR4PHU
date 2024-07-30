@@ -48,12 +48,588 @@
 <div class="page-header"><h1 id="impactr4phu-">impactR4PHU <a href="https://www.impact-initiatives.org" class="external-link"><img src="reference/figures/impactR4PHU.png" align="right" height="138"></a>
 <a class="anchor" aria-label="anchor" href="#impactr4phu-"></a>
 </h1></div>
-</div>
-<div class="section level1">
-<h1 id="unit-testing">UNIT TESTING<a class="anchor" aria-label="anchor" href="#unit-testing"></a>
-</h1>
-</div>
+<!-- badges: start -->
 
+<div class="section level2">
+<h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
+</h2>
+<p><code>impactR4PHU</code> is designed for creating quality check reports, cleaning, analysing and outputing results of core outcome indicators of Public Health Unit. This package will target mainly Food Security and Livelihoods, WASH, Nutrition and Health Sectors.</p>
+</div>
+<div class="section level2">
+<h2 id="table-of-contents">Table of Contents<a class="anchor" aria-label="anchor" href="#table-of-contents"></a>
+</h2>
+<ul>
+<li><a href="#installation">Installation</a></li>
+<li>
+<a href="#projects">Projects</a>
+<ul>
+<li>
+<a href="#data-quality">Data Quality</a>
+<ul>
+<li>FSL</li>
+<li>Mortality</li>
+<li>IYCF</li>
+</ul>
+</li>
+<li>
+<a href="#cleaning">Cleaning</a>
+<ul>
+<li>FSL</li>
+<li>Mortality</li>
+<li>IYCF</li>
+</ul>
+</li>
+<li>
+<a href="#descriptive-analysis">Descriptive Analysis</a>
+<ul>
+<li>FSL</li>
+<li>Mortality</li>
+<li>IYCF</li>
+</ul>
+</li>
+<li>
+<a href="#iphra">IPHRA</a>
+<ul>
+<li>Quality Report and Plausibility Checks</li>
+<li>Cleaning</li>
+<li>Analysis</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#potential-errors-and-how-to-fix-them">Potential Errors and How to fix them</a></li>
+<li>
+<a href="#standalone-functions">Standalone Functions</a>
+<ul>
+<li>
+<a href="#fsl-add-indicators">FSL ADD INDICATORS</a>
+<ul>
+<li>FCS: Food Consumption Score</li>
+<li>HHS: Household Hunger Scale</li>
+<li>rCSI: Reduced Coping Strategy Index</li>
+<li>LCSI: Livelihood Coping Strategy Index</li>
+<li>HDDS: Household Dietary Diversity Score</li>
+<li>FCM: Food Consumption Matrix</li>
+<li>FCLCM: Food Consumption Livelihood Matrix</li>
+</ul>
+</li>
+<li>
+<a href="#nutrition-add-indicators">Nutrition ADD INDICATORS</a>
+<ul>
+<li>MUAC: Mid-Upper Arm Circumference</li>
+<li>MFAZ: MUAC for Age z-score</li>
+<li>IYCF: Infant and Young Child Feeding Scores</li>
+</ul>
+</li>
+<li><a href="#checking-flags">Checking Flags</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section level2">
+<h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
+</h2>
+<p>You can install the development version from <a href="https://github.com/" class="external-link">GitHub</a> with:</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># install.packages("devtools")</span></span>
+<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"impact-initiatives/impactR4PHU"</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="projects">Projects<a class="anchor" aria-label="anchor" href="#projects"></a>
+</h2>
+<p>Upon installing the impactR4PHU package, you will be able to access pre-coded projects related to the various sectors of Public Health. These projects aims to support country missions and the research department to check/clean/and analyse indicatores related to Public Health sectors.</p>
+<p>To access these projects, follow the following instructions.</p>
+<figure><img src="./reference/figures/projects_1.png" alt="Go to File -&gt; New Project…"><figcaption aria-hidden="true">
+Go to File -&gt; New Project…
+</figcaption></figure><figure><img src="./reference/figures/projects_2.png" alt="Select New Directory"><figcaption aria-hidden="true">
+Select New Directory
+</figcaption></figure><figure><img src="./reference/figures/projects_3.png" alt="Scroll to find the respective projects"><figcaption aria-hidden="true">
+Scroll to find the respective projects
+</figcaption></figure><figure><img src="./reference/figures/projects_4.png" alt="Select all the lines and click run"><figcaption aria-hidden="true">
+Select all the lines and click run
+</figcaption></figure><div class="section level3">
+<h3 id="data-quality">Data Quality<a class="anchor" aria-label="anchor" href="#data-quality"></a>
+</h3>
+<p>The Data Quality and Plausibility Report serves as a crucial tool for assessing the reliability and accuracy of the data collection of all related public health indicators across different assessments. This comprehensive analysis is designed to identify and address potential issues within the data, ensuring that field teams are being informed on potential issues detected in the data collection.</p>
+<p>The report provides a detailed examination of the datasets, employing a variety of metrics and methodologies to evaluate data quality and plausibility. This includes checks for completeness, consistency, and accuracy of the data collected. This report aims to uncover any discrepancies, outliers, or anomalies that may suggest data collection, entry errors, or underlying issues that could impact the integrity of the findings.</p>
+<div class="section level4">
+<h4 id="fsl-section">FSL Section<a class="anchor" aria-label="anchor" href="#fsl-section"></a>
+</h4>
+This section includes:
+<ul>
+<li>
+Overall Plausibility Report / By Enumerator
+</li>
+<li>
+All the flags related to Food Security and Livelihoods (details shown for each flag in the section)
+</li>
+<li>
+Plots showing the distribution of the data.
+</li>
+</ul>
+</div>
+<div class="section level4">
+<h4 id="mortality-section">Mortality Section<a class="anchor" aria-label="anchor" href="#mortality-section"></a>
+</h4>
+This section includes:
+<ul>
+<li>
+Overall Plausibility Report / By Enumerator
+</li>
+<li>
+All the flags related to Mortality (details shown for each flag in the section)
+</li>
+<li>
+Number of deaths(overall and under 5)/joiners/leavers as well as person times.
+</li>
+<li>
+Plots showing the crude, under 5, and birth rates.
+</li>
+</ul>
+</div>
+<div class="section level4">
+<h4 id="iycf-section">IYCF Section<a class="anchor" aria-label="anchor" href="#iycf-section"></a>
+</h4>
+This section includes:
+<ul>
+<li>
+Overall Plausibility Report / By Enumerator
+</li>
+<li>
+All the flags related to IYCF (details shown for each flag in the section)
+</li>
+<li>
+Plots showing the distribution of the data.
+</li>
+</ul>
+</div>
+<div class="section level4">
+<h4 id="what-to-do-next">What to do next?<a class="anchor" aria-label="anchor" href="#what-to-do-next"></a>
+</h4>
+<p>Please check each flag and the <strong>ACTION</strong> related to it and act accordingly. Another output will be associated to this HTML, the Excel file of the flags that were fired and requires follow-up with the field team. Please check the README tab in the excel file. This file will again be generated with the full data during the cleaning of the dataset. So please do use this file during data collection and relate to it in the final one to be filled.</p>
+</div>
+</div>
+<div class="section level3">
+<h3 id="cleaning">Cleaning<a class="anchor" aria-label="anchor" href="#cleaning"></a>
+</h3>
+<p>The Data Cleaning Template serves as a crucial tool for assessing the data collection of all related public health indicators indicators across different assessments. This comprehensive tool is designed to identify and address potential issues within the data, ensuring that field teams are being followed up on potential issues detected in the data collection.</p>
+<p>The report provides a detailed examination of the datasets, employing a variety of metrics and methodologies to evaluate data quality. This report aims to uncover any discrepancies, outliers, or anomalies that may suggest data collection, entry errors, or underlying issues that could impact the integrity of the findings.</p>
+<div class="section level4">
+<h4 id="fsl-section-1">FSL Section<a class="anchor" aria-label="anchor" href="#fsl-section-1"></a>
+</h4>
+<strong>Direct Checks:</strong>
+<ul>
+<li>
+All FCS columns are 0. FCS Score is equal to 0. All values are changed to NA.
+</li>
+<li>
+All FCS columns are 7. All values are changed to NA.
+</li>
+<li>
+All LCSI columns are not_applicable. All values are changed to NA.
+</li>
+<li>
+The LCSI strategy related to Displacement/Migration but HH is not a displaced group. Value of LCSI changed to NA.
+</li>
+<li>
+The LCSI strategy related to Agriculture but HH do not have income type related to agriculture. Value of LCSI changed to NA.
+</li>
+<li>
+The LCSI strategy related to Livestock but HH do not have income type related to livestock. Value of LCSI changed to NA.
+</li>
+</ul>
+<strong>Follow-Up Checks:</strong>
+<ul>
+<li>
+Check 1: rCSI Score is high while protein consumption is also reported as frequent.
+</li>
+<li>
+Check 2: HHs report using crisis or emergency strategies but not stress strategies or Emergency and no crisis.
+</li>
+<li>
+Check 3: HH that would have an acceptable FCS score and a high rCSI score.
+</li>
+</ul>
+</div>
+<div class="section level4">
+<h4 id="mortality-section-individual-level">Mortality Section (Individual Level)<a class="anchor" aria-label="anchor" href="#mortality-section-individual-level"></a>
+</h4>
+<strong>Follow-Up Checks:</strong>
+<ul>
+<li>
+Check 1: Respondent reported more than 2 death in the HH.
+</li>
+<li>
+Check 2:Respondent reported sex of dead person male and a cause of death related to female only.
+</li>
+<li>
+Check 3:Respondent reported wrong dates leading to a negative person time.
+</li>
+</ul>
+</div>
+<div class="section level4">
+<h4 id="mortality-section-household-level">Mortality Section (Household Level)<a class="anchor" aria-label="anchor" href="#mortality-section-household-level"></a>
+</h4>
+<strong>Follow-Up Checks</strong>
+<ul>
+<li>
+Check 1: Respondent reported more than 2 death in the HH.
+</li>
+</ul>
+</div>
+<div class="section level4">
+<h4 id="what-to-do-next-1">What to do next?<a class="anchor" aria-label="anchor" href="#what-to-do-next-1"></a>
+</h4>
+<p>Please check the files in the output/ folder. The cleaning_logbook.xlsx already can contain some of the directly cleaned data. The followup_request.xlsm file represent the checks that needs to be followed up with the field team. Please follow the instruction in the READ_ME tab to know how to fill the file. After filling the file, you can merge the [uuid/variable/old.value/new.value/issue] from the filled file with the cleaning_logbook.xlsx and add them to your cleaning scripts.</p>
+</div>
+</div>
+<div class="section level3">
+<h3 id="descriptive-analysis">Descriptive Analysis<a class="anchor" aria-label="anchor" href="#descriptive-analysis"></a>
+</h3>
+<p>The Descriptive Analysis is an analytical platform that presents a multitude of quantitative data tables. It encompasses a wide range of public health indicators collected through the assessment process, empowering users to examine and interpret complex datasets effectively. This tool is structured to support understanding the distribution of your data and support you writing your factsheets/outputs/reports, and create other visualizations.</p>
+<div class="section level4">
+<h4 id="fsl-section-2">FSL Section<a class="anchor" aria-label="anchor" href="#fsl-section-2"></a>
+</h4>
+As you saw in the output folder, you will have another excel file outputed from the analysis script.
+<ul>
+<li>
+The Excel file includes 2 sheets. The first 2 are all the tables that you see in the different sections of this HTML output. You can navigate to respective tables through the first sheet “Table of Contents”.
+</li>
+<li>
+Another output as well will include the IPC table.
+</li>
+</ul>
+</div>
+<div class="section level4">
+<h4 id="mortality-section-1">Mortality Section<a class="anchor" aria-label="anchor" href="#mortality-section-1"></a>
+</h4>
+As you saw in the output folder, you will have another excel file outputed from the analysis script.
+<ul>
+<li>
+The Excel file includes 2 sheets. The first 2 are all the tables that you see in the different sections of this HTML output. You can navigate to respective tables through the first sheet “Table of Contents”.
+</li>
+</ul>
+</div>
+</div>
+<div class="section level3">
+<h3 id="iphra">IPHRA<a class="anchor" aria-label="anchor" href="#iphra"></a>
+</h3>
+<p>The use case for this toolkit is intended to be in acute crises where there is a realistic possibility of deterioration of public health outcomes in the population to be assessed. This is not intended to be an urgent rapid assessment done within the first 72 hours, which tend to be more qualitative, but instead the intended timeline should be after an initial stabilization of a situation and population movements, maybe one month after an initial shock or hazard, depending on the situation. The general objective and purpose of an IPHRA assessment is “to assess the severity of the public health situation and identify initial public health priorities for response to mitigate excess morbidity, malnutrition, and mortality.”</p>
+<p>Please follow the instructions provided in the recorded training sessions in the <a href="https://acted.sharepoint.com/sites/IMPACT-Public_health/SitePages/Toolkits.aspx" class="external-link">PHU Intranet Page</a> to learn how to run the scripts.</p>
+<div class="section level4">
+<h4 id="quality-report-and-plausibility-checks">Quality Report and Plausibility Checks<a class="anchor" aria-label="anchor" href="#quality-report-and-plausibility-checks"></a>
+</h4>
+<p>The Data Quality and Plausibility Report serves as a crucial tool for assessing the reliability and accuracy of the IPHRA data collection across different sectors such as Nutrition, Mortality, Water, Sanitation and Hygiene (WASH), Food Security, and Livelihoods. This comprehensive analysis is designed to identify and address potential issues within the data, ensuring that field teams are being informed on potential issues detected in the data collection.each of these sectors, the report provides a detailed examination of the datasets, employing a variety of metrics and methodologies to evaluate data quality and plausibility. This includes checks for completeness, consistency, and accuracy of the data collected. This report aims to uncover any discrepancies, outliers, or anomalies that may suggest data collection, entry errors, or underlying issues that could impact the integrity of the findings.</p>
+</div>
+<div class="section level4">
+<h4 id="cleaning-1">Cleaning<a class="anchor" aria-label="anchor" href="#cleaning-1"></a>
+</h4>
+<p>The IPHRA Cleaning toolkit is a tailored project to clean the collected data following IMPACT’s guidance of quantitative data cleaning. The project is divided in batches files that can be ran outside of R Studio to reduce the interactions with R and allow any person run the scripts. You are required to have R Tools and RStudio installed on your device to be able to run the scripts.</p>
+</div>
+<div class="section level4">
+<h4 id="analysis">Analysis<a class="anchor" aria-label="anchor" href="#analysis"></a>
+</h4>
+<p>The IPHRA Tabular Analysis is an analytical platform that presents a multitude of quantitative data tables. It encompasses a wide range of indicators collected through the IPHRA assessment process, empowering users to examine and interpret complex datasets effectively. This tool is structured to support understanding the distribution of your data and support you writing your factsheets/outputs/reports, and create other visualizations.</p>
+</div>
+</div>
+</div>
+<div class="section level2">
+<h2 id="potential-errors-and-how-to-fix-them">Potential Errors and How to fix them<a class="anchor" aria-label="anchor" href="#potential-errors-and-how-to-fix-them"></a>
+</h2>
+<p>During the run of the integrated projects, some errors might occur. <br> Please see some of these errors that were already caught and the way to solve them.</p>
+<div class="section level3">
+<h3 id="lazy-load-error">lazy-load Error<a class="anchor" aria-label="anchor" href="#lazy-load-error"></a>
+</h3>
+<p><img src="./reference/figures/just_restart.png" alt="Lazy Load Error"> This error usually appears after the scripts taking some time (5-10 mins) to load due to the upload of the packages. <br> To solve this issue, only restart the session or R by going to the tab part -&gt; Session -&gt; Restart R (or CTRL + SHIFT + F10), and rerun the script again.</p>
+</div>
+<div class="section level3">
+<h3 id="make-not-found">‘make’ not found<a class="anchor" aria-label="anchor" href="#make-not-found"></a>
+</h3>
+<img src="./reference/figures/make_error.png" alt="make not found"> This error usually appears during the installation of packages the first time you are running the scripts. The projects are wrapped within something called R Environment that automatically install and load the necessary packages for the project. Some of these packages are constantly maintained by their owners and new versions are deployed regularly. The script try to check for any updates in the package and upload the newest. However, if the error still shows, specially with <strong>Error: Error Installing package ‘XXXX’</strong>, you have two options.
+<ul>
+<li>
+If you are comfortable handling some debugging, please try to find the latest version of the mentioned package in the error in the web, usually searching (PACKAGE NAME latest version in r) show you something called the CRAN where you can see the latest version. Then, open renv.lock, and target the actual package (attention, not where it is mentioned as dependency to another package), then replace the version with the latest one. Please do contact Abraham Azar (<a href="mailto:abraham.azar@impact-initiatives" class="email">abraham.azar@impact-initiatives</a>) or the PHU team (<a href="mailto:impact.geneva.phu@impact-initiatives.org" class="email">impact.geneva.phu@impact-initiatives.org</a>) mentioning the updated package name and the version.
+</li>
+<li>
+If the first point was gibberish to you, directly contact Abraham Azar (<a href="mailto:abraham.azar@impact-initiatives" class="email">abraham.azar@impact-initiatives</a>) or the PHU team (<a href="mailto:impact.geneva.phu@impact-initiatives.org" class="email">impact.geneva.phu@impact-initiatives.org</a>) with the error.
+</li>
+</ul>
+<p>If any other error is hindering you to run the whole script, or any other semantic issues (output do not make any sense), please contact Abraham Azar (<a href="mailto:abraham.azar@impact-initiatives" class="email">abraham.azar@impact-initiatives</a>) or the PHU team (<a href="mailto:impact.geneva.phu@impact-initiatives.org" class="email">impact.geneva.phu@impact-initiatives.org</a>) with the error/issue.</p>
+</div>
+</div>
+<div class="section level2">
+<h2 id="standalone-functions-for-both-analysis-or-quality-checks">Standalone Functions (for both Analysis or Quality checks)<a class="anchor" aria-label="anchor" href="#standalone-functions-for-both-analysis-or-quality-checks"></a>
+</h2>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://impact-initiatives.github.io/impactR4PHU/">impactR4PHU</a></span><span class="op">)</span></span>
+<span><span class="va">df</span> <span class="op">&lt;-</span> <span class="va">impactR4PHU_data_template</span></span></code></pre></div>
+<div class="section level3">
+<h3 id="fsl-add-indicators">FSL ADD Indicators<a class="anchor" aria-label="anchor" href="#fsl-add-indicators"></a>
+</h3>
+<div class="section level4">
+<h4 id="example-add-food-consumption-score-fcs">Example:: Add Food Consumption Score (FCS)<a class="anchor" aria-label="anchor" href="#example-add-food-consumption-score-fcs"></a>
+</h4>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">df_with_fcs</span> <span class="op">&lt;-</span> <span class="va">df</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="reference/add_fcs.html">add_fcs</a></span><span class="op">(</span></span>
+<span>  cutoffs <span class="op">=</span> <span class="st">"normal"</span>,</span>
+<span>  fsl_fcs_cereal <span class="op">=</span> <span class="st">"fsl_fcs_cereal"</span>,</span>
+<span>  fsl_fcs_legumes <span class="op">=</span> <span class="st">"fsl_fcs_legumes"</span>,</span>
+<span>  fsl_fcs_veg <span class="op">=</span> <span class="st">"fsl_fcs_veg"</span>,</span>
+<span>  fsl_fcs_fruit <span class="op">=</span> <span class="st">"fsl_fcs_fruit"</span>,</span>
+<span>  fsl_fcs_meat <span class="op">=</span> <span class="st">"fsl_fcs_meat"</span>,</span>
+<span>  fsl_fcs_dairy <span class="op">=</span> <span class="st">"fsl_fcs_dairy"</span>,</span>
+<span>  fsl_fcs_sugar <span class="op">=</span> <span class="st">"fsl_fcs_sugar"</span>,</span>
+<span>  fsl_fcs_oil <span class="op">=</span> <span class="st">"fsl_fcs_oil"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level4">
+<h4 id="example-add-household-hunger-scale-hhs">Example:: Add Household Hunger Scale (HHS)<a class="anchor" aria-label="anchor" href="#example-add-household-hunger-scale-hhs"></a>
+</h4>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">df_with_hhs</span> <span class="op">&lt;-</span> <span class="va">df_with_fcs</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="reference/add_hhs.html">add_hhs</a></span><span class="op">(</span></span>
+<span>  fsl_hhs_nofoodhh <span class="op">=</span> <span class="st">"fsl_hhs_nofoodhh"</span>,</span>
+<span>  fsl_hhs_nofoodhh_freq <span class="op">=</span> <span class="st">"fsl_hhs_nofoodhh_freq"</span>,</span>
+<span>  fsl_hhs_sleephungry <span class="op">=</span> <span class="st">"fsl_hhs_sleephungry"</span>,</span>
+<span>  fsl_hhs_sleephungry_freq <span class="op">=</span> <span class="st">"fsl_hhs_sleephungry_freq"</span>,</span>
+<span>  fsl_hhs_alldaynight <span class="op">=</span> <span class="st">"fsl_hhs_alldaynight"</span>,</span>
+<span>  fsl_hhs_alldaynight_freq <span class="op">=</span> <span class="st">"fsl_hhs_alldaynight_freq"</span>,</span>
+<span>  yes_answer <span class="op">=</span> <span class="st">"yes"</span>,</span>
+<span>  no_answer <span class="op">=</span> <span class="st">"no"</span>,</span>
+<span>  rarely_answer <span class="op">=</span> <span class="st">"rarely"</span>,</span>
+<span>  sometimes_answer <span class="op">=</span> <span class="st">"sometimes"</span>,</span>
+<span>  often_answer <span class="op">=</span> <span class="st">"often"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level4">
+<h4 id="example-add-livelihood-coping-strategy-score-lcsi">Example:: Add Livelihood Coping Strategy score (LCSI)<a class="anchor" aria-label="anchor" href="#example-add-livelihood-coping-strategy-score-lcsi"></a>
+</h4>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">df_with_lcsi</span> <span class="op">&lt;-</span> <span class="va">df_with_hhs</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="reference/add_lcsi.html">add_lcsi</a></span><span class="op">(</span></span>
+<span>  fsl_lcsi_stress1 <span class="op">=</span> <span class="st">"fsl_lcsi_stress1"</span>,</span>
+<span>  fsl_lcsi_stress2 <span class="op">=</span> <span class="st">"fsl_lcsi_stress2"</span>,</span>
+<span>  fsl_lcsi_stress3 <span class="op">=</span> <span class="st">"fsl_lcsi_stress3"</span>,</span>
+<span>  fsl_lcsi_stress4 <span class="op">=</span> <span class="st">"fsl_lcsi_stress4"</span>,</span>
+<span>  fsl_lcsi_crisis1 <span class="op">=</span> <span class="st">"fsl_lcsi_crisis1"</span>,</span>
+<span>  fsl_lcsi_crisis2 <span class="op">=</span> <span class="st">"fsl_lcsi_crisis2"</span>,</span>
+<span>  fsl_lcsi_crisis3 <span class="op">=</span> <span class="st">"fsl_lcsi_crisis3"</span>,</span>
+<span>  fsl_lcsi_emergency1 <span class="op">=</span> <span class="st">"fsl_lcsi_emergency1"</span>,</span>
+<span>  fsl_lcsi_emergency2 <span class="op">=</span> <span class="st">"fsl_lcsi_emergency2"</span>,</span>
+<span>  fsl_lcsi_emergency3 <span class="op">=</span> <span class="st">"fsl_lcsi_emergency3"</span>,</span>
+<span>  yes_val <span class="op">=</span> <span class="st">"yes"</span>,</span>
+<span>  no_val <span class="op">=</span> <span class="st">"no_had_no_need"</span>,</span>
+<span>  exhausted_val <span class="op">=</span> <span class="st">"no_exhausted"</span>,</span>
+<span>  not_applicable_val <span class="op">=</span> <span class="st">"not_applicable"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level4">
+<h4 id="example-add-reduced-household-coping-strategy-score-rcsi">Example:: Add Reduced Household Coping Strategy score (rCSI)<a class="anchor" aria-label="anchor" href="#example-add-reduced-household-coping-strategy-score-rcsi"></a>
+</h4>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">df_with_rcsi</span> <span class="op">&lt;-</span> <span class="va">df_with_lcsi</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="reference/add_rcsi.html">add_rcsi</a></span><span class="op">(</span></span>
+<span>  fsl_rcsi_lessquality <span class="op">=</span> <span class="st">"fsl_rcsi_lessquality"</span>,</span>
+<span>  fsl_rcsi_borrow <span class="op">=</span> <span class="st">"fsl_rcsi_borrow"</span>,</span>
+<span>  fsl_rcsi_mealsize <span class="op">=</span> <span class="st">"fsl_rcsi_mealsize"</span>,</span>
+<span>  fsl_rcsi_mealadult <span class="op">=</span> <span class="st">"fsl_rcsi_mealadult"</span>,</span>
+<span>  fsl_rcsi_mealnb <span class="op">=</span> <span class="st">"fsl_rcsi_mealnb"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level4">
+<h4 id="example-add-household-dietary-diversity-score-hdds">Example:: Add Household Dietary Diversity Score (HDDS)<a class="anchor" aria-label="anchor" href="#example-add-household-dietary-diversity-score-hdds"></a>
+</h4>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">df_with_hdds</span> <span class="op">&lt;-</span> <span class="va">df_with_rcsi</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="reference/add_hdds.html">add_hdds</a></span><span class="op">(</span></span>
+<span>   fsl_hdds_cereals <span class="op">=</span> <span class="st">"fsl_hdds_cereals"</span>,</span>
+<span>   fsl_hdds_tubers <span class="op">=</span> <span class="st">"fsl_hdds_tubers"</span>,</span>
+<span>   fsl_hdds_veg <span class="op">=</span> <span class="st">"fsl_hdds_veg"</span>,</span>
+<span>   fsl_hdds_fruit <span class="op">=</span> <span class="st">"fsl_hdds_fruit"</span>,</span>
+<span>   fsl_hdds_meat <span class="op">=</span> <span class="st">"fsl_hdds_meat"</span>,</span>
+<span>   fsl_hdds_eggs <span class="op">=</span> <span class="st">"fsl_hdds_eggs"</span>,</span>
+<span>   fsl_hdds_fish <span class="op">=</span> <span class="st">"fsl_hdds_fish"</span>,</span>
+<span>   fsl_hdds_legumes <span class="op">=</span> <span class="st">"fsl_hdds_legumes"</span>,</span>
+<span>   fsl_hdds_dairy <span class="op">=</span> <span class="st">"fsl_hdds_dairy"</span>,</span>
+<span>   fsl_hdds_oil <span class="op">=</span> <span class="st">"fsl_hdds_oil"</span>,</span>
+<span>   fsl_hdds_sugar <span class="op">=</span> <span class="st">"fsl_hdds_sugar"</span>,</span>
+<span>   fsl_hdds_condiments <span class="op">=</span> <span class="st">"fsl_hdds_condiments"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level4">
+<h4 id="example-add-food-consumption-matrix-fcm-using-fcs-rcsi-and-hhs">Example:: Add Food Consumption Matrix (FCM) using FCS, RCSI, and HHS<a class="anchor" aria-label="anchor" href="#example-add-food-consumption-matrix-fcm-using-fcs-rcsi-and-hhs"></a>
+</h4>
+<p><strong>Notice that these functions are also pipable</strong></p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">df_with_fcm_1</span> <span class="op">&lt;-</span> <span class="va">df_with_hdds</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="reference/add_fcm_phase.html">add_fcm_phase</a></span><span class="op">(</span></span>
+<span>    fcs_column_name <span class="op">=</span> <span class="st">"fsl_fcs_cat"</span>,</span>
+<span>    rcsi_column_name <span class="op">=</span> <span class="st">"fsl_rcsi_cat"</span>,</span>
+<span>    hhs_column_name <span class="op">=</span> <span class="st">"fsl_hhs_cat_ipc"</span>,</span>
+<span>    fcs_categories_acceptable <span class="op">=</span> <span class="st">"Acceptable"</span>,</span>
+<span>    fcs_categories_poor <span class="op">=</span> <span class="st">"Poor"</span>,</span>
+<span>    fcs_categories_borderline <span class="op">=</span> <span class="st">"Borderline"</span>,</span>
+<span>    rcsi_categories_low <span class="op">=</span> <span class="st">"No to Low"</span>,</span>
+<span>    rcsi_categories_medium <span class="op">=</span> <span class="st">"Medium"</span>,</span>
+<span>    rcsi_categories_high <span class="op">=</span> <span class="st">"High"</span>,</span>
+<span>    hhs_categories_none <span class="op">=</span> <span class="st">"None"</span>,</span>
+<span>    hhs_categories_little <span class="op">=</span> <span class="st">"No or Little"</span>,</span>
+<span>    hhs_categories_moderate <span class="op">=</span> <span class="st">"Moderate"</span>,</span>
+<span>    hhs_categories_severe <span class="op">=</span> <span class="st">"Severe"</span>,</span>
+<span>    hhs_categories_very_severe <span class="op">=</span> <span class="st">"Very Severe"</span></span>
+<span>  <span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level4">
+<h4 id="example-add-food-consumption-matrix-fcm-using-hdds-rcsi-and-hhs">Example:: Add Food Consumption Matrix (FCM) using HDDS, RCSI, and HHS<a class="anchor" aria-label="anchor" href="#example-add-food-consumption-matrix-fcm-using-hdds-rcsi-and-hhs"></a>
+</h4>
+<p><strong>Notice that these functions are also pipable</strong></p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">df_with_fcm_2</span> <span class="op">&lt;-</span> <span class="va">df_with_hdds</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="reference/add_fcm_phase.html">add_fcm_phase</a></span><span class="op">(</span></span>
+<span>    hdds_column_name <span class="op">=</span> <span class="st">"fsl_hdds_cat"</span>,</span>
+<span>    rcsi_column_name <span class="op">=</span> <span class="st">"fsl_rcsi_cat"</span>,</span>
+<span>    hhs_column_name <span class="op">=</span> <span class="st">"fsl_hhs_cat_ipc"</span>,</span>
+<span>    hdds_categories_low <span class="op">=</span> <span class="st">"Low"</span>,</span>
+<span>    hdds_categories_medium <span class="op">=</span> <span class="st">"Medium"</span>,</span>
+<span>    hdds_categories_high <span class="op">=</span> <span class="st">"High"</span>,</span>
+<span>    rcsi_categories_low <span class="op">=</span> <span class="st">"No to Low"</span>,</span>
+<span>    rcsi_categories_medium <span class="op">=</span> <span class="st">"Medium"</span>,</span>
+<span>    rcsi_categories_high <span class="op">=</span> <span class="st">"High"</span>,</span>
+<span>    hhs_categories_none <span class="op">=</span> <span class="st">"None"</span>,</span>
+<span>    hhs_categories_little <span class="op">=</span> <span class="st">"No or Little"</span>,</span>
+<span>    hhs_categories_moderate <span class="op">=</span> <span class="st">"Moderate"</span>,</span>
+<span>    hhs_categories_severe <span class="op">=</span> <span class="st">"Severe"</span>,</span>
+<span>    hhs_categories_very_severe <span class="op">=</span> <span class="st">"Very Severe"</span></span>
+<span>  <span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level4">
+<h4 id="example-add-food-consumption-matrix-fcm-using-fcs-and-hhs">Example:: Add Food Consumption Matrix (FCM) using FCS and HHS<a class="anchor" aria-label="anchor" href="#example-add-food-consumption-matrix-fcm-using-fcs-and-hhs"></a>
+</h4>
+<p><strong>Notice that these functions are also pipable</strong></p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">df_with_fcm_3</span> <span class="op">&lt;-</span> <span class="va">df_with_hdds</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="reference/add_fcm_phase.html">add_fcm_phase</a></span><span class="op">(</span></span>
+<span>    fcs_column_name <span class="op">=</span> <span class="st">"fsl_fcs_cat"</span>,</span>
+<span>    hhs_column_name <span class="op">=</span> <span class="st">"fsl_hhs_cat_ipc"</span>,</span>
+<span>    fcs_categories_acceptable <span class="op">=</span> <span class="st">"Acceptable"</span>,</span>
+<span>    fcs_categories_poor <span class="op">=</span> <span class="st">"Poor"</span>,</span>
+<span>    fcs_categories_borderline <span class="op">=</span> <span class="st">"Borderline"</span>,</span>
+<span>    hhs_categories_none <span class="op">=</span> <span class="st">"None"</span>,</span>
+<span>    hhs_categories_little <span class="op">=</span> <span class="st">"No or Little"</span>,</span>
+<span>    hhs_categories_moderate <span class="op">=</span> <span class="st">"Moderate"</span>,</span>
+<span>    hhs_categories_severe <span class="op">=</span> <span class="st">"Severe"</span>,</span>
+<span>    hhs_categories_very_severe <span class="op">=</span> <span class="st">"Very Severe"</span></span>
+<span>  <span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level4">
+<h4 id="example-add-food-consumption-matrix-fcm-using-hdds-and-hhs">Example:: Add Food Consumption Matrix (FCM) using HDDS and HHS<a class="anchor" aria-label="anchor" href="#example-add-food-consumption-matrix-fcm-using-hdds-and-hhs"></a>
+</h4>
+<p><strong>Notice that these functions are also pipable</strong></p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">df_with_fcm_4</span> <span class="op">&lt;-</span> <span class="va">df_with_hdds</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="reference/add_fcm_phase.html">add_fcm_phase</a></span><span class="op">(</span></span>
+<span>    hdds_column_name <span class="op">=</span> <span class="st">"fsl_hdds_cat"</span>,</span>
+<span>    hhs_column_name <span class="op">=</span> <span class="st">"fsl_hhs_cat_ipc"</span>,</span>
+<span>    hdds_categories_low <span class="op">=</span> <span class="st">"Low"</span>,</span>
+<span>    hdds_categories_medium <span class="op">=</span> <span class="st">"Medium"</span>,</span>
+<span>    hdds_categories_high <span class="op">=</span> <span class="st">"High"</span>,</span>
+<span>    hhs_categories_none <span class="op">=</span> <span class="st">"None"</span>,</span>
+<span>    hhs_categories_little <span class="op">=</span> <span class="st">"No or Little"</span>,</span>
+<span>    hhs_categories_moderate <span class="op">=</span> <span class="st">"Moderate"</span>,</span>
+<span>    hhs_categories_severe <span class="op">=</span> <span class="st">"Severe"</span>,</span>
+<span>    hhs_categories_very_severe <span class="op">=</span> <span class="st">"Very Severe"</span></span>
+<span>  <span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level4">
+<h4 id="example-add-fewsnet-food-consumption-livelihood-matrix-fclcm">Example:: Add FEWSNET Food Consumption-Livelihood Matrix (FCLCM)<a class="anchor" aria-label="anchor" href="#example-add-fewsnet-food-consumption-livelihood-matrix-fclcm"></a>
+</h4>
+<p><strong>Notice that these functions are also pipable</strong></p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">df_with_fclcm</span> <span class="op">&lt;-</span> <span class="va">df_with_fcm_1</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> <span class="co">## Taken from previous Example</span></span>
+<span>  <span class="fu"><a href="reference/add_fclcm_phase.html">add_fclcm_phase</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+</div>
+</div>
+<div class="section level3">
+<h3 id="nutrition-add-indicators">NUTRITION ADD Indicators<a class="anchor" aria-label="anchor" href="#nutrition-add-indicators"></a>
+</h3>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">df_nut</span> <span class="op">&lt;-</span> <span class="va">impactR4PHU_data_nut_template</span></span></code></pre></div>
+<div class="section level4">
+<h4 id="example-add-muac">Example:: Add MUAC<a class="anchor" aria-label="anchor" href="#example-add-muac"></a>
+</h4>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">df_with_muac</span> <span class="op">&lt;-</span> <span class="va">df_nut</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="reference/add_muac.html">add_muac</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level4">
+<h4 id="example-add-mfaz">Example:: Add MFAZ<a class="anchor" aria-label="anchor" href="#example-add-mfaz"></a>
+</h4>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">df_with_mfaz</span> <span class="op">&lt;-</span> <span class="va">df_with_muac</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="reference/add_mfaz.html">add_mfaz</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a><span class="do">## ================================================================================</span></span></code></pre></div>
+</div>
+<div class="section level4">
+<h4 id="example-add-iycf">Example:: Add IYCF<a class="anchor" aria-label="anchor" href="#example-add-iycf"></a>
+</h4>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">df_iycf</span> <span class="op">&lt;-</span> <span class="va">impactR4PHU_iycf_template_data</span></span>
+<span><span class="va">df_with_iycf</span> <span class="op">&lt;-</span> <span class="va">df_iycf</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="reference/add_iycf.html">add_iycf</a></span><span class="op">(</span>uuid <span class="op">=</span> <span class="st">"_submission__uuid"</span>,</span>
+<span>           age_months <span class="op">=</span> <span class="st">"child_age_months_2"</span><span class="op">)</span></span></code></pre></div>
+</div>
+</div>
+<div class="section level3">
+<h3 id="checking-flags">Checking Flags<a class="anchor" aria-label="anchor" href="#checking-flags"></a>
+</h3>
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">tool</span> <span class="op">&lt;-</span> <span class="va">impactR4PHU_survey_template</span></span></code></pre></div>
+<div class="section level4">
+<h4 id="example-check-food-security-and-livelihoods-flags">Example:: Check Food Security and Livelihoods Flags<a class="anchor" aria-label="anchor" href="#example-check-food-security-and-livelihoods-flags"></a>
+</h4>
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">fsl_flags</span> <span class="op">&lt;-</span> <span class="va">df_with_fclcm</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="reference/check_fsl_flags.html">check_fsl_flags</a></span><span class="op">(</span>tool.survey <span class="op">=</span> <span class="va">tool</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level4">
+<h4 id="example-check-anthropometric-flags">Example:: Check Anthropometric Flags<a class="anchor" aria-label="anchor" href="#example-check-anthropometric-flags"></a>
+</h4>
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">anthro_flags</span> <span class="op">&lt;-</span> <span class="va">df_with_mfaz</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="reference/check_anthro_flags.html">check_anthro_flags</a></span><span class="op">(</span>loop_index <span class="op">=</span> <span class="st">"loop_index"</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level4">
+<h4 id="example-check-wash-flags">Example:: Check WASH Flags<a class="anchor" aria-label="anchor" href="#example-check-wash-flags"></a>
+</h4>
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">container_df</span> <span class="op">&lt;-</span> <span class="va">impactR4PHU_data_wash_template</span></span>
+<span><span class="va">wash_flags</span> <span class="op">&lt;-</span> <span class="va">df</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="reference/check_wash_flags.html">check_wash_flags</a></span><span class="op">(</span>data_container_loop <span class="op">=</span> <span class="va">container_df</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb22"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" tabindex="-1"></a><span class="do">## Joining with `by = join_by(uuid)`</span></span></code></pre></div>
+</div>
+<div class="section level4">
+<h4 id="example-check-health-flags-to-add-more-flags-related-to-wgss">Example:: Check Health Flags (to add more flags related to WGSS)<a class="anchor" aria-label="anchor" href="#example-check-health-flags-to-add-more-flags-related-to-wgss"></a>
+</h4>
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">msna_data</span> <span class="op">&lt;-</span> <span class="va">impactR4PHU_MSNA_template_data</span></span>
+<span><span class="va">health_flags</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/check_health_flags.html">check_health_flags</a></span><span class="op">(</span></span>
+<span>  .dataset <span class="op">=</span> <span class="va">msna_data</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level4">
+<h4 id="example-check-iycf-flags">Example:: Check IYCF Flags<a class="anchor" aria-label="anchor" href="#example-check-iycf-flags"></a>
+</h4>
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">iycf_flags</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/check_iycf_flags.html">check_iycf_flags</a></span><span class="op">(</span></span>
+<span>  .dataset <span class="op">=</span> <span class="va">df_with_iycf</span>,</span>
+<span>  age_months <span class="op">=</span> <span class="st">"child_age_months_2"</span>,</span>
+<span>  uuid <span class="op">=</span> <span class="st">"_submission__uuid"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+</div>
+</div>
+</div>
+<div class="section level2">
+<h2 id="code-of-conduct">Code of Conduct<a class="anchor" aria-label="anchor" href="#code-of-conduct"></a>
+</h2>
+<p>Please note that the impactR4PHU project is released with a <a href="https://impact-initiatives.github.io/impactR4PHU/CODE_OF_CONDUCT.html">Contributor Code of Conduct</a>. By contributing to this project, you agree to abide by its terms.</p>
+</div>
+</div>
   </main><aside class="col-md-3"><div class="license">
 <h2 data-toc-skip>License</h2>
 <ul class="list-unstyled">
@@ -83,7 +659,14 @@
 </ul>
 </div>
 
-
+<div class="dev-status">
+<h2 data-toc-skip>Dev status</h2>
+<ul class="list-unstyled">
+<li><a href="code_of_conduct.html"><img src="https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg" alt="Contributor Covenant"></a></li>
+<li><a href="https://github.com/impact-initiatives/impactR4PHU/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/impact-initiatives/impactR4PHU/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a></li>
+<li><a href="https://codecov.io/gh/impact-initiatives/impactR4PHU" class="external-link"><img src="https://codecov.io/gh/impact-initiatives/impactR4PHU/graph/badge.svg?token=BG57ECHOYX" alt="codecov"></a></li>
+</ul>
+</div>
 
   </aside>
 </div>
