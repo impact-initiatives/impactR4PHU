@@ -215,6 +215,12 @@ This error usually appears during the installation of packages the first time yo
 <li>If the first point was gibberish to you, directly contact Abraham Azar (abraham.azar@impact-initiatives.org) or the PHU team (impact.geneva.phu@impact-initiatives.org) with the error.</li>
 </ul>
 
+### Wrong dates in mortality
+
+![Wrong dates in mortality](./man/figures/wrong_dates.png)
+
+If the above error appears while running the mortality quality report or descriptive analysis projects, this means that you have a possible issue between the birth dates and the death dates in the death loop. Most probably, one of the death have a recorded birth date after the recorded death date. Make sure to fix the dates before running the scripts. 
+
 If any other error is hindering you to run the whole script, or any other semantic issues (output do not make any sense), please contact Abraham Azar (abraham.azar@impact-initiatives.org) or the PHU team (impact.geneva.phu@impact-initiatives.org) with the error/issue.
 
 ## Standalone Functions (for both Analysis or Quality checks)

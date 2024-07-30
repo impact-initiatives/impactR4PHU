@@ -397,9 +397,10 @@ searching (PACKAGE NAME latest version in r) show you something called
 the CRAN where you can see the latest version. Then, open renv.lock, and
 target the actual package (attention, not where it is mentioned as
 dependency to another package), then replace the version with the latest
-one. Please do contact Abraham Azar (<abraham.azar@impact-initiatives.org>)
-or the PHU team (<impact.geneva.phu@impact-initiatives.org>) mentioning
-the updated package name and the version.
+one. Please do contact Abraham Azar
+(<abraham.azar@impact-initiatives.org>) or the PHU team
+(<impact.geneva.phu@impact-initiatives.org>) mentioning the updated
+package name and the version.
 </li>
 <li>
 If the first point was gibberish to you, directly contact Abraham Azar
@@ -408,9 +409,23 @@ If the first point was gibberish to you, directly contact Abraham Azar
 </li>
 </ul>
 
+### Wrong dates in mortality
+
+<figure>
+<img src="./man/figures/wrong_dates.png"
+alt="Wrong dates in mortality" />
+<figcaption aria-hidden="true">Wrong dates in mortality</figcaption>
+</figure>
+
+If the above error appears while running the mortality quality report or
+descriptive analysis projects, this means that you have a possible issue
+between the birth dates and the death dates in the death loop. Most
+probably, one of the death have a recorded birth date after the recorded
+death date. Make sure to fix the dates before running the scripts.
+
 If any other error is hindering you to run the whole script, or any
 other semantic issues (output do not make any sense), please contact
-Abraham Azar (<abraham.azar@impact-initiatives>.org) or the PHU team
+Abraham Azar (<abraham.azar@impact-initiatives.org>) or the PHU team
 (<impact.geneva.phu@impact-initiatives.org>) with the error/issue.
 
 ## Standalone Functions (for both Analysis or Quality checks)
@@ -624,6 +639,8 @@ df_with_muac <- df_nut %>%
 df_with_mfaz <- df_with_muac %>% 
   add_mfaz()
 ```
+
+    ## ================================================================================
 
 #### Example:: Add IYCF
 
