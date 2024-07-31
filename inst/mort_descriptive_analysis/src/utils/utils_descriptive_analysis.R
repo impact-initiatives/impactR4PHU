@@ -1032,7 +1032,7 @@ save.dfs.mortality <- function(df, tables = NULL, filename,use_template = F){
   if (!is.null(tables)){
     for (table in tables) {
       openxlsx::addWorksheet(wb, table)
-      openxlsx::writeData(wb, sheet = table, startCol = 1, startRow = 1, x = !!rlang::sym(table))
+      openxlsx::writeData(wb, sheet = table, startCol = 1, startRow = 1, x = get(table))
     }
   }
   openxlsx::saveWorkbook(wb, filename, overwrite=TRUE)

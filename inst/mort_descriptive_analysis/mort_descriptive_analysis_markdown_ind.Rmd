@@ -191,11 +191,16 @@ for (i in sections){
 ```
 
 ```{r message=TRUE, warning=FALSE, include=FALSE}
-
+teams_df <- data.list$main %>% 
+  dplyr::select(uuid_main, team) %>% 
+  dplyr::rename("uuid" = uuid_main)
 
 weight_df <- data.list$main %>% 
   dplyr::select(uuid_main, weight) %>% 
   dplyr::rename("uuid" = uuid_main)
+
+df_mortality_long <- df_mortality_long %>% 
+  dplyr::left_join(teams_df)
 
 ```
 
@@ -274,11 +279,10 @@ if(yes_no_team == "yes"){
           subch(impactR4PHU::plot_age_distribution(df_mortality_long %>%
                                                filter(is.na(left),
                                                       is.na(death),
-                                                      !!rlang::sym("enumerator") %in% j,
+                                                      enumerator %in% j,
                                                       !!rlang::sym(team) %in% i),
                                              year_or_month = "year",
-                                             max_age = 10,
-                                             by_group = "enumerator"),
+                                             max_age = 10),
                 fig_height = 8)
        }
     }
