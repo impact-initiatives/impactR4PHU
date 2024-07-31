@@ -1009,25 +1009,28 @@ load.entry <- function(analysis.plan.row){
 save.dfs.mortality <- function(df, tables = NULL, filename,use_template = F){
   if(use_template) wb <- openxlsx::loadWorkbook("./../resources/analysis_template.xlsx")
   else wb <- openxlsx::createWorkbook()
-  openxlsx::addWorksheet(wb, "Table_of_content")
-  openxlsx::addWorksheet(wb, "Data")
-  count_sh1 <- 2
-  count_sh2 <- 1
-  openxlsx::writeData(wb, sheet = "Table_of_content", x = "Table of Content", startCol = 1, startRow = 1)
-  for (i in 1:length(df)){
-    openxlsx::writeFormula(wb, "Table_of_content",
-                           startRow = count_sh1,
-                           x = openxlsx::makeHyperlinkString(
-                             sheet = "Data", row = count_sh2, col = 1,
-                             text = names(df[i])
-                           ))
-    count_sh1 <- count_sh1 + 1
-    openxlsx::writeData(wb, sheet = "Data", names(df[i]), startCol = 1, startRow = count_sh2)
-    count_sh2 <- count_sh2 + 1
-    openxlsx::writeData(wb = wb, sheet = "Data", x = df[[i]], startRow = count_sh2)
-    count_sh2 <- count_sh2 + 1 + nrow(df[[i]])
-    openxlsx::writeData(wb = wb, sheet= "Data", x = NULL, startRow = count_sh2)
-    count_sh2 <- count_sh2 + 1
+  if(!is.null(df)){
+
+    openxlsx::addWorksheet(wb, "Table_of_content")
+    openxlsx::addWorksheet(wb, "Data")
+    count_sh1 <- 2
+    count_sh2 <- 1
+    openxlsx::writeData(wb, sheet = "Table_of_content", x = "Table of Content", startCol = 1, startRow = 1)
+    for (i in 1:length(df)){
+      openxlsx::writeFormula(wb, "Table_of_content",
+                             startRow = count_sh1,
+                             x = openxlsx::makeHyperlinkString(
+                               sheet = "Data", row = count_sh2, col = 1,
+                               text = names(df[i])
+                             ))
+      count_sh1 <- count_sh1 + 1
+      openxlsx::writeData(wb, sheet = "Data", names(df[i]), startCol = 1, startRow = count_sh2)
+      count_sh2 <- count_sh2 + 1
+      openxlsx::writeData(wb = wb, sheet = "Data", x = df[[i]], startRow = count_sh2)
+      count_sh2 <- count_sh2 + 1 + nrow(df[[i]])
+      openxlsx::writeData(wb = wb, sheet= "Data", x = NULL, startRow = count_sh2)
+      count_sh2 <- count_sh2 + 1
+    }
   }
   if (!is.null(tables)){
     for (table in tables) {
@@ -1037,4 +1040,5 @@ save.dfs.mortality <- function(df, tables = NULL, filename,use_template = F){
   }
   openxlsx::saveWorkbook(wb, filename, overwrite=TRUE)
 }
+
 
