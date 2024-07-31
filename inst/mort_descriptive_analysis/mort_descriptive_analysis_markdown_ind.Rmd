@@ -191,24 +191,8 @@ for (i in sections){
 ```
 
 ```{r message=TRUE, warning=FALSE, include=FALSE}
-## output XLSX files
-file.list <- list.files(path = params['combine_folder'], pattern = "*.xlsx")
-file.list <- setNames(file.list, paste0(params['combine_folder'], file.list))
-df <- lapply(names(file.list), readxl::read_excel)
-names(df) <- stringr::str_remove(file.list, ".xlsx")
 
-sorted_df <- df
 
-save.dfs(sorted_df,paste0("output/Mortality_combined_analysis_toc_", strings['out_date'], ".xlsx"), use_template = F)
-
-for (i in 1:length(names(sorted_df))){
-  if (nchar(names(sorted_df)[i]) > 31){
-    names(sorted_df)[i] <- stringr::str_trunc(names(sorted_df)[i], 28)
-    names(sorted_df)[i] <- paste0(names(sorted_df)[i],i)
-  } else{
-    names(sorted_df) <- names(sorted_df)
-  }
-}
 weight_df <- data.list$main %>% 
   dplyr::select(uuid_main, weight) %>% 
   dplyr::rename("uuid" = uuid_main)
@@ -470,7 +454,7 @@ srvey_mortality <- srvyr::as_survey_design(df_mortality_long %>%
                                              vartype = "ci"))%>%
     dplyr::mutate_at(vars(c(x,x_low,x_upp)),~round(.,2)) %>%
     mutate(variable = "u5mr")
-  results.summary <- rbind(crude,under_5) %>%
+  overall <- rbind(crude,under_5) %>%
    rename(`point.est` = "x",
           `95%lci` = "x_low",
           `95%uci` = "x_upp") %>%
@@ -478,11 +462,11 @@ srvey_mortality <- srvyr::as_survey_design(df_mortality_long %>%
 ```
 
 ```{r, results='asis'}
-DT::datatable(results.summary)
+DT::datatable(overall)
 ```
 
 ```{r, include=FALSE}
-plot_results.summary <- ggplot2::ggplot(results.summary %>%
+plot_results.summary <- ggplot2::ggplot(overall %>%
                                                mutate(variable = case_when(variable == "cmr"~"Crude",
                                                                            variable == "u5mr"~"Under 5")), ggplot2::aes(x = variable)) +
   ggplot2::geom_hline(yintercept=1, linetype='dotted', color = 'black', size =1)+
@@ -492,10 +476,10 @@ plot_results.summary <- ggplot2::ggplot(results.summary %>%
   ggplot2::geom_text(ggplot2::aes(x = variable, y = `95%uci`, label = `95%uci`, vjust = -0.5, color = "red", fontface = "bold"), size = 3)+
   ggplot2::geom_point(ggplot2::aes(y = point.est), color = "blue")+
   ggplot2::geom_text(ggplot2::aes(x = variable, y = point.est, label = point.est, hjust = -0.5), size = 3, color = "blue", fontface = "bold")+
-  ggplot2::scale_y_continuous(limits=c(0, if(max(results.summary$`95%uci`)<2){
+  ggplot2::scale_y_continuous(limits=c(0, if(max(overall$`95%uci`)<2){
     2
   } else {
-    max(results.summary$`95%uci`)
+    max(overall$`95%uci`)
   }))+
   ggplot2::theme(legend.position = "none", axis.title.y = ggplot2::element_blank())+
   ggplot2::xlab("Overall Mortality Rates")+
@@ -529,16 +513,16 @@ under5_gender <- results_mort_gender %>%
                 group = case_when(group == 1~"Male",
                                   group == 2~"Female"))
 
-results.summary_gender <- rbind(crude_gender,under5_gender) %>%
+by_gender <- rbind(crude_gender,under5_gender) %>%
   dplyr::relocate(variable, .before = 1)
 ```
 
 ```{r, results='asis'}
-DT::datatable(results.summary_gender)
+DT::datatable(by_gender)
 ```
 
 ```{r, include=FALSE}
-plot_results.summary_gender <- ggplot2::ggplot(results.summary_gender %>%
+plot_results.summary_gender <- ggplot2::ggplot(by_gender %>%
                                                mutate(variable = case_when(variable == "cmr"~"Crude",
                                                                            variable == "u5mr"~"Under 5")), ggplot2::aes(x = variable)) +
   ggplot2::geom_hline(yintercept=1, linetype='dotted', color = 'black', size =1)+
@@ -548,10 +532,10 @@ plot_results.summary_gender <- ggplot2::ggplot(results.summary_gender %>%
   ggplot2::geom_text(ggplot2::aes(x = variable, y = `95%uci`, label = `95%uci`, vjust = -0.5, color = "red", fontface = "bold"), size = 3)+
   ggplot2::geom_point(ggplot2::aes(y = point.est), color = "blue")+
   ggplot2::geom_text(ggplot2::aes(x = variable, y = point.est, label = point.est, hjust = -0.5), size = 3, color = "blue", fontface = "bold")+
-  ggplot2::scale_y_continuous(limits=c(0, if(max(results.summary_gender$`95%uci`)<2){
+  ggplot2::scale_y_continuous(limits=c(0, if(max(by_gender$`95%uci`)<2){
     2
   } else {
-    max(results.summary_gender$`95%uci`)
+    max(by_gender$`95%uci`)
   }))+
   ggplot2::theme(legend.position = "none", axis.title.y = ggplot2::element_blank())+
   ggplot2::xlab("Overall Mortality Rates")+
@@ -586,16 +570,16 @@ under5_age_group <- results_mort_age_group %>%
   dplyr::mutate(variable = "u5mr",
                 group = case_when(group == 1~"0-17"))
 
-results.summary_age_group <- rbind(crude_age_group,under5_age_group) %>%
+by_age_group <- rbind(crude_age_group,under5_age_group) %>%
   dplyr::relocate(variable, .before = 1)
 ```
 
 ```{r, results='asis'}
-DT::datatable(results.summary_age_group)
+DT::datatable(by_age_group)
 ```
 
 ```{r, include=FALSE}
-plot_results.summary_age_group <- ggplot2::ggplot(results.summary_age_group %>%
+plot_results.summary_age_group <- ggplot2::ggplot(by_age_group %>%
                                                mutate(variable = case_when(variable == "cmr"~"Crude",
                                                                            variable == "u5mr"~"Under 5")), ggplot2::aes(x = variable)) +
   ggplot2::geom_hline(yintercept=1, linetype='dotted', color = 'black', size =1)+
@@ -605,10 +589,10 @@ plot_results.summary_age_group <- ggplot2::ggplot(results.summary_age_group %>%
   ggplot2::geom_text(ggplot2::aes(x = variable, y = `95%uci`, label = `95%uci`, vjust = -0.5, color = "red", fontface = "bold"), size = 3)+
   ggplot2::geom_point(ggplot2::aes(y = point.est), color = "blue")+
   ggplot2::geom_text(ggplot2::aes(x = variable, y = point.est, label = point.est, hjust = -0.5), size = 3, color = "blue", fontface = "bold")+
-  ggplot2::scale_y_continuous(limits=c(0, if(max(results.summary_age_group$`95%uci`)<2){
+  ggplot2::scale_y_continuous(limits=c(0, if(max(by_age_group$`95%uci`)<2){
     2
   } else {
-    max(results.summary_age_group$`95%uci`)
+    max(by_age_group$`95%uci`)
   }))+
   ggplot2::theme(legend.position = "none", axis.title.y = ggplot2::element_blank())+
   ggplot2::xlab("Overall Mortality Rates")+
@@ -638,16 +622,16 @@ under5_pop_group <- results_mort_pop_group %>%
   dplyr::select(group,`point.est`,`95%lci`,`95%uci`) %>%
   dplyr::mutate(variable = "u5mr")
 
-results.summary_pop_group <- rbind(crude_pop_group,under5_pop_group) %>%
+by_pop_group <- rbind(crude_pop_group,under5_pop_group) %>%
   dplyr::relocate(variable, .before = 1)
 ```
 
 ```{r, results='asis'}
-DT::datatable(results.summary_pop_group)
+DT::datatable(by_pop_group)
 ```
 
 ```{r, include=FALSE}
-plot_results.summary_pop_group <- ggplot2::ggplot(results.summary_pop_group %>%
+plot_results.summary_pop_group <- ggplot2::ggplot(by_pop_group %>%
                                                mutate(variable = case_when(variable == "cmr"~"Crude",
                                                                            variable == "u5mr"~"Under 5")), ggplot2::aes(x = variable)) +
   ggplot2::geom_hline(yintercept=1, linetype='dotted', color = 'black', size =1)+
@@ -657,10 +641,10 @@ plot_results.summary_pop_group <- ggplot2::ggplot(results.summary_pop_group %>%
   ggplot2::geom_text(ggplot2::aes(x = variable, y = `95%uci`, label = `95%uci`, vjust = -0.5, color = "red", fontface = "bold"), size = 3)+
   ggplot2::geom_point(ggplot2::aes(y = point.est), color = "blue")+
   ggplot2::geom_text(ggplot2::aes(x = variable, y = point.est, label = point.est, hjust = -0.5), size = 3, color = "blue", fontface = "bold")+
-  ggplot2::scale_y_continuous(limits=c(0, if(max(results.summary_pop_group$`95%uci`)<2){
+  ggplot2::scale_y_continuous(limits=c(0, if(max(by_pop_group$`95%uci`)<2){
     2
   } else {
-    max(results.summary_pop_group$`95%uci`)
+    max(by_pop_group$`95%uci`)
   }))+
   ggplot2::theme(legend.position = "none", axis.title.y = ggplot2::element_blank())+
   ggplot2::xlab("Overall Mortality Rates")+
@@ -697,7 +681,7 @@ if(is.null(cluster)){
                                              vartype = "ci"))%>%
     dplyr::mutate_at(vars(c(x,x_low,x_upp)),~round(.,2)) %>%
     mutate(variable = "u5mr")
-  results.summary_admin1 <- rbind(crude_admin1,under_5_admin1) %>%
+  by_admin1 <- rbind(crude_admin1,under_5_admin1) %>%
    rename(`point.est` = "x",
           `95%lci` = "x_low",
           `95%uci` = "x_upp") %>%
@@ -727,7 +711,7 @@ if(is.null(cluster)){
                                              deff = "replace"))%>%
     dplyr::mutate_at(vars(c(x,x_low,x_upp,x_deff)),~round(.,2)) %>%
     dplyr::mutate(variable = "u5mr")
-  results.summary_admin1 <- rbind(crude_admin1,under_5_admin1) %>%
+  by_admin1 <- rbind(crude_admin1,under_5_admin1) %>%
     dplyr::mutate(x_deff = ifelse(is.nan(x_deff),0,x_deff)) %>% 
    dplyr::rename(`point.est` = "x",
           `95%lci` = "x_low",
@@ -739,11 +723,11 @@ if(is.null(cluster)){
 ```
 
 ```{r, results='asis'}
-DT::datatable(results.summary_admin1)
+DT::datatable(by_admin1)
 ```
 
 ```{r, include=FALSE}
-plot_results.summary_admin1 <- ggplot2::ggplot(results.summary_admin1 %>%
+plot_results.summary_admin1 <- ggplot2::ggplot(by_admin1 %>%
                                                mutate(variable = case_when(variable == "cmr"~"Crude",
                                                                            variable == "u5mr"~"Under 5")), ggplot2::aes(x = variable)) +
   ggplot2::geom_hline(yintercept=1, linetype='dotted', color = 'black', size =1)+
@@ -753,10 +737,10 @@ plot_results.summary_admin1 <- ggplot2::ggplot(results.summary_admin1 %>%
   ggplot2::geom_text(ggplot2::aes(x = variable, y = `95%uci`, label = `95%uci`, vjust = -0.5, color = "red", fontface = "bold"), size = 3)+
   ggplot2::geom_point(ggplot2::aes(y = point.est), color = "blue")+
   ggplot2::geom_text(ggplot2::aes(x = variable, y = point.est, label = point.est, hjust = -0.5), size = 3, color = "blue", fontface = "bold")+
-  ggplot2::scale_y_continuous(limits=c(0, if(max(results.summary_admin1$`95%uci`)<2){
+  ggplot2::scale_y_continuous(limits=c(0, if(max(by_admin1$`95%uci`)<2){
     2
   } else {
-    max(results.summary_admin1$`95%uci`)
+    max(by_admin1$`95%uci`)
   }))+
   ggplot2::theme(legend.position = "none", axis.title.y = ggplot2::element_blank())+
   ggplot2::xlab("Overall Mortality Rates")+
@@ -787,16 +771,16 @@ under5_admin2 <- results_mort_admin2 %>%
   dplyr::select(group,`point.est`,`95%lci`,`95%uci`) %>%
   dplyr::mutate(variable = "u5mr")
 
-results.summary_admin2 <- rbind(crude_admin2,under5_admin2) %>%
+by_admin2 <- rbind(crude_admin2,under5_admin2) %>%
   dplyr::relocate(variable, .before = 1)
 ```
 
 ```{r, results='asis'}
-DT::datatable(results.summary_admin2)
+DT::datatable(by_admin2)
 ```
 
 ```{r, include=FALSE}
-plot_results.summary_admin2 <- ggplot2::ggplot(results.summary_admin2 %>%
+plot_results.summary_admin2 <- ggplot2::ggplot(by_admin2 %>%
                                                mutate(variable = case_when(variable == "cmr"~"Crude",
                                                                            variable == "u5mr"~"Under 5")), ggplot2::aes(x = variable)) +
   ggplot2::geom_hline(yintercept=1, linetype='dotted', color = 'black', size =1)+
@@ -806,10 +790,10 @@ plot_results.summary_admin2 <- ggplot2::ggplot(results.summary_admin2 %>%
   ggplot2::geom_text(ggplot2::aes(x = variable, y = `95%uci`, label = `95%uci`, vjust = -0.5, color = "red", fontface = "bold"), size = 3)+
   ggplot2::geom_point(ggplot2::aes(y = point.est), color = "blue")+
   ggplot2::geom_text(ggplot2::aes(x = variable, y = point.est, label = point.est, hjust = -0.5), size = 3, color = "blue", fontface = "bold")+
-  ggplot2::scale_y_continuous(limits=c(0, if(max(results.summary_admin2$`95%uci`)<2){
+  ggplot2::scale_y_continuous(limits=c(0, if(max(by_admin2$`95%uci`)<2){
     2
   } else {
-    max(results.summary_admin2$`95%uci`)
+    max(by_admin2$`95%uci`)
   }))+
   ggplot2::theme(legend.position = "none", axis.title.y = ggplot2::element_blank())+
   ggplot2::xlab("Overall Mortality Rates")+
@@ -839,16 +823,16 @@ under5_admin1_pop_group <- results_mort_admin1_pop_group %>%
   dplyr::select(group,`point.est`,`95%lci`,`95%uci`) %>%
   dplyr::mutate(variable = "u5mr")
 
-results.summary_admin1_pop_group <- rbind(crude_admin1_pop_group,under5_admin1_pop_group) %>%
+by_admin1_pop_group <- rbind(crude_admin1_pop_group,under5_admin1_pop_group) %>%
   dplyr::relocate(variable, .before = 1)
 ```
 
 ```{r, results='asis'}
-DT::datatable(results.summary_admin1_pop_group)
+DT::datatable(by_admin1_pop_group)
 ```
 
 ```{r, include=FALSE}
-plot_results.summary_admin1_pop_group <- ggplot2::ggplot(results.summary_admin1_pop_group %>%
+plot_results.summary_admin1_pop_group <- ggplot2::ggplot(by_admin1_pop_group %>%
                                                mutate(variable = case_when(variable == "cmr"~"Crude",
                                                                            variable == "u5mr"~"Under 5")), ggplot2::aes(x = variable)) +
   ggplot2::geom_hline(yintercept=1, linetype='dotted', color = 'black', size =1)+
@@ -858,10 +842,10 @@ plot_results.summary_admin1_pop_group <- ggplot2::ggplot(results.summary_admin1_
   ggplot2::geom_text(ggplot2::aes(x = variable, y = `95%uci`, label = `95%uci`, vjust = -0.5, color = "red", fontface = "bold"), size = 3)+
   ggplot2::geom_point(ggplot2::aes(y = point.est), color = "blue")+
   ggplot2::geom_text(ggplot2::aes(x = variable, y = point.est, label = point.est, hjust = -0.5), size = 3, color = "blue", fontface = "bold")+
-  ggplot2::scale_y_continuous(limits=c(0, if(max(results.summary_admin1_pop_group$`95%uci`)<2){
+  ggplot2::scale_y_continuous(limits=c(0, if(max(by_admin1_pop_group$`95%uci`)<2){
     2
   } else {
-    max(results.summary_admin1_pop_group$`95%uci`)
+    max(by_admin1_pop_group$`95%uci`)
   }))+
   ggplot2::theme(legend.position = "none", axis.title.y = ggplot2::element_blank())+
   ggplot2::xlab("Overall Mortality Rates")+
@@ -892,16 +876,16 @@ under5_hoh_gender <- results_mort_hoh_gender %>%
   dplyr::select(group,`point.est`,`95%lci`,`95%uci`) %>%
   dplyr::mutate(variable = "u5mr")
 
-results.summary_hoh_gender <- rbind(crude_hoh_gender,under5_hoh_gender) %>%
+by_hoh_gender <- rbind(crude_hoh_gender,under5_hoh_gender) %>%
   dplyr::relocate(variable, .before = 1)
 ```
 
 ```{r, results='asis'}
-DT::datatable(results.summary_hoh_gender)
+DT::datatable(by_hoh_gender)
 ```
 
 ```{r, include=FALSE}
-plot_results.summary_hoh_gender <- ggplot2::ggplot(results.summary_hoh_gender %>%
+plot_results.summary_hoh_gender <- ggplot2::ggplot(by_hoh_gender %>%
                                                mutate(variable = case_when(variable == "cmr"~"Crude",
                                                                            variable == "u5mr"~"Under 5")), ggplot2::aes(x = variable)) +
   ggplot2::geom_hline(yintercept=1, linetype='dotted', color = 'black', size =1)+
@@ -911,10 +895,10 @@ plot_results.summary_hoh_gender <- ggplot2::ggplot(results.summary_hoh_gender %>
   ggplot2::geom_text(ggplot2::aes(x = variable, y = `95%uci`, label = `95%uci`, vjust = -0.5, color = "red", fontface = "bold"), size = 3)+
   ggplot2::geom_point(ggplot2::aes(y = point.est), color = "blue")+
   ggplot2::geom_text(ggplot2::aes(x = variable, y = point.est, label = point.est, hjust = -0.5), size = 3, color = "blue", fontface = "bold")+
-  ggplot2::scale_y_continuous(limits=c(0, if(max(results.summary_hoh_gender$`95%uci`)<2){
+  ggplot2::scale_y_continuous(limits=c(0, if(max(by_hoh_gender$`95%uci`)<2){
     2
   } else {
-    max(results.summary_hoh_gender$`95%uci`)
+    max(by_hoh_gender$`95%uci`)
   }))+
   ggplot2::theme(legend.position = "none", axis.title.y = ggplot2::element_blank())+
   ggplot2::xlab("Overall Mortality Rates")+
@@ -944,16 +928,16 @@ under5_income_source <- results_mort_income_source %>%
   dplyr::select(group,`point.est`,`95%lci`,`95%uci`) %>%
   dplyr::mutate(variable = "u5mr")
 
-results.summary_income_source <- rbind(crude_income_source,under5_income_source) %>%
+by_income_source <- rbind(crude_income_source,under5_income_source) %>%
   dplyr::relocate(variable, .before = 1)
 ```
 
 ```{r, results='asis'}
-DT::datatable(results.summary_income_source)
+DT::datatable(by_income_source)
 ```
 
 ```{r, include=FALSE}
-plot_results.summary_income_source <- ggplot2::ggplot(results.summary_income_source %>%
+plot_results.summary_income_source <- ggplot2::ggplot(by_income_source %>%
                                                mutate(variable = case_when(variable == "cmr"~"Crude",
                                                                            variable == "u5mr"~"Under 5"),
                                                       group = factor(group, c("Below 20%", "20% - 40%","40% - 60%","60% - 80%","Above 80%"))), ggplot2::aes(x = variable)) +
@@ -964,10 +948,10 @@ plot_results.summary_income_source <- ggplot2::ggplot(results.summary_income_sou
   ggplot2::geom_text(ggplot2::aes(x = variable, y = `95%uci`, label = `95%uci`, vjust = -0.5, color = "red", fontface = "bold"), size = 3)+
   ggplot2::geom_point(ggplot2::aes(y = point.est), color = "blue")+
   ggplot2::geom_text(ggplot2::aes(x = variable, y = point.est, label = point.est, hjust = -0.5), size = 3, color = "blue", fontface = "bold")+
-  ggplot2::scale_y_continuous(limits=c(0, if(max(results.summary_income_source$`95%uci`)<2){
+  ggplot2::scale_y_continuous(limits=c(0, if(max(by_income_source$`95%uci`)<2){
     2
   } else {
-    max(results.summary_income_source$`95%uci`)
+    max(by_income_source$`95%uci`)
   }))+
   ggplot2::theme(legend.position = "none", axis.title.y = ggplot2::element_blank())+
   ggplot2::xlab("Overall Mortality Rates")+
@@ -990,22 +974,22 @@ birth <- results_mort %>%
   dplyr::select(`point.est`,`95%lci`,`95%uci`) %>%
   dplyr::mutate(variable = "Birth")
 
-results.summary.birth <- birth %>%
+overall_birth <- birth %>%
   dplyr::relocate(variable, .before = 1)
 ```
 
 ```{r, results='asis'}
-DT::datatable(results.summary.birth)
+DT::datatable(overall_birth)
 ```
 
 ```{r, include=FALSE}
-plot_results.summary.birth <- ggplot2::ggplot(results.summary.birth, ggplot2::aes(x = variable)) +
+plot_results.summary.birth <- ggplot2::ggplot(overall_birth, ggplot2::aes(x = variable)) +
   ggplot2::geom_errorbar(ggplot2::aes(ymin =`95%lci`, ymax = `95%uci`, width = 0.2, color = "red"))+
   ggplot2::geom_text(ggplot2::aes(x = variable, y = `95%lci`, label = `95%lci`, vjust = 1.5, color = "red", fontface = "bold"), size = 3)+
   ggplot2::geom_text(ggplot2::aes(x = variable, y = `95%uci`, label = `95%uci`, vjust = -0.5, color = "red", fontface = "bold"), size = 3)+
   ggplot2::geom_point(ggplot2::aes(y = point.est), color = "blue")+
   ggplot2::geom_text(ggplot2::aes(x = variable, y = point.est, label = point.est, hjust = -0.5), size = 3, color = "blue", fontface = "bold")+
-  ggplot2::scale_y_continuous(limits=c(0, max(results.summary.birth$`95%uci`)))+
+  ggplot2::scale_y_continuous(limits=c(0, max(overall_birth$`95%uci`)))+
   ggplot2::theme(legend.position = "none", axis.title.y = ggplot2::element_blank())+
   ggplot2::xlab("Overall Birth Rates")
 ```
@@ -1014,4 +998,34 @@ plot_results.summary.birth <- ggplot2::ggplot(results.summary.birth, ggplot2::ae
 plot_results.summary.birth
 ```
 
+```{r message=TRUE, warning=FALSE, include=FALSE}
+## output XLSX files
+file.list <- list.files(path = params['combine_folder'], pattern = "*.xlsx")
+file.list <- setNames(file.list, paste0(params['combine_folder'], file.list))
+df <- lapply(names(file.list), readxl::read_excel)
+names(df) <- stringr::str_remove(file.list, ".xlsx")
+
+sorted_df <- df
+
+save.dfs.mortality(sorted_df, tables = c("overall",
+                                         "by_gender",
+                                         "by_age_group",
+                                         "by_pop_group",
+                                         "by_admin1",
+                                         "by_admin2",
+                                         "by_admin1_pop_group",
+                                         "by_hoh_gender",
+                                         "by_income_source",
+                                         "overall_birth"),
+                   paste0("output/Mortality_combined_analysis_toc_", strings['out_date'], ".xlsx"), use_template = F)
+
+for (i in 1:length(names(sorted_df))){
+  if (nchar(names(sorted_df)[i]) > 31){
+    names(sorted_df)[i] <- stringr::str_trunc(names(sorted_df)[i], 28)
+    names(sorted_df)[i] <- paste0(names(sorted_df)[i],i)
+  } else{
+    names(sorted_df) <- names(sorted_df)
+  }
+}
+```
 

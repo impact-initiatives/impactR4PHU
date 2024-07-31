@@ -1007,6 +1007,8 @@ load.entry <- function(analysis.plan.row){
 }
 
 # load all DFs to one sheet
+
+# load all DFs to one sheet
 save.dfs <- function(df, filename,use_template = F){
   if(use_template) wb <- openxlsx::loadWorkbook("./../resources/analysis_template.xlsx")
   else wb <- openxlsx::createWorkbook()
@@ -1017,11 +1019,11 @@ save.dfs <- function(df, filename,use_template = F){
   openxlsx::writeData(wb, sheet = "Table_of_content", x = "Table of Content", startCol = 1, startRow = 1)
   for (i in 1:length(df)){
     openxlsx::writeFormula(wb, "Table_of_content",
-                 startRow = count_sh1,
-                 x = openxlsx::makeHyperlinkString(
-                   sheet = "Data", row = count_sh2, col = 1,
-                   text = names(df[i])
-                 ))
+                           startRow = count_sh1,
+                           x = openxlsx::makeHyperlinkString(
+                             sheet = "Data", row = count_sh2, col = 1,
+                             text = names(df[i])
+                           ))
     count_sh1 <- count_sh1 + 1
     openxlsx::writeData(wb, sheet = "Data", names(df[i]), startCol = 1, startRow = count_sh2)
     count_sh2 <- count_sh2 + 1
