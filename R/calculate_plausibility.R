@@ -77,7 +77,7 @@ calculate_plausibility <- function(.dataset){
     .dataset <- .dataset %>% dplyr::mutate(plaus_hh_multiple_death = ifelse(prop_hh_flag_deaths < 0.005, 0,
                                                                   ifelse(prop_hh_flag_deaths < 0.01, 5,
                                                                          ifelse(prop_hh_flag_deaths < 0.015, 10,
-                                                                                ifelse(prop_hh_flag_deaths >= 1.5, 20, 0)))))
+                                                                                ifelse(prop_hh_flag_deaths >=0.015, 20, 0)))))
   }
   if (length(setdiff(c("sex_ratio.pvalue", "cdr"), names(.dataset))) == 0) {
     .dataset <- .dataset %>% dplyr::mutate(plaus_sex_ratio = ifelse(sex_ratio.pvalue > 0.05, 0,
