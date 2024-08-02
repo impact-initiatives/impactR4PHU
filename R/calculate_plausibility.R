@@ -10,7 +10,6 @@
 
 
 calculate_plausibility <- function(.dataset){
-  print("Now Calculating Plausibility Scoring and Classifications.")
   anthro_plaus_vars <- c("flag_perc_mfaz_children","n_children_muac","sd_muac_mm",
                          "age_ratio.pvalue", "sex_ratio.pvalue","dps_muac")
 
@@ -52,17 +51,12 @@ calculate_plausibility <- function(.dataset){
                                                                        ifelse(sd_muac_mm >= 15, 20, NA)))))
   }
   if (length(setdiff(anthro_plaus_vars, names(.dataset))) == 0) {
-    print("Generating anthropometric plausibility score and classification.")
     .dataset <- .dataset %>% dplyr::mutate(plaus_anthro_score = rowSums(dplyr::across(c(plaus_sd_muac_mm, plaus_n_children_muac,
                                                                      plaus_ageratio,plaus_sexratio,plaus_perc_mfaz_children,plaus_dps_muac), .fns = as.numeric), na.rm=T),
                                plaus_anthro_cat = ifelse(plaus_anthro_score >= 0 & plaus_anthro_score <= 9, "Excellent",
                                                          ifelse(plaus_anthro_score > 9 & plaus_anthro_score <= 19, "Good",
                                                                 ifelse(plaus_anthro_score > 19 & plaus_anthro_score < 25, "Acceptable",
                                                                        ifelse(plaus_anthro_score >= 25, "Problematic", NA)))))
-  }
-  else {
-    print(paste0("Not all necessary variables for anthropometric plausibility score and classification. Skipping this step. The dataframe is missing "))
-    print(setdiff(anthro_plaus_vars, names(.dataset)))
   }
   mort_plaus_vars <- c("plaus_overall_cdr", "plaus_hh_multiple_death",
                        "plaus_sex_ratio", "plaus_age0to4_5plus_ratio",
@@ -129,10 +123,6 @@ calculate_plausibility <- function(.dataset){
                                                        ifelse(plaus_mort_score >= 10 & plaus_mort_score < 20, "Good (10-<20)",
                                                               ifelse(plaus_mort_score >= 20 & plaus_mort_score < 25, "Acceptable (20 - <25)",
                                                                      ifelse(plaus_mort_score >= 25, "Problematic (>=25)", NA)))))
-  }
-  else {
-    print(paste0("Not all necessary variables for mortality plausibility score and classification. Skipping this step. The dataframe is missing "))
-    print(setdiff(mort_plaus_vars, names(.dataset)))
   }
   if (c("sd_fcs") %in% names(.dataset)) {
     .dataset <- .dataset %>% dplyr::mutate(plaus_sd_fcs = dplyr::case_when(sd_fcs < 8 ~ 4,
@@ -382,7 +372,6 @@ calculate_plausibility <- function(.dataset){
   if (length(setdiff(iycf_plaus_vars, colnames(.dataset))) == 0) {
     if (!(c("plaus_prop_iycf_caregiver") %in% colnames(.dataset))) {
       .dataset <- .dataset %>% dplyr::mutate(plaus_prop_iycf_caregiver = 10)
-      print("No iycf_caregiver variable was available. Plaus penalty of 10 applied assuming this wasn't done during the survey.")
     }
     .dataset <- .dataset %>% dplyr::mutate(plaus_iycf_score = plaus_prop_iycf_caregiver + plaus_sdd_mdd +
                                  plaus_age_ratio_under6m_6to23m.pvalue + plaus_sexratio +
@@ -391,11 +380,6 @@ calculate_plausibility <- function(.dataset){
                                                        ifelse(plaus_iycf_score >= 10 & plaus_iycf_score < 15, "Good (10-<15)",
                                                               ifelse(plaus_iycf_score >= 15 & plaus_iycf_score < 25, "Acceptable (15 - <25)",
                                                                      ifelse(plaus_iycf_score >= 25, "Problematic (>=25)", NA)))))
-  }
-  else {
-    print(paste0("Not all necessary variables for IYCF plausibility score and classification. Skipping this step. The dataframe is missing "))
-    print(setdiff(iycf_plaus_vars, names(.dataset)))
-    print(setdiff(c("prop_iycf_caregiver"), names(.dataset)))
   }
   return(.dataset)
 }
