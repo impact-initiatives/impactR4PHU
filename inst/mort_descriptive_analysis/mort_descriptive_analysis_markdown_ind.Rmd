@@ -1040,5 +1040,13 @@ for (i in 1:length(names(sorted_df))){
     names(sorted_df) <- names(sorted_df)
   }
 }
+
+## admin1 for MSNA Integrated Analysis Tables
+table_by_admin1 <- by_admin1 %>% 
+  dplyr::filter(variable == "cmr") %>% 
+  dplyr::select(admin1,point.est)
+
+
+openxlsx::write.xlsx(table_by_admin1, file = paste0("./output/MSNA_Integrated_Table", strings['out_date'], ".xlsx"))
 ```
 

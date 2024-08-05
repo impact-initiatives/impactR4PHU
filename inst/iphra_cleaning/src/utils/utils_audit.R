@@ -16,7 +16,7 @@ load.audit.files <- function(dir.audits, uuids=NULL, track.changes=F){
     uuid <- sp[length(sp)-1]
     if(is.null(uuids) | uuid %in% uuids){
       # load file
-      audit <- read_csv(filename, show_col_types = FALSE, locale = locale(encoding = "UTF-8")) %>%
+      audit <- readr::read_csv(filename, show_col_types = FALSE, locale = locale(encoding = "UTF-8")) %>%
         mutate(uuid=uuid, .before=1)
       # TODO: make sure that the below is correctly done (probably not)
       if(track.changes & "old-value" %in% colnames(audit)) {
