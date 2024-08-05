@@ -20,7 +20,8 @@ load.audit.files <- function(dir.audits, uuids=NULL, track.changes=F){
         mutate(uuid=uuid, .before=1)
       # TODO: make sure that the below is correctly done (probably not)
       if(track.changes & "old-value" %in% colnames(audit)) {
-        audit <- audit %>% rename("old.value" = `old-value`, "new.value" = `new-value`)
+        audit <- audit %>% rename("old.value" = `old-value`, "new.value" = `new-value`) %>%
+          mutate(old.value = as.character(old.value))
       } else {
         audit <- audit %>% mutate(old.value = NA, new.value = NA)
       }
@@ -50,7 +51,7 @@ process.uuid <- function(df){
   # df <- audits
   max.num.iterations <- 15
   t <- list() # Time of each iteration
-  rt <- list() # response time of each iteration 
+  rt <- list() # response time of each iteration
   j <- list() # number of jumps
   q <- list() # number of questions
   w <- list() # waiting time
@@ -76,14 +77,14 @@ process.uuid <- function(df){
     } else if (status=="waiting" & df$event[r]=="form.exit"){
       if("uuid2" %in% colnames(df)) warning(paste("status=waiting while form.exit! uuid:",df$uuid2[r]))
       else warning("status=waiting while form.exit!")
-    } 
+    }
   }
   res <- data.frame()
   res[1, "n.iteration"] <- length(t)
   res[1, "tot.t"] <- round((df[nrow(df), "start"] - df[1, "start"])/60000, 1)
   res[1, "tot.rt"] <- round(sum(filter(df, event %in% c("question", "group.questions"))$duration)/60, 1)
   for (i in 1:max.num.iterations){
-    res[1, c(paste0("t", i), paste0("rt", i), 
+    res[1, c(paste0("t", i), paste0("rt", i),
              paste0("q", i), paste0("j", i),
              paste0("e", i),
              paste0("w", i))] <- NA
@@ -102,7 +103,7 @@ process.uuid <- function(df){
     for (i in 1:min(length(w), max.num.iterations)) res[1, paste0("w", i)] <- round(w[[i]], 1)
   }
   if("uuid2" %in% colnames(res)) res <- res %>% select(-uuid2)
-  
+
   # new functionality :)
   # res <- res %>%  discard(~any_of(is.na(.)))  # dropping empty columns (all NA)
   return(res)
@@ -110,11 +111,11 @@ process.uuid <- function(df){
 
 
 find.similar.surveys <- function(data.main, tool.survey, uuid="_uuid", staff_name_col="Staff_Name", idnk_value="idnk"){
-#' for each survey, it finds the closest matching survey with the minimum number of different columns
-#'
-#' @param uuid Name of the column in which uuids are stored.
-#' @param staff_name_col Name of the column in which enumerator's name (or identifier etc.) is stored
-#' @param idnk_value Value (from tool.choices) that represents the answer "I don't know"
+  #' for each survey, it finds the closest matching survey with the minimum number of different columns
+  #'
+  #' @param uuid Name of the column in which uuids are stored.
+  #' @param staff_name_col Name of the column in which enumerator's name (or identifier etc.) is stored
+  #' @param idnk_value Value (from tool.choices) that represents the answer "I don't know"
 
   data <- data.main
 
@@ -134,7 +135,7 @@ find.similar.surveys <- function(data.main, tool.survey, uuid="_uuid", staff_nam
   cols_to_keep <- data.frame(column=colnames(data)) %>%
     left_join(select(tool.survey, name, type), by=c("column"="name")) %>%
     filter(column==staff_name_col | (!(type %in% types_to_remove) &
-             !stringr::str_starts(column, "_") & !stringr::str_detect(column, "/") & !stringr::str_ends(column, "_other")))
+                                       !stringr::str_starts(column, "_") & !stringr::str_detect(column, "/") & !stringr::str_ends(column, "_other")))
   data <- data[, all_of(cols_to_keep$column)]
 
   # 4) remove columns with all NA; convert remaining NA to "NA"; convert all columns to factor
@@ -235,17 +236,17 @@ calculate.enumerator.similarity <- function(data, tool.survey, col_enum, col_adm
 #-------------------------------------------------------------------------------
 
 create.count_deleted_enu <- function(deletion.log, col_enum)  {
-    #' was previously named create.count_enu
+  #' was previously named create.count_enu
 
   count_del <- deletion.log %>%
     group_by(!!sym(col_enum)) %>%
     summarize(count = n()) %>%
-      arrange(col_enum)
+    arrange(col_enum)
 
   count_del_reas <- deletion.log %>%
     group_by(!!sym(col_enum),reason) %>%
     summarize(count = n(), .groups = "keep") %>%
-      arrange(col_enum)
+    arrange(col_enum)
 
   wb <- openxlsx::createWorkbook()
   openxlsx::addWorksheet(wb, "dlog entries")
@@ -259,17 +260,17 @@ create.count_deleted_enu <- function(deletion.log, col_enum)  {
 }
 
 create.count_collected_enu <- function(kobo.raw, col_enum)  {
-    #' Create an analysis of the number of surveys conducted per enumerator.
-    #'
-    #' The output spreadsheet is saved to a file named 'count_collected_enu.xlsx in directory 'output/enum_performance'
-    #'
-    #' @param kobo.raw This dataframe should contain the raw data, as it was exported from Kobo.
-    #' @param col_enum The name of the column which contains the enumerator's ID.
+  #' Create an analysis of the number of surveys conducted per enumerator.
+  #'
+  #' The output spreadsheet is saved to a file named 'count_collected_enu.xlsx in directory 'output/enum_performance'
+  #'
+  #' @param kobo.raw This dataframe should contain the raw data, as it was exported from Kobo.
+  #' @param col_enum The name of the column which contains the enumerator's ID.
 
   count_del <- kobo.raw %>%
     group_by(!!sym(col_enum)) %>%
     summarize(count = n()) %>%
-      arrange(col_enum)
+    arrange(col_enum)
 
   wb <- openxlsx::createWorkbook()
   openxlsx::addWorksheet(wb, "Sheet1")
@@ -280,24 +281,24 @@ create.count_collected_enu <- function(kobo.raw, col_enum)  {
 }
 
 create.count_enu_cleaning <- function(cleaning.log, col_enum)  {
-    #' Create an analysis of the numbers of cleaning log entries per enumerator.
-    #'
-    #' The output spreadsheet is saved to a file named 'count_enu_cleaning.xlsx in directory 'output/enum_performance'
-    #' The first sheet named "clog entries" has the numbers of entires per enumerator
-    #' The second sheet named "clog reasons" includes grouping by reason too.
-    #'
-    #' @param cleaning.log The entire cleaning.log, containing the column `col_enum`
-    #' @param col_enum The name of the column which contains the enumerator's ID.
-    #'
+  #' Create an analysis of the numbers of cleaning log entries per enumerator.
+  #'
+  #' The output spreadsheet is saved to a file named 'count_enu_cleaning.xlsx in directory 'output/enum_performance'
+  #' The first sheet named "clog entries" has the numbers of entires per enumerator
+  #' The second sheet named "clog reasons" includes grouping by reason too.
+  #'
+  #' @param cleaning.log The entire cleaning.log, containing the column `col_enum`
+  #' @param col_enum The name of the column which contains the enumerator's ID.
+  #'
   count_cl_entries <- cleaning.log %>%
     group_by(!!sym(col_enum)) %>%
     summarize(count = n()) %>%
-      arrange(col_enum)
+    arrange(col_enum)
 
   count_cl_entries_reas <- cleaning.log %>%
     group_by(!!sym(col_enum), issue) %>%
     summarize(count = n(), .groups = "keep") %>%
-      arrange(col_enum)
+    arrange(col_enum)
 
   wb <- openxlsx::createWorkbook()
   openxlsx::addWorksheet(wb, "clog entries")
