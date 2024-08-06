@@ -239,6 +239,10 @@ if(!file.exists("inputs/environment.Rdata")) {
     }
 
   } else {
+    resp_hoh_yes <- NULL
+    hoh_yes_no <- NULL
+    resp_hoh_no <- NULL
+    resp_gender <- NULL
     hoh_gender <- names(raw.main)[grepl("hoh|gender",names(raw.main))]
     if(length(hoh_gender) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", hoh_gender, "' the correct hoh gender column?"), type = "yesno")$res
@@ -1524,7 +1528,6 @@ if(yes_no_weight == "yes"){
 } else {
   weight <- 1
 }
-if(yes_no_weight == "yes"){
   for(sheet in names(data.list)){
     data.list[[sheet]] <- data.list[[sheet]] %>%
       mutate(overall = "overall",
