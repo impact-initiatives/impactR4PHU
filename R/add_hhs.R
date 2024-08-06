@@ -137,7 +137,7 @@ add_hhs <- function(.dataset,
                                                  fsl_hhs_score <= 3 ~ "Moderate",
                                                  fsl_hhs_score == 4 ~ "Severe",
                                                  fsl_hhs_score <= 6 ~ "Very Severe"),
-                  fsl_hhs_cat = dplyr::case_when(fsl_hhs_score <= 1 ~ "No or Little",
+                  fsl_hhs_cat = dplyr::case_when(fsl_hhs_score <= 1 ~ "Little to No",
                                                  fsl_hhs_score <= 3 ~ "Moderate",
                                                  fsl_hhs_score <= 6 ~ "Severe",
                                              TRUE ~ NA))
