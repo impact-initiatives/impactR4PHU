@@ -12,7 +12,7 @@
 #' @param rcsi_categories_medium The name of the value "Medium" (by default) in the rcsi categories
 #' @param rcsi_categories_high The name of the value "High" (by default) in the rcsi categories
 #' @param hhs_categories_none The name of the value "None" (by default) in the hhs categories
-#' @param hhs_categories_little The name of the value "No or Little" (by default) in the hhs categories
+#' @param hhs_categories_little The name of the value "Little" (by default) in the hhs categories
 #' @param hhs_categories_moderate The name of the value "Moderate" (by default) in the hhs categories
 #' @param hhs_categories_severe The name of the value "Severe" (by default) in the hhs categories
 #' @param hhs_categories_very_severe The name of the value "Very Severe" (by default) in the hhs categories
@@ -32,7 +32,7 @@
 #' test_data <- data.frame(
 #'   fsl_fcs_cat = c("Acceptable", "Poor", "Borderline", "Acceptable"),
 #'   fsl_rcsi_cat = c("No to Low", "Medium", "No to Low", "High"),
-#'   fsl_hhs_cat = c("None", "No or Little", "Severe", "Very Severe"),
+#'   fsl_hhs_cat = c("None", "Little", "Severe", "Very Severe"),
 #'   fsl_hdds_cat = c("Low", "High", "Medium", "High")
 #' )
 #' add_fcm_phase(test_data,
@@ -47,7 +47,7 @@
 #'   rcsi_categories_medium = "Medium",
 #'   rcsi_categories_high = "High",
 #'   hhs_categories_none = "None",
-#'   hhs_categories_little = "No or Little",
+#'   hhs_categories_little = "Little",
 #'   hhs_categories_moderate = "Moderate",
 #'   hhs_categories_severe = "Severe",
 #'   hhs_categories_very_severe = "Very Severe",
