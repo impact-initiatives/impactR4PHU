@@ -17,7 +17,7 @@ add_fcm_phase(
   rcsi_categories_medium = "Medium",
   rcsi_categories_high = "High",
   hhs_categories_none = "None",
-  hhs_categories_little = "No or Little",
+  hhs_categories_little = "Little",
   hhs_categories_moderate = "Moderate",
   hhs_categories_severe = "Severe",
   hhs_categories_very_severe = "Very Severe",

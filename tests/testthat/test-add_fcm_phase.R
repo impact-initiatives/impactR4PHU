@@ -28,7 +28,7 @@ testthat::test_that("Check for missing columns", {
 
 })
 
-testthat::test_that("Checking column values hhs - [None/No or Little/Moderate/Severe/Very Severe]", {
+testthat::test_that("Checking column values hhs - [None/Little/Moderate/Severe/Very Severe]", {
   load(testthat::test_path("testdata", "test_df.rda"))
 
   set.seed(30)
@@ -94,7 +94,7 @@ testthat::test_that("check if function producing expected output with (FCS/RCSI/
   test_df <- expand.grid(
     fsl_fcs_cat = c("Acceptable", "Poor", "Borderline"),
     fsl_rcsi_cat = c("No to Low", "Medium", "High"),
-    fsl_hhs_cat_ipc = c("None", "Moderate", "Very Severe", "Severe", "No or Little")
+    fsl_hhs_cat_ipc = c("None", "Moderate", "Very Severe", "Severe", "Little")
   ) |>
     as.data.frame()
   expected_output_success <- test_df |>
@@ -108,15 +108,15 @@ testthat::test_that("check if function producing expected output with (FCS/RCSI/
       fsl_fcs_cat == "Acceptable" & fsl_rcsi_cat == "High" & fsl_hhs_cat_ipc == "None" ~ 31,
       fsl_fcs_cat == "Poor" & fsl_rcsi_cat == "High" & fsl_hhs_cat_ipc == "None" ~ 41,
       fsl_fcs_cat == "Borderline" & fsl_rcsi_cat == "High" & fsl_hhs_cat_ipc == "None" ~ 36,
-      fsl_fcs_cat == "Acceptable" & fsl_rcsi_cat == "No to Low" & fsl_hhs_cat_ipc == "No or Little" ~ 2,
-      fsl_fcs_cat == "Poor" & fsl_rcsi_cat == "No to Low" & fsl_hhs_cat_ipc == "No or Little" ~ 12,
-      fsl_fcs_cat == "Borderline" & fsl_rcsi_cat == "No to Low" & fsl_hhs_cat_ipc == "No or Little" ~ 7,
-      fsl_fcs_cat == "Acceptable" & fsl_rcsi_cat == "Medium" & fsl_hhs_cat_ipc == "No or Little" ~ 17,
-      fsl_fcs_cat == "Poor" & fsl_rcsi_cat == "Medium" & fsl_hhs_cat_ipc == "No or Little" ~ 27,
-      fsl_fcs_cat == "Borderline" & fsl_rcsi_cat == "Medium" & fsl_hhs_cat_ipc == "No or Little" ~ 22,
-      fsl_fcs_cat == "Acceptable" & fsl_rcsi_cat == "High" & fsl_hhs_cat_ipc == "No or Little" ~ 32,
-      fsl_fcs_cat == "Poor" & fsl_rcsi_cat == "High" & fsl_hhs_cat_ipc == "No or Little" ~ 42,
-      fsl_fcs_cat == "Borderline" & fsl_rcsi_cat == "High" & fsl_hhs_cat_ipc == "No or Little" ~ 37,
+      fsl_fcs_cat == "Acceptable" & fsl_rcsi_cat == "No to Low" & fsl_hhs_cat_ipc == "Little" ~ 2,
+      fsl_fcs_cat == "Poor" & fsl_rcsi_cat == "No to Low" & fsl_hhs_cat_ipc == "Little" ~ 12,
+      fsl_fcs_cat == "Borderline" & fsl_rcsi_cat == "No to Low" & fsl_hhs_cat_ipc == "Little" ~ 7,
+      fsl_fcs_cat == "Acceptable" & fsl_rcsi_cat == "Medium" & fsl_hhs_cat_ipc == "Little" ~ 17,
+      fsl_fcs_cat == "Poor" & fsl_rcsi_cat == "Medium" & fsl_hhs_cat_ipc == "Little" ~ 27,
+      fsl_fcs_cat == "Borderline" & fsl_rcsi_cat == "Medium" & fsl_hhs_cat_ipc == "Little" ~ 22,
+      fsl_fcs_cat == "Acceptable" & fsl_rcsi_cat == "High" & fsl_hhs_cat_ipc == "Little" ~ 32,
+      fsl_fcs_cat == "Poor" & fsl_rcsi_cat == "High" & fsl_hhs_cat_ipc == "Little" ~ 42,
+      fsl_fcs_cat == "Borderline" & fsl_rcsi_cat == "High" & fsl_hhs_cat_ipc == "Little" ~ 37,
       fsl_fcs_cat == "Acceptable" & fsl_rcsi_cat == "No to Low" & fsl_hhs_cat_ipc == "Moderate" ~ 3,
       fsl_fcs_cat == "Poor" & fsl_rcsi_cat == "No to Low" & fsl_hhs_cat_ipc == "Moderate" ~ 13,
       fsl_fcs_cat == "Borderline" & fsl_rcsi_cat == "No to Low" & fsl_hhs_cat_ipc == "Moderate" ~ 8,
@@ -167,7 +167,7 @@ testthat::test_that("check if function producing expected output with (FCS/RCSI/
       rcsi_categories_medium = "Medium",
       rcsi_categories_high = "High",
       hhs_categories_none = "None",
-      hhs_categories_little = "No or Little",
+      hhs_categories_little = "Little",
       hhs_categories_moderate = "Moderate",
       hhs_categories_severe = "Severe",
       hhs_categories_very_severe = "Very Severe"
@@ -181,7 +181,7 @@ testthat::test_that("check if function producing expected output with (HDDS/RCSI
   test_df <- expand.grid(
     fsl_hdds_cat = c("Low", "Medium", "High"),
     fsl_rcsi_cat = c("No to Low", "Medium", "High"),
-    fsl_hhs_cat_ipc = c("None", "Moderate", "Very Severe", "Severe", "No or Little")
+    fsl_hhs_cat_ipc = c("None", "Moderate", "Very Severe", "Severe", "Little")
   ) |>
     as.data.frame()
   expected_output_success <- test_df |>
@@ -195,15 +195,15 @@ testthat::test_that("check if function producing expected output with (HDDS/RCSI
       fsl_hdds_cat == "High" & fsl_rcsi_cat == "High" & fsl_hhs_cat_ipc == "None" ~ 31,
       fsl_hdds_cat == "Low" & fsl_rcsi_cat == "High" & fsl_hhs_cat_ipc == "None" ~ 41,
       fsl_hdds_cat == "Medium" & fsl_rcsi_cat == "High" & fsl_hhs_cat_ipc == "None" ~ 36,
-      fsl_hdds_cat == "High" & fsl_rcsi_cat == "No to Low" & fsl_hhs_cat_ipc == "No or Little" ~ 2,
-      fsl_hdds_cat == "Low" & fsl_rcsi_cat == "No to Low" & fsl_hhs_cat_ipc == "No or Little" ~ 12,
-      fsl_hdds_cat == "Medium" & fsl_rcsi_cat == "No to Low" & fsl_hhs_cat_ipc == "No or Little" ~ 7,
-      fsl_hdds_cat == "High" & fsl_rcsi_cat == "Medium" & fsl_hhs_cat_ipc == "No or Little" ~ 17,
-      fsl_hdds_cat == "Low" & fsl_rcsi_cat == "Medium" & fsl_hhs_cat_ipc == "No or Little" ~ 27,
-      fsl_hdds_cat == "Medium" & fsl_rcsi_cat == "Medium" & fsl_hhs_cat_ipc == "No or Little" ~ 22,
-      fsl_hdds_cat == "High" & fsl_rcsi_cat == "High" & fsl_hhs_cat_ipc == "No or Little" ~ 32,
-      fsl_hdds_cat == "Low" & fsl_rcsi_cat == "High" & fsl_hhs_cat_ipc == "No or Little" ~ 42,
-      fsl_hdds_cat == "Medium" & fsl_rcsi_cat == "High" & fsl_hhs_cat_ipc == "No or Little" ~ 37,
+      fsl_hdds_cat == "High" & fsl_rcsi_cat == "No to Low" & fsl_hhs_cat_ipc == "Little" ~ 2,
+      fsl_hdds_cat == "Low" & fsl_rcsi_cat == "No to Low" & fsl_hhs_cat_ipc == "Little" ~ 12,
+      fsl_hdds_cat == "Medium" & fsl_rcsi_cat == "No to Low" & fsl_hhs_cat_ipc == "Little" ~ 7,
+      fsl_hdds_cat == "High" & fsl_rcsi_cat == "Medium" & fsl_hhs_cat_ipc == "Little" ~ 17,
+      fsl_hdds_cat == "Low" & fsl_rcsi_cat == "Medium" & fsl_hhs_cat_ipc == "Little" ~ 27,
+      fsl_hdds_cat == "Medium" & fsl_rcsi_cat == "Medium" & fsl_hhs_cat_ipc == "Little" ~ 22,
+      fsl_hdds_cat == "High" & fsl_rcsi_cat == "High" & fsl_hhs_cat_ipc == "Little" ~ 32,
+      fsl_hdds_cat == "Low" & fsl_rcsi_cat == "High" & fsl_hhs_cat_ipc == "Little" ~ 42,
+      fsl_hdds_cat == "Medium" & fsl_rcsi_cat == "High" & fsl_hhs_cat_ipc == "Little" ~ 37,
       fsl_hdds_cat == "High" & fsl_rcsi_cat == "No to Low" & fsl_hhs_cat_ipc == "Moderate" ~ 3,
       fsl_hdds_cat == "Low" & fsl_rcsi_cat == "No to Low" & fsl_hhs_cat_ipc == "Moderate" ~ 13,
       fsl_hdds_cat == "Medium" & fsl_rcsi_cat == "No to Low" & fsl_hhs_cat_ipc == "Moderate" ~ 8,
@@ -254,7 +254,7 @@ testthat::test_that("check if function producing expected output with (HDDS/RCSI
                   rcsi_categories_medium = "Medium",
                   rcsi_categories_high = "High",
                   hhs_categories_none = "None",
-                  hhs_categories_little = "No or Little",
+                  hhs_categories_little = "Little",
                   hhs_categories_moderate = "Moderate",
                   hhs_categories_severe = "Severe",
                   hhs_categories_very_severe = "Very Severe"
@@ -266,7 +266,7 @@ testthat::test_that("check if function producing expected output with (HDDS/RCSI
 testthat::test_that("check if function producing expected output with (FCS/HHS)", {
   test_df <- expand.grid(
     fsl_fcs_cat = c("Acceptable", "Poor", "Borderline"),
-    fsl_hhs_cat_ipc = c("None", "Moderate", "Very Severe", "Severe", "No or Little")
+    fsl_hhs_cat_ipc = c("None", "Moderate", "Very Severe", "Severe", "Little")
   ) |>
     as.data.frame()
   expected_output_success <- test_df |>
@@ -274,9 +274,9 @@ testthat::test_that("check if function producing expected output with (FCS/HHS)"
       fsl_fcs_cat == "Acceptable" & fsl_hhs_cat_ipc == "None" ~ 1,
       fsl_fcs_cat == "Poor" & fsl_hhs_cat_ipc == "None" ~ 11,
       fsl_fcs_cat == "Borderline" & fsl_hhs_cat_ipc == "None" ~ 6,
-      fsl_fcs_cat == "Acceptable" & fsl_hhs_cat_ipc == "No or Little" ~ 2,
-      fsl_fcs_cat == "Poor" & fsl_hhs_cat_ipc == "No or Little" ~ 12,
-      fsl_fcs_cat == "Borderline" & fsl_hhs_cat_ipc == "No or Little" ~ 7,
+      fsl_fcs_cat == "Acceptable" & fsl_hhs_cat_ipc == "Little" ~ 2,
+      fsl_fcs_cat == "Poor" & fsl_hhs_cat_ipc == "Little" ~ 12,
+      fsl_fcs_cat == "Borderline" & fsl_hhs_cat_ipc == "Little" ~ 7,
       fsl_fcs_cat == "Acceptable" & fsl_hhs_cat_ipc == "Moderate" ~ 3,
       fsl_fcs_cat == "Poor" & fsl_hhs_cat_ipc == "Moderate" ~ 13,
       fsl_fcs_cat == "Borderline" & fsl_hhs_cat_ipc == "Moderate" ~ 8,
@@ -303,7 +303,7 @@ testthat::test_that("check if function producing expected output with (FCS/HHS)"
                   fcs_categories_poor = "Poor",
                   fcs_categories_borderline = "Borderline",
                   hhs_categories_none = "None",
-                  hhs_categories_little = "No or Little",
+                  hhs_categories_little = "Little",
                   hhs_categories_moderate = "Moderate",
                   hhs_categories_severe = "Severe",
                   hhs_categories_very_severe = "Very Severe"
@@ -316,7 +316,7 @@ testthat::test_that("check if function producing expected output with (FCS/HHS)"
 testthat::test_that("check if function producing expected output with (HDDS/HHS)", {
   test_df <- expand.grid(
     fsl_hdds_cat = c("High", "Low", "Medium"),
-    fsl_hhs_cat_ipc = c("None", "Moderate", "Very Severe", "Severe", "No or Little")
+    fsl_hhs_cat_ipc = c("None", "Moderate", "Very Severe", "Severe", "Little")
   ) |>
     as.data.frame()
   expected_output_success <- test_df |>
@@ -324,9 +324,9 @@ testthat::test_that("check if function producing expected output with (HDDS/HHS)
       fsl_hdds_cat == "High" & fsl_hhs_cat_ipc == "None" ~ 1,
       fsl_hdds_cat == "Low" & fsl_hhs_cat_ipc == "None" ~ 11,
       fsl_hdds_cat == "Medium" & fsl_hhs_cat_ipc == "None" ~ 6,
-      fsl_hdds_cat == "High" & fsl_hhs_cat_ipc == "No or Little" ~ 2,
-      fsl_hdds_cat == "Low" & fsl_hhs_cat_ipc == "No or Little" ~ 12,
-      fsl_hdds_cat == "Medium" & fsl_hhs_cat_ipc == "No or Little" ~ 7,
+      fsl_hdds_cat == "High" & fsl_hhs_cat_ipc == "Little" ~ 2,
+      fsl_hdds_cat == "Low" & fsl_hhs_cat_ipc == "Little" ~ 12,
+      fsl_hdds_cat == "Medium" & fsl_hhs_cat_ipc == "Little" ~ 7,
       fsl_hdds_cat == "High" & fsl_hhs_cat_ipc == "Moderate" ~ 3,
       fsl_hdds_cat == "Low" & fsl_hhs_cat_ipc == "Moderate" ~ 13,
       fsl_hdds_cat == "Medium" & fsl_hhs_cat_ipc == "Moderate" ~ 8,
@@ -353,7 +353,7 @@ testthat::test_that("check if function producing expected output with (HDDS/HHS)
                   fcs_categories_poor = "Low",
                   fcs_categories_borderline = "Medium",
                   hhs_categories_none = "None",
-                  hhs_categories_little = "No or Little",
+                  hhs_categories_little = "Little",
                   hhs_categories_moderate = "Moderate",
                   hhs_categories_severe = "Severe",
                   hhs_categories_very_severe = "Very Severe"
