@@ -50,7 +50,7 @@
 <span>  rcsi_categories_medium <span class="op">=</span> <span class="st">"Medium"</span>,</span>
 <span>  rcsi_categories_high <span class="op">=</span> <span class="st">"High"</span>,</span>
 <span>  hhs_categories_none <span class="op">=</span> <span class="st">"None"</span>,</span>
-<span>  hhs_categories_little <span class="op">=</span> <span class="st">"No or Little"</span>,</span>
+<span>  hhs_categories_little <span class="op">=</span> <span class="st">"Little"</span>,</span>
 <span>  hhs_categories_moderate <span class="op">=</span> <span class="st">"Moderate"</span>,</span>
 <span>  hhs_categories_severe <span class="op">=</span> <span class="st">"Severe"</span>,</span>
 <span>  hhs_categories_very_severe <span class="op">=</span> <span class="st">"Very Severe"</span>,</span>
@@ -113,7 +113,7 @@
 
 
 <dt id="arg-hhs-categories-little">hhs_categories_little<a class="anchor" aria-label="anchor" href="#arg-hhs-categories-little"></a></dt>
-<dd><p>The name of the value "No or Little" (by default) in the hhs categories</p></dd>
+<dd><p>The name of the value "Little" (by default) in the hhs categories</p></dd>
 
 
 <dt id="arg-hhs-categories-moderate">hhs_categories_moderate<a class="anchor" aria-label="anchor" href="#arg-hhs-categories-moderate"></a></dt>
@@ -152,7 +152,7 @@ of food consumption</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">test_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  fsl_fcs_cat <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Acceptable"</span>, <span class="st">"Poor"</span>, <span class="st">"Borderline"</span>, <span class="st">"Acceptable"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  fsl_rcsi_cat <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"No to Low"</span>, <span class="st">"Medium"</span>, <span class="st">"No to Low"</span>, <span class="st">"High"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  fsl_hhs_cat <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"None"</span>, <span class="st">"No or Little"</span>, <span class="st">"Severe"</span>, <span class="st">"Very Severe"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  fsl_hhs_cat <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"None"</span>, <span class="st">"Little"</span>, <span class="st">"Severe"</span>, <span class="st">"Very Severe"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  fsl_hdds_cat <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Low"</span>, <span class="st">"High"</span>, <span class="st">"Medium"</span>, <span class="st">"High"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">add_fcm_phase</span><span class="op">(</span><span class="va">test_data</span>,</span></span>
@@ -167,7 +167,7 @@ of food consumption</p>
 <span class="r-in"><span>  rcsi_categories_medium <span class="op">=</span> <span class="st">"Medium"</span>,</span></span>
 <span class="r-in"><span>  rcsi_categories_high <span class="op">=</span> <span class="st">"High"</span>,</span></span>
 <span class="r-in"><span>  hhs_categories_none <span class="op">=</span> <span class="st">"None"</span>,</span></span>
-<span class="r-in"><span>  hhs_categories_little <span class="op">=</span> <span class="st">"No or Little"</span>,</span></span>
+<span class="r-in"><span>  hhs_categories_little <span class="op">=</span> <span class="st">"Little"</span>,</span></span>
 <span class="r-in"><span>  hhs_categories_moderate <span class="op">=</span> <span class="st">"Moderate"</span>,</span></span>
 <span class="r-in"><span>  hhs_categories_severe <span class="op">=</span> <span class="st">"Severe"</span>,</span></span>
 <span class="r-in"><span>  hhs_categories_very_severe <span class="op">=</span> <span class="st">"Very Severe"</span>,</span></span>
@@ -175,11 +175,11 @@ of food consumption</p>
 <span class="r-in"><span>  hdds_categories_medium <span class="op">=</span> <span class="st">"Medium"</span>,</span></span>
 <span class="r-in"><span>  hdds_categories_high <span class="op">=</span> <span class="st">"High"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   fsl_fcs_cat fsl_rcsi_cat  fsl_hhs_cat fsl_hdds_cat fsl_fc_cell fsl_fc_phase</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1  Acceptable    No to Low         None          Low           1   Phase 1 FC</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2        Poor       Medium No or Little         High          27   Phase 3 FC</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3  Borderline    No to Low       Severe       Medium           9   Phase 3 FC</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4  Acceptable         High  Very Severe         High          35   Phase 4 FC</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   fsl_fcs_cat fsl_rcsi_cat fsl_hhs_cat fsl_hdds_cat fsl_fc_cell fsl_fc_phase</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1  Acceptable    No to Low        None          Low           1   Phase 1 FC</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2        Poor       Medium      Little         High          27   Phase 3 FC</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3  Borderline    No to Low      Severe       Medium           9   Phase 3 FC</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4  Acceptable         High Very Severe         High          35   Phase 4 FC</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
