@@ -1247,15 +1247,15 @@
     },
     "humind": {
       "Package": "humind",
-      "Version": "2024.1",
+      "Version": "2024.1.1",
       "Source": "GitHub",
-      "Remotes": "gnoblet/impactR.utils, impact-initiatives/impactR4PHU",
       "RemoteType": "github",
-      "RemoteHost": "api.github.com",
-      "RemoteRepo": "humind",
       "RemoteUsername": "impact-initiatives-hppu",
+      "RemoteRepo": "humind",
       "RemoteRef": "HEAD",
-      "RemoteSha": "5301758a0b82c221450b489ebcb47bebbb853073",
+      "RemoteSha": "0ded11daa91c813239847aa817f99bd337c20598",
+      "RemoteHost": "api.github.com",
+      "Remotes": "gnoblet/impactR.utils, impact-initiatives/impactR4PHU",
       "Requirements": [
         "R",
         "dplyr",
@@ -1267,7 +1267,7 @@
         "stats",
         "tidyr"
       ],
-      "Hash": "87ad3f4e736a2e06ac1bbc0f7cdbd9af"
+      "Hash": "296ef8f62c376e152344a60684010e0a"
     },
     "ids": {
       "Package": "ids",
@@ -1286,9 +1286,9 @@
       "Source": "GitHub",
       "RemoteType": "github",
       "RemoteHost": "api.github.com",
-      "RemoteRepo": "impactR.utils",
       "RemoteUsername": "gnoblet",
-      "RemoteRef": "HEAD",
+      "RemoteRepo": "impactR.utils",
+      "RemoteRef": "main",
       "RemoteSha": "880a57ebb0282e377f888f352c746c9bde412e75",
       "Requirements": [
         "R",
@@ -1303,7 +1303,7 @@
         "tibble",
         "tidyr"
       ],
-      "Hash": "43e9e3473e04f43c14ccaa394eae577a"
+      "Hash": "f9b1ac73d8f88a20380b3f85d0ccb511"
     },
     "impactR4PHU": {
       "Package": "impactR4PHU",
@@ -1314,7 +1314,7 @@
       "RemoteRepo": "impactR4PHU",
       "RemoteUsername": "impact-initiatives",
       "RemoteRef": "HEAD",
-      "RemoteSha": "b25c117b3d49d98463e74a694ef1e4119615c016",
+      "RemoteSha": "d9f5ebd1613ff8f395080e5da49741bec6595ff9",
       "Requirements": [
         "GGally",
         "R",
@@ -1335,7 +1335,7 @@
         "writexl",
         "zscorer"
       ],
-      "Hash": "0ed6773d1a67cf8b54c36ebb67014509"
+      "Hash": "ed0bc7e6ed8caecc77db8c3d021b4de3"
     },
     "ini": {
       "Package": "ini",
