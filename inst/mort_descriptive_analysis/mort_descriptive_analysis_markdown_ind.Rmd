@@ -998,7 +998,11 @@ plot_results.summary.birth <- ggplot2::ggplot(overall_birth, ggplot2::aes(x = va
   ggplot2::geom_text(ggplot2::aes(x = variable, y = `95%uci`, label = `95%uci`, vjust = -0.5, color = "red", fontface = "bold"), size = 3)+
   ggplot2::geom_point(ggplot2::aes(y = point.est), color = "blue")+
   ggplot2::geom_text(ggplot2::aes(x = variable, y = point.est, label = point.est, hjust = -0.5), size = 3, color = "blue", fontface = "bold")+
-  ggplot2::scale_y_continuous(limits=c(0, max(overall_birth$`95%uci`)))+
+  ggplot2::scale_y_continuous(limits=c(0, if(max(overall_birth$`95%uci`)<2){
+    2
+  } else {
+    max(overall_birth$`95%uci`)
+  }))+
   ggplot2::theme(legend.position = "none", axis.title.y = ggplot2::element_blank())+
   ggplot2::xlab("Overall Birth Rates")
 ```
@@ -1006,6 +1010,82 @@ plot_results.summary.birth <- ggplot2::ggplot(overall_birth, ggplot2::aes(x = va
 ```{r}
 plot_results.summary.birth
 ```
+
+##### Birth By Admin 1
+
+```{r, include=FALSE}
+birth_admin1 <- results_mort_admin1 %>%
+  dplyr::mutate(`point.est` = as.numeric(birth_rate),
+                `95%lci` = as.numeric(stringr::str_extract(birth_rate_ci,"(?<=\\[)[^\\s\\-]*")),
+                `95%uci` = as.numeric(stringr::str_remove(stringr::str_extract(birth_rate_ci,"(?<=-)[^\\]]*")," "))) %>%
+  dplyr::select(group,`point.est`,`95%lci`,`95%uci`) %>%
+  dplyr::mutate(variable = "Birth") %>%
+  dplyr::relocate(variable, .before = 1)
+```
+
+```{r, results='asis'}
+DT::datatable(birth_admin1)
+```
+
+```{r, include=FALSE}
+plot_results.summary.birth_admin1 <- ggplot2::ggplot(birth_admin1, ggplot2::aes(x = variable)) +
+  ggplot2::geom_errorbar(ggplot2::aes(ymin =`95%lci`, ymax = `95%uci`, width = 0.2, color = "red"))+
+  ggplot2::geom_text(ggplot2::aes(x = variable, y = `95%lci`, label = `95%lci`, vjust = 1.5, color = "red", fontface = "bold"), size = 3)+
+  ggplot2::geom_text(ggplot2::aes(x = variable, y = `95%uci`, label = `95%uci`, vjust = -0.5, color = "red", fontface = "bold"), size = 3)+
+  ggplot2::geom_point(ggplot2::aes(y = point.est), color = "blue")+
+  ggplot2::geom_text(ggplot2::aes(x = variable, y = point.est, label = point.est, hjust = -0.5), size = 3, color = "blue", fontface = "bold")+
+  ggplot2::scale_y_continuous(limits=c(0, if(max(birth_admin1$`95%uci`)<2){
+    2
+  } else {
+    max(birth_admin1$`95%uci`)
+  }))+
+  ggplot2::theme(legend.position = "none", axis.title.y = ggplot2::element_blank())+
+  ggplot2::xlab("Overall Birth Rates")
+```
+
+```{r}
+plot_results.summary.birth_admin1
+```
+
+##### Birth By Population Group
+
+```{r, include=FALSE}
+birth_pop_group <- results_mort_pop_group %>%
+  dplyr::mutate(`point.est` = as.numeric(birth_rate),
+                `95%lci` = as.numeric(stringr::str_extract(birth_rate_ci,"(?<=\\[)[^\\s\\-]*")),
+                `95%uci` = as.numeric(stringr::str_remove(stringr::str_extract(birth_rate_ci,"(?<=-)[^\\]]*")," "))) %>%
+  dplyr::select(group,`point.est`,`95%lci`,`95%uci`) %>%
+  dplyr::mutate(variable = "Birth") %>%
+  dplyr::relocate(variable, .before = 1)
+```
+
+```{r, results='asis'}
+DT::datatable(birth_pop_group)
+```
+
+```{r, include=FALSE}
+plot_results.summary.birth_pop_group <- ggplot2::ggplot(birth_pop_group, ggplot2::aes(x = variable)) +
+  ggplot2::geom_errorbar(ggplot2::aes(ymin =`95%lci`, ymax = `95%uci`, width = 0.2, color = "red"))+
+  ggplot2::geom_text(ggplot2::aes(x = variable, y = `95%lci`, label = `95%lci`, vjust = 1.5, color = "red", fontface = "bold"), size = 3)+
+  ggplot2::geom_text(ggplot2::aes(x = variable, y = `95%uci`, label = `95%uci`, vjust = -0.5, color = "red", fontface = "bold"), size = 3)+
+  ggplot2::geom_point(ggplot2::aes(y = point.est), color = "blue")+
+  ggplot2::geom_text(ggplot2::aes(x = variable, y = point.est, label = point.est, hjust = -0.5), size = 3, color = "blue", fontface = "bold")+
+  ggplot2::scale_y_continuous(limits=c(0, if(max(birth_pop_group$`95%uci`)<2){
+    2
+  } else {
+    max(birth_pop_group$`95%uci`)
+  }))+
+  ggplot2::theme(legend.position = "none", axis.title.y = ggplot2::element_blank())+
+  ggplot2::xlab("Overall Birth Rates")
+```
+
+```{r}
+plot_results.summary.birth_pop_group
+```
+
+
+### TO ADD CAUSE OF DEATH (ADMIN1 - POP STATUS) & % of DEATHS that SOUGHT CARE in Previous 2 Weeks (ADMIN1 - POP STATUS)
+
 
 ```{r message=TRUE, warning=FALSE, include=FALSE}
 ## output XLSX files
