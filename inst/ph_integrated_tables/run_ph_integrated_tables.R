@@ -1432,6 +1432,7 @@ if(mort_collected == "yes") {
                                    mort > 1.4 ~ "Extremely high",
                                    TRUE ~ NA))
   ph_int_table <- ph_int_table %>%
+    dplyr::arrange(desc(mort)) %>%
     dplyr::mutate(mort_lci = mort_data$mort_lci[match(!!rlang::sym(admin1),mort_data$admin1)],
                   mort_uci = mort_data$mort_uci[match(!!rlang::sym(admin1),mort_data$admin1)],
                   mort = paste0(mort," [",mort_lci," - ",mort_uci,"]")) %>%
