@@ -43,15 +43,17 @@ for(sheet in sheet_names[-1]) {
 
 ## Load Mortality
 if(mort_collected == "yes"){
-  mort_data <- readxl::read_excel(filename.mortality, col_types = "text") %>% 
-    dplyr::rename("mort" = point.est)
+  mort_data <- readxl::read_excel(filename.mortality, col_types = "text") %>%
+    dplyr::rename("mort" = point.est,
+                  "mort_lci"=`95%lci`,
+                  "mort_uci"=`95%uci`)
 }
 
 
 if(!file.exists("inputs/environment.Rdata")) {
   ## Detect Admin1 column
   admin1 <- names(data.list$main)[grepl("admin",names(data.list$main))]
-  
+
   if(length(admin1) == 1){
     yes_no <- svDialogs::dlg_message(paste0("Is '", admin1, "' the correct admin1 column?"), type = "yesno")$res
     if(yes_no == "no"){
@@ -86,7 +88,7 @@ if(!file.exists("inputs/environment.Rdata")) {
     } else if (length(fsl_fcs_cereal) == 0) {
       fsl_fcs_cereal <- svDialogs::dlg_input(message= "Enter the name of the fsl_fcs_cereal","fsl_fcs_cereal")$res
     }
-    
+
     fsl_fcs_legumes <- names(data.list$main)[grepl("legume|pulse|bean|nuts|noix",names(data.list$main))]
     if(length(fsl_fcs_legumes) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_fcs_legumes, "' the correct fsl_fcs_legumes column?"), type = "yesno")$res
@@ -101,7 +103,7 @@ if(!file.exists("inputs/environment.Rdata")) {
     } else if (length(fsl_fcs_legumes) == 0) {
       fsl_fcs_legumes <- svDialogs::dlg_input(message= "Enter the name of the fsl_fcs_legumes","fsl_fcs_legumes")$res
     }
-    
+
     fsl_fcs_veg <- names(data.list$main)[grepl("veg|legume",names(data.list$main))]
     if(length(fsl_fcs_veg) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_fcs_veg, "' the correct fsl_fcs_veg column?"), type = "yesno")$res
@@ -116,7 +118,7 @@ if(!file.exists("inputs/environment.Rdata")) {
     } else if (length(fsl_fcs_veg) == 0) {
       fsl_fcs_veg <- svDialogs::dlg_input(message= "Enter the name of the fsl_fcs_veg","fsl_fcs_veg")$res
     }
-    
+
     fsl_fcs_fruit <- names(data.list$main)[grepl("fruit",names(data.list$main))]
     if(length(fsl_fcs_fruit) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_fcs_fruit, "' the correct fsl_fcs_fruit column?"), type = "yesno")$res
@@ -131,7 +133,7 @@ if(!file.exists("inputs/environment.Rdata")) {
     } else if (length(fsl_fcs_fruit) == 0) {
       fsl_fcs_fruit <- svDialogs::dlg_input(message= "Enter the name of the fsl_fcs_fruit","fsl_fcs_fruit")$res
     }
-    
+
     fsl_fcs_meat <- names(data.list$main)[grepl("meat|viande",names(data.list$main))]
     if(length(fsl_fcs_meat) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_fcs_meat, "' the correct fsl_fcs_meat column?"), type = "yesno")$res
@@ -146,7 +148,7 @@ if(!file.exists("inputs/environment.Rdata")) {
     } else if (length(fsl_fcs_meat) == 0) {
       fsl_fcs_meat <- svDialogs::dlg_input(message= "Enter the name of the fsl_fcs_meat","fsl_fcs_meat")$res
     }
-    
+
     fsl_fcs_dairy <- names(data.list$main)[grepl("dairy|milk|lait",names(data.list$main))]
     if(length(fsl_fcs_dairy) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_fcs_dairy, "' the correct fsl_fcs_dairy column?"), type = "yesno")$res
@@ -161,7 +163,7 @@ if(!file.exists("inputs/environment.Rdata")) {
     } else if (length(fsl_fcs_dairy) == 0) {
       fsl_fcs_dairy <- svDialogs::dlg_input(message= "Enter the name of the fsl_fcs_dairy","fsl_fcs_dairy")$res
     }
-    
+
     fsl_fcs_sugar <- names(data.list$main)[grepl("sugar|sucre",names(data.list$main))]
     if(length(fsl_fcs_sugar) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_fcs_sugar, "' the correct fsl_fcs_sugar column?"), type = "yesno")$res
@@ -176,7 +178,7 @@ if(!file.exists("inputs/environment.Rdata")) {
     } else if (length(fsl_fcs_sugar) == 0) {
       fsl_fcs_sugar <- svDialogs::dlg_input(message= "Enter the name of the fsl_fcs_sugar","fsl_fcs_sugar")$res
     }
-    
+
     fsl_fcs_oil <- names(data.list$main)[grepl("oil|huile",names(data.list$main))]
     if(length(fsl_fcs_oil) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_fcs_oil, "' the correct fsl_fcs_oil column?"), type = "yesno")$res
@@ -191,7 +193,7 @@ if(!file.exists("inputs/environment.Rdata")) {
     } else if (length(fsl_fcs_oil) == 0) {
       fsl_fcs_oil <- svDialogs::dlg_input(message= "Enter the name of the fsl_fcs_oil","fsl_fcs_oil")$res
     }
-    
+
     fcs_check_columns <- c(fsl_fcs_cereal,
                            fsl_fcs_legumes,
                            fsl_fcs_veg,
@@ -200,7 +202,7 @@ if(!file.exists("inputs/environment.Rdata")) {
                            fsl_fcs_dairy,
                            fsl_fcs_sugar,
                            fsl_fcs_oil)
-    
+
     if(!all(fcs_check_columns %in% names(data.list$main))) {
       svDialogs::dlg_message("Please check if the FCS columns selected are correct and available in the dataset")
       stop("Please check if the FCS columns selected are correct and available in the dataset")
@@ -265,7 +267,7 @@ if(!file.exists("inputs/environment.Rdata")) {
     } else if (length(fsl_rcsi_lessquality) == 0) {
       fsl_rcsi_lessquality <- svDialogs::dlg_input(message= "Enter the name of the fsl_rcsi_lessquality","fsl_rcsi_lessquality")$res
     }
-    
+
     fsl_rcsi_borrow <- names(data.list$main)[grepl("borrow|emprunt",names(data.list$main))]
     if(length(fsl_rcsi_borrow) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_rcsi_borrow, "' the correct fsl_rcsi_borrow column?"), type = "yesno")$res
@@ -280,7 +282,7 @@ if(!file.exists("inputs/environment.Rdata")) {
     } else if (length(fsl_rcsi_borrow) == 0) {
       fsl_rcsi_borrow <- svDialogs::dlg_input(message= "Enter the name of the fsl_rcsi_borrow","fsl_rcsi_borrow")$res
     }
-    
+
     fsl_rcsi_mealsize <- names(data.list$main)[grepl("mealsize|limit|portion|diminu",names(data.list$main))]
     if(length(fsl_rcsi_mealsize) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_rcsi_mealsize, "' the correct fsl_rcsi_mealsize column?"), type = "yesno")$res
@@ -295,7 +297,7 @@ if(!file.exists("inputs/environment.Rdata")) {
     } else if (length(fsl_rcsi_mealsize) == 0) {
       fsl_rcsi_mealsize <- svDialogs::dlg_input(message= "Enter the name of the fsl_rcsi_mealsize","fsl_rcsi_mealsize")$res
     }
-    
+
     fsl_rcsi_mealadult <- names(data.list$main)[grepl("mealadult|restrict|consommation",names(data.list$main))]
     if(length(fsl_rcsi_mealadult) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_rcsi_mealadult, "' the correct fsl_rcsi_mealadult column?"), type = "yesno")$res
@@ -310,7 +312,7 @@ if(!file.exists("inputs/environment.Rdata")) {
     } else if (length(fsl_rcsi_mealadult) == 0) {
       fsl_rcsi_mealadult <- svDialogs::dlg_input(message= "Enter the name of the fsl_rcsi_mealadult","fsl_rcsi_mealadult")$res
     }
-    
+
     fsl_rcsi_mealnb <- names(data.list$main)[grepl("mealnb|reduce|meals|nb|repas",names(data.list$main))]
     if(length(fsl_rcsi_mealnb) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_rcsi_mealnb, "' the correct fsl_rcsi_mealnb column?"), type = "yesno")$res
@@ -325,13 +327,13 @@ if(!file.exists("inputs/environment.Rdata")) {
     } else if (length(fsl_rcsi_mealnb) == 0) {
       fsl_rcsi_mealnb <- svDialogs::dlg_input(message= "Enter the name of the fsl_rcsi_mealnb","fsl_rcsi_mealnb")$res
     }
-    
+
     rcsi_check_columns <- c(fsl_rcsi_lessquality,
                             fsl_rcsi_borrow,
                             fsl_rcsi_mealsize,
                             fsl_rcsi_mealadult,
                             fsl_rcsi_mealnb)
-    
+
     if(!all(rcsi_check_columns %in% names(data.list$main))) {
       svDialogs::dlg_message("Please check if the rCSI columns selected are correct and available in the dataset")
       stop("Please check if the rCSI columns selected are correct and available in the dataset")
@@ -382,7 +384,7 @@ if(!file.exists("inputs/environment.Rdata")) {
     } else if (length(fsl_hhs_nofoodhh) == 0) {
       fsl_hhs_nofoodhh <- svDialogs::dlg_input(message= "Enter the name of the fsl_hhs_nofoodhh","fsl_hhs_nofoodhh")$res
     }
-    
+
     fsl_hhs_nofoodhh_freq <- names(data.list$main)[grepl("nofood|lack|aucun",names(data.list$main))]
     if(length(fsl_hhs_nofoodhh_freq) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_hhs_nofoodhh_freq, "' the correct fsl_hhs_nofoodhh_freq column?"), type = "yesno")$res
@@ -397,7 +399,7 @@ if(!file.exists("inputs/environment.Rdata")) {
     } else if (length(fsl_hhs_nofoodhh_freq) == 0) {
       fsl_hhs_nofoodhh_freq <- svDialogs::dlg_input(message= "Enter the name of the fsl_hhs_nofoodhh_freq","fsl_hhs_nofoodhh_freq")$res
     }
-    
+
     fsl_hhs_sleephungry <- names(data.list$main)[grepl("sleephungry|sleep|dormir",names(data.list$main))]
     if(length(fsl_hhs_sleephungry) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_hhs_sleephungry, "' the correct fsl_hhs_sleephungry column?"), type = "yesno")$res
@@ -412,7 +414,7 @@ if(!file.exists("inputs/environment.Rdata")) {
     } else if (length(fsl_hhs_sleephungry) == 0) {
       fsl_hhs_sleephungry <- svDialogs::dlg_input(message= "Enter the name of the fsl_hhs_sleephungry","fsl_hhs_sleephungry")$res
     }
-    
+
     fsl_hhs_sleephungry_freq <- names(data.list$main)[grepl("sleephungry|sleep|dormir",names(data.list$main))]
     if(length(fsl_hhs_sleephungry_freq) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_hhs_sleephungry_freq, "' the correct fsl_hhs_sleephungry_freq column?"), type = "yesno")$res
@@ -427,7 +429,7 @@ if(!file.exists("inputs/environment.Rdata")) {
     } else if (length(fsl_hhs_sleephungry_freq) == 0) {
       fsl_hhs_sleephungry_freq <- svDialogs::dlg_input(message= "Enter the name of the fsl_hhs_sleephungry_freq","fsl_hhs_sleephungry_freq")$res
     }
-    
+
     fsl_hhs_alldaynight <- names(data.list$main)[grepl("alldaynight|daynoteating|wholeday|assez",names(data.list$main))]
     if(length(fsl_hhs_alldaynight) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_hhs_alldaynight, "' the correct fsl_hhs_alldaynight column?"), type = "yesno")$res
@@ -442,7 +444,7 @@ if(!file.exists("inputs/environment.Rdata")) {
     } else if (length(fsl_hhs_alldaynight) == 0) {
       fsl_hhs_alldaynight <- svDialogs::dlg_input(message= "Enter the name of the fsl_hhs_alldaynight","fsl_hhs_alldaynight")$res
     }
-    
+
     fsl_hhs_alldaynight_freq <- names(data.list$main)[grepl("alldaynight|daynoteating|wholeday|assez",names(data.list$main))]
     if(length(fsl_hhs_alldaynight_freq) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_hhs_alldaynight_freq, "' the correct fsl_hhs_alldaynight_freq column?"), type = "yesno")$res
@@ -457,15 +459,15 @@ if(!file.exists("inputs/environment.Rdata")) {
     } else if (length(fsl_hhs_alldaynight_freq) == 0) {
       fsl_hhs_alldaynight_freq <- svDialogs::dlg_input(message= "Enter the name of the fsl_hhs_alldaynight_freq","fsl_hhs_alldaynight_freq")$res
     }
-    
+
     hhs_check_columns <- c(fsl_hhs_nofoodhh,
                            fsl_hhs_sleephungry,
                            fsl_hhs_alldaynight)
-    
+
     hhs_check_columns_freq <- c(fsl_hhs_nofoodhh_freq,
                                 fsl_hhs_sleephungry_freq,
                                 fsl_hhs_alldaynight_freq)
-    
+
     if(!all(c(hhs_check_columns,hhs_check_columns_freq) %in% names(data.list$main))) {
       svDialogs::dlg_message("Please check if the HHS columns selected are correct and available in the dataset")
       stop("Please check if the HHS columns selected are correct and available in the dataset")
@@ -475,7 +477,7 @@ if(!file.exists("inputs/environment.Rdata")) {
       rarely_answer <- tcltk::tk_select.list(unique(unlist(data.list$main[,hhs_check_columns_freq])), title = "Rarely Value")
       sometimes_answer <- tcltk::tk_select.list(unique(unlist(data.list$main[,hhs_check_columns_freq])), title = "Sometimes Value")
       often_answer <- tcltk::tk_select.list(unique(unlist(data.list$main[,hhs_check_columns_freq])), title = "Often Value")
-      data.list$main <- data.list$main %>% 
+      data.list$main <- data.list$main %>%
         dplyr::select(-contains("_recoded"))
       data.list$main <- data.list$main %>%
         dplyr::mutate_at(vars(hhs_check_columns),~case_when(. == yes_answer ~ yes_answer,
@@ -507,14 +509,14 @@ if(!file.exists("inputs/environment.Rdata")) {
     hhs_check_columns <- c(fsl_hhs_nofoodhh,
                            fsl_hhs_sleephungry,
                            fsl_hhs_alldaynight)
-    
+
     hhs_check_columns_freq <- c(fsl_hhs_nofoodhh_freq,
                                 fsl_hhs_sleephungry_freq,
                                 fsl_hhs_alldaynight_freq)
   }
 } else {
   if("HHS" %in% FSL_indicators){
-    data.list$main <- data.list$main %>% 
+    data.list$main <- data.list$main %>%
       dplyr::select(-contains("_recoded"))
     data.list$main <- data.list$main %>%
       dplyr::mutate_at(vars(hhs_check_columns),~case_when(. == yes_answer ~ yes_answer,
@@ -568,7 +570,7 @@ if(!file.exists("inputs/environment.Rdata")) {
     } else if (length(fsl_lcsi_stress2) == 0) {
       fsl_lcsi_stress2 <- svDialogs::dlg_input(message= "Enter the name of the fsl_lcsi_stress2","fsl_lcsi_stress2")$res
     }
-    
+
     fsl_lcsi_stress3 <- names(data.list$main)[grepl("stress|stress3",names(data.list$main))]
     if(length(fsl_lcsi_stress3) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_lcsi_stress3, "' the correct fsl_lcsi_stress3 column?"), type = "yesno")$res
@@ -583,7 +585,7 @@ if(!file.exists("inputs/environment.Rdata")) {
     } else if (length(fsl_lcsi_stress3) == 0) {
       fsl_lcsi_stress3 <- svDialogs::dlg_input(message= "Enter the name of the fsl_lcsi_stress3","fsl_lcsi_stress3")$res
     }
-    
+
     fsl_lcsi_stress4 <- names(data.list$main)[grepl("stress|stress4",names(data.list$main))]
     if(length(fsl_lcsi_stress4) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_lcsi_stress4, "' the correct fsl_lcsi_stress4 column?"), type = "yesno")$res
@@ -598,7 +600,7 @@ if(!file.exists("inputs/environment.Rdata")) {
     } else if (length(fsl_lcsi_stress4) == 0) {
       fsl_lcsi_stress4 <- svDialogs::dlg_input(message= "Enter the name of the fsl_lcsi_stress4","fsl_lcsi_stress4")$res
     }
-    
+
     fsl_lcsi_crisis1 <- names(data.list$main)[grepl("crisis|crisis1",names(data.list$main))]
     if(length(fsl_lcsi_crisis1) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_lcsi_crisis1, "' the correct fsl_lcsi_crisis1 column?"), type = "yesno")$res
@@ -613,7 +615,7 @@ if(!file.exists("inputs/environment.Rdata")) {
     } else if (length(fsl_lcsi_crisis1) == 0) {
       fsl_lcsi_crisis1 <- svDialogs::dlg_input(message= "Enter the name of the fsl_lcsi_crisis1","fsl_lcsi_crisis1")$res
     }
-    
+
     fsl_lcsi_crisis2 <- names(data.list$main)[grepl("crisis|crisis2",names(data.list$main))]
     if(length(fsl_lcsi_crisis2) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_lcsi_crisis2, "' the correct fsl_lcsi_crisis2 column?"), type = "yesno")$res
@@ -628,7 +630,7 @@ if(!file.exists("inputs/environment.Rdata")) {
     } else if (length(fsl_lcsi_crisis2) == 0) {
       fsl_lcsi_crisis2 <- svDialogs::dlg_input(message= "Enter the name of the fsl_lcsi_crisis2","fsl_lcsi_crisis2")$res
     }
-    
+
     fsl_lcsi_crisis3 <- names(data.list$main)[grepl("crisis|crisis3",names(data.list$main))]
     if(length(fsl_lcsi_crisis3) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_lcsi_crisis3, "' the correct fsl_lcsi_crisis3 column?"), type = "yesno")$res
@@ -643,7 +645,7 @@ if(!file.exists("inputs/environment.Rdata")) {
     } else if (length(fsl_lcsi_crisis3) == 0) {
       fsl_lcsi_crisis3 <- svDialogs::dlg_input(message= "Enter the name of the fsl_lcsi_crisis3","fsl_lcsi_crisis3")$res
     }
-    
+
     fsl_lcsi_emergency1 <- names(data.list$main)[grepl("emergency|emergency1",names(data.list$main))]
     if(length(fsl_lcsi_emergency1) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_lcsi_emergency1, "' the correct fsl_lcsi_emergency1 column?"), type = "yesno")$res
@@ -658,7 +660,7 @@ if(!file.exists("inputs/environment.Rdata")) {
     } else if (length(fsl_lcsi_emergency1) == 0) {
       fsl_lcsi_emergency1 <- svDialogs::dlg_input(message= "Enter the name of the fsl_lcsi_emergency1","fsl_lcsi_emergency1")$res
     }
-    
+
     fsl_lcsi_emergency2 <- names(data.list$main)[grepl("emergency|emergency2",names(data.list$main))]
     if(length(fsl_lcsi_emergency2) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_lcsi_emergency2, "' the correct fsl_lcsi_emergency2 column?"), type = "yesno")$res
@@ -673,7 +675,7 @@ if(!file.exists("inputs/environment.Rdata")) {
     } else if (length(fsl_lcsi_emergency2) == 0) {
       fsl_lcsi_emergency2 <- svDialogs::dlg_input(message= "Enter the name of the fsl_lcsi_emergency2","fsl_lcsi_emergency2")$res
     }
-    
+
     fsl_lcsi_emergency3 <- names(data.list$main)[grepl("emergency|emergency3",names(data.list$main))]
     if(length(fsl_lcsi_emergency3) == 1){
       yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_lcsi_emergency3, "' the correct fsl_lcsi_emergency3 column?"), type = "yesno")$res
@@ -688,12 +690,12 @@ if(!file.exists("inputs/environment.Rdata")) {
     } else if (length(fsl_lcsi_emergency3) == 0) {
       fsl_lcsi_emergency3 <- svDialogs::dlg_input(message= "Enter the name of the fsl_lcsi_emergency3","fsl_lcsi_emergency3")$res
     }
-    
+
     lcsi_check_columns <- c(fsl_lcsi_stress1,fsl_lcsi_stress2,fsl_lcsi_stress3,fsl_lcsi_stress4,
                             fsl_lcsi_crisis1,fsl_lcsi_crisis2,fsl_lcsi_crisis3,
                             fsl_lcsi_emergency1,fsl_lcsi_emergency2,fsl_lcsi_emergency3)
-    
-    
+
+
     if(!all(lcsi_check_columns %in% names(data.list$main))) {
       svDialogs::dlg_message("Please check if the LCSI columns selected are correct and available in the dataset")
       stop("Please check if the LCSI columns selected are correct and available in the dataset")
@@ -784,11 +786,11 @@ if(all(fcm_check_1_columns %in% names(data.list$main)) |
 }
 
 
-admin1_df <- data.list$main %>% 
-  dplyr::group_by(!!rlang::sym(admin1)) %>% 
+admin1_df <- data.list$main %>%
+  dplyr::group_by(!!rlang::sym(admin1)) %>%
   dplyr::summarise(num_observartion = n())
 
-ph_int_table <- admin1_df %>% 
+ph_int_table <- admin1_df %>%
   dplyr::mutate(children_sick = NA,
                 unmet_healthcare = NA,
                 amn_phase = NA,
@@ -804,44 +806,44 @@ ph_int_table <- admin1_df %>%
                 distance_healthcare = NA)
 
 if(mort_collected == "yes"){
-  ph_int_table <- ph_int_table %>% 
-    dplyr::mutate(mort = mort_data$mort[match(!!rlang::sym(admin1),mort_data$admin1)]) %>% 
+  ph_int_table <- ph_int_table %>%
+    dplyr::mutate(mort = mort_data$mort[match(!!rlang::sym(admin1),mort_data$admin1)]) %>%
     dplyr::relocate(mort, .before = 3)
 }
 
 if("FCS" %in% FSL_indicators) {
-  fcs_df <- data.list$main %>% 
-    dplyr::filter(fsl_fcs_cat == "Poor") %>% 
-    dplyr::group_by(!!rlang::sym(admin1)) %>% 
+  fcs_df <- data.list$main %>%
+    dplyr::filter(fsl_fcs_cat == "Poor") %>%
+    dplyr::group_by(!!rlang::sym(admin1)) %>%
     dplyr::summarise(fcs = n())
 }
 
 if("rCSI" %in% FSL_indicators) {
-  rcsi_df <- data.list$main %>% 
-    dplyr::filter(fsl_rcsi_cat == "High") %>% 
-    dplyr::group_by(!!rlang::sym(admin1)) %>% 
+  rcsi_df <- data.list$main %>%
+    dplyr::filter(fsl_rcsi_cat == "High") %>%
+    dplyr::group_by(!!rlang::sym(admin1)) %>%
     dplyr::summarise(rcsi = n())
 }
 
 if("HHS" %in% FSL_indicators) {
-  hhs_df <- data.list$main %>% 
-    dplyr::filter(fsl_hhs_cat_ipc %in% c("Moderate","Severe","Very Severe")) %>% 
-    dplyr::group_by(!!rlang::sym(admin1)) %>% 
+  hhs_df <- data.list$main %>%
+    dplyr::filter(fsl_hhs_cat_ipc %in% c("Moderate","Severe","Very Severe")) %>%
+    dplyr::group_by(!!rlang::sym(admin1)) %>%
     dplyr::summarise(hhs = n())
 }
 
 if("LCSI" %in% FSL_indicators) {
-  lcsi_df <- data.list$main %>% 
-    dplyr::filter(fsl_lcsi_cat == "Emergency") %>% 
-    dplyr::group_by(!!rlang::sym(admin1)) %>% 
+  lcsi_df <- data.list$main %>%
+    dplyr::filter(fsl_lcsi_cat == "Emergency") %>%
+    dplyr::group_by(!!rlang::sym(admin1)) %>%
     dplyr::summarise(lcsi = n())
 }
 
-fsl_phase_df <- data.list$main %>% 
+fsl_phase_df <- data.list$main %>%
   dplyr::filter(fsl_fc_phase %in% c("Phase 3 FC",
                                     "Phase 4 FC",
-                                    "Phase 5 FC")) %>% 
-  dplyr::group_by(!!rlang::sym(admin1)) %>% 
+                                    "Phase 5 FC")) %>%
+  dplyr::group_by(!!rlang::sym(admin1)) %>%
   dplyr::summarise(fcs_phase = n())
 
 
@@ -865,7 +867,7 @@ if(!file.exists("inputs/environment.Rdata")) {
   }
   survey_modality_in_person <- tcltk::tk_select.list(unique(unlist(data.list$main[,survey_modality])), title = "In Person Values", multiple = T)
   survey_modality_remote <- tcltk::tk_select.list(unique(unlist(data.list$main[,survey_modality])), title = "Remote Values", multiple = T)
-  
+
   #Handwashing Facility
   facility <- names(data.list$main)[grepl("handwashing|facility",names(data.list$main))]
   if(length(facility) == 1){
@@ -885,7 +887,7 @@ if(!file.exists("inputs/environment.Rdata")) {
   facility_no <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility])), title = "None Value")
   facility_no_permission <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility])), title = "No permission Value")
   facility_undefined <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility])), title = "Other Value")
-  
+
   # Observed water of handwashing facility
   facility_observed_water <- names(data.list$main)[grepl("facility_observed_water",names(data.list$main))]
   if(length(facility_observed_water) == 1){
@@ -903,7 +905,7 @@ if(!file.exists("inputs/environment.Rdata")) {
   }
   facility_observed_water_yes <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_observed_water])), title = "Yes Value")
   facility_observed_water_no <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_observed_water])), title = "No Value")
-  
+
   ## Observed Soap Handwashing Facility
   facility_observed_soap <- names(data.list$main)[grepl("facility_observed_soap",names(data.list$main))]
   if(length(facility_observed_soap) == 1){
@@ -922,7 +924,7 @@ if(!file.exists("inputs/environment.Rdata")) {
   facility_observed_soap_yes <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_observed_soap])), title = "Yes Value")
   facility_observed_soap_no <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_observed_soap])), title = "No Value")
   facility_observed_soap_alternative <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_observed_soap])), title = "Alternative Value")
-  
+
   ## Reported Handwashing Facility
   facility_reported <- names(data.list$main)[grepl("facility_reported",names(data.list$main))]
   if(length(facility_reported) == 1){
@@ -941,7 +943,7 @@ if(!file.exists("inputs/environment.Rdata")) {
   facility_reported_yes <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_reported])), title = "Yes Value", multiple = TRUE)
   facility_reported_no <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_reported])), title = "No Value", multiple = TRUE)
   facility_reported_undefined <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_reported])), title = "Undefined Value", multiple = TRUE)
-  
+
   ## Reported no permission soap
   facility_reported_no_permission_soap <- names(data.list$main)[grepl("soap_observed",names(data.list$main))]
   if(length(facility_reported_no_permission_soap) == 1){
@@ -979,7 +981,7 @@ if(!file.exists("inputs/environment.Rdata")) {
   facility_reported_no_permission_soap_type_yes <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_reported_no_permission_soap_type])), title = "Yes Value", multiple = TRUE)
   facility_reported_no_permission_soap_type_no <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_reported_no_permission_soap_type])), title = "No Value")
   facility_reported_no_permission_soap_type_undefined <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_reported_no_permission_soap_type])), title = "Undefined Value", multiple = TRUE)
-  
+
   ## Reported remote soap
   facility_reported_remote_soap <- names(data.list$main)[grepl("soap_reported",names(data.list$main))]
   if(length(facility_reported_remote_soap) == 1){
@@ -998,7 +1000,7 @@ if(!file.exists("inputs/environment.Rdata")) {
   facility_reported_remote_soap_yes <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_reported_remote_soap])), title = "Yes Value")
   facility_reported_remote_soap_no <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_reported_remote_soap])), title = "No Value")
   facility_reported_remote_soap_undefined <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_reported_remote_soap])), title = "Undefined Value", multiple = TRUE)
-  
+
   ## Reported remote soap type
   facility_reported_remote_soap_type <- names(data.list$main)[grepl("soap_reported_type",names(data.list$main))]
   if(length(facility_reported_remote_soap_type) == 1){
@@ -1019,11 +1021,11 @@ if(!file.exists("inputs/environment.Rdata")) {
   facility_reported_remote_soap_type_undefined <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_reported_remote_soap_type])), title = "Undefined Value", multiple = TRUE)
 }
 
-handwash_df <- data.list$main %>% 
+handwash_df <- data.list$main %>%
   humind::add_handwashing_facility_cat(survey_modality = survey_modality,
                                        survey_modality_in_person = survey_modality_in_person,
                                        survey_modality_remote = survey_modality_remote,
-                                       facility = facility, 
+                                       facility = facility,
                                        facility_yes = facility_yes,
                                        facility_no = facility_no,
                                        facility_no_permission = facility_no_permission,
@@ -1054,11 +1056,11 @@ handwash_df <- data.list$main %>%
                                        facility_reported_remote_soap_type = facility_reported_remote_soap_type,
                                        facility_reported_remote_soap_type_yes = facility_reported_remote_soap_type_yes,
                                        facility_reported_remote_soap_type_no = facility_reported_remote_soap_type_no,
-                                       facility_reported_remote_soap_type_undefined = facility_reported_remote_soap_type_undefined) %>% 
-  dplyr::select(admin1, wash_handwashing_facility_jmp_cat) %>% 
-  dplyr::rename("handwash"=wash_handwashing_facility_jmp_cat) %>% 
-  dplyr::filter(handwash %in% c("basic","limited")) %>% 
-  dplyr::group_by(!!rlang::sym(admin1)) %>% 
+                                       facility_reported_remote_soap_type_undefined = facility_reported_remote_soap_type_undefined) %>%
+  dplyr::select(admin1, wash_handwashing_facility_jmp_cat) %>%
+  dplyr::rename("handwash"=wash_handwashing_facility_jmp_cat) %>%
+  dplyr::filter(handwash %in% c("basic","limited")) %>%
+  dplyr::group_by(!!rlang::sym(admin1)) %>%
   dplyr::summarise(handwash = n())
 
 if(!file.exists("inputs/environment.Rdata")) {
@@ -1082,16 +1084,16 @@ if(!file.exists("inputs/environment.Rdata")) {
   undefined_drinking_water <- tcltk::tk_select.list(unique(unlist(data.list$main[,drinking_water_source])), title = "Undefined Values", multiple = T)
 }
 
-impro_water_df <- data.list$main %>% 
+impro_water_df <- data.list$main %>%
   humind::add_drinking_water_source_cat(drinking_water_source = drinking_water_source,
                                         improved = improved_drinking_water,
                                         unimproved = unimproved_drinking_water,
                                         surface_water = surface_water,
-                                        undefined = undefined_drinking_water) %>% 
-  dplyr::select(admin1, wash_drinking_water_source_cat) %>% 
-  dplyr::rename("impro_water" = wash_drinking_water_source_cat)%>% 
-  dplyr::filter(impro_water %in% c("improved")) %>% 
-  dplyr::group_by(!!rlang::sym(admin1)) %>% 
+                                        undefined = undefined_drinking_water) %>%
+  dplyr::select(admin1, wash_drinking_water_source_cat) %>%
+  dplyr::rename("impro_water" = wash_drinking_water_source_cat)%>%
+  dplyr::filter(impro_water %in% c("improved")) %>%
+  dplyr::group_by(!!rlang::sym(admin1)) %>%
   dplyr::summarise(impro_water = n())
 
 if(!file.exists("inputs/environment.Rdata")) {
@@ -1115,16 +1117,16 @@ if(!file.exists("inputs/environment.Rdata")) {
   undefined_sanitation_facility <- tcltk::tk_select.list(unique(unlist(data.list$main[,sanitation_facility])), title = "Undefined Values", multiple = T)
 }
 
-sanitation_df <- data.list$main %>% 
+sanitation_df <- data.list$main %>%
   humind::add_sanitation_facility_cat(sanitation_facility = sanitation_facility,
                                       improved = improved_sanitation_facility,
                                       unimproved = unimproved_sanitation_facility,
                                       none = none_sanitation_facility,
-                                      undefined = undefined_sanitation_facility) %>% 
-  dplyr::select(admin1, wash_sanitation_facility_cat) %>% 
-  dplyr::rename("sanitation" = wash_sanitation_facility_cat)%>% 
-  dplyr::filter(sanitation %in% c("improved")) %>% 
-  dplyr::group_by(!!rlang::sym(admin1)) %>% 
+                                      undefined = undefined_sanitation_facility) %>%
+  dplyr::select(admin1, wash_sanitation_facility_cat) %>%
+  dplyr::rename("sanitation" = wash_sanitation_facility_cat)%>%
+  dplyr::filter(sanitation %in% c("improved")) %>%
+  dplyr::group_by(!!rlang::sym(admin1)) %>%
   dplyr::summarise(sanitation = n())
 
 if(!file.exists("inputs/environment.Rdata")) {
@@ -1145,11 +1147,11 @@ if(!file.exists("inputs/environment.Rdata")) {
 }
 
 
-drinking_water_df <- data.list$main %>% 
-  dplyr::select(admin1, wash_water_quantity) %>% 
-  dplyr::rename("drinking_water" = wash_water_quantity)%>% 
-  dplyr::filter(drinking_water %in% c("always","often")) %>% 
-  dplyr::group_by(!!rlang::sym(admin1)) %>% 
+drinking_water_df <- data.list$main %>%
+  dplyr::select(admin1, wash_water_quantity) %>%
+  dplyr::rename("drinking_water" = wash_water_quantity)%>%
+  dplyr::filter(drinking_water %in% c("always","often")) %>%
+  dplyr::group_by(!!rlang::sym(admin1)) %>%
   dplyr::summarise(drinking_water = n())
 
 ## Health
@@ -1170,17 +1172,17 @@ if(!file.exists("inputs/environment.Rdata")) {
   }
 }
 
-distance_healthcare_df <- data.list$main %>% 
-  dplyr::select(admin1, distance_healthcare) %>% 
-  dplyr::filter(as.numeric(!!rlang::sym(distance_healthcare)) >= 60) %>% 
-  dplyr::group_by(!!rlang::sym(admin1)) %>% 
+distance_healthcare_df <- data.list$main %>%
+  dplyr::select(admin1, distance_healthcare) %>%
+  dplyr::filter(as.numeric(!!rlang::sym(distance_healthcare)) >= 60) %>%
+  dplyr::group_by(!!rlang::sym(admin1)) %>%
   dplyr::summarise(distance_healthcare = n())
 
 
 ## Health
 if(!file.exists("inputs/environment.Rdata")) {
-  healthcare_sheet <- tcltk::tk_select.list(sheet_names, title = "Health Individual Sheet") 
-  
+  healthcare_sheet <- tcltk::tk_select.list(sheet_names, title = "Health Individual Sheet")
+
   ## healthcare is needed
   ind_healthcare_needed <- names(data.list[[healthcare_sheet]])[grepl("healthcare_needed",names(data.list[[healthcare_sheet]]))]
   if(length(ind_healthcare_needed) == 1){
@@ -1198,7 +1200,7 @@ if(!file.exists("inputs/environment.Rdata")) {
   }
   ind_healthcare_needed_levels <- unique(unlist(data.list[[healthcare_sheet]][,ind_healthcare_needed]))
   ind_healthcare_needed_levels <- ind_healthcare_needed_levels[!is.na(ind_healthcare_needed_levels)]
-  
+
   ## healthcare is needed
   ind_healthcare_received <- names(data.list[[healthcare_sheet]])[grepl("healthcare_received",names(data.list[[healthcare_sheet]]))]
   if(length(ind_healthcare_received) == 1){
@@ -1231,7 +1233,7 @@ if(!file.exists("inputs/environment.Rdata")) {
   } else if (length(ind_age) == 0) {
     ind_age <- svDialogs::dlg_input(message= "Enter the name of the age of individual","ind_age")$res
   }
-  
+
   ## UUID Health Loop
   uuid_health_loop <- names(data.list[[healthcare_sheet]])[grepl("uuid",names(data.list[[healthcare_sheet]]))]
   if(length(uuid_health_loop) == 1){
@@ -1247,7 +1249,7 @@ if(!file.exists("inputs/environment.Rdata")) {
   } else if (length(uuid_health_loop) == 0){
     uuid_health_loop <- svDialogs::dlg_input(message= "Enter the name of the uuid of HH","uuid")$res
   }
-  
+
   ## UUID Main
   uuid_main <- names(data.list$main)[grepl("uuid",names(data.list$main))]
   if(length(uuid_main) == 1){
@@ -1265,28 +1267,28 @@ if(!file.exists("inputs/environment.Rdata")) {
   }
 }
 
-unmet_loop_df <- data.list[[healthcare_sheet]] %>% 
+unmet_loop_df <- data.list[[healthcare_sheet]] %>%
   humind::add_loop_healthcare_needed_cat(ind_healthcare_needed = ind_healthcare_needed,
                                          ind_healthcare_needed_levels = ind_healthcare_needed_levels,
                                          ind_healthcare_received = ind_healthcare_received,
                                          ind_healthcare_received_levels = ind_healthcare_received_levels,
-                                         ind_age = ind_age)%>% 
+                                         ind_age = ind_age)%>%
   dplyr::rename(!!rlang::sym(uuid_main) := uuid_health_loop)
 
 unmet_health_df <- humind::add_loop_healthcare_needed_cat_to_main(data.list$main,
                                                                   unmet_loop_df ,
                                                                   id_col_main = uuid_main,
-                                                                  id_col_loop = uuid_main) %>% 
-  dplyr::select(admin1, health_ind_healthcare_needed_yes_unmet_n) %>% 
-  dplyr::filter(as.numeric(health_ind_healthcare_needed_yes_unmet_n) > 0) %>% 
-  dplyr::group_by(!!rlang::sym(admin1)) %>% 
+                                                                  id_col_loop = uuid_main) %>%
+  dplyr::select(admin1, health_ind_healthcare_needed_yes_unmet_n) %>%
+  dplyr::filter(as.numeric(health_ind_healthcare_needed_yes_unmet_n) > 0) %>%
+  dplyr::group_by(!!rlang::sym(admin1)) %>%
   dplyr::summarise(unmet_healthcare = n())
 
 
 ## Nutrition
 if(!file.exists("inputs/environment.Rdata")) {
-  nut_sheet <- tcltk::tk_select.list(sheet_names, title = "Nutrtion Individual Sheet") 
-  
+  nut_sheet <- tcltk::tk_select.list(sheet_names, title = "Nutrtion Individual Sheet")
+
   ## under5 sick
   under5_sick <- names(data.list[[nut_sheet]])[grepl("under5",names(data.list[[nut_sheet]]))]
   if(length(under5_sick) == 1){
@@ -1320,20 +1322,20 @@ if(!file.exists("inputs/environment.Rdata")) {
   }
 }
 
-nut_under5_sick_loop <- data.list[[nut_sheet]] %>% 
-  dplyr::mutate(under5_sick_n = ifelse(!!rlang::sym(under5_sick) == under5_sick_yes,1,0)) %>% 
-  dplyr::rename(!!rlang::sym(uuid_main) := uuid_nut) %>% 
-  dplyr::group_by(!!rlang::sym(uuid_main)) %>% 
+nut_under5_sick_loop <- data.list[[nut_sheet]] %>%
+  dplyr::mutate(under5_sick_n = ifelse(!!rlang::sym(under5_sick) == under5_sick_yes,1,0)) %>%
+  dplyr::rename(!!rlang::sym(uuid_main) := uuid_nut) %>%
+  dplyr::group_by(!!rlang::sym(uuid_main)) %>%
   dplyr::summarise(under5_sick_n = sum(under5_sick_n, na.rm = T))
-  
-nut_under5_sick_df <- data.list$main %>% 
-  dplyr::left_join(nut_under5_sick_loop) %>% 
-  dplyr::select(admin1, under5_sick_n) %>% 
-  dplyr::filter(as.numeric(under5_sick_n) > 0) %>% 
-  dplyr::group_by(!!rlang::sym(admin1)) %>% 
+
+nut_under5_sick_df <- data.list$main %>%
+  dplyr::left_join(nut_under5_sick_loop) %>%
+  dplyr::select(admin1, under5_sick_n) %>%
+  dplyr::filter(as.numeric(under5_sick_n) > 0) %>%
+  dplyr::group_by(!!rlang::sym(admin1)) %>%
   dplyr::summarise(children_sick = n())
 
-ph_int_table <- ph_int_table %>% 
+ph_int_table <- ph_int_table %>%
   dplyr::mutate(fcs = fcs_df$fcs[match(!!rlang::sym(admin1),fcs_df[[admin1]])] / num_observartion,
                 rcsi = rcsi_df$rcsi[match(!!rlang::sym(admin1),rcsi_df[[admin1]])] / num_observartion,
                 fcs_phase = fsl_phase_df$fcs_phase[match(!!rlang::sym(admin1),fsl_phase_df[[admin1]])] / num_observartion,
@@ -1347,7 +1349,7 @@ ph_int_table <- ph_int_table %>%
                 children_sick = nut_under5_sick_df$children_sick[match(!!rlang::sym(admin1),nut_under5_sick_df[[admin1]])] / num_observartion,
                 hhs = hhs_df$hhs[match(!!rlang::sym(admin1),hhs_df[[admin1]])] / num_observartion)
 
-ph_int_cat <- ph_int_table %>% 
+ph_int_cat <- ph_int_table %>%
   dplyr::mutate(children_sick = case_when(children_sick <= 0.1 ~ "Low",
                                           children_sick <= 0.2 ~ "Moderate",
                                           children_sick <= 0.3 ~ "High",
@@ -1422,19 +1424,26 @@ ph_int_cat <- ph_int_table %>%
                                                 TRUE ~ NA))
 
 if(mort_collected == "yes") {
-  ph_int_cat <- ph_int_cat %>% 
+  ph_int_cat <- ph_int_cat %>%
     dplyr::mutate(mort = case_when(mort <= 0.5 ~ "Low",
                                    mort <= 0.75 ~ "Moderate",
                                    mort <= 1 ~ "High",
                                    mort <= 1.4 ~ "Very high",
                                    mort > 1.4 ~ "Extremely high",
                                    TRUE ~ NA))
+  ph_int_table <- ph_int_table %>%
+    dplyr::mutate(mort_lci = mort_data$mort_lci[match(!!rlang::sym(admin1),mort_data$admin1)],
+                  mort_uci = mort_data$mort_uci[match(!!rlang::sym(admin1),mort_data$admin1)],
+                  mort = paste0(mort," [",mort_lci," - ",mort_uci,"]")) %>%
+    dplyr::select(-c(mort_lci,mort_uci))
 }
 
-ph_int_table <- ph_int_table %>% 
+ph_int_table <- ph_int_table %>%
   dplyr::mutate_at(vars(children_sick,unmet_healthcare,amn_phase,fcs_phase,fcs,rcsi,hhs,
                      lcsi,impro_water,drinking_water,sanitation,handwash,distance_healthcare),
                    ~ ifelse(is.na(.),NA,paste0(round(.*100,2),"%")))
+
+
 
 source("src/output_table.R")
 
