@@ -1214,12 +1214,13 @@
       "Source": "GitHub",
       "RemoteType": "github",
       "RemoteHost": "api.github.com",
-      "RemoteUsername": "impact-initiatives",
       "RemoteRepo": "impactR4PHU",
-      "RemoteRef": "main",
-      "RemoteSha": "d9f5ebd1613ff8f395080e5da49741bec6595ff9",
+      "RemoteUsername": "impact-initiatives",
+      "RemoteRef": "HEAD",
+      "RemoteSha": "5cb78f240c93e9f732abc34ca84d62a61045a762",
       "Requirements": [
         "GGally",
+        "R",
         "apyramid",
         "dplyr",
         "flextable",
@@ -1237,7 +1238,7 @@
         "writexl",
         "zscorer"
       ],
-      "Hash": "766376d53a8b244302741c08e25df016"
+      "Hash": "4569cb125493cc6b737cfe20e7b9c2a2"
     },
     "isoband": {
       "Package": "isoband",
