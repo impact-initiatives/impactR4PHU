@@ -254,7 +254,7 @@ create_mortality_plaus <- function(df_mortality,
                        deaths = sum(!is.na(death), na.rm = TRUE),
                        deaths_under5 = sum(!is.na(death_under5), na.rm = TRUE),
                        sex_ratio = round(as.numeric(nipnTK::sexRatioTest(sex, codes = c("1", "2"), pop = sx_ratio)[1]),3),
-                       sex_ratio.pvalue = round(as.numeric(nipnTK::sexRatioTest(sex, codes = c("1", "2"), pop = sx_ratio)[5]),2),
+                       sex_ratio.pvalue = as.numeric(nipnTK::sexRatioTest(sex, codes = c("1", "2"), pop = sx_ratio)[5]),
                        age_ratio_0_5 = sum(!is.na(age_0to5)) / sum(!is.na(age_5plus)),
                        age_ratio_0_5 = ifelse(is.nan(age_ratio_0_5), NA, age_ratio_0_5),
                        age_ratio_0_5.pvalue = ifelse(is.na(age_ratio_0_5),NA,try(stats::chisq.test(x = c(sum(!is.na(age_0to5)), sum(!is.na(age_5plus))), p = age_under5_ratio)[3], silent = T)),
@@ -326,8 +326,8 @@ create_mortality_plaus <- function(df_mortality,
                      n_hh_under_5 = sum(is_hh_under5, na.rm = TRUE),
                      n_hh_flag_deaths = sum(is_hh_flag_deaths, na.rm = TRUE)
     ) %>%
-    dplyr::mutate(prop_hh_under5 = round((n_hh_under_5 / n_hh),2),
-                  prop_hh_flag_deaths = round((n_hh_flag_deaths / n_hh), 2))
+    dplyr::mutate(prop_hh_under5 = (n_hh_under_5 / n_hh),
+                  prop_hh_flag_deaths = (n_hh_flag_deaths / n_hh))
   df_selected <- df_selected %>%
     dplyr::left_join(draft_df3)
 
