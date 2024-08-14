@@ -1528,6 +1528,7 @@ if(yes_no_weight == "yes"){
 } else {
   weight <- 1
 }
+if(yes_no_weight == "yes"){
   for(sheet in names(data.list)){
     data.list[[sheet]] <- data.list[[sheet]] %>%
       mutate(overall = "overall",
@@ -1543,6 +1544,28 @@ if(yes_no_weight == "yes"){
   }
 }
 
+if(!file.exists("inputs/environment.Rdata")){
+  ## Detect died_healthcare_yn column
+  died_healthcare_yn <- names(raw.died_member)[grepl("healthcare",names(raw.died_member))]
+
+  if(length(died_healthcare_yn) == 1){
+    yes_no <- svDialogs::dlg_message(paste0("Is '", died_healthcare_yn, "' the correct died_healthcare_yn column?"), type = "yesno")$res
+    if(yes_no == "no"){
+      died_healthcare_yn <- svDialogs::dlg_input(message= "Enter the name of the died_healthcare_yn column","died_healthcare_yn")$res
+    }
+  } else if (length(died_healthcare_yn) > 1){
+    died_healthcare_yn <- tcltk::tk_select.list(died_healthcare_yn, title = "Died seek healthcare Column [Died Data]")
+    if(died_healthcare_yn == "") {
+      died_healthcare_yn <- svDialogs::dlg_input(message= "Enter the name of the died_healthcare_yn column","died_healthcare_yn")$res
+    }
+  } else if (length(died_healthcare_yn) == 0) {
+    died_healthcare_yn <- svDialogs::dlg_input(message= "Enter the name of the died_healthcare_yn column","died_healthcare_yn")$res
+  }
+
+  yes_seek_healthcare <- tcltk::tk_select.list(unlist(unique(raw.died_member[died_healthcare_yn])),title = "Yes value", multiple = F)
+}
+
+
 if(collected_df_left){
   list_of_var <- c("date_dc","date_recall_event","enumerator","admin1","admin2","cluster",
                    "uuid_main","uuid_roster","sex_roster","age_roster","joined_roster","joined_date_roster",
@@ -1553,8 +1576,8 @@ if(collected_df_left){
                    "yes_no_gender","hoh_gender","resp_gender","hoh_yes_no","resp_hoh_yes","resp_hoh_no",
                    "exp_sex_ratio","exp_ratio_0_4","exp_ratio_2_5","exp_ratio_5_10","exp_hh_size","income_sources",
                    "label_colname","collect_num_join_left","num_join","num_left", "dates_collected","population_group",
-                   "male","female","date_dc_reformat","date_recall_reformat","date_join_reformat",
-                   "date_birth_reformat","date_left_reformat","date_death_reformat","yes_no_team","team",
+                   "male","female","date_dc_reformat","date_recall_reformat","date_join_reformat","died_healthcare_yn",
+                   "date_birth_reformat","date_left_reformat","date_death_reformat","yes_no_team","team","yes_seek_healthcare",
                    "unknown", "injury_trauma", "illness", "no_demo_values", "yes_demo_values","age_roster_month",
                    "current_location","during_migration","last_place","other_place")
 } else {
@@ -1564,9 +1587,9 @@ if(collected_df_left){
                    "sex_died","age_died","birth_died","birthdate_died","joined_died", "smart","income_sources",
                    "joined_date_died","date_death","death_cause","death_location","cause_death_f",
                    "yes_no_gender","hoh_gender","resp_gender","hoh_yes_no","resp_hoh_yes","resp_hoh_no",
-                   "exp_sex_ratio","exp_ratio_0_4","exp_ratio_2_5","exp_ratio_5_10","exp_hh_size",
+                   "exp_sex_ratio","exp_ratio_0_4","exp_ratio_2_5","exp_ratio_5_10","exp_hh_size","yes_seek_healthcare",
                    "label_colname","collect_num_join_left","num_join","num_left", "dates_collected",
-                   "male","female","date_dc_reformat","date_recall_reformat","date_join_reformat",
+                   "male","female","date_dc_reformat","date_recall_reformat","date_join_reformat","died_healthcare_yn",
                    "date_birth_reformat","date_left_reformat","date_death_reformat","yes_no_team","team",
                    "unknown", "injury_trauma", "illness", "no_demo_values", "yes_demo_values","age_roster_month",
                    "current_location","during_migration","last_place","other_place")
