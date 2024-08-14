@@ -14,9 +14,7 @@ type_assessment <- tcltk::tk_select.list(c("Household",
 if(type_assessment == "Individual"){
 rmarkdown::render("mort_cleaning_markdown_ind.Rmd",
                   output_file = paste0("output/", "Mort_Cleaning_", strings['out_date'],".html"))
-}
-
-if(type_assessment == "Household") {
+} else if(type_assessment == "Household") {
   rmarkdown::render("mort_cleaning_markdown_hh.Rmd",
                     output_file = paste0("output/", "Mort_Cleaning_", strings['out_date'],".html"))
 }

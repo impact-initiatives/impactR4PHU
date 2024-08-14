@@ -1084,7 +1084,61 @@ plot_results.summary.birth_pop_group
 ```
 
 
-### TO ADD CAUSE OF DEATH (ADMIN1 - POP STATUS) & % of DEATHS that SOUGHT CARE in Previous 2 Weeks (ADMIN1 - POP STATUS)
+##### Cause of death by Admin1 
+
+```{r, results='asis'}
+cause_death_table_Admin1 <- srvyr.designs[[died_Sheet]] %>% 
+  dplyr::group_by(!!rlang::sym(admin1),!!rlang::sym(death_cause)) %>% 
+  dplyr::summarise(prop_cause = srvyr::survey_prop(vartype = "ci")) %>% 
+  dplyr::mutate(!!rlang::sym(admin1) := get.choice.label(!!rlang::sym(admin1), get.choice.list.from.name(admin1)),
+                !!rlang::sym(death_cause) := get.choice.label(!!rlang::sym(death_cause), get.choice.list.from.name(death_cause))) %>% 
+  dplyr::mutate_at(vars(starts_with("prop_")),~ paste0(round(.*100,2),"%")) %>% 
+  dplyr::rename_with(~stringr::str_remove(., "prop_"), starts_with("prop_"))
+
+subch(DT::datatable(cause_death_table_Admin1, options = tableFormat))
+```
+
+##### Cause of death by population status
+
+```{r, results='asis'}
+cause_death_table_pop_status <- srvyr.designs[[died_Sheet]] %>% 
+  dplyr::group_by(!!rlang::sym(population_group),!!rlang::sym(death_cause)) %>% 
+  dplyr::summarise(prop_cause = srvyr::survey_prop(vartype = "ci")) %>% 
+  dplyr::mutate(!!rlang::sym(death_cause) := get.choice.label(!!rlang::sym(death_cause), get.choice.list.from.name(death_cause))) %>% 
+  dplyr::mutate_at(vars(starts_with("prop_")),~ paste0(round(.*100,2),"%")) %>% 
+  dplyr::rename_with(~stringr::str_remove(., "prop_"), starts_with("prop_"))
+
+subch(DT::datatable(cause_death_table_pop_status, options = tableFormat))
+```
+
+##### % of DEATHS that SOUGHT CARE in Previous 2 Weeks by Admin1
+
+```{r, results='asis'}
+died_healthcare_death_table_admin1 <- srvyr.designs[[died_Sheet]] %>% 
+  dplyr::group_by(!!rlang::sym(admin1),!!rlang::sym(died_healthcare_yn)) %>% 
+  dplyr::summarise(prop_seek_healthcare = srvyr::survey_prop(vartype = "ci")) %>% 
+  dplyr::mutate(!!rlang::sym(admin1) := get.choice.label(!!rlang::sym(admin1), get.choice.list.from.name(admin1))) %>% 
+  dplyr::filter(!!rlang::sym(died_healthcare_yn) == yes_seek_healthcare) %>% 
+  dplyr::mutate_at(vars(starts_with("prop_")),~ paste0(round(.*100,2),"%")) %>% 
+  dplyr::rename_with(~stringr::str_remove(., "prop_"), starts_with("prop_")) %>% 
+  dplyr::select(-died_healthcare_yn)
+
+subch(DT::datatable(died_healthcare_death_table_admin1, options = tableFormat))
+```
+
+##### % of DEATHS that SOUGHT CARE in Previous 2 Weeks by population status
+
+```{r, results='asis'}
+died_healthcare_death_table_pop_status <- srvyr.designs[[died_Sheet]] %>% 
+  dplyr::group_by(!!rlang::sym(population_group),!!rlang::sym(died_healthcare_yn)) %>% 
+  dplyr::summarise(prop_seek_healthcare = srvyr::survey_prop(vartype = "ci")) %>% 
+  dplyr::filter(!!rlang::sym(died_healthcare_yn) == yes_seek_healthcare) %>% 
+  dplyr::mutate_at(vars(starts_with("prop_")),~ paste0(round(.*100,2),"%")) %>% 
+  dplyr::rename_with(~stringr::str_remove(., "prop_"), starts_with("prop_")) %>% 
+  dplyr::select(-died_healthcare_yn)
+
+subch(DT::datatable(died_healthcare_death_table_pop_status, options = tableFormat))
+```
 
 
 ```{r message=TRUE, warning=FALSE, include=FALSE}
