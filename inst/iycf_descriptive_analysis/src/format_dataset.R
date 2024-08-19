@@ -752,6 +752,16 @@ if(!file.exists("inputs/environment.Rdata")) {
     svDialogs::dlg_message("Please check if the uuid or Age month column exist in the IYCF dataset")
     stop("Please check if the uuid or Age month column exist in the IYCF dataset")
   } else{
+    all_vars <- ls()
+    is_empty <- function(x) {
+      obj <- get(x)
+      length(obj) == 0 || is.null(obj) ||  (is.character(obj) && all(obj == ""))
+    }
+    empty_vars <- all_vars[sapply(all_vars, is_empty)]
+
+    for (i in empty_vars) {
+      assign(i, NULL)
+    }
     iycf <- iycf %>%
       impactR4PHU::add_iycf(age_months = age_months,
                             iycf_1 = iycf_1,

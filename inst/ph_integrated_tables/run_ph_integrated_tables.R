@@ -794,6 +794,7 @@ ph_int_table <- admin1_df %>%
   dplyr::mutate(children_sick = NA,
                 unmet_healthcare = NA,
                 amn_phase = NA,
+                afi_phase = NA,
                 fcs_phase = NA,
                 fcs = NA,
                 rcsi = NA,
@@ -1440,7 +1441,7 @@ if(mort_collected == "yes") {
 }
 
 ph_int_table <- ph_int_table %>%
-  dplyr::mutate_at(vars(children_sick,unmet_healthcare,amn_phase,fcs_phase,fcs,rcsi,hhs,
+  dplyr::mutate_at(vars(children_sick,unmet_healthcare,amn_phase,afi_phase,fcs_phase,fcs,rcsi,hhs,
                      lcsi,impro_water,drinking_water,sanitation,handwash,distance_healthcare),
                    ~ ifelse(is.na(.),NA,paste0(round(.*100,2),"%")))
 
