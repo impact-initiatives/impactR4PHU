@@ -322,7 +322,7 @@
     },
     "broom.helpers": {
       "Package": "broom.helpers",
-      "Version": "1.15.0",
+      "Version": "1.16.0",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
@@ -339,7 +339,7 @@
         "tibble",
         "tidyr"
       ],
-      "Hash": "768cae43c3da698d6b11763777301e43"
+      "Hash": "da2ca8a757b2851fa2b625b6cd1e361c"
     },
     "bslib": {
       "Package": "bslib",
@@ -632,14 +632,14 @@
     },
     "digest": {
       "Package": "digest",
-      "Version": "0.6.36",
+      "Version": "0.6.37",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
         "R",
         "utils"
       ],
-      "Hash": "fd6824ad91ede64151e93af67df6376b"
+      "Hash": "33698c4b3127fc9f506654607fb73676"
     },
     "downlit": {
       "Package": "downlit",
@@ -1314,7 +1314,7 @@
       "RemoteRepo": "impactR4PHU",
       "RemoteUsername": "impact-initiatives",
       "RemoteRef": "HEAD",
-      "RemoteSha": "050e2a29ef02e0e829bb72ee9f9591cbf85f1f51",
+      "RemoteSha": "fe802246577895e179eadac274767ea29ee8de44",
       "Requirements": [
         "GGally",
         "R",
@@ -1335,7 +1335,7 @@
         "writexl",
         "zscorer"
       ],
-      "Hash": "0e438703863e7233eb4487cd243d863e"
+      "Hash": "3860d1e4b4f7d0fddb7acf351b85b8f5"
     },
     "ini": {
       "Package": "ini",
@@ -2055,7 +2055,7 @@
     },
     "rio": {
       "Package": "rio",
-      "Version": "1.2.1",
+      "Version": "1.2.2",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
@@ -2074,7 +2074,7 @@
         "utils",
         "writexl"
       ],
-      "Hash": "a2d8d896c1ea5ca6ca622ec60ee78a2c"
+      "Hash": "2bedcf4fe1b776f2fd523541e2c0e5e3"
     },
     "rlang": {
       "Package": "rlang",
