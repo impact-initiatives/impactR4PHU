@@ -362,7 +362,7 @@
     },
     "broom.helpers": {
       "Package": "broom.helpers",
-      "Version": "1.15.0",
+      "Version": "1.16.0",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
@@ -379,7 +379,7 @@
         "tibble",
         "tidyr"
       ],
-      "Hash": "768cae43c3da698d6b11763777301e43"
+      "Hash": "da2ca8a757b2851fa2b625b6cd1e361c"
     },
     "bslib": {
       "Package": "bslib",
@@ -682,14 +682,14 @@
     },
     "digest": {
       "Package": "digest",
-      "Version": "0.6.36",
+      "Version": "0.6.37",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
         "R",
         "utils"
       ],
-      "Hash": "fd6824ad91ede64151e93af67df6376b"
+      "Hash": "33698c4b3127fc9f506654607fb73676"
     },
     "dplyr": {
       "Package": "dplyr",
@@ -1217,7 +1217,7 @@
       "RemoteRepo": "impactR4PHU",
       "RemoteUsername": "impact-initiatives",
       "RemoteRef": "HEAD",
-      "RemoteSha": "050e2a29ef02e0e829bb72ee9f9591cbf85f1f51",
+      "RemoteSha": "fe802246577895e179eadac274767ea29ee8de44",
       "Requirements": [
         "GGally",
         "R",
@@ -1238,7 +1238,7 @@
         "writexl",
         "zscorer"
       ],
-      "Hash": "0e438703863e7233eb4487cd243d863e"
+      "Hash": "3860d1e4b4f7d0fddb7acf351b85b8f5"
     },
     "isoband": {
       "Package": "isoband",
@@ -2052,11 +2052,10 @@
     },
     "srvyr": {
       "Package": "srvyr",
-      "Version": "1.2.0",
+      "Version": "1.3.0",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
-        "R",
         "dplyr",
         "magrittr",
         "methods",
@@ -2067,7 +2066,7 @@
         "tidyselect",
         "vctrs"
       ],
-      "Hash": "9388d659c3f4b7a93be210ebaaba8cf1"
+      "Hash": "11179f4e74e0018168ae9f219809a3f2"
     },
     "stringi": {
       "Package": "stringi",
