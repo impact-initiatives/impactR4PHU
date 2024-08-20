@@ -49,6 +49,49 @@ if(mort_collected == "yes"){
                   "mort_uci"=`95%uci`)
 }
 
+## Mortality
+if(mort_collected == "yes"){
+  if(!file.exists("inputs/environment.Rdata")) {
+    died_sheet <- tcltk::tk_select.list(sheet_names, title = "Sheet including mortality data")
+    died_member <- data.list[[died_sheet]]
+
+    ## Detect death_cause column
+    death_cause <- names(died_member)[grepl("cause",names(died_member))]
+
+    if(length(death_cause) == 1){
+      yes_no <- svDialogs::dlg_message(paste0("Is '", death_cause, "' the correct death_cause column?"), type = "yesno")$res
+      if(yes_no == "no"){
+        death_cause <- svDialogs::dlg_input(message= "Enter the name of the Cause of Death Column","death_cause")$res
+      }
+    } else if (length(death_cause) > 1){
+      death_cause <- tcltk::tk_select.list(death_cause, title = "Cause of Death Column")
+      if(death_cause == "") {
+        death_cause <- svDialogs::dlg_input(message= "Enter the name of the Cause of Death Column","death_cause")$res
+      }
+    } else if (length(death_cause) == 0) {
+      death_cause <- svDialogs::dlg_input(message= "Enter the name of the Cause of Death Column","death_cause")$res
+    }
+
+    ## Detect uuid_died column
+    uuid_died <- names(died_member)[grepl("uuid",names(died_member))]
+
+    if(length(uuid_died) == 1){
+      yes_no <- svDialogs::dlg_message(paste0("Is '", uuid_died, "' the correct uuid died HH column?"), type = "yesno")$res
+      if(yes_no == "no"){
+        uuid_died <- svDialogs::dlg_input(message= "Enter the name of the uuid died HH Column","uuid")$res
+      }
+    } else if (length(uuid_died) > 1){
+      uuid_died <- tcltk::tk_select.list(uuid_died, title = "uuid died HH Column")
+      if(uuid_died == "") {
+        uuid_died <- svDialogs::dlg_input(message= "Enter the name of the uuid died HH Column","uuid")$res
+      }
+    } else if (length(uuid_died) == 0) {
+      uuid_died <- svDialogs::dlg_input(message= "Enter the name of the uuid died HH Column","uuid")$res
+    }
+
+    non_trauma_deaths <- tcltk::tk_select.list(unlist(unique(died_members[death_cause])), multiple = T, title = "Non Injury/Trauma Death Causes")
+  }
+}
 
 if(!file.exists("inputs/environment.Rdata")) {
   ## Detect Admin1 column
@@ -1336,6 +1379,28 @@ nut_under5_sick_df <- data.list$main %>%
   dplyr::group_by(!!rlang::sym(admin1)) %>%
   dplyr::summarise(children_sick = n())
 
+if(mort_collected == "yes"){
+  non_trauma_loop <- data.list[[died_sheet]] %>%
+    dplyr::filter(! !!rlang::sym(death_cause) %in% non_trauma_deaths) %>%
+    dplyr::mutate(uuid = !!rlang::sym(uuid_died)) %>%
+    dplyr::group_by(uuid) %>%
+    dplyr::summarise(non_trauma_n = n())
+
+  non_trauma_df <- data.list$main %>%
+    dplyr::mutate(uuid = !!rlang::sym(uuid_main)) %>%
+    dplyr::select(uuid, admin1) %>%
+    dplyr::left_join(non_trauma_loop) %>%
+    dplyr::mutate(non_trauma = ifelse(is.na(non_trauma_n), NA,
+                                      ifelse(non_trauma_n > 0, 1, 0))) %>%
+    dplyr::group_by(!!rlang::sym(admin1)) %>%
+    dplyr::summarise(non_trauma = sum(non_trauma, na.rm = T))
+
+  ph_int_table <- ph_int_table %>%
+    dplyr::mutate(non_trauma = non_trauma_df$non_trauma[match(!!rlang::sym(admin1),non_trauma[[admin1]])]) %>%
+    dplyr::relocate(non_trauma, .before = 4)
+}
+
+
 ph_int_table <- ph_int_table %>%
   dplyr::mutate(fcs = fcs_df$fcs[match(!!rlang::sym(admin1),fcs_df[[admin1]])] / num_observartion,
                 rcsi = rcsi_df$rcsi[match(!!rlang::sym(admin1),rcsi_df[[admin1]])] / num_observartion,
@@ -1466,7 +1531,7 @@ list_of_var <- c("admin1","fsl_fcs_cereal","fsl_fcs_legumes","fsl_fcs_veg","FSL_
                  "unimproved_sanitation_facility","none_sanitation_facility","undefined_sanitation_facility",
                  "drinking_water_source","improved_drinking_water","unimproved_drinking_water","surface_water",
                  "fsl_lcsi_crisis3","fsl_lcsi_emergency1","fsl_lcsi_emergency2",
-                 "hhs_check_columns","hhs_check_columns_freq",
+                 "hhs_check_columns","hhs_check_columns_freq","died_sheet","uuid_died",
                  "survey_modality","survey_modality_in_person","survey_modality_remote",
                  "facility","facility_yes","facility_no","facility_no_permission",
                  "facility_undefined","facility_observed_water","facility_observed_water_yes",
@@ -1480,7 +1545,7 @@ list_of_var <- c("admin1","fsl_fcs_cereal","fsl_fcs_legumes","fsl_fcs_veg","FSL_
                  "facility_reported_remote_soap_yes","facility_reported_remote_soap_no",
                  "ind_healthcare_needed","ind_healthcare_needed_levels","ind_healthcare_received",
                  "ind_healthcare_received_levels","ind_age","uuid_health_loop","uuid_main","healthcare_sheet",
-                 "nut_sheet","under5_sick","uuid_nut","under5_sick_yes",
+                 "nut_sheet","under5_sick","uuid_nut","under5_sick_yes","non_trauma_deaths","death_cause",
                  "facility_reported_remote_soap_undefined","facility_reported_remote_soap_type",
                  "facility_reported_remote_soap_type_yes","facility_reported_remote_soap_type_no","facility_reported_remote_soap_type_undefined",
                  "fsl_lcsi_emergency3","yes_val","no_val","exhausted_val","not_applicable_val","distance_healthcare")
