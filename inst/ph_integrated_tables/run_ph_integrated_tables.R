@@ -828,7 +828,7 @@ if("rCSI" %in% FSL_indicators) {
 
 if("HHS" %in% FSL_indicators) {
   hhs_df <- data.list$main %>%
-    dplyr::filter(fsl_hhs_cat_ipc %in% c("Moderate","Severe","Very Severe")) %>%
+    dplyr::filter(fsl_hhs_cat_ipc %in% c("Severe","Very Severe")) %>%
     dplyr::group_by(!!rlang::sym(admin1)) %>%
     dplyr::summarise(hhs = n())
 }
