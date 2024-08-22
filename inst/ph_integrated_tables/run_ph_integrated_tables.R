@@ -89,7 +89,7 @@ if(mort_collected == "yes"){
       uuid_died <- svDialogs::dlg_input(message= "Enter the name of the uuid died HH Column","uuid")$res
     }
 
-    non_trauma_deaths <- tcltk::tk_select.list(unlist(unique(died_members[death_cause])), multiple = T, title = "Non Injury/Trauma Death Causes")
+    non_trauma_deaths <- tcltk::tk_select.list(unlist(unique(died_member[death_cause])), multiple = T, title = "Non Injury/Trauma Death Causes")
   }
 }
 
@@ -1380,23 +1380,24 @@ nut_under5_sick_df <- data.list$main %>%
   dplyr::summarise(children_sick = n())
 
 if(mort_collected == "yes"){
-  non_trauma_loop <- data.list[[died_sheet]] %>%
-    dplyr::filter(! !!rlang::sym(death_cause) %in% non_trauma_deaths) %>%
-    dplyr::mutate(uuid = !!rlang::sym(uuid_died)) %>%
-    dplyr::group_by(uuid) %>%
-    dplyr::summarise(non_trauma_n = n())
-
   non_trauma_df <- data.list$main %>%
     dplyr::mutate(uuid = !!rlang::sym(uuid_main)) %>%
-    dplyr::select(uuid, admin1) %>%
-    dplyr::left_join(non_trauma_loop) %>%
-    dplyr::mutate(non_trauma = ifelse(is.na(non_trauma_n), NA,
-                                      ifelse(non_trauma_n > 0, 1, 0))) %>%
-    dplyr::group_by(!!rlang::sym(admin1)) %>%
-    dplyr::summarise(non_trauma = sum(non_trauma, na.rm = T))
+    dplyr::select(uuid, admin1)
+
+  non_trauma_loop <- data.list[[died_sheet]] %>%
+    # dplyr::filter(!!rlang::sym(death_cause) %in% non_trauma_deaths) %>%
+    dplyr::mutate(uuid = !!rlang::sym(uuid_died)) %>%
+    dplyr::left_join(non_trauma_df) %>%
+    dplyr::group_by(!!rlang::sym(admin1), !!rlang::sym(death_cause)) %>%
+    dplyr::summarise(non_trauma_n = n()) %>%
+    tidyr::pivot_wider(names_from = death_cause, values_from = non_trauma_n, values_fill = 0) %>%
+    dplyr::mutate(total_non_trauma = rowSums(across(non_trauma_deaths, .fns = as.numeric)),
+                  total = rowSums(across(data.list[[died_sheet]][[death_cause]] %>% unique(), .fns = as.numeric)),
+                  non_trauma = total_non_trauma / total)
+
 
   ph_int_table <- ph_int_table %>%
-    dplyr::mutate(non_trauma = non_trauma_df$non_trauma[match(!!rlang::sym(admin1),non_trauma[[admin1]])]) %>%
+    dplyr::mutate(non_trauma = non_trauma_loop$non_trauma[match(!!rlang::sym(admin1),non_trauma_loop[[admin1]])]) %>%
     dplyr::relocate(non_trauma, .before = 4)
 }
 
@@ -1414,101 +1415,169 @@ ph_int_table <- ph_int_table %>%
                 unmet_healthcare = unmet_health_df$unmet_healthcare[match(!!rlang::sym(admin1),unmet_health_df[[admin1]])] / num_observartion,
                 children_sick = nut_under5_sick_df$children_sick[match(!!rlang::sym(admin1),nut_under5_sick_df[[admin1]])] / num_observartion,
                 hhs = hhs_df$hhs[match(!!rlang::sym(admin1),hhs_df[[admin1]])] / num_observartion)
-
-ph_int_cat <- ph_int_table %>%
-  dplyr::mutate(children_sick = case_when(children_sick <= 0.1 ~ "Low",
-                                          children_sick <= 0.2 ~ "Moderate",
-                                          children_sick <= 0.3 ~ "High",
-                                          children_sick <= 0.4 ~ "Very high",
-                                          children_sick > 0.4 ~ "Extremely high",
-                                          TRUE ~ NA),
-                unmet_healthcare = case_when(unmet_healthcare <= 0.1 ~ "Low",
-                                             unmet_healthcare <= 0.2 ~ "Moderate",
-                                             unmet_healthcare <= 0.3 ~ "High",
-                                             unmet_healthcare <= 0.4 ~ "Very high",
-                                             unmet_healthcare > 0.4 ~ "Extremely high",
-                                             TRUE ~ NA),
-                fcs_phase = case_when(fcs_phase <= 0.1 ~ "Low",
-                                      fcs_phase <= 0.2 ~ "Moderate",
-                                      fcs_phase <= 0.3 ~ "High",
-                                      fcs_phase <= 0.4 ~ "Very high",
-                                      fcs_phase > 0.4 ~ "Extremely high",
-                                      TRUE ~ NA),
-                fcs = case_when(fcs <= 0.1 ~ "Low",
-                                fcs <= 0.2 ~ "Moderate",
-                                fcs <= 0.3 ~ "High",
-                                fcs <= 0.4 ~ "Very high",
-                                fcs > 0.4 ~ "Extremely high",
-                                TRUE ~ NA),
-                rcsi = case_when(rcsi <= 0.1 ~ "Low",
-                                 rcsi <= 0.2 ~ "Moderate",
-                                 rcsi <= 0.3 ~ "High",
-                                 rcsi <= 0.4 ~ "Very high",
-                                 rcsi > 0.4 ~ "Extremely high",
-                                 TRUE ~ NA),
-                hhs = case_when(hhs <= 0.1 ~ "Low",
-                                hhs <= 0.2 ~ "Moderate",
-                                hhs <= 0.3 ~ "High",
-                                hhs <= 0.4 ~ "Very high",
-                                hhs > 0.4 ~ "Extremely high",
-                                TRUE ~ NA),
-                lcsi = case_when(lcsi <= 0.1 ~ "Low",
-                                 lcsi <= 0.2 ~ "Moderate",
-                                 lcsi <= 0.3 ~ "High",
-                                 lcsi <= 0.4 ~ "Very high",
-                                 lcsi > 0.4 ~ "Extremely high",
-                                 TRUE ~ NA),
-                impro_water = case_when(impro_water >= 0.8 ~ "Low",
-                                        impro_water >= 0.6 ~ "Moderate",
-                                        impro_water >= 0.4 ~ "High",
-                                        impro_water >= 0.2 ~ "Very high",
-                                        impro_water < 0.2 ~ "Extremely high",
-                                        TRUE ~ NA),
-                sanitation = case_when(sanitation >= 0.8 ~ "Low",
-                                       sanitation >= 0.6 ~ "Moderate",
-                                       sanitation >= 0.4 ~ "High",
-                                       sanitation >= 0.2 ~ "Very high",
-                                       sanitation < 0.2 ~ "Extremely high",
-                                       TRUE ~ NA),
-                handwash = case_when(handwash >= 0.8 ~ "Low",
-                                     handwash >= 0.6 ~ "Moderate",
-                                     handwash >= 0.4 ~ "High",
-                                     handwash >= 0.2 ~ "Very high",
-                                     handwash < 0.2 ~ "Extremely high",
-                                     TRUE ~ NA),
-                drinking_water = case_when(drinking_water <= 0.2 ~ "Low",
-                                           drinking_water <= 0.4 ~ "Moderate",
-                                           drinking_water <= 0.6 ~ "High",
-                                           drinking_water <= 0.8 ~ "Very high",
-                                           drinking_water > 0.8 ~ "Extremely high",
-                                           TRUE ~ NA),
-                distance_healthcare = case_when(distance_healthcare <= 0.1 ~ "Low",
-                                                distance_healthcare <= 0.2 ~ "Moderate",
-                                                distance_healthcare <= 0.3 ~ "High",
-                                                distance_healthcare <= 0.4 ~ "Very high",
-                                                distance_healthcare > 0.4 ~ "Extremely high",
-                                                TRUE ~ NA))
-
 if(mort_collected == "yes") {
-  ph_int_cat <- ph_int_cat %>%
-    dplyr::mutate(mort = case_when(mort <= 0.5 ~ "Low",
-                                   mort <= 0.75 ~ "Moderate",
-                                   mort <= 1 ~ "High",
-                                   mort <= 1.4 ~ "Very high",
-                                   mort > 1.4 ~ "Extremely high",
-                                   TRUE ~ NA))
   ph_int_table <- ph_int_table %>%
     dplyr::arrange(desc(mort)) %>%
     dplyr::mutate(mort_lci = mort_data$mort_lci[match(!!rlang::sym(admin1),mort_data$admin1)],
                   mort_uci = mort_data$mort_uci[match(!!rlang::sym(admin1),mort_data$admin1)],
-                  mort = paste0(mort," [",mort_lci," - ",mort_uci,"]")) %>%
+                  mort = paste0(round(as.numeric(mort),2)," [",round(as.numeric(mort_lci),2)," - ",round(as.numeric(mort_uci),2),"]")) %>%
     dplyr::select(-c(mort_lci,mort_uci))
+  ph_int_cat <- ph_int_table %>%
+    dplyr::mutate(mort = case_when(as.numeric(stringr::str_extract(mort,"^[^ ]*")) >= 2 ~ "Extremely high",
+                                   as.numeric(stringr::str_extract(mort,"^[^ ]*")) > 1 ~ "Very high",
+                                   as.numeric(stringr::str_extract(mort,"^[^ ]*")) > 0.75 ~ "High",
+                                   as.numeric(stringr::str_extract(mort,"^[^ ]*")) > 0.5~ "Moderate",
+                                   as.numeric(stringr::str_extract(mort,"^[^ ]*")) <= 0.5 ~ "Low",
+                                   TRUE ~ NA),
+                  children_sick = case_when(children_sick <= 0.1 ~ "Low",
+                                            children_sick <= 0.2 ~ "Moderate",
+                                            children_sick <= 0.3 ~ "High",
+                                            children_sick <= 0.4 ~ "Very high",
+                                            children_sick > 0.4 ~ "Extremely high",
+                                            TRUE ~ NA),
+                  unmet_healthcare = case_when(unmet_healthcare <= 0.1 ~ "Low",
+                                               unmet_healthcare <= 0.2 ~ "Moderate",
+                                               unmet_healthcare <= 0.3 ~ "High",
+                                               unmet_healthcare <= 0.4 ~ "Very high",
+                                               unmet_healthcare > 0.4 ~ "Extremely high",
+                                               TRUE ~ NA),
+                  fcs_phase = case_when(fcs_phase <= 0.1 ~ "Low",
+                                        fcs_phase <= 0.2 ~ "Moderate",
+                                        fcs_phase <= 0.3 ~ "High",
+                                        fcs_phase <= 0.4 ~ "Very high",
+                                        fcs_phase > 0.4 ~ "Extremely high",
+                                        TRUE ~ NA),
+                  fcs = case_when(fcs <= 0.1 ~ "Low",
+                                  fcs <= 0.2 ~ "Moderate",
+                                  fcs <= 0.3 ~ "High",
+                                  fcs <= 0.4 ~ "Very high",
+                                  fcs > 0.4 ~ "Extremely high",
+                                  TRUE ~ NA),
+                  rcsi = case_when(rcsi <= 0.1 ~ "Low",
+                                   rcsi <= 0.2 ~ "Moderate",
+                                   rcsi <= 0.3 ~ "High",
+                                   rcsi <= 0.4 ~ "Very high",
+                                   rcsi > 0.4 ~ "Extremely high",
+                                   TRUE ~ NA),
+                  hhs = case_when(hhs <= 0.05 ~ "Low",
+                                  hhs <= 0.1 ~ "Moderate",
+                                  hhs <= 0.15 ~ "High",
+                                  hhs <= 0.2 ~ "Very high",
+                                  hhs > 0.2 ~ "Extremely high",
+                                  TRUE ~ NA),
+                  lcsi = case_when(lcsi <= 0.1 ~ "Low",
+                                   lcsi <= 0.2 ~ "Moderate",
+                                   lcsi <= 0.3 ~ "High",
+                                   lcsi <= 0.4 ~ "Very high",
+                                   lcsi > 0.4 ~ "Extremely high",
+                                   TRUE ~ NA),
+                  impro_water = case_when(impro_water >= 0.8 ~ "Low",
+                                          impro_water >= 0.6 ~ "Moderate",
+                                          impro_water >= 0.4 ~ "High",
+                                          impro_water >= 0.2 ~ "Very high",
+                                          impro_water < 0.2 ~ "Extremely high",
+                                          TRUE ~ NA),
+                  sanitation = case_when(sanitation >= 0.8 ~ "Low",
+                                         sanitation >= 0.6 ~ "Moderate",
+                                         sanitation >= 0.4 ~ "High",
+                                         sanitation >= 0.2 ~ "Very high",
+                                         sanitation < 0.2 ~ "Extremely high",
+                                         TRUE ~ NA),
+                  handwash = case_when(handwash >= 0.2 ~ "Low",
+                                       handwash >= 0.15 ~ "Moderate",
+                                       handwash >= 0.1 ~ "High",
+                                       handwash >= 0.05 ~ "Very high",
+                                       handwash < 0.05 ~ "Extremely high",
+                                       TRUE ~ NA),
+                  drinking_water = case_when(drinking_water <= 0.04 ~ "Low",
+                                             drinking_water <= 0.06 ~ "Moderate",
+                                             drinking_water <= 0.08 ~ "High",
+                                             drinking_water <= 0.1 ~ "Very high",
+                                             drinking_water > 0.1 ~ "Extremely high",
+                                             TRUE ~ NA),
+                  distance_healthcare = case_when(distance_healthcare <= 0.1 ~ "Low",
+                                                  distance_healthcare <= 0.2 ~ "Moderate",
+                                                  distance_healthcare <= 0.3 ~ "High",
+                                                  distance_healthcare <= 0.4 ~ "Very high",
+                                                  distance_healthcare > 0.4 ~ "Extremely high",
+                                                  TRUE ~ NA))%>%
+    dplyr::mutate(non_trauma = ifelse(is.na(non_trauma),NA,paste0(round(non_trauma*100,2),"%")))
+} else {
+  ph_int_cat <- ph_int_table %>%
+    dplyr::mutate(children_sick = case_when(children_sick <= 0.1 ~ "Low",
+                                            children_sick <= 0.2 ~ "Moderate",
+                                            children_sick <= 0.3 ~ "High",
+                                            children_sick <= 0.4 ~ "Very high",
+                                            children_sick > 0.4 ~ "Extremely high",
+                                            TRUE ~ NA),
+                  unmet_healthcare = case_when(unmet_healthcare <= 0.1 ~ "Low",
+                                               unmet_healthcare <= 0.2 ~ "Moderate",
+                                               unmet_healthcare <= 0.3 ~ "High",
+                                               unmet_healthcare <= 0.4 ~ "Very high",
+                                               unmet_healthcare > 0.4 ~ "Extremely high",
+                                               TRUE ~ NA),
+                  fcs_phase = case_when(fcs_phase <= 0.1 ~ "Low",
+                                        fcs_phase <= 0.2 ~ "Moderate",
+                                        fcs_phase <= 0.3 ~ "High",
+                                        fcs_phase <= 0.4 ~ "Very high",
+                                        fcs_phase > 0.4 ~ "Extremely high",
+                                        TRUE ~ NA),
+                  fcs = case_when(fcs <= 0.1 ~ "Low",
+                                  fcs <= 0.2 ~ "Moderate",
+                                  fcs <= 0.3 ~ "High",
+                                  fcs <= 0.4 ~ "Very high",
+                                  fcs > 0.4 ~ "Extremely high",
+                                  TRUE ~ NA),
+                  rcsi = case_when(rcsi <= 0.1 ~ "Low",
+                                   rcsi <= 0.2 ~ "Moderate",
+                                   rcsi <= 0.3 ~ "High",
+                                   rcsi <= 0.4 ~ "Very high",
+                                   rcsi > 0.4 ~ "Extremely high",
+                                   TRUE ~ NA),
+                  hhs = case_when(hhs <= 0.05 ~ "Low",
+                                  hhs <= 0.1 ~ "Moderate",
+                                  hhs <= 0.15 ~ "High",
+                                  hhs <= 0.2 ~ "Very high",
+                                  hhs > 0.2 ~ "Extremely high",
+                                  TRUE ~ NA),
+                  lcsi = case_when(lcsi <= 0.1 ~ "Low",
+                                   lcsi <= 0.2 ~ "Moderate",
+                                   lcsi <= 0.3 ~ "High",
+                                   lcsi <= 0.4 ~ "Very high",
+                                   lcsi > 0.4 ~ "Extremely high",
+                                   TRUE ~ NA),
+                  impro_water = case_when(impro_water >= 0.8 ~ "Low",
+                                          impro_water >= 0.6 ~ "Moderate",
+                                          impro_water >= 0.4 ~ "High",
+                                          impro_water >= 0.2 ~ "Very high",
+                                          impro_water < 0.2 ~ "Extremely high",
+                                          TRUE ~ NA),
+                  sanitation = case_when(sanitation >= 0.8 ~ "Low",
+                                         sanitation >= 0.6 ~ "Moderate",
+                                         sanitation >= 0.4 ~ "High",
+                                         sanitation >= 0.2 ~ "Very high",
+                                         sanitation < 0.2 ~ "Extremely high",
+                                         TRUE ~ NA),
+                  handwash = case_when(handwash >= 0.2 ~ "Low",
+                                       handwash >= 0.15 ~ "Moderate",
+                                       handwash >= 0.1 ~ "High",
+                                       handwash >= 0.05 ~ "Very high",
+                                       handwash < 0.05 ~ "Extremely high",
+                                       TRUE ~ NA),
+                  drinking_water = case_when(drinking_water <= 0.04 ~ "Low",
+                                             drinking_water <= 0.06 ~ "Moderate",
+                                             drinking_water <= 0.08 ~ "High",
+                                             drinking_water <= 0.1 ~ "Very high",
+                                             drinking_water > 0.1 ~ "Extremely high",
+                                             TRUE ~ NA),
+                  distance_healthcare = case_when(distance_healthcare <= 0.1 ~ "Low",
+                                                  distance_healthcare <= 0.2 ~ "Moderate",
+                                                  distance_healthcare <= 0.3 ~ "High",
+                                                  distance_healthcare <= 0.4 ~ "Very high",
+                                                  distance_healthcare > 0.4 ~ "Extremely high",
+                                                  TRUE ~ NA))
 }
 
-ph_int_table <- ph_int_table %>%
-  dplyr::mutate_at(vars(children_sick,unmet_healthcare,amn_phase,afi_phase,fcs_phase,fcs,rcsi,hhs,
-                     lcsi,impro_water,drinking_water,sanitation,handwash,distance_healthcare),
-                   ~ ifelse(is.na(.),NA,paste0(round(.*100,2),"%")))
 
 
 
