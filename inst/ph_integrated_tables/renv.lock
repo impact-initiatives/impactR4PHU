@@ -1226,7 +1226,7 @@
     },
     "httr2": {
       "Package": "httr2",
-      "Version": "1.0.2",
+      "Version": "1.0.3",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
@@ -1243,19 +1243,19 @@
         "vctrs",
         "withr"
       ],
-      "Hash": "320c8fe23fcb25a6690ef7bdb6a3a705"
+      "Hash": "10d93e97faad6b629301bb3a2fd23378"
     },
     "humind": {
       "Package": "humind",
       "Version": "2024.1.1",
       "Source": "GitHub",
+      "Remotes": "gnoblet/impactR.utils, impact-initiatives/impactR4PHU",
       "RemoteType": "github",
-      "RemoteUsername": "impact-initiatives-hppu",
+      "RemoteHost": "api.github.com",
       "RemoteRepo": "humind",
+      "RemoteUsername": "impact-initiatives-hppu",
       "RemoteRef": "HEAD",
       "RemoteSha": "0ded11daa91c813239847aa817f99bd337c20598",
-      "RemoteHost": "api.github.com",
-      "Remotes": "gnoblet/impactR.utils, impact-initiatives/impactR4PHU",
       "Requirements": [
         "R",
         "dplyr",
@@ -1314,7 +1314,7 @@
       "RemoteRepo": "impactR4PHU",
       "RemoteUsername": "impact-initiatives",
       "RemoteRef": "HEAD",
-      "RemoteSha": "e4b5a19586cc2c8377945479a520053508de26a7",
+      "RemoteSha": "24490b8a5e6d2b24cd2fa1b42e91d30b32685797",
       "Requirements": [
         "GGally",
         "R",
@@ -1335,7 +1335,7 @@
         "writexl",
         "zscorer"
       ],
-      "Hash": "aedf539dbf96debca06131a9e6595154"
+      "Hash": "d3d52dd2f4e1e2eed7ecef60c6123e83"
     },
     "ini": {
       "Package": "ini",
