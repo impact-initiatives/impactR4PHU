@@ -15,49 +15,49 @@ save.ph.integrated.tables <- function(df, df_cat, wb_name, mort = F, use_templat
   } else {
     end_column <- 17
   }
-  ## 25/20/15/10
+  openxlsx::conditionalFormatting(wb,
+                                  sheet = "Cat",
+                                  cols = c(3,5:end_column),
+                                  rows = 3:(nrow(df_cat)+2),
+                                  rule = '="Extremely high"',
+                                  style = openxlsx::createStyle(bgFill = "#960000",
+                                                                fontColour = "white"))
+  openxlsx::conditionalFormatting(wb,
+                                  sheet = "Cat",
+                                  cols = c(3,5:end_column),
+                                  rows = 3:(nrow(df_cat)+2),
+                                  rule = '="Very high"',
+                                  style = openxlsx::createStyle(bgFill = "#FF0000",
+                                                                fontColour = "white"))
+  openxlsx::conditionalFormatting(wb,
+                                  sheet = "Cat",
+                                  cols = c(3,5:end_column),
+                                  rows = 3:(nrow(df_cat)+2),
+                                  rule = '="High"',
+                                  style = openxlsx::createStyle(bgFill = "#ED7D31",
+                                                                fontColour = "black"))
+  openxlsx::conditionalFormatting(wb,
+                                  sheet = "Cat",
+                                  cols = c(3,5:end_column),
+                                  rows = 3:(nrow(df_cat)+2),
+                                  rule = '="Moderate"',
+                                  style = openxlsx::createStyle(bgFill = "#FFE699",
+                                                                fontColour = "#833C0C"))
+  openxlsx::conditionalFormatting(wb,
+                                  sheet = "Cat",
+                                  cols = c(3,5:end_column),
+                                  rows = 3:(nrow(df_cat)+2),
+                                  rule = '="Low"',
+                                  style = openxlsx::createStyle(bgFill = "#C6E0B4",
+                                                                fontColour = "black"))
+  openxlsx::conditionalFormatting(wb,
+                                  sheet = "Cat",
+                                  cols = c(3,5:end_column),
+                                  rows = 3:(nrow(df_cat)+2),
+                                  rule = '=""',
+                                  style = openxlsx::createStyle(bgFill = "black"))
+
   if(mort){
-    openxlsx::conditionalFormatting(wb,
-                                    sheet = "Cat",
-                                    cols = c(3,5:end_column),
-                                    rows = 3:(nrow(df_cat)+2),
-                                    rule = '="Extremely high"',
-                                    style = openxlsx::createStyle(bgFill = "#960000",
-                                                                  fontColour = "white"))
-    openxlsx::conditionalFormatting(wb,
-                                    sheet = "Cat",
-                                    cols = c(3,5:end_column),
-                                    rows = 3:(nrow(df_cat)+2),
-                                    rule = '="Very high"',
-                                    style = openxlsx::createStyle(bgFill = "#FF0000",
-                                                                  fontColour = "white"))
-    openxlsx::conditionalFormatting(wb,
-                                    sheet = "Cat",
-                                    cols = c(3,5:end_column),
-                                    rows = 3:(nrow(df_cat)+2),
-                                    rule = '="High"',
-                                    style = openxlsx::createStyle(bgFill = "#ED7D31",
-                                                                  fontColour = "black"))
-    openxlsx::conditionalFormatting(wb,
-                                    sheet = "Cat",
-                                    cols = c(3,5:end_column),
-                                    rows = 3:(nrow(df_cat)+2),
-                                    rule = '="Moderate"',
-                                    style = openxlsx::createStyle(bgFill = "#FFE699",
-                                                                  fontColour = "#833C0C"))
-    openxlsx::conditionalFormatting(wb,
-                                    sheet = "Cat",
-                                    cols = c(3,5:end_column),
-                                    rows = 3:(nrow(df_cat)+2),
-                                    rule = '="Low"',
-                                    style = openxlsx::createStyle(bgFill = "#C6E0B4",
-                                                                  fontColour = "black"))
-    openxlsx::conditionalFormatting(wb,
-                                    sheet = "Cat",
-                                    cols = c(3,5:end_column),
-                                    rows = 3:(nrow(df_cat)+2),
-                                    rule = '=""',
-                                    style = openxlsx::createStyle(bgFill = "black"))
     #25/20/15/10
     openxlsx::conditionalFormatting(wb,
                                     sheet = "Data",

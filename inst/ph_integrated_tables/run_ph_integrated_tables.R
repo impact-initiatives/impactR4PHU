@@ -830,7 +830,8 @@ if(all(fcm_check_1_columns %in% names(data.list$main)) |
 
 
 admin1_df <- data.list$main %>%
-  dplyr::group_by(!!rlang::sym(admin1)) %>%
+  dplyr::mutate(admin1 = !!rlang::sym(admin1)) %>%
+  dplyr::group_by(admin1) %>%
   dplyr::summarise(num_observartion = n())
 
 ph_int_table <- admin1_df %>%
@@ -851,28 +852,31 @@ ph_int_table <- admin1_df %>%
 
 if(mort_collected == "yes"){
   ph_int_table <- ph_int_table %>%
-    dplyr::mutate(mort = mort_data$mort[match(!!rlang::sym(admin1),mort_data$admin1)]) %>%
+    dplyr::mutate(mort = mort_data$mort[match(admin1,mort_data$admin1)]) %>%
     dplyr::relocate(mort, .before = 3)
 }
 
 if("FCS" %in% FSL_indicators) {
   fcs_df <- data.list$main %>%
     dplyr::filter(fsl_fcs_cat == "Poor") %>%
-    dplyr::group_by(!!rlang::sym(admin1)) %>%
+    dplyr::mutate(admin1 = !!rlang::sym(admin1)) %>%
+    dplyr::group_by(admin1) %>%
     dplyr::summarise(fcs = n())
 }
 
 if("rCSI" %in% FSL_indicators) {
   rcsi_df <- data.list$main %>%
     dplyr::filter(fsl_rcsi_cat == "High") %>%
-    dplyr::group_by(!!rlang::sym(admin1)) %>%
+    dplyr::mutate(admin1 = !!rlang::sym(admin1)) %>%
+    dplyr::group_by(admin1) %>%
     dplyr::summarise(rcsi = n())
 }
 
 if("HHS" %in% FSL_indicators) {
   hhs_df <- data.list$main %>%
     dplyr::filter(fsl_hhs_cat_ipc %in% c("Severe","Very Severe")) %>%
-    dplyr::group_by(!!rlang::sym(admin1)) %>%
+    dplyr::mutate(admin1 = !!rlang::sym(admin1)) %>%
+    dplyr::group_by(admin1) %>%
     dplyr::summarise(hhs = n())
 }
 
@@ -887,7 +891,8 @@ fsl_phase_df <- data.list$main %>%
   dplyr::filter(fsl_fc_phase %in% c("Phase 3 FC",
                                     "Phase 4 FC",
                                     "Phase 5 FC")) %>%
-  dplyr::group_by(!!rlang::sym(admin1)) %>%
+  dplyr::mutate(admin1 = !!rlang::sym(admin1)) %>%
+  dplyr::group_by(admin1) %>%
   dplyr::summarise(fcs_phase = n())
 
 
@@ -909,8 +914,13 @@ if(!file.exists("inputs/environment.Rdata")) {
   } else if (length(survey_modality) == 0) {
     survey_modality <- svDialogs::dlg_input(message= "Enter the name of the survey modality","survey_modality")$res
   }
-  survey_modality_in_person <- tcltk::tk_select.list(unique(unlist(data.list$main[,survey_modality])), title = "In Person Values", multiple = T)
-  survey_modality_remote <- tcltk::tk_select.list(unique(unlist(data.list$main[,survey_modality])), title = "Remote Values", multiple = T)
+  if(!is_empty(survey_modality)){
+    survey_modality_in_person <- tcltk::tk_select.list(unique(unlist(data.list$main[,survey_modality])), title = "In Person Values", multiple = T)
+    survey_modality_remote <- tcltk::tk_select.list(unique(unlist(data.list$main[,survey_modality])), title = "Remote Values", multiple = T)
+  } else {
+    survey_modality_in_person <- NULL
+    survey_modality_remote <- NULL
+  }
 
   #Handwashing Facility
   facility <- names(data.list$main)[grepl("handwashing|facility",names(data.list$main))]
@@ -927,10 +937,17 @@ if(!file.exists("inputs/environment.Rdata")) {
   } else if (length(facility) == 0) {
     facility <- svDialogs::dlg_input(message= "Enter the name of the handwashing facility","wash_handwashing_facility")$res
   }
-  facility_yes <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility])), title = "Yes Value")
-  facility_no <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility])), title = "None Value")
-  facility_no_permission <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility])), title = "No permission Value")
-  facility_undefined <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility])), title = "Other Value")
+  if(!is_empty(facility)){
+    facility_yes <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility])), title = "Yes Value")
+    facility_no <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility])), title = "None Value")
+    facility_no_permission <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility])), title = "No permission Value")
+    facility_undefined <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility])), title = "Other Value")
+  } else {
+    facility_yes <- NULL
+    facility_no <- NULL
+    facility_no_permission <- NULL
+    facility_undefined <- NULL
+  }
 
   # Observed water of handwashing facility
   facility_observed_water <- names(data.list$main)[grepl("facility_observed_water",names(data.list$main))]
@@ -947,8 +964,13 @@ if(!file.exists("inputs/environment.Rdata")) {
   } else if (length(facility_observed_water) == 0) {
     facility_observed_water <- svDialogs::dlg_input(message= "Enter the name of the handwashing facility observed water","wash_handwashing_facility_observed_water")$res
   }
-  facility_observed_water_yes <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_observed_water])), title = "Yes Value")
-  facility_observed_water_no <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_observed_water])), title = "No Value")
+  if(!is_empty(facility_observed_water)){
+    facility_observed_water_yes <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_observed_water])), title = "Yes Value")
+    facility_observed_water_no <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_observed_water])), title = "No Value")
+  } else {
+    facility_observed_water_yes <- NULL
+    facility_observed_water_no <- NULL
+  }
 
   ## Observed Soap Handwashing Facility
   facility_observed_soap <- names(data.list$main)[grepl("facility_observed_soap",names(data.list$main))]
@@ -965,9 +987,15 @@ if(!file.exists("inputs/environment.Rdata")) {
   } else if (length(facility_observed_soap) == 0) {
     facility_observed_soap <- svDialogs::dlg_input(message= "Enter the name of the handwashing facility observed soap","wash_handwashing_facility_observed_soap")$res
   }
-  facility_observed_soap_yes <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_observed_soap])), title = "Yes Value")
-  facility_observed_soap_no <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_observed_soap])), title = "No Value")
-  facility_observed_soap_alternative <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_observed_soap])), title = "Alternative Value")
+  if(!is_empty(facility_observed_soap)){
+    facility_observed_soap_yes <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_observed_soap])), title = "Yes Value")
+    facility_observed_soap_no <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_observed_soap])), title = "No Value")
+    facility_observed_soap_alternative <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_observed_soap])), title = "Alternative Value")
+  } else {
+    facility_observed_soap_yes <- NULL
+    facility_observed_soap_no <- NULL
+    facility_observed_soap_alternative <- NULL
+  }
 
   ## Reported Handwashing Facility
   facility_reported <- names(data.list$main)[grepl("facility_reported",names(data.list$main))]
@@ -984,9 +1012,15 @@ if(!file.exists("inputs/environment.Rdata")) {
   } else if (length(facility_reported) == 0) {
     facility_reported <- svDialogs::dlg_input(message= "Enter the name of the handwashing facility reported","wash_handwashing_facility_reported")$res
   }
-  facility_reported_yes <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_reported])), title = "Yes Value", multiple = TRUE)
-  facility_reported_no <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_reported])), title = "No Value", multiple = TRUE)
-  facility_reported_undefined <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_reported])), title = "Undefined Value", multiple = TRUE)
+  if(!is_empty(facility_reported)){
+    facility_reported_yes <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_reported])), title = "Yes Value", multiple = TRUE)
+    facility_reported_no <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_reported])), title = "No Value", multiple = TRUE)
+    facility_reported_undefined <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_reported])), title = "Undefined Value", multiple = TRUE)
+  } else {
+    facility_reported_yes <- NULL
+    facility_reported_no <- NULL
+    facility_reported_undefined <- NULL
+  }
 
   ## Reported no permission soap
   facility_reported_no_permission_soap <- names(data.list$main)[grepl("soap_observed",names(data.list$main))]
@@ -1003,10 +1037,15 @@ if(!file.exists("inputs/environment.Rdata")) {
   } else if (length(facility_reported_no_permission_soap) == 0) {
     facility_reported_no_permission_soap <- svDialogs::dlg_input(message= "Enter the name of the reported no permission soap","wash_soap_observed")$res
   }
-  facility_reported_no_permission_soap_yes <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_reported_no_permission_soap])), title = "Yes Value", multiple = TRUE)
-  facility_reported_no_permission_soap_no <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_reported_no_permission_soap])), title = "No Value")
-  facility_reported_no_permission_soap_undefined <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_reported_no_permission_soap])), title = "Undefined Value", multiple = TRUE)
-
+  if(!is_empty(facility_reported_no_permission_soap)){
+    facility_reported_no_permission_soap_yes <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_reported_no_permission_soap])), title = "Yes Value", multiple = TRUE)
+    facility_reported_no_permission_soap_no <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_reported_no_permission_soap])), title = "No Value")
+    facility_reported_no_permission_soap_undefined <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_reported_no_permission_soap])), title = "Undefined Value", multiple = TRUE)
+  } else {
+    facility_reported_no_permission_soap_yes <- NULL
+    facility_reported_no_permission_soap_no <- NULL
+    facility_reported_no_permission_soap_undefined <- NULL
+  }
   ## Reported no permission soap type
   facility_reported_no_permission_soap_type <- names(data.list$main)[grepl("soap_observed_type",names(data.list$main))]
   if(length(facility_reported_no_permission_soap_type) == 1){
@@ -1022,9 +1061,15 @@ if(!file.exists("inputs/environment.Rdata")) {
   } else if (length(facility_reported_no_permission_soap_type) == 0) {
     facility_reported_no_permission_soap_type <- svDialogs::dlg_input(message= "Enter the name of the reported no permission soap type","wash_soap_observed_type")$res
   }
-  facility_reported_no_permission_soap_type_yes <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_reported_no_permission_soap_type])), title = "Yes Value", multiple = TRUE)
-  facility_reported_no_permission_soap_type_no <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_reported_no_permission_soap_type])), title = "No Value")
-  facility_reported_no_permission_soap_type_undefined <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_reported_no_permission_soap_type])), title = "Undefined Value", multiple = TRUE)
+  if(!is_empty(facility_reported_no_permission_soap_type)){
+    facility_reported_no_permission_soap_type_yes <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_reported_no_permission_soap_type])), title = "Yes Value", multiple = TRUE)
+    facility_reported_no_permission_soap_type_no <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_reported_no_permission_soap_type])), title = "No Value")
+    facility_reported_no_permission_soap_type_undefined <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_reported_no_permission_soap_type])), title = "Undefined Value", multiple = TRUE)
+  } else {
+    facility_reported_no_permission_soap_type_yes <- NULL
+    facility_reported_no_permission_soap_type_no <- NULL
+    facility_reported_no_permission_soap_type_undefined <- NULL
+  }
 
   ## Reported remote soap
   facility_reported_remote_soap <- names(data.list$main)[grepl("soap_reported",names(data.list$main))]
@@ -1041,9 +1086,15 @@ if(!file.exists("inputs/environment.Rdata")) {
   } else if (length(facility_reported_remote_soap) == 0) {
     facility_reported_remote_soap <- svDialogs::dlg_input(message= "Enter the name of the reported remote soap","wash_soap_reported")$res
   }
-  facility_reported_remote_soap_yes <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_reported_remote_soap])), title = "Yes Value")
-  facility_reported_remote_soap_no <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_reported_remote_soap])), title = "No Value")
-  facility_reported_remote_soap_undefined <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_reported_remote_soap])), title = "Undefined Value", multiple = TRUE)
+  if(!is_empty(facility_reported_remote_soap)){
+    facility_reported_remote_soap_yes <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_reported_remote_soap])), title = "Yes Value")
+    facility_reported_remote_soap_no <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_reported_remote_soap])), title = "No Value")
+    facility_reported_remote_soap_undefined <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_reported_remote_soap])), title = "Undefined Value", multiple = TRUE)
+  } else {
+    facility_reported_remote_soap_yes <- NULL
+    facility_reported_remote_soap_no <- NULL
+    facility_reported_remote_soap_undefined <- NULL
+  }
 
   ## Reported remote soap type
   facility_reported_remote_soap_type <- names(data.list$main)[grepl("soap_reported_type",names(data.list$main))]
@@ -1060,9 +1111,15 @@ if(!file.exists("inputs/environment.Rdata")) {
   } else if (length(facility_reported_remote_soap_type) == 0) {
     facility_reported_remote_soap_type <- svDialogs::dlg_input(message= "Enter the name of the reported remote soap type","wash_soap_reported_type")$res
   }
-  facility_reported_remote_soap_type_yes <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_reported_remote_soap_type])), title = "Yes Value", multiple = TRUE)
-  facility_reported_remote_soap_type_no <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_reported_remote_soap_type])), title = "No Value", multiple = TRUE)
-  facility_reported_remote_soap_type_undefined <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_reported_remote_soap_type])), title = "Undefined Value", multiple = TRUE)
+  if(!is_empty(facility_reported_remote_soap_type)){
+    facility_reported_remote_soap_type_yes <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_reported_remote_soap_type])), title = "Yes Value", multiple = TRUE)
+    facility_reported_remote_soap_type_no <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_reported_remote_soap_type])), title = "No Value", multiple = TRUE)
+    facility_reported_remote_soap_type_undefined <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_reported_remote_soap_type])), title = "Undefined Value", multiple = TRUE)
+  } else {
+    facility_reported_remote_soap_type_yes <- NULL
+    facility_reported_remote_soap_type_no <- NULL
+    facility_reported_remote_soap_type_undefined <- NULL
+  }
 }
 
 handwash_df <- data.list$main %>%
@@ -1104,7 +1161,8 @@ handwash_df <- data.list$main %>%
   dplyr::select(admin1, wash_handwashing_facility_jmp_cat) %>%
   dplyr::rename("handwash"=wash_handwashing_facility_jmp_cat) %>%
   dplyr::filter(handwash %in% c("basic","limited")) %>%
-  dplyr::group_by(!!rlang::sym(admin1)) %>%
+  dplyr::mutate(admin1 = !!rlang::sym(admin1)) %>%
+  dplyr::group_by(admin1) %>%
   dplyr::summarise(handwash = n())
 
 if(!file.exists("inputs/environment.Rdata")) {
@@ -1122,10 +1180,17 @@ if(!file.exists("inputs/environment.Rdata")) {
   } else if (length(drinking_water_source) == 0) {
     drinking_water_source <- svDialogs::dlg_input(message= "Enter the name of the main source of drinking water","wash_drinking_water_source")$res
   }
-  improved_drinking_water <- tcltk::tk_select.list(unique(unlist(data.list$main[,drinking_water_source])), title = "Improved Values", multiple = T)
-  unimproved_drinking_water <- tcltk::tk_select.list(unique(unlist(data.list$main[,drinking_water_source])), title = "Unimproved Values", multiple = T)
-  surface_water <- tcltk::tk_select.list(unique(unlist(data.list$main[,drinking_water_source])), title = "Surface Water Values", multiple = T)
-  undefined_drinking_water <- tcltk::tk_select.list(unique(unlist(data.list$main[,drinking_water_source])), title = "Undefined Values", multiple = T)
+  if(!is_empty(drinking_water_source)){
+    improved_drinking_water <- tcltk::tk_select.list(unique(unlist(data.list$main[,drinking_water_source])), title = "Improved Values", multiple = T)
+    unimproved_drinking_water <- tcltk::tk_select.list(unique(unlist(data.list$main[,drinking_water_source])), title = "Unimproved Values", multiple = T)
+    surface_water <- tcltk::tk_select.list(unique(unlist(data.list$main[,drinking_water_source])), title = "Surface Water Values", multiple = T)
+    undefined_drinking_water <- tcltk::tk_select.list(unique(unlist(data.list$main[,drinking_water_source])), title = "Undefined Values", multiple = T)
+  } else {
+    improved_drinking_water <- NULL
+    unimproved_drinking_water <- NULL
+    surface_water <- NULL
+    undefined_drinking_water <- NULL
+  }
 }
 
 impro_water_df <- data.list$main %>%
@@ -1137,7 +1202,8 @@ impro_water_df <- data.list$main %>%
   dplyr::select(admin1, wash_drinking_water_source_cat) %>%
   dplyr::rename("impro_water" = wash_drinking_water_source_cat)%>%
   dplyr::filter(impro_water %in% c("improved")) %>%
-  dplyr::group_by(!!rlang::sym(admin1)) %>%
+  dplyr::mutate(admin1 = !!rlang::sym(admin1)) %>%
+  dplyr::group_by(admin1) %>%
   dplyr::summarise(impro_water = n())
 
 if(!file.exists("inputs/environment.Rdata")) {
@@ -1155,10 +1221,17 @@ if(!file.exists("inputs/environment.Rdata")) {
   } else if (length(sanitation_facility) == 0) {a
     sanitation_facility <- svDialogs::dlg_input(message= "Enter the name of the toilet facility","wash_sanitation_facility")$res
   }
-  improved_sanitation_facility <- tcltk::tk_select.list(unique(unlist(data.list$main[,sanitation_facility])), title = "Improved Values", multiple = T)
-  unimproved_sanitation_facility <- tcltk::tk_select.list(unique(unlist(data.list$main[,sanitation_facility])), title = "Unimproved Values", multiple = T)
-  none_sanitation_facility <- tcltk::tk_select.list(unique(unlist(data.list$main[,sanitation_facility])), title = "None Values", multiple = T)
-  undefined_sanitation_facility <- tcltk::tk_select.list(unique(unlist(data.list$main[,sanitation_facility])), title = "Undefined Values", multiple = T)
+  if(!is_empty(sanitation_facility)){
+    improved_sanitation_facility <- tcltk::tk_select.list(unique(unlist(data.list$main[,sanitation_facility])), title = "Improved Values", multiple = T)
+    unimproved_sanitation_facility <- tcltk::tk_select.list(unique(unlist(data.list$main[,sanitation_facility])), title = "Unimproved Values", multiple = T)
+    none_sanitation_facility <- tcltk::tk_select.list(unique(unlist(data.list$main[,sanitation_facility])), title = "None Values", multiple = T)
+    undefined_sanitation_facility <- tcltk::tk_select.list(unique(unlist(data.list$main[,sanitation_facility])), title = "Undefined Values", multiple = T)
+  } else {
+    improved_sanitation_facility <- NULL
+    unimproved_sanitation_facility <- NULL
+    none_sanitation_facility <- NULL
+    undefined_sanitation_facility <- NULL
+  }
 }
 
 sanitation_df <- data.list$main %>%
@@ -1170,7 +1243,8 @@ sanitation_df <- data.list$main %>%
   dplyr::select(admin1, wash_sanitation_facility_cat) %>%
   dplyr::rename("sanitation" = wash_sanitation_facility_cat)%>%
   dplyr::filter(sanitation %in% c("improved")) %>%
-  dplyr::group_by(!!rlang::sym(admin1)) %>%
+  dplyr::mutate(admin1 = !!rlang::sym(admin1)) %>%
+  dplyr::group_by(admin1) %>%
   dplyr::summarise(sanitation = n())
 
 if(!file.exists("inputs/environment.Rdata")) {
@@ -1195,7 +1269,8 @@ drinking_water_df <- data.list$main %>%
   dplyr::select(admin1, wash_water_quantity) %>%
   dplyr::rename("drinking_water" = wash_water_quantity)%>%
   dplyr::filter(drinking_water %in% c("always","often")) %>%
-  dplyr::group_by(!!rlang::sym(admin1)) %>%
+  dplyr::mutate(admin1 = !!rlang::sym(admin1)) %>%
+  dplyr::group_by(admin1) %>%
   dplyr::summarise(drinking_water = n())
 
 ## Health
@@ -1219,7 +1294,8 @@ if(!file.exists("inputs/environment.Rdata")) {
 distance_healthcare_df <- data.list$main %>%
   dplyr::select(admin1, distance_healthcare) %>%
   dplyr::filter(as.numeric(!!rlang::sym(distance_healthcare)) >= 60) %>%
-  dplyr::group_by(!!rlang::sym(admin1)) %>%
+  dplyr::mutate(admin1 = !!rlang::sym(admin1)) %>%
+  dplyr::group_by(admin1) %>%
   dplyr::summarise(distance_healthcare = n())
 
 
@@ -1325,7 +1401,8 @@ unmet_health_df <- humind::add_loop_healthcare_needed_cat_to_main(data.list$main
                                                                   id_col_loop = uuid_main) %>%
   dplyr::select(admin1, health_ind_healthcare_needed_yes_unmet_n) %>%
   dplyr::filter(as.numeric(health_ind_healthcare_needed_yes_unmet_n) > 0) %>%
-  dplyr::group_by(!!rlang::sym(admin1)) %>%
+  dplyr::mutate(admin1 = !!rlang::sym(admin1)) %>%
+  dplyr::group_by(admin1) %>%
   dplyr::summarise(unmet_healthcare = n())
 
 
@@ -1348,7 +1425,15 @@ if(!file.exists("inputs/environment.Rdata")) {
   } else if (length(under5_sick) == 0) {
     under5_sick <- svDialogs::dlg_input(message= "Enter the name of the under5 sick","nut_ind_under5_sick_yn")$res
   }
-  under5_sick_yes <- tcltk::tk_select.list(unique(unlist(data.list[[nut_sheet]][,under5_sick])), title = "Yes value")
+  if(!is_empty(under5_sick)){
+    under5_sick_yes <- tcltk::tk_select.list(unique(unlist(data.list[[nut_sheet]][,under5_sick])), title = "Yes value")
+    under5_sick_no <- tcltk::tk_select.list(unique(unlist(data.list[[nut_sheet]][,under5_sick])), title = "No value")
+    under5_sick_undefined <- tcltk::tk_select.list(unique(unlist(data.list[[nut_sheet]][,under5_sick])),multiple = T, title = "Undefined value")
+  }else {
+    under5_sick_yes <- NULL
+    under5_sick_no <- NULL
+    under5_sick_undefined <- NULL
+  }
   ## UUID Main
   uuid_nut <- names(data.list[[nut_sheet]])[grepl("uuid",names(data.list[[nut_sheet]]))]
   if(length(uuid_nut) == 1){
@@ -1366,60 +1451,67 @@ if(!file.exists("inputs/environment.Rdata")) {
   }
 }
 
-nut_under5_sick_loop <- data.list[[nut_sheet]] %>%
-  dplyr::mutate(under5_sick_n = ifelse(!!rlang::sym(under5_sick) == under5_sick_yes,1,0)) %>%
-  dplyr::rename(!!rlang::sym(uuid_main) := uuid_nut) %>%
-  dplyr::group_by(!!rlang::sym(uuid_main)) %>%
-  dplyr::summarise(under5_sick_n = sum(under5_sick_n, na.rm = T))
-
 nut_under5_sick_df <- data.list$main %>%
-  dplyr::left_join(nut_under5_sick_loop) %>%
-  dplyr::select(admin1, under5_sick_n) %>%
-  dplyr::filter(as.numeric(under5_sick_n) > 0) %>%
-  dplyr::group_by(!!rlang::sym(admin1)) %>%
-  dplyr::summarise(children_sick = n())
+  dplyr::mutate(admin1 = !!rlang::sym(admin1),
+                uuid = !!rlang::sym(uuid_main)) %>%
+  dplyr::select(uuid,admin1)
+
+
+nut_under5_sick_loop <- data.list[[nut_sheet]] %>%
+  dplyr::filter(!!rlang::sym(under5_sick) %in% c(under5_sick_no,under5_sick_yes)) %>%
+  dplyr::mutate(under5_sick_n = ifelse(!!rlang::sym(under5_sick) == under5_sick_yes,1,0),
+                uuid = !!rlang::sym(uuid_nut)) %>%
+  dplyr::left_join(nut_under5_sick_df) %>%
+  dplyr::group_by(admin1) %>%
+  dplyr::summarise(children_sick_n = sum(under5_sick_n, na.rm = T),
+                   n = n()) %>%
+  dplyr::mutate(children_sick = children_sick_n / n)
 
 if(mort_collected == "yes"){
   non_trauma_df <- data.list$main %>%
     dplyr::mutate(uuid = !!rlang::sym(uuid_main)) %>%
     dplyr::select(uuid, admin1)
 
+  data.list[[died_sheet]] <- data.list[[died_sheet]] %>%
+    dplyr::mutate(!!rlang::sym(death_cause) := ifelse(is.na(!!rlang::sym(death_cause)),"dnk",!!rlang::sym(death_cause)))
+
   non_trauma_loop <- data.list[[died_sheet]] %>%
     # dplyr::filter(!!rlang::sym(death_cause) %in% non_trauma_deaths) %>%
     dplyr::mutate(uuid = !!rlang::sym(uuid_died)) %>%
     dplyr::left_join(non_trauma_df) %>%
-    dplyr::group_by(!!rlang::sym(admin1), !!rlang::sym(death_cause)) %>%
+    dplyr::group_by(!!rlang::sym(admin1), !!rlang::sym(death_cause))%>%
     dplyr::summarise(non_trauma_n = n()) %>%
     tidyr::pivot_wider(names_from = death_cause, values_from = non_trauma_n, values_fill = 0) %>%
     dplyr::mutate(total_non_trauma = rowSums(across(non_trauma_deaths, .fns = as.numeric)),
                   total = rowSums(across(data.list[[died_sheet]][[death_cause]] %>% unique(), .fns = as.numeric)),
-                  non_trauma = total_non_trauma / total)
+                  non_trauma = total_non_trauma / total) %>%
+    dplyr::mutate(admin1 = !!rlang::sym(admin1))
 
 
   ph_int_table <- ph_int_table %>%
-    dplyr::mutate(non_trauma = non_trauma_loop$non_trauma[match(!!rlang::sym(admin1),non_trauma_loop[[admin1]])]) %>%
+    dplyr::mutate(non_trauma = non_trauma_loop$non_trauma[match(!!rlang::sym(admin1),non_trauma_loop$admin1)]) %>%
     dplyr::relocate(non_trauma, .before = 4)
 }
 
 
 ph_int_table <- ph_int_table %>%
-  dplyr::mutate(fcs = fcs_df$fcs[match(!!rlang::sym(admin1),fcs_df[[admin1]])] / num_observartion,
-                rcsi = rcsi_df$rcsi[match(!!rlang::sym(admin1),rcsi_df[[admin1]])] / num_observartion,
-                fcs_phase = fsl_phase_df$fcs_phase[match(!!rlang::sym(admin1),fsl_phase_df[[admin1]])] / num_observartion,
-                lcsi = lcsi_df$lcsi[match(!!rlang::sym(admin1),lcsi_df[[admin1]])] / num_observartion,
-                handwash = handwash_df$handwash[match(!!rlang::sym(admin1),handwash_df[[admin1]])] / num_observartion,
-                impro_water = impro_water_df$impro_water[match(!!rlang::sym(admin1),impro_water_df[[admin1]])] / num_observartion,
-                sanitation = sanitation_df$sanitation[match(!!rlang::sym(admin1),sanitation_df[[admin1]])] / num_observartion,
-                drinking_water = drinking_water_df$drinking_water[match(!!rlang::sym(admin1),drinking_water_df[[admin1]])] / num_observartion,
-                distance_healthcare = distance_healthcare_df$distance_healthcare[match(!!rlang::sym(admin1),distance_healthcare_df[[admin1]])] / num_observartion,
-                unmet_healthcare = unmet_health_df$unmet_healthcare[match(!!rlang::sym(admin1),unmet_health_df[[admin1]])] / num_observartion,
-                children_sick = nut_under5_sick_df$children_sick[match(!!rlang::sym(admin1),nut_under5_sick_df[[admin1]])] / num_observartion,
-                hhs = hhs_df$hhs[match(!!rlang::sym(admin1),hhs_df[[admin1]])] / num_observartion)
+  dplyr::mutate(fcs = fcs_df$fcs[match(admin1,fcs_df$admin1)] / num_observartion,
+                rcsi = rcsi_df$rcsi[match(admin1,rcsi_df$admin1)] / num_observartion,
+                fcs_phase = fsl_phase_df$fcs_phase[match(admin1,fsl_phase_df$admin1)] / num_observartion,
+                lcsi = lcsi_df$lcsi[match(admin1,lcsi_df$admin1)] / num_observartion,
+                handwash = handwash_df$handwash[match(admin1,handwash_df$admin1)] / num_observartion,
+                impro_water = impro_water_df$impro_water[match(admin1,impro_water_df$admin1)] / num_observartion,
+                sanitation = sanitation_df$sanitation[match(admin1,sanitation_df$admin1)] / num_observartion,
+                drinking_water = drinking_water_df$drinking_water[match(admin1,drinking_water_df$admin1)] / num_observartion,
+                distance_healthcare = distance_healthcare_df$distance_healthcare[match(admin1,distance_healthcare_df$admin1)] / num_observartion,
+                unmet_healthcare = unmet_health_df$unmet_healthcare[match(admin1,unmet_health_df$admin1)] / num_observartion,
+                children_sick = nut_under5_sick_loop$children_sick[match(admin1,nut_under5_sick_loop$admin1)],
+                hhs = hhs_df$hhs[match(admin1,hhs_df$admin1)] / num_observartion)
 if(mort_collected == "yes") {
   ph_int_table <- ph_int_table %>%
     dplyr::arrange(desc(mort)) %>%
-    dplyr::mutate(mort_lci = mort_data$mort_lci[match(!!rlang::sym(admin1),mort_data$admin1)],
-                  mort_uci = mort_data$mort_uci[match(!!rlang::sym(admin1),mort_data$admin1)],
+    dplyr::mutate(mort_lci = mort_data$mort_lci[match(admin1,mort_data$admin1)],
+                  mort_uci = mort_data$mort_uci[match(admin1,mort_data$admin1)],
                   mort = paste0(round(as.numeric(mort),2)," [",round(as.numeric(mort_lci),2)," - ",round(as.numeric(mort_uci),2),"]")) %>%
     dplyr::select(-c(mort_lci,mort_uci))
   ph_int_cat <- ph_int_table %>%
@@ -1430,10 +1522,10 @@ if(mort_collected == "yes") {
                                    as.numeric(stringr::str_extract(mort,"^[^ ]*")) <= 0.5 ~ "Low",
                                    TRUE ~ NA),
                   children_sick = case_when(children_sick <= 0.1 ~ "Low",
-                                            children_sick <= 0.2 ~ "Moderate",
-                                            children_sick <= 0.3 ~ "High",
-                                            children_sick <= 0.4 ~ "Very high",
-                                            children_sick > 0.4 ~ "Extremely high",
+                                            children_sick <= 0.15 ~ "Moderate",
+                                            children_sick <= 0.2 ~ "High",
+                                            children_sick <= 0.25 ~ "Very high",
+                                            children_sick > 0.25 ~ "Extremely high",
                                             TRUE ~ NA),
                   unmet_healthcare = case_when(unmet_healthcare <= 0.1 ~ "Low",
                                                unmet_healthcare <= 0.2 ~ "Moderate",
@@ -1505,10 +1597,10 @@ if(mort_collected == "yes") {
 } else {
   ph_int_cat <- ph_int_table %>%
     dplyr::mutate(children_sick = case_when(children_sick <= 0.1 ~ "Low",
-                                            children_sick <= 0.2 ~ "Moderate",
-                                            children_sick <= 0.3 ~ "High",
-                                            children_sick <= 0.4 ~ "Very high",
-                                            children_sick > 0.4 ~ "Extremely high",
+                                            children_sick <= 0.15 ~ "Moderate",
+                                            children_sick <= 0.2 ~ "High",
+                                            children_sick <= 0.25 ~ "Very high",
+                                            children_sick > 0.25 ~ "Extremely high",
                                             TRUE ~ NA),
                   unmet_healthcare = case_when(unmet_healthcare <= 0.1 ~ "Low",
                                                unmet_healthcare <= 0.2 ~ "Moderate",
@@ -1589,6 +1681,7 @@ save.ph.integrated.tables(ph_int_table,ph_int_cat,"PH_Integrated_Table",mort = T
 list_of_var <- c("admin1","fsl_fcs_cereal","fsl_fcs_legumes","fsl_fcs_veg","FSL_indicators",
                  "fsl_fcs_fruit","fsl_fcs_meat","fsl_fcs_dairy","fsl_fcs_sugar",
                  "fsl_fcs_oil","fsl_rcsi_lessquality","fsl_rcsi_borrow",
+                 "under5_sick_undefined","under5_sick_no",
                  "fsl_rcsi_mealsize","fsl_rcsi_mealadult","fsl_rcsi_mealnb",
                  "fsl_hhs_nofoodhh","fsl_hhs_nofoodhh_freq","fsl_hhs_sleephungry",
                  "fsl_hhs_sleephungry_freq","fsl_hhs_alldaynight","fsl_hhs_alldaynight_freq",
