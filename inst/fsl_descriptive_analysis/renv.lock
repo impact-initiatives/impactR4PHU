@@ -198,9 +198,9 @@
       "Source": "GitHub",
       "RemoteType": "github",
       "RemoteHost": "api.github.com",
-      "RemoteRepo": "addindicators",
       "RemoteUsername": "impact-initiatives",
-      "RemoteRef": "HEAD",
+      "RemoteRepo": "addindicators",
+      "RemoteRef": "master",
       "RemoteSha": "2335c6678f169d9ef84e3526955bc65fe9ac8a6b",
       "Requirements": [
         "R",
@@ -211,19 +211,19 @@
         "rlang",
         "tidyr"
       ],
-      "Hash": "88e52c0ea0e81747bf9093291383986e"
+      "Hash": "ef0dfa9e21fda2663f3f514f99d09b96"
     },
     "analysistools": {
       "Package": "analysistools",
       "Version": "0.0.0.902",
       "Source": "GitHub",
-      "Remotes": "impact-initiatives/addindicators, impact-initiatives/cleaningtools",
       "RemoteType": "github",
       "RemoteHost": "api.github.com",
-      "RemoteRepo": "analysistools",
       "RemoteUsername": "impact-initiatives",
-      "RemoteRef": "HEAD",
+      "RemoteRepo": "analysistools",
+      "RemoteRef": "main",
       "RemoteSha": "e429025047c274336123a5199d79a9303a051df8",
+      "Remotes": "impact-initiatives/addindicators, impact-initiatives/cleaningtools",
       "Requirements": [
         "R",
         "addindicators",
@@ -238,7 +238,7 @@
         "tidyr",
         "tidyselect"
       ],
-      "Hash": "138886138d24cbc5155fed4a7110a950"
+      "Hash": "1b050ffe819bbf6cca3a72da4627bc9a"
     },
     "apyramid": {
       "Package": "apyramid",
@@ -443,13 +443,13 @@
       "Package": "cleaningtools",
       "Version": "0.0.0.9003",
       "Source": "GitHub",
-      "Remotes": "edouard-legoupil/riddle",
       "RemoteType": "github",
       "RemoteHost": "api.github.com",
-      "RemoteRepo": "cleaningtools",
       "RemoteUsername": "impact-initiatives",
-      "RemoteRef": "HEAD",
+      "RemoteRepo": "cleaningtools",
+      "RemoteRef": "master",
       "RemoteSha": "954aa39b07f224ac51644e0801115da837538050",
+      "Remotes": "edouard-legoupil/riddle",
       "Requirements": [
         "R",
         "assertthat",
@@ -474,7 +474,7 @@
         "tidyselect",
         "utils"
       ],
-      "Hash": "497649567326b1395a8b4de43427814b"
+      "Hash": "1f805af374b59193417b7ae1d564ee00"
     },
     "cli": {
       "Package": "cli",
@@ -1217,7 +1217,7 @@
       "RemoteRepo": "impactR4PHU",
       "RemoteUsername": "impact-initiatives",
       "RemoteRef": "HEAD",
-      "RemoteSha": "24490b8a5e6d2b24cd2fa1b42e91d30b32685797",
+      "RemoteSha": "c9c8b40f8ff46dbe6d41efef96ff492398c5078b",
       "Requirements": [
         "GGally",
         "R",
@@ -1238,7 +1238,7 @@
         "writexl",
         "zscorer"
       ],
-      "Hash": "d3d52dd2f4e1e2eed7ecef60c6123e83"
+      "Hash": "f11959cbfbe8e2f1ac7f1a4c9c060ae2"
     },
     "isoband": {
       "Package": "isoband",
@@ -1640,13 +1640,13 @@
       "Package": "presentresults",
       "Version": "0.0.0.9002",
       "Source": "GitHub",
-      "Remotes": "impact-initiatives/analysistools",
       "RemoteType": "github",
-      "RemoteHost": "api.github.com",
-      "RemoteRepo": "presentresults",
       "RemoteUsername": "impact-initiatives",
+      "RemoteRepo": "presentresults",
       "RemoteRef": "HEAD",
-      "RemoteSha": "fdfbfd3aac540c7e8d16d2c7fb5b8509bcffe330",
+      "RemoteSha": "ba9f1be46f546b0e54ee18c431640f5c080839c6",
+      "RemoteHost": "api.github.com",
+      "Remotes": "impact-initiatives/analysistools",
       "Requirements": [
         "R",
         "analysistools",
@@ -1660,7 +1660,7 @@
         "tidyr",
         "tidyselect"
       ],
-      "Hash": "cd78011746236788f5692d4914fbe193"
+      "Hash": "b3244793bc65cd00907a3a3024b02ce8"
     },
     "prettyunits": {
       "Package": "prettyunits",
