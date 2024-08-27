@@ -15,49 +15,49 @@ save.ph.integrated.tables <- function(df, df_cat, wb_name, mort = F, use_templat
   } else {
     end_column <- 17
   }
-  openxlsx::conditionalFormatting(wb,
-                                  sheet = "Cat",
-                                  cols = c(3,5:end_column),
-                                  rows = 3:(nrow(df_cat)+2),
-                                  rule = '="Extremely high"',
-                                  style = openxlsx::createStyle(bgFill = "#960000",
-                                                                fontColour = "white"))
-  openxlsx::conditionalFormatting(wb,
-                                  sheet = "Cat",
-                                  cols = c(3,5:end_column),
-                                  rows = 3:(nrow(df_cat)+2),
-                                  rule = '="Very high"',
-                                  style = openxlsx::createStyle(bgFill = "#FF0000",
-                                                                fontColour = "white"))
-  openxlsx::conditionalFormatting(wb,
-                                  sheet = "Cat",
-                                  cols = c(3,5:end_column),
-                                  rows = 3:(nrow(df_cat)+2),
-                                  rule = '="High"',
-                                  style = openxlsx::createStyle(bgFill = "#ED7D31",
-                                                                fontColour = "black"))
-  openxlsx::conditionalFormatting(wb,
-                                  sheet = "Cat",
-                                  cols = c(3,5:end_column),
-                                  rows = 3:(nrow(df_cat)+2),
-                                  rule = '="Moderate"',
-                                  style = openxlsx::createStyle(bgFill = "#FFE699",
-                                                                fontColour = "#833C0C"))
-  openxlsx::conditionalFormatting(wb,
-                                  sheet = "Cat",
-                                  cols = c(3,5:end_column),
-                                  rows = 3:(nrow(df_cat)+2),
-                                  rule = '="Low"',
-                                  style = openxlsx::createStyle(bgFill = "#C6E0B4",
-                                                                fontColour = "black"))
-  openxlsx::conditionalFormatting(wb,
-                                  sheet = "Cat",
-                                  cols = c(3,5:end_column),
-                                  rows = 3:(nrow(df_cat)+2),
-                                  rule = '=""',
-                                  style = openxlsx::createStyle(bgFill = "black"))
-
+  ## 25/20/15/10
   if(mort){
+    openxlsx::conditionalFormatting(wb,
+                                    sheet = "Cat",
+                                    cols = c(3,5:end_column),
+                                    rows = 3:(nrow(df_cat)+2),
+                                    rule = '="Extremely high"',
+                                    style = openxlsx::createStyle(bgFill = "#960000",
+                                                                  fontColour = "white"))
+    openxlsx::conditionalFormatting(wb,
+                                    sheet = "Cat",
+                                    cols = c(3,5:end_column),
+                                    rows = 3:(nrow(df_cat)+2),
+                                    rule = '="Very high"',
+                                    style = openxlsx::createStyle(bgFill = "#FF0000",
+                                                                  fontColour = "white"))
+    openxlsx::conditionalFormatting(wb,
+                                    sheet = "Cat",
+                                    cols = c(3,5:end_column),
+                                    rows = 3:(nrow(df_cat)+2),
+                                    rule = '="High"',
+                                    style = openxlsx::createStyle(bgFill = "#ED7D31",
+                                                                  fontColour = "black"))
+    openxlsx::conditionalFormatting(wb,
+                                    sheet = "Cat",
+                                    cols = c(3,5:end_column),
+                                    rows = 3:(nrow(df_cat)+2),
+                                    rule = '="Moderate"',
+                                    style = openxlsx::createStyle(bgFill = "#FFE699",
+                                                                  fontColour = "#833C0C"))
+    openxlsx::conditionalFormatting(wb,
+                                    sheet = "Cat",
+                                    cols = c(3,5:end_column),
+                                    rows = 3:(nrow(df_cat)+2),
+                                    rule = '="Low"',
+                                    style = openxlsx::createStyle(bgFill = "#C6E0B4",
+                                                                  fontColour = "black"))
+    openxlsx::conditionalFormatting(wb,
+                                    sheet = "Cat",
+                                    cols = c(3,5:end_column),
+                                    rows = 3:(nrow(df_cat)+2),
+                                    rule = '=""',
+                                    style = openxlsx::createStyle(bgFill = "black"))
     #25/20/15/10
     openxlsx::conditionalFormatting(wb,
                                     sheet = "Data",
@@ -182,12 +182,49 @@ save.ph.integrated.tables <- function(df, df_cat, wb_name, mort = F, use_templat
                                     style = openxlsx::createStyle(bgFill = "#960000",
                                                                   fontColour = "white"))
     ## 20/15/10/5
+    value <- quantile(df[[17]])[[2]] - (quantile(df[[17]])[[4]] - quantile(df[[17]])[[2]])
+    if(value<0){
+      low_threshold <- quantile(df[[17]])[[4]] + (quantile(df[[17]])[[4]] - quantile(df[[17]])[[2]])
+      moderate_threshold <- quantile(df[[17]])[[4]]
+      high_threshold <- quantile(df[[17]])[[3]]
+      exhigh_threshold <- quantile(df[[17]])[[2]]
+    } else {
+      low_threshold <- quantile(df[[17]])[[4]]
+      moderate_threshold <- quantile(df[[17]])[[3]]
+      high_threshold <- quantile(df[[17]])[[2]]
+      exhigh_threshold <- quantile(df[[17]])[[2]] - (quantile(df[[17]])[[4]] - quantile(df[[17]])[[2]])
+    }
+
+    openxlsx::writeData(wb,
+                        sheet = "instructions",
+                        startRow = 3, startCol = 16,
+                        x = paste0("<",round(exhigh_threshold*100,2),"%"))
+
+    openxlsx::writeData(wb,
+                        sheet = "instructions",
+                        startRow = 4, startCol = 16,
+                        x = paste0("<",round(high_threshold*100,2),"%"))
+
+    openxlsx::writeData(wb,
+                        sheet = "instructions",
+                        startRow = 5, startCol = 16,
+                        x = paste0("<",round(moderate_threshold*100,2),"%"))
+
+    openxlsx::writeData(wb,
+                        sheet = "instructions",
+                        startRow = 6, startCol = 16,
+                        x = paste0("<",round(low_threshold*100,2),"%"))
+
+    openxlsx::writeData(wb,
+                        sheet = "instructions",
+                        startRow = 7, startCol = 16,
+                        x = paste0(">=",round(low_threshold*100,2),"%"))
 
     openxlsx::conditionalFormatting(wb,
                                     sheet = "Data",
                                     cols = c(17),
                                     rows = 3:(nrow(df)+2),
-                                    rule = '>=0.2',
+                                    rule = paste0('>=',low_threshold),
                                     style = openxlsx::createStyle(bgFill = "#C6E0B4",
                                                                   fontColour = "black"))
 
@@ -195,7 +232,7 @@ save.ph.integrated.tables <- function(df, df_cat, wb_name, mort = F, use_templat
                                     sheet = "Data",
                                     cols = c(17),
                                     rows = 3:(nrow(df)+2),
-                                    rule = '<0.2',
+                                    rule = paste0('<',low_threshold),
                                     style = openxlsx::createStyle(bgFill = "#FFE699",
                                                                   fontColour = "#833C0C"))
 
@@ -203,7 +240,7 @@ save.ph.integrated.tables <- function(df, df_cat, wb_name, mort = F, use_templat
                                     sheet = "Data",
                                     cols = c(17),
                                     rows = 3:(nrow(df)+2),
-                                    rule = '<0.15',
+                                    rule = paste0('<',moderate_threshold),
                                     style = openxlsx::createStyle(bgFill = "#ED7D31",
                                                                   fontColour = "black"))
 
@@ -211,7 +248,7 @@ save.ph.integrated.tables <- function(df, df_cat, wb_name, mort = F, use_templat
                                     sheet = "Data",
                                     cols = c(17),
                                     rows = 3:(nrow(df)+2),
-                                    rule = '<0.1',
+                                    rule = paste0('<',high_threshold),
                                     style = openxlsx::createStyle(bgFill = "#FF0000",
                                                                   fontColour = "white"))
 
@@ -219,18 +256,56 @@ save.ph.integrated.tables <- function(df, df_cat, wb_name, mort = F, use_templat
                                     sheet = "Data",
                                     cols = c(17),
                                     rows = 3:(nrow(df)+2),
-                                    rule = '<0.05',
+                                    rule = paste0('<',exhigh_threshold),
                                     style = openxlsx::createStyle(bgFill = "#960000",
                                                                   fontColour = "white"))
 
     ## 20/40/60/80
     cols <- c(14,16)
     for(col in cols){
+      value <- quantile(df[[col]])[[2]] - (quantile(df[[col]])[[4]] - quantile(df[[col]])[[2]])
+      if(value<0){
+        low_threshold <- quantile(df[[col]])[[4]] + (quantile(df[[col]])[[4]] - quantile(df[[col]])[[2]])
+        moderate_threshold <- quantile(df[[col]])[[4]]
+        high_threshold <- quantile(df[[col]])[[3]]
+        exhigh_threshold <- quantile(df[[col]])[[2]]
+      } else {
+        low_threshold <- quantile(df[[col]])[[4]]
+        moderate_threshold <- quantile(df[[col]])[[3]]
+        high_threshold <- quantile(df[[col]])[[2]]
+        exhigh_threshold <- quantile(df[[col]])[[2]] - (quantile(df[[col]])[[4]] - quantile(df[[col]])[[2]])
+      }
+
+      openxlsx::writeData(wb,
+                          sheet = "instructions",
+                          startRow = 3, startCol = col - 1,
+                          x = paste0("<",round(exhigh_threshold*100,2),"%"))
+
+      openxlsx::writeData(wb,
+                          sheet = "instructions",
+                          startRow = 4, startCol = col - 1,
+                          x = paste0("<",round(high_threshold*100,2),"%"))
+
+      openxlsx::writeData(wb,
+                          sheet = "instructions",
+                          startRow = 5, startCol = col - 1,
+                          x = paste0("<",round(moderate_threshold*100,2),"%"))
+
+      openxlsx::writeData(wb,
+                          sheet = "instructions",
+                          startRow = 6, startCol = col - 1,
+                          x = paste0("<",round(low_threshold*100,2),"%"))
+
+      openxlsx::writeData(wb,
+                          sheet = "instructions",
+                          startRow = 7, startCol = col - 1,
+                          x = paste0(">=",round(low_threshold*100,2),"%"))
+
       openxlsx::conditionalFormatting(wb,
                                       sheet = "Data",
                                       cols = col,
                                       rows = 3:(nrow(df)+2),
-                                      rule = '>=0.8',
+                                      rule = paste0('>=',low_threshold),
                                       style = openxlsx::createStyle(bgFill = "#C6E0B4",
                                                                     fontColour = "black"))
 
@@ -238,7 +313,7 @@ save.ph.integrated.tables <- function(df, df_cat, wb_name, mort = F, use_templat
                                       sheet = "Data",
                                       cols = col,
                                       rows = 3:(nrow(df)+2),
-                                      rule = '<0.8',
+                                      rule = paste0('<',low_threshold),
                                       style = openxlsx::createStyle(bgFill = "#FFE699",
                                                                     fontColour = "#833C0C"))
 
@@ -246,7 +321,7 @@ save.ph.integrated.tables <- function(df, df_cat, wb_name, mort = F, use_templat
                                       sheet = "Data",
                                       cols = col,
                                       rows = 3:(nrow(df)+2),
-                                      rule = '<0.6',
+                                      rule = paste0('<',moderate_threshold),
                                       style = openxlsx::createStyle(bgFill = "#ED7D31",
                                                                     fontColour = "black"))
 
@@ -254,7 +329,7 @@ save.ph.integrated.tables <- function(df, df_cat, wb_name, mort = F, use_templat
                                       sheet = "Data",
                                       cols = col,
                                       rows = 3:(nrow(df)+2),
-                                      rule = '<0.4',
+                                      rule = paste0('<',high_threshold),
                                       style = openxlsx::createStyle(bgFill = "#FF0000",
                                                                     fontColour = "white"))
 
@@ -262,7 +337,7 @@ save.ph.integrated.tables <- function(df, df_cat, wb_name, mort = F, use_templat
                                       sheet = "Data",
                                       cols = col,
                                       rows = 3:(nrow(df)+2),
-                                      rule = '<0.20',
+                                      rule = paste0('<',exhigh_threshold),
                                       style = openxlsx::createStyle(bgFill = "#960000",
                                                                     fontColour = "white"))
     }
@@ -336,6 +411,7 @@ save.ph.integrated.tables <- function(df, df_cat, wb_name, mort = F, use_templat
 
       # Apply the style to the cell
       openxlsx::addStyle(wb, "Data", style = style, rows = i + 2, cols = 3, gridExpand = TRUE, stack = TRUE)
+      openxlsx::addStyle(wb, "Cat", style = style, rows = i + 2, cols = 3, gridExpand = TRUE, stack = TRUE)
     }
     openxlsx::conditionalFormatting(wb,
                                     sheet = "Data",
@@ -602,6 +678,8 @@ save.ph.integrated.tables <- function(df, df_cat, wb_name, mort = F, use_templat
                                     rule = '=""',
                                     style = openxlsx::createStyle(bgFill = "black"))
   }
+
+
 
   filename <- paste0("output/", wb_name, ".xlsx")
   openxlsx::saveWorkbook(wb, filename, overwrite=TRUE)
