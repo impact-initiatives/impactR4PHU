@@ -1489,7 +1489,7 @@ if(mort_collected == "yes"){
 
 
   ph_int_table <- ph_int_table %>%
-    dplyr::mutate(non_trauma = non_trauma_loop$non_trauma[match(!!rlang::sym(admin1),non_trauma_loop$admin1)]) %>%
+    dplyr::mutate(non_trauma = non_trauma_loop$non_trauma[admin1,non_trauma_loop$admin1)]) %>%
     dplyr::relocate(non_trauma, .before = 4)
 }
 
