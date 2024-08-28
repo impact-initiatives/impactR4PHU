@@ -314,12 +314,13 @@
     },
     "broom.helpers": {
       "Package": "broom.helpers",
-      "Version": "1.16.0",
+      "Version": "1.17.0",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
         "R",
         "broom",
+        "cards",
         "cli",
         "dplyr",
         "labelled",
@@ -331,7 +332,7 @@
         "tibble",
         "tidyr"
       ],
-      "Hash": "da2ca8a757b2851fa2b625b6cd1e361c"
+      "Hash": "53142c51f78663c89ff79091874319e4"
     },
     "bslib": {
       "Package": "bslib",
@@ -378,6 +379,22 @@
         "utils"
       ],
       "Hash": "d7e13f49c19103ece9e58ad2d83a7354"
+    },
+    "cards": {
+      "Package": "cards",
+      "Version": "0.2.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "cli",
+        "dplyr",
+        "glue",
+        "rlang",
+        "tidyr",
+        "tidyselect"
+      ],
+      "Hash": "721cc0c2adf373692473385e5b684496"
     },
     "cellranger": {
       "Package": "cellranger",
@@ -1081,7 +1098,7 @@
       "RemoteRepo": "impactR4PHU",
       "RemoteUsername": "impact-initiatives",
       "RemoteRef": "HEAD",
-      "RemoteSha": "c25e93efc8311c664e8ded94b1ed17511f07d487",
+      "RemoteSha": "f7c5a2f919849e2cee17f807a29890451532fb29",
       "Requirements": [
         "GGally",
         "R",
@@ -1102,7 +1119,7 @@
         "writexl",
         "zscorer"
       ],
-      "Hash": "f313deec103aac695808e7c472b98449"
+      "Hash": "a43920ed104460e0683ecaff30fa7374"
     },
     "isoband": {
       "Package": "isoband",
