@@ -1717,3 +1717,8 @@ if(!file.exists("inputs/environment.Rdata")){
 
 cat("\n> Creation of table completed! You can check your output folder.")
 
+
+
+
+
+# summary(test_thresholds)
