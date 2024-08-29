@@ -41,6 +41,40 @@ for(sheet in sheet_names[-1]) {
   data.list[[sheet]] <- readxl::read_excel(filename.data, sheet=sheet, col_types = "text")
 }
 
+## Weights
+yes_no_weight <- svDialogs::dlg_message("Is your data weighted?", type = "yesno")$res
+if(yes_no_weight == "yes"){
+  weight <- names(data.list$main)[grepl("weight",names(data.list$main))]
+  if(length(weight) == 1){
+    yes_no <- svDialogs::dlg_message(paste0("Is '", weight, "' the correct weight column?"), type = "yesno")$res
+    if (yes_no == "no") {
+      weight <- svDialogs::dlg_input(message= "Enter the name of the weight column","weight")$res
+    }
+  } else if (length(weight) > 1){
+    weight <- tcltk::tk_select.list(weight, title = "Weight column")
+    if(weight == "") {
+      weight <- svDialogs::dlg_input(message= "Enter the name of the weight column","weight")$res
+    }
+  } else if (length(weight) == 0) {
+    weight <- svDialogs::dlg_input(message= "Enter the name of the weight column","weight")$res
+  }
+} else {
+  weight <- 1
+}
+if(yes_no_weight == "yes"){
+  for(sheet in names(data.list)){
+    data.list[[sheet]] <- data.list[[sheet]] %>%
+      mutate(weight = as.numeric(!!rlang::sym(weight))) %>%
+      mutate_at(vars(everything()),~ifelse(. == "",NA,.))
+  }
+} else {
+  for(sheet in names(data.list)){
+    data.list[[sheet]] <- data.list[[sheet]] %>%
+      mutate(weight = 1) %>%
+      mutate_at(vars(everything()),~ifelse(. == "",NA,.))
+  }
+}
+
 ## Load Mortality
 if(mort_collected == "yes"){
   mort_data <- readxl::read_excel(filename.mortality, col_types = "text") %>%
@@ -834,7 +868,29 @@ admin1_df <- data.list$main %>%
   dplyr::group_by(admin1) %>%
   dplyr::summarise(num_observartion = n())
 
+national_df <- data.list$main %>%
+  dplyr::group_by() %>%
+  dplyr::summarise(num_observation = n()) %>%
+  dplyr::mutate(admin1 = "national") %>%
+  dplyr::relocate(admin1, .before = 1)
+
 ph_int_table <- admin1_df %>%
+  dplyr::mutate(children_sick = NA,
+                unmet_healthcare = NA,
+                amn_phase = NA,
+                afi_phase = NA,
+                fcs_phase = NA,
+                fcs = NA,
+                rcsi = NA,
+                hhs = NA,
+                lcsi = NA,
+                impro_water = NA,
+                drinking_water = NA,
+                sanitation = NA,
+                handwash = NA,
+                distance_healthcare = NA)
+
+national_df <- national_df %>%
   dplyr::mutate(children_sick = NA,
                 unmet_healthcare = NA,
                 amn_phase = NA,
@@ -854,47 +910,104 @@ if(mort_collected == "yes"){
   ph_int_table <- ph_int_table %>%
     dplyr::mutate(mort = mort_data$mort[match(admin1,mort_data$admin1)]) %>%
     dplyr::relocate(mort, .before = 3)
+
+  national_df <- national_df %>%
+    dplyr::mutate(mort = mort_data$mort[match(admin1,mort_data$admin1)]) %>%
+    dplyr::relocate(mort, .before = 3)
 }
 
+survey_df <- srvyr::as_survey_design(data.list$main,
+                                     weights = weight)
+
 if("FCS" %in% FSL_indicators) {
-  fcs_df <- data.list$main %>%
-    dplyr::filter(fsl_fcs_cat == "Poor") %>%
+  fcs_df <- survey_df %>%
     dplyr::mutate(admin1 = !!rlang::sym(admin1)) %>%
-    dplyr::group_by(admin1) %>%
-    dplyr::summarise(fcs = n())
+    srvyr::group_by(admin1, fsl_fcs_cat) %>%
+    srvyr::summarise(fcs = srvyr::survey_prop()) %>%
+    dplyr::filter(fsl_fcs_cat == "Poor") %>%
+    dplyr::select(admin1, fcs)
+
+  fcs_df_national <- survey_df %>%
+    dplyr::mutate(admin1 = "national") %>%
+    srvyr::group_by(admin1, fsl_fcs_cat) %>%
+    srvyr::summarise(fcs = srvyr::survey_prop()) %>%
+    dplyr::filter(fsl_fcs_cat == "Poor") %>%
+    dplyr::select(admin1, fcs)
 }
 
 if("rCSI" %in% FSL_indicators) {
-  rcsi_df <- data.list$main %>%
-    dplyr::filter(fsl_rcsi_cat == "High") %>%
+  rcsi_df <- survey_df %>%
     dplyr::mutate(admin1 = !!rlang::sym(admin1)) %>%
-    dplyr::group_by(admin1) %>%
-    dplyr::summarise(rcsi = n())
+    srvyr::group_by(admin1, fsl_rcsi_cat) %>%
+    srvyr::summarise(rcsi = srvyr::survey_prop()) %>%
+    dplyr::filter(fsl_rcsi_cat == "High") %>%
+    dplyr::select(admin1, rcsi)
+
+  rcsi_df_national <- survey_df %>%
+    dplyr::mutate(admin1 = "national") %>%
+    srvyr::group_by(admin1, fsl_rcsi_cat) %>%
+    srvyr::summarise(rcsi = srvyr::survey_prop()) %>%
+    dplyr::filter(fsl_rcsi_cat == "High") %>%
+    dplyr::select(admin1, rcsi)
 }
 
 if("HHS" %in% FSL_indicators) {
-  hhs_df <- data.list$main %>%
-    dplyr::filter(fsl_hhs_cat_ipc %in% c("Severe","Very Severe")) %>%
-    dplyr::mutate(admin1 = !!rlang::sym(admin1)) %>%
-    dplyr::group_by(admin1) %>%
-    dplyr::summarise(hhs = n())
+  hhs_df <- survey_df %>%
+    dplyr::mutate(admin1 = !!rlang::sym(admin1),
+                  fsl_hhs_cat_ipc = case_when(fsl_hhs_cat_ipc %in% c("Severe","Very Severe")~"Severe",
+                                              TRUE ~ fsl_hhs_cat_ipc)) %>%
+    srvyr::group_by(admin1, fsl_hhs_cat_ipc) %>%
+    srvyr::summarise(hhs = srvyr::survey_prop())%>%
+    dplyr::filter(fsl_hhs_cat_ipc == "Severe") %>%
+    dplyr::select(admin1, hhs)
+
+  hhs_df_national <- survey_df %>%
+    dplyr::mutate(admin1 = "national",
+                  fsl_hhs_cat_ipc = case_when(fsl_hhs_cat_ipc %in% c("Severe","Very Severe")~"Severe",
+                                              TRUE ~ fsl_hhs_cat_ipc)) %>%
+    srvyr::group_by(admin1, fsl_hhs_cat_ipc) %>%
+    srvyr::summarise(hhs = srvyr::survey_prop())%>%
+    dplyr::filter(fsl_hhs_cat_ipc == "Severe") %>%
+    dplyr::select(admin1, hhs)
 }
 
 if("LCSI" %in% FSL_indicators) {
-  lcsi_df <- data.list$main %>%
-    dplyr::filter(fsl_lcsi_cat == "Emergency") %>%
+  lcsi_df <- survey_df %>%
     dplyr::mutate(admin1 = !!rlang::sym(admin1)) %>%
-    dplyr::group_by(admin1) %>%
-    dplyr::summarise(lcsi = n())
+    srvyr::group_by(admin1, fsl_lcsi_cat) %>%
+    srvyr::summarise(lcsi = srvyr::survey_prop())%>%
+    dplyr::filter(fsl_lcsi_cat == "Emergency") %>%
+    dplyr::select(admin1, lcsi)
+
+  lcsi_df_national <- survey_df %>%
+    dplyr::mutate(admin1 = "national") %>%
+    srvyr::group_by(admin1, fsl_lcsi_cat) %>%
+    srvyr::summarise(lcsi = srvyr::survey_prop())%>%
+    dplyr::filter(fsl_lcsi_cat == "Emergency") %>%
+    dplyr::select(admin1, lcsi)
 }
 
-fsl_phase_df <- data.list$main %>%
-  dplyr::filter(fsl_fc_phase %in% c("Phase 3 FC",
-                                    "Phase 4 FC",
-                                    "Phase 5 FC")) %>%
-  dplyr::mutate(admin1 = !!rlang::sym(admin1)) %>%
-  dplyr::group_by(admin1) %>%
-  dplyr::summarise(fcs_phase = n())
+fsl_phase_df <- survey_df %>%
+  dplyr::mutate(admin1 = !!rlang::sym(admin1),
+                fsl_fc_phase = case_when(fsl_fc_phase %in% c("Phase 3 FC",
+                                                             "Phase 4 FC",
+                                                             "Phase 5 FC")~"Same",
+                                         TRUE ~ fsl_fc_phase)) %>%
+  srvyr::group_by(admin1, fsl_fc_phase) %>%
+  srvyr::summarise(fcs_phase = srvyr::survey_prop())%>%
+  dplyr::filter(fsl_fc_phase == "Same") %>%
+  dplyr::select(admin1, fcs_phase)
+
+fsl_phase_df_national <- survey_df %>%
+  dplyr::mutate(admin1 = "national",
+                fsl_fc_phase = case_when(fsl_fc_phase %in% c("Phase 3 FC",
+                                                             "Phase 4 FC",
+                                                             "Phase 5 FC")~"Same",
+                                         TRUE ~ fsl_fc_phase)) %>%
+  srvyr::group_by(admin1, fsl_fc_phase) %>%
+  srvyr::summarise(fcs_phase = srvyr::survey_prop())%>%
+  dplyr::filter(fsl_fc_phase == "Same") %>%
+  dplyr::select(admin1, fcs_phase)
 
 
 ## WASH
@@ -1107,12 +1220,61 @@ handwash_df <- data.list$main %>%
                                        facility_reported_remote_soap_type_yes = facility_reported_remote_soap_type_yes,
                                        facility_reported_remote_soap_type_no = facility_reported_remote_soap_type_no,
                                        facility_reported_remote_soap_type_undefined = facility_reported_remote_soap_type_undefined) %>%
-  dplyr::select(admin1, wash_handwashing_facility_jmp_cat) %>%
-  dplyr::rename("handwash"=wash_handwashing_facility_jmp_cat) %>%
-  dplyr::filter(handwash %in% c("basic","limited")) %>%
-  dplyr::mutate(admin1 = !!rlang::sym(admin1)) %>%
-  dplyr::group_by(admin1) %>%
-  dplyr::summarise(handwash = n())
+  srvyr::as_survey_design(weights = weight) %>%
+  dplyr::rename("handwash_cat"=wash_handwashing_facility_jmp_cat) %>%
+  dplyr::mutate(admin1 = !!rlang::sym(admin1),
+                handwash_cat = case_when(handwash_cat  %in% c("basic","limited") ~ "limited",
+                                         TRUE ~ handwash_cat)) %>%
+  dplyr::group_by(admin1,handwash_cat) %>%
+  dplyr::summarise(handwash = srvyr::survey_prop())%>%
+  dplyr::filter(handwash_cat == "limited")%>%
+  dplyr::select(admin1, handwash)
+
+handwash_df_national <- data.list$main %>%
+  humind::add_handwashing_facility_cat(survey_modality = survey_modality,
+                                       survey_modality_in_person = survey_modality_in_person,
+                                       survey_modality_remote = survey_modality_remote,
+                                       facility = facility,
+                                       facility_yes = facility_yes,
+                                       facility_no = facility_no,
+                                       facility_no_permission = facility_no_permission,
+                                       facility_undefined = facility_undefined,
+                                       facility_observed_water = facility_observed_water,
+                                       facility_observed_water_yes = facility_observed_water_yes,
+                                       facility_observed_water_no = facility_observed_water_no,
+                                       facility_observed_soap = facility_observed_soap,
+                                       facility_observed_soap_yes = facility_observed_soap_yes,
+                                       facility_observed_soap_no = facility_observed_soap_no,
+                                       facility_observed_soap_alternative = facility_observed_soap_alternative,
+                                       facility_reported = facility_reported,
+                                       facility_reported_yes = facility_reported_yes,
+                                       facility_reported_no = facility_reported_no,
+                                       facility_reported_undefined = facility_reported_undefined,
+                                       facility_reported_no_permission_soap = facility_reported_no_permission_soap,
+                                       facility_reported_no_permission_soap_yes = facility_reported_no_permission_soap_yes,
+                                       facility_reported_no_permission_soap_no = facility_reported_no_permission_soap_no,
+                                       facility_reported_no_permission_soap_undefined = facility_reported_no_permission_soap_undefined,
+                                       facility_reported_no_permission_soap_type = facility_reported_no_permission_soap_type,
+                                       facility_reported_no_permission_soap_type_yes = facility_reported_no_permission_soap_type_yes,
+                                       facility_reported_no_permission_soap_type_no = facility_reported_no_permission_soap_type_no,
+                                       facility_reported_no_permission_soap_type_undefined = facility_reported_no_permission_soap_type_undefined,
+                                       facility_reported_remote_soap = facility_reported_remote_soap,
+                                       facility_reported_remote_soap_yes = facility_reported_remote_soap_yes,
+                                       facility_reported_remote_soap_no = facility_reported_remote_soap_no,
+                                       facility_reported_remote_soap_undefined = facility_reported_remote_soap_undefined,
+                                       facility_reported_remote_soap_type = facility_reported_remote_soap_type,
+                                       facility_reported_remote_soap_type_yes = facility_reported_remote_soap_type_yes,
+                                       facility_reported_remote_soap_type_no = facility_reported_remote_soap_type_no,
+                                       facility_reported_remote_soap_type_undefined = facility_reported_remote_soap_type_undefined) %>%
+  srvyr::as_survey_design(weights = weight) %>%
+  dplyr::rename("handwash_cat"=wash_handwashing_facility_jmp_cat) %>%
+  dplyr::mutate(admin1 = "national",
+                handwash_cat = case_when(handwash_cat  %in% c("basic","limited") ~ "limited",
+                                         TRUE ~ handwash_cat)) %>%
+  dplyr::group_by(admin1,handwash_cat) %>%
+  dplyr::summarise(handwash = srvyr::survey_prop())%>%
+  dplyr::filter(handwash_cat == "limited")%>%
+  dplyr::select(admin1, handwash)
 
 if(!file.exists("inputs/environment.Rdata")) {
   drinking_water_source <- names(data.list$main)[grepl("drinking",names(data.list$main))]
@@ -1141,12 +1303,27 @@ impro_water_df <- data.list$main %>%
                                         unimproved = unimproved_drinking_water,
                                         surface_water = surface_water,
                                         undefined = undefined_drinking_water) %>%
-  dplyr::select(admin1, wash_drinking_water_source_cat) %>%
-  dplyr::rename("impro_water" = wash_drinking_water_source_cat)%>%
-  dplyr::filter(impro_water %in% c("improved")) %>%
+  srvyr::as_survey_design(weights = weight) %>%
+  dplyr::rename("impro_water_cat"=wash_drinking_water_source_cat) %>%
   dplyr::mutate(admin1 = !!rlang::sym(admin1)) %>%
-  dplyr::group_by(admin1) %>%
-  dplyr::summarise(impro_water = n())
+  dplyr::group_by(admin1,impro_water_cat) %>%
+  dplyr::summarise(impro_water = srvyr::survey_prop())%>%
+  dplyr::filter(impro_water_cat == "improved")%>%
+  dplyr::select(admin1, impro_water)
+
+impro_water_df_national <- data.list$main %>%
+  humind::add_drinking_water_source_cat(drinking_water_source = drinking_water_source,
+                                        improved = improved_drinking_water,
+                                        unimproved = unimproved_drinking_water,
+                                        surface_water = surface_water,
+                                        undefined = undefined_drinking_water) %>%
+  srvyr::as_survey_design(weights = weight) %>%
+  dplyr::rename("impro_water_cat"=wash_drinking_water_source_cat) %>%
+  dplyr::mutate(admin1 = "national") %>%
+  dplyr::group_by(admin1,impro_water_cat) %>%
+  dplyr::summarise(impro_water = srvyr::survey_prop())%>%
+  dplyr::filter(impro_water_cat == "improved")%>%
+  dplyr::select(admin1, impro_water)
 
 if(!file.exists("inputs/environment.Rdata")) {
   sanitation_facility <- names(data.list$main)[grepl("sanitation",names(data.list$main))]
@@ -1175,12 +1352,27 @@ sanitation_df <- data.list$main %>%
                                       unimproved = unimproved_sanitation_facility,
                                       none = none_sanitation_facility,
                                       undefined = undefined_sanitation_facility) %>%
-  dplyr::select(admin1, wash_sanitation_facility_cat) %>%
-  dplyr::rename("sanitation" = wash_sanitation_facility_cat)%>%
-  dplyr::filter(sanitation %in% c("improved")) %>%
+  srvyr::as_survey_design(weights = weight) %>%
+  dplyr::rename("sanitation_cat"=wash_sanitation_facility_cat) %>%
   dplyr::mutate(admin1 = !!rlang::sym(admin1)) %>%
-  dplyr::group_by(admin1) %>%
-  dplyr::summarise(sanitation = n())
+  dplyr::group_by(admin1,sanitation_cat) %>%
+  dplyr::summarise(sanitation = srvyr::survey_prop())%>%
+  dplyr::filter(sanitation_cat == "improved")%>%
+  dplyr::select(admin1, sanitation)
+
+sanitation_df_national <- data.list$main %>%
+  humind::add_sanitation_facility_cat(sanitation_facility = sanitation_facility,
+                                      improved = improved_sanitation_facility,
+                                      unimproved = unimproved_sanitation_facility,
+                                      none = none_sanitation_facility,
+                                      undefined = undefined_sanitation_facility) %>%
+  srvyr::as_survey_design(weights = weight) %>%
+  dplyr::rename("sanitation_cat"=wash_sanitation_facility_cat) %>%
+  dplyr::mutate(admin1 = "national") %>%
+  dplyr::group_by(admin1,sanitation_cat) %>%
+  dplyr::summarise(sanitation = srvyr::survey_prop())%>%
+  dplyr::filter(sanitation_cat == "improved")%>%
+  dplyr::select(admin1, sanitation)
 
 if(!file.exists("inputs/environment.Rdata")) {
   wash_water_quantity <- names(data.list$main)[grepl("wash_water_quantity|quantity",names(data.list$main))]
@@ -1200,13 +1392,26 @@ if(!file.exists("inputs/environment.Rdata")) {
 }
 
 
-drinking_water_df <- data.list$main %>%
-  dplyr::select(admin1, wash_water_quantity) %>%
-  dplyr::rename("drinking_water" = wash_water_quantity)%>%
-  dplyr::filter(drinking_water %in% c("always","often")) %>%
-  dplyr::mutate(admin1 = !!rlang::sym(admin1)) %>%
-  dplyr::group_by(admin1) %>%
-  dplyr::summarise(drinking_water = n())
+drinking_water_df <- survey_df %>%
+  dplyr::rename("drinking_water_cat"=wash_water_quantity) %>%
+  dplyr::mutate(admin1 = !!rlang::sym(admin1),
+                drinking_water_cat = case_when(drinking_water_cat %in% c("always","often") ~ "always",
+                                               TRUE ~ drinking_water_cat)) %>%
+  dplyr::group_by(admin1,drinking_water_cat) %>%
+  dplyr::summarise(drinking_water = srvyr::survey_prop())%>%
+  dplyr::filter(drinking_water_cat == "always")%>%
+  dplyr::select(admin1, drinking_water)
+
+
+drinking_water_df_national <- survey_df %>%
+  dplyr::rename("drinking_water_cat"=wash_water_quantity) %>%
+  dplyr::mutate(admin1 = "national",
+                drinking_water_cat = case_when(drinking_water_cat %in% c("always","often") ~ "always",
+                                               TRUE ~ drinking_water_cat)) %>%
+  dplyr::group_by(admin1,drinking_water_cat) %>%
+  dplyr::summarise(drinking_water = srvyr::survey_prop())%>%
+  dplyr::filter(drinking_water_cat == "always")%>%
+  dplyr::select(admin1, drinking_water)
 
 ## Health
 if(!file.exists("inputs/environment.Rdata")) {
@@ -1226,12 +1431,25 @@ if(!file.exists("inputs/environment.Rdata")) {
   }
 }
 
-distance_healthcare_df <- data.list$main %>%
-  dplyr::select(admin1, distance_healthcare) %>%
-  dplyr::filter(as.numeric(!!rlang::sym(distance_healthcare)) >= 60) %>%
-  dplyr::mutate(admin1 = !!rlang::sym(admin1)) %>%
-  dplyr::group_by(admin1) %>%
-  dplyr::summarise(distance_healthcare = n())
+distance_healthcare_df <- survey_df %>%
+  dplyr::rename("distance_healthcare_cat"=distance_healthcare) %>%
+  dplyr::mutate(admin1 = !!rlang::sym(admin1),
+                distance_healthcare_cat = case_when(as.numeric(distance_healthcare_cat) >= 60 ~ "high",
+                                                    TRUE ~ "low")) %>%
+  dplyr::group_by(admin1,distance_healthcare_cat) %>%
+  dplyr::summarise(distance_healthcare = srvyr::survey_prop())%>%
+  dplyr::filter(distance_healthcare_cat == "high")%>%
+  dplyr::select(admin1, distance_healthcare)
+
+distance_healthcare_df_national <- survey_df %>%
+  dplyr::rename("distance_healthcare_cat"=distance_healthcare) %>%
+  dplyr::mutate(admin1 = "national",
+                distance_healthcare_cat = case_when(as.numeric(distance_healthcare_cat) >= 60 ~ "high",
+                                                    TRUE ~ "low")) %>%
+  dplyr::group_by(admin1,distance_healthcare_cat) %>%
+  dplyr::summarise(distance_healthcare = srvyr::survey_prop())%>%
+  dplyr::filter(distance_healthcare_cat == "high")%>%
+  dplyr::select(admin1, distance_healthcare)
 
 
 ## Health
@@ -1327,18 +1545,28 @@ unmet_loop_df <- data.list[[healthcare_sheet]] %>%
                                          ind_healthcare_needed_levels = ind_healthcare_needed_levels,
                                          ind_healthcare_received = ind_healthcare_received,
                                          ind_healthcare_received_levels = ind_healthcare_received_levels,
-                                         ind_age = ind_age)%>%
-  dplyr::rename(!!rlang::sym(uuid_main) := uuid_health_loop)
-
-unmet_health_df <- humind::add_loop_healthcare_needed_cat_to_main(data.list$main,
-                                                                  unmet_loop_df ,
-                                                                  id_col_main = uuid_main,
-                                                                  id_col_loop = uuid_main) %>%
-  dplyr::select(admin1, health_ind_healthcare_needed_yes_unmet_n) %>%
-  dplyr::filter(as.numeric(health_ind_healthcare_needed_yes_unmet_n) > 0) %>%
+                                         ind_age = ind_age) %>%
+  srvyr::as_survey_design(weights = weight) %>%
   dplyr::mutate(admin1 = !!rlang::sym(admin1)) %>%
   dplyr::group_by(admin1) %>%
-  dplyr::summarise(unmet_healthcare = n())
+  dplyr::summarise(n = n(),
+                   sum = srvyr::survey_total(health_ind_healthcare_needed_yes_unmet),
+                   unmet_healthcare = sum/n) %>%
+  dplyr::select(admin1,unmet_healthcare)
+
+unmet_loop_df_national <- data.list[[healthcare_sheet]] %>%
+  humind::add_loop_healthcare_needed_cat(ind_healthcare_needed = ind_healthcare_needed,
+                                         ind_healthcare_needed_levels = ind_healthcare_needed_levels,
+                                         ind_healthcare_received = ind_healthcare_received,
+                                         ind_healthcare_received_levels = ind_healthcare_received_levels,
+                                         ind_age = ind_age) %>%
+  srvyr::as_survey_design(weights = weight) %>%
+  dplyr::mutate(admin1 = "national") %>%
+  dplyr::group_by(admin1) %>%
+  dplyr::summarise(n = n(),
+                   sum = srvyr::survey_total(health_ind_healthcare_needed_yes_unmet),
+                   unmet_healthcare = sum/n) %>%
+  dplyr::select(admin1,unmet_healthcare)
 
 
 ## Nutrition
@@ -1391,10 +1619,26 @@ nut_under5_sick_loop <- data.list[[nut_sheet]] %>%
   dplyr::mutate(under5_sick_n = ifelse(!!rlang::sym(under5_sick) == under5_sick_yes,1,0),
                 uuid = !!rlang::sym(uuid_nut)) %>%
   dplyr::left_join(nut_under5_sick_df) %>%
+  srvyr::as_survey_design(weights = weight) %>%
+  dplyr::mutate(admin1 = !!rlang::sym(admin1)) %>%
   dplyr::group_by(admin1) %>%
-  dplyr::summarise(children_sick_n = sum(under5_sick_n, na.rm = T),
-                   n = n()) %>%
-  dplyr::mutate(children_sick = children_sick_n / n)
+  dplyr::summarise(n = n(),
+                   sum = srvyr::survey_total(under5_sick_n),
+                   children_sick = sum/n) %>%
+  dplyr::select(admin1,children_sick)
+
+nut_under5_sick_loop_national <- data.list[[nut_sheet]] %>%
+  dplyr::filter(!!rlang::sym(under5_sick) %in% c(under5_sick_no,under5_sick_yes)) %>%
+  dplyr::mutate(under5_sick_n = ifelse(!!rlang::sym(under5_sick) == under5_sick_yes,1,0),
+                uuid = !!rlang::sym(uuid_nut)) %>%
+  srvyr::as_survey_design(weights = weight) %>%
+  dplyr::mutate(admin1 = "national") %>%
+  dplyr::group_by(admin1) %>%
+  dplyr::summarise(n = n(),
+                   sum = srvyr::survey_total(under5_sick_n),
+                   children_sick = sum/n) %>%
+  dplyr::select(admin1,children_sick)
+
 
 if(mort_collected == "yes"){
   non_trauma_df <- data.list$main %>%
@@ -1405,39 +1649,76 @@ if(mort_collected == "yes"){
     dplyr::mutate(!!rlang::sym(death_cause) := ifelse(is.na(!!rlang::sym(death_cause)),"dnk",!!rlang::sym(death_cause)))
 
   non_trauma_loop <- data.list[[died_sheet]] %>%
-    # dplyr::filter(!!rlang::sym(death_cause) %in% non_trauma_deaths) %>%
-    dplyr::mutate(uuid = !!rlang::sym(uuid_died)) %>%
+    dplyr::mutate(uuid = !!rlang::sym(uuid_died),
+                  !!rlang::sym(death_cause) := case_when(!!rlang::sym(death_cause) %in% non_trauma_deaths ~ "non_trauma_deaths",
+                                                         TRUE ~ !!rlang::sym(death_cause))) %>%
     dplyr::left_join(non_trauma_df) %>%
-    dplyr::group_by(!!rlang::sym(admin1), !!rlang::sym(death_cause))%>%
-    dplyr::summarise(non_trauma_n = n()) %>%
-    tidyr::pivot_wider(names_from = death_cause, values_from = non_trauma_n, values_fill = 0) %>%
-    dplyr::mutate(total_non_trauma = rowSums(across(non_trauma_deaths, .fns = as.numeric)),
-                  total = rowSums(across(data.list[[died_sheet]][[death_cause]] %>% unique(), .fns = as.numeric)),
-                  non_trauma = total_non_trauma / total) %>%
-    dplyr::mutate(admin1 = !!rlang::sym(admin1))
+    dplyr::filter(!is.na(weight)) %>%
+    srvyr::as_survey_design(weights = weight) %>%
+    dplyr::mutate(admin1 = !!rlang::sym(admin1)) %>%
+    dplyr::group_by(admin1, !!rlang::sym(death_cause))%>%
+    dplyr::summarise(non_trauma = srvyr::survey_prop())%>%
+    dplyr::filter(!!rlang::sym(death_cause) == "non_trauma_deaths")%>%
+    dplyr::select(admin1, non_trauma)
+
+  non_trauma_loop_national <- data.list[[died_sheet]] %>%
+    dplyr::mutate(uuid = !!rlang::sym(uuid_died),
+                  !!rlang::sym(death_cause) := case_when(!!rlang::sym(death_cause) %in% non_trauma_deaths ~ "non_trauma_deaths",
+                                                         TRUE ~ !!rlang::sym(death_cause))) %>%
+    dplyr::filter(!is.na(weight)) %>%
+    srvyr::as_survey_design(weights = weight) %>%
+    dplyr::mutate(admin1 = "national") %>%
+    dplyr::group_by(admin1, !!rlang::sym(death_cause))%>%
+    dplyr::summarise(non_trauma = srvyr::survey_prop())%>%
+    dplyr::filter(!!rlang::sym(death_cause) == "non_trauma_deaths")%>%
+    dplyr::select(admin1, non_trauma)
 
 
   ph_int_table <- ph_int_table %>%
     dplyr::mutate(non_trauma = non_trauma_loop$non_trauma[match(admin1,non_trauma_loop$admin1)]) %>%
     dplyr::relocate(non_trauma, .before = 4)
+
+  national_df <- national_df %>%
+    dplyr::mutate(non_trauma = non_trauma_loop_national$non_trauma[match(admin1,non_trauma_loop_national$admin1)]) %>%
+    dplyr::relocate(non_trauma, .before = 4)
 }
 
 
 ph_int_table <- ph_int_table %>%
-  dplyr::mutate(fcs = fcs_df$fcs[match(admin1,fcs_df$admin1)] / num_observartion,
-                rcsi = rcsi_df$rcsi[match(admin1,rcsi_df$admin1)] / num_observartion,
-                fcs_phase = fsl_phase_df$fcs_phase[match(admin1,fsl_phase_df$admin1)] / num_observartion,
-                lcsi = lcsi_df$lcsi[match(admin1,lcsi_df$admin1)] / num_observartion,
-                handwash = handwash_df$handwash[match(admin1,handwash_df$admin1)] / num_observartion,
-                impro_water = impro_water_df$impro_water[match(admin1,impro_water_df$admin1)] / num_observartion,
-                sanitation = sanitation_df$sanitation[match(admin1,sanitation_df$admin1)] / num_observartion,
-                drinking_water = drinking_water_df$drinking_water[match(admin1,drinking_water_df$admin1)] / num_observartion,
-                distance_healthcare = distance_healthcare_df$distance_healthcare[match(admin1,distance_healthcare_df$admin1)] / num_observartion,
-                unmet_healthcare = unmet_health_df$unmet_healthcare[match(admin1,unmet_health_df$admin1)] / num_observartion,
+  dplyr::mutate(fcs = fcs_df$fcs[match(admin1,fcs_df$admin1)],
+                rcsi = rcsi_df$rcsi[match(admin1,rcsi_df$admin1)],
+                fcs_phase = fsl_phase_df$fcs_phase[match(admin1,fsl_phase_df$admin1)],
+                lcsi = lcsi_df$lcsi[match(admin1,lcsi_df$admin1)],
+                handwash = handwash_df$handwash[match(admin1,handwash_df$admin1)],
+                impro_water = impro_water_df$impro_water[match(admin1,impro_water_df$admin1)],
+                sanitation = sanitation_df$sanitation[match(admin1,sanitation_df$admin1)],
+                drinking_water = drinking_water_df$drinking_water[match(admin1,drinking_water_df$admin1)],
+                distance_healthcare = distance_healthcare_df$distance_healthcare[match(admin1,distance_healthcare_df$admin1)],
+                unmet_healthcare = unmet_loop_df$unmet_healthcare[match(admin1,unmet_loop_df$admin1)],
                 children_sick = nut_under5_sick_loop$children_sick[match(admin1,nut_under5_sick_loop$admin1)],
-                hhs = hhs_df$hhs[match(admin1,hhs_df$admin1)] / num_observartion)
+                hhs = hhs_df$hhs[match(admin1,hhs_df$admin1)])
+
+national_df <- national_df %>%
+  dplyr::mutate(fcs = fcs_df_national$fcs[match(admin1,fcs_df_national$admin1)],
+                rcsi = rcsi_df_national$rcsi[match(admin1,rcsi_df_national$admin1)],
+                fcs_phase = fsl_phase_df_national$fcs_phase[match(admin1,fsl_phase_df_national$admin1)],
+                lcsi = lcsi_df_national$lcsi[match(admin1,lcsi_df_national$admin1)],
+                handwash = handwash_df_national$handwash[match(admin1,handwash_df_national$admin1)],
+                impro_water = impro_water_df_national$impro_water[match(admin1,impro_water_df_national$admin1)],
+                sanitation = sanitation_df_national$sanitation[match(admin1,sanitation_df_national$admin1)],
+                drinking_water = drinking_water_df_national$drinking_water[match(admin1,drinking_water_df_national$admin1)],
+                distance_healthcare = distance_healthcare_df_national$distance_healthcare[match(admin1,distance_healthcare_df_national$admin1)],
+                unmet_healthcare = unmet_loop_df_national$unmet_healthcare[match(admin1,unmet_loop_df_national$admin1)],
+                children_sick = nut_under5_sick_loop_national$children_sick[match(admin1,nut_under5_sick_loop_national$admin1)],
+                hhs = hhs_df_national$hhs[match(admin1,hhs_df_national$admin1)])
 if(mort_collected == "yes") {
   ph_int_table <- ph_int_table %>%
+    dplyr::arrange(desc(mort)) %>%
+    dplyr::mutate(mort_lci = mort_data$mort_lci[match(admin1,mort_data$admin1)],
+                  mort_uci = mort_data$mort_uci[match(admin1,mort_data$admin1)],
+                  mort = paste0(round(as.numeric(mort),2)," [",round(as.numeric(mort_lci),2)," - ",round(as.numeric(mort_uci),2),"]")) %>%
+    dplyr::select(-c(mort_lci,mort_uci))
+  national_df <- national_df %>%
     dplyr::arrange(desc(mort)) %>%
     dplyr::mutate(mort_lci = mort_data$mort_lci[match(admin1,mort_data$admin1)],
                   mort_uci = mort_data$mort_uci[match(admin1,mort_data$admin1)],
@@ -1457,10 +1738,126 @@ if(mort_collected == "yes") {
                                             children_sick > 0.25 ~ "Extremely high",
                                             TRUE ~ NA),
                   unmet_healthcare = case_when(unmet_healthcare <= 0.1 ~ "Low",
-                                               unmet_healthcare <= 0.2 ~ "Moderate",
-                                               unmet_healthcare <= 0.3 ~ "High",
-                                               unmet_healthcare <= 0.4 ~ "Very high",
-                                               unmet_healthcare > 0.4 ~ "Extremely high",
+                                               unmet_healthcare <= 0.15 ~ "Moderate",
+                                               unmet_healthcare <= 0.2 ~ "High",
+                                               unmet_healthcare <= 0.25 ~ "Very high",
+                                               unmet_healthcare > 0.25 ~ "Extremely high",
+                                               TRUE ~ NA),
+                  fcs_phase = case_when(fcs_phase <= 0.1 ~ "Low",
+                                        fcs_phase <= 0.2 ~ "Moderate",
+                                        fcs_phase <= 0.3 ~ "High",
+                                        fcs_phase <= 0.4 ~ "Very high",
+                                        fcs_phase > 0.4 ~ "Extremely high",
+                                        TRUE ~ NA),
+                  fcs = case_when(fcs <= 0.1 ~ "Low",
+                                  fcs <= 0.2 ~ "Moderate",
+                                  fcs <= 0.3 ~ "High",
+                                  fcs <= 0.4 ~ "Very high",
+                                  fcs > 0.4 ~ "Extremely high",
+                                  TRUE ~ NA),
+                  rcsi = case_when(rcsi <= 0.1 ~ "Low",
+                                   rcsi <= 0.2 ~ "Moderate",
+                                   rcsi <= 0.3 ~ "High",
+                                   rcsi <= 0.4 ~ "Very high",
+                                   rcsi > 0.4 ~ "Extremely high",
+                                   TRUE ~ NA),
+                  hhs = case_when(hhs <= 0.05 ~ "Low",
+                                  hhs <= 0.1 ~ "Moderate",
+                                  hhs <= 0.15 ~ "High",
+                                  hhs <= 0.2 ~ "Very high",
+                                  hhs > 0.2 ~ "Extremely high",
+                                  TRUE ~ NA),
+                  lcsi = case_when(lcsi <= 0.1 ~ "Low",
+                                   lcsi <= 0.2 ~ "Moderate",
+                                   lcsi <= 0.3 ~ "High",
+                                   lcsi <= 0.4 ~ "Very high",
+                                   lcsi > 0.4 ~ "Extremely high",
+                                   TRUE ~ NA)) %>%
+    {
+
+      if(quantile(ph_int_table$impro_water)[[2]] -
+         (quantile(ph_int_table$impro_water)[[4]] - quantile(ph_int_table$impro_water)[[2]]) < 0){
+        dplyr::mutate(.,impro_water = case_when(impro_water >= quantile(impro_water)[[4]] + (quantile(impro_water)[[4]] - quantile(impro_water)[[2]]) ~ "Low",
+                                                impro_water >= quantile(impro_water)[[4]]~ "Moderate",
+                                                impro_water >= quantile(impro_water)[[3]]~ "High",
+                                                impro_water >= quantile(impro_water)[[2]]~ "Very high",
+                                                impro_water < quantile(impro_water)[[2]]~ "Extremely high",
+                                                TRUE ~ NA))
+      } else {
+        dplyr::mutate(.,impro_water = case_when(impro_water >= quantile(impro_water)[[4]]  ~ "Low",
+                                                impro_water >= quantile(impro_water)[[3]]~ "Moderate",
+                                                impro_water >= quantile(impro_water)[[2]] ~ "High",
+                                                impro_water >= quantile(impro_water)[[2]] - (quantile(impro_water)[[4]] - quantile(impro_water)[[2]]) ~ "Very high",
+                                                impro_water < quantile(impro_water)[[2]] - (quantile(impro_water)[[4]] - quantile(impro_water)[[2]])  ~ "Extremely high",
+                                                TRUE ~ NA))
+      }
+    } %>%
+    {
+      if(quantile(ph_int_table$sanitation)[[2]] - (quantile(ph_int_table$sanitation)[[4]] - quantile(ph_int_table$sanitation)[[2]])<0){
+        dplyr::mutate(.,sanitation = case_when(sanitation >= quantile(sanitation)[[4]]+(quantile(sanitation)[[4]] - quantile(sanitation)[[2]])   ~ "Low",
+                                               sanitation >= quantile(sanitation)[[4]] ~ "Moderate",
+                                               sanitation >= quantile(sanitation)[[3]] ~ "High",
+                                               sanitation >= quantile(sanitation)[[2]]~ "Very high",
+                                               sanitation < quantile(sanitation)[[2]] ~ "Extremely high",
+                                               TRUE ~ NA))
+      } else {
+        dplyr::mutate(.,sanitation = case_when(sanitation >= quantile(sanitation)[[4]] ~ "Low",
+                                               sanitation >= quantile(sanitation)[[3]] ~ "Moderate",
+                                               sanitation >= quantile(sanitation)[[2]] ~ "High",
+                                               sanitation >= quantile(sanitation)[[2]] - (quantile(sanitation)[[4]] - quantile(sanitation)[[2]])  ~ "Very high",
+                                               sanitation < quantile(sanitation)[[2]] - (quantile(sanitation)[[4]] - quantile(sanitation)[[2]])  ~ "Extremely high",
+                                               TRUE ~ NA))
+      }
+    } %>%
+    {
+      if(quantile(ph_int_table$handwash)[[2]]- (quantile(ph_int_table$handwash)[[4]] - quantile(ph_int_table$handwash)[[2]])<0){
+        dplyr::mutate(.,handwash = case_when(handwash >= quantile(handwash)[[4]]+ (quantile(handwash)[[4]] - quantile(handwash)[[2]])   ~ "Low",
+                                             handwash >= quantile(handwash)[[4]] ~ "Moderate",
+                                             handwash >= quantile(handwash)[[3]] ~ "High",
+                                             handwash >= quantile(handwash)[[2]]~ "Very high",
+                                             handwash < quantile(handwash)[[2]]~ "Extremely high",
+                                             TRUE ~ NA))
+      } else {
+        dplyr::mutate(.,handwash = case_when(handwash >= quantile(handwash)[[4]]  ~ "Low",
+                                             handwash >= quantile(handwash)[[3]] ~ "Moderate",
+                                             handwash >= quantile(handwash)[[2]] ~ "High",
+                                             handwash >= quantile(handwash)[[2]] - (quantile(handwash)[[4]] - quantile(handwash)[[2]])  ~ "Very high",
+                                             handwash < quantile(handwash)[[2]]- (quantile(handwash)[[4]] - quantile(handwash)[[2]])  ~ "Extremely high",
+                                             TRUE ~ NA))
+      }
+    } %>%
+    dplyr::mutate(drinking_water = case_when(drinking_water <= 0.04 ~ "Low",
+                                             drinking_water <= 0.06 ~ "Moderate",
+                                             drinking_water <= 0.08 ~ "High",
+                                             drinking_water <= 0.1 ~ "Very high",
+                                             drinking_water > 0.1 ~ "Extremely high",
+                                             TRUE ~ NA),
+                  distance_healthcare = case_when(distance_healthcare <= 0.1 ~ "Low",
+                                                  distance_healthcare <= 0.2 ~ "Moderate",
+                                                  distance_healthcare <= 0.3 ~ "High",
+                                                  distance_healthcare <= 0.4 ~ "Very high",
+                                                  distance_healthcare > 0.4 ~ "Extremely high",
+                                                  TRUE ~ NA))%>%
+    dplyr::mutate(non_trauma = ifelse(is.na(non_trauma),NA,paste0(round(non_trauma*100,2),"%")))
+
+  national_df_cat <- national_df %>%
+    dplyr::mutate(mort = case_when(as.numeric(stringr::str_extract(mort,"^[^ ]*")) >= 2 ~ "Extremely high",
+                                   as.numeric(stringr::str_extract(mort,"^[^ ]*")) > 1 ~ "Very high",
+                                   as.numeric(stringr::str_extract(mort,"^[^ ]*")) > 0.75 ~ "High",
+                                   as.numeric(stringr::str_extract(mort,"^[^ ]*")) > 0.5~ "Moderate",
+                                   as.numeric(stringr::str_extract(mort,"^[^ ]*")) <= 0.5 ~ "Low",
+                                   TRUE ~ NA),
+                  children_sick = case_when(children_sick <= 0.1 ~ "Low",
+                                            children_sick <= 0.15 ~ "Moderate",
+                                            children_sick <= 0.2 ~ "High",
+                                            children_sick <= 0.25 ~ "Very high",
+                                            children_sick > 0.25 ~ "Extremely high",
+                                            TRUE ~ NA),
+                  unmet_healthcare = case_when(unmet_healthcare <= 0.1 ~ "Low",
+                                               unmet_healthcare <= 0.15 ~ "Moderate",
+                                               unmet_healthcare <= 0.2 ~ "High",
+                                               unmet_healthcare <= 0.25 ~ "Very high",
+                                               unmet_healthcare > 0.25 ~ "Extremely high",
                                                TRUE ~ NA),
                   fcs_phase = case_when(fcs_phase <= 0.1 ~ "Low",
                                         fcs_phase <= 0.2 ~ "Moderate",
@@ -1568,10 +1965,119 @@ if(mort_collected == "yes") {
                                             children_sick > 0.25 ~ "Extremely high",
                                             TRUE ~ NA),
                   unmet_healthcare = case_when(unmet_healthcare <= 0.1 ~ "Low",
-                                               unmet_healthcare <= 0.2 ~ "Moderate",
-                                               unmet_healthcare <= 0.3 ~ "High",
-                                               unmet_healthcare <= 0.4 ~ "Very high",
-                                               unmet_healthcare > 0.4 ~ "Extremely high",
+                                               unmet_healthcare <= 0.15 ~ "Moderate",
+                                               unmet_healthcare <= 0.2 ~ "High",
+                                               unmet_healthcare <= 0.25 ~ "Very high",
+                                               unmet_healthcare > 0.25 ~ "Extremely high",
+                                               TRUE ~ NA),
+                  fcs_phase = case_when(fcs_phase <= 0.1 ~ "Low",
+                                        fcs_phase <= 0.2 ~ "Moderate",
+                                        fcs_phase <= 0.3 ~ "High",
+                                        fcs_phase <= 0.4 ~ "Very high",
+                                        fcs_phase > 0.4 ~ "Extremely high",
+                                        TRUE ~ NA),
+                  fcs = case_when(fcs <= 0.1 ~ "Low",
+                                  fcs <= 0.2 ~ "Moderate",
+                                  fcs <= 0.3 ~ "High",
+                                  fcs <= 0.4 ~ "Very high",
+                                  fcs > 0.4 ~ "Extremely high",
+                                  TRUE ~ NA),
+                  rcsi = case_when(rcsi <= 0.1 ~ "Low",
+                                   rcsi <= 0.2 ~ "Moderate",
+                                   rcsi <= 0.3 ~ "High",
+                                   rcsi <= 0.4 ~ "Very high",
+                                   rcsi > 0.4 ~ "Extremely high",
+                                   TRUE ~ NA),
+                  hhs = case_when(hhs <= 0.05 ~ "Low",
+                                  hhs <= 0.1 ~ "Moderate",
+                                  hhs <= 0.15 ~ "High",
+                                  hhs <= 0.2 ~ "Very high",
+                                  hhs > 0.2 ~ "Extremely high",
+                                  TRUE ~ NA),
+                  lcsi = case_when(lcsi <= 0.1 ~ "Low",
+                                   lcsi <= 0.2 ~ "Moderate",
+                                   lcsi <= 0.3 ~ "High",
+                                   lcsi <= 0.4 ~ "Very high",
+                                   lcsi > 0.4 ~ "Extremely high",
+                                   TRUE ~ NA))  %>%
+    {
+
+      if(quantile(ph_int_table$impro_water)[[2]] -
+         (quantile(ph_int_table$impro_water)[[4]] - quantile(ph_int_table$impro_water)[[2]]) < 0){
+        dplyr::mutate(.,impro_water = case_when(impro_water >= quantile(impro_water)[[4]] + (quantile(impro_water)[[4]] - quantile(impro_water)[[2]]) ~ "Low",
+                                                impro_water >= quantile(impro_water)[[4]]~ "Moderate",
+                                                impro_water >= quantile(impro_water)[[3]]~ "High",
+                                                impro_water >= quantile(impro_water)[[2]]~ "Very high",
+                                                impro_water < quantile(impro_water)[[2]]~ "Extremely high",
+                                                TRUE ~ NA))
+      } else {
+        dplyr::mutate(.,impro_water = case_when(impro_water >= quantile(impro_water)[[4]]  ~ "Low",
+                                                impro_water >= quantile(impro_water)[[3]]~ "Moderate",
+                                                impro_water >= quantile(impro_water)[[2]] ~ "High",
+                                                impro_water >= quantile(impro_water)[[2]] - (quantile(impro_water)[[4]] - quantile(impro_water)[[2]]) ~ "Very high",
+                                                impro_water < quantile(impro_water)[[2]] - (quantile(impro_water)[[4]] - quantile(impro_water)[[2]])  ~ "Extremely high",
+                                                TRUE ~ NA))
+      }
+    } %>%
+    {
+      if(quantile(ph_int_table$sanitation)[[2]] - (quantile(ph_int_table$sanitation)[[4]] - quantile(ph_int_table$sanitation)[[2]])<0){
+        dplyr::mutate(.,sanitation = case_when(sanitation >= quantile(sanitation)[[4]]+(quantile(sanitation)[[4]] - quantile(sanitation)[[2]])   ~ "Low",
+                                               sanitation >= quantile(sanitation)[[4]] ~ "Moderate",
+                                               sanitation >= quantile(sanitation)[[3]] ~ "High",
+                                               sanitation >= quantile(sanitation)[[2]]~ "Very high",
+                                               sanitation < quantile(sanitation)[[2]] ~ "Extremely high",
+                                               TRUE ~ NA))
+      } else {
+        dplyr::mutate(.,sanitation = case_when(sanitation >= quantile(sanitation)[[4]] ~ "Low",
+                                               sanitation >= quantile(sanitation)[[3]] ~ "Moderate",
+                                               sanitation >= quantile(sanitation)[[2]] ~ "High",
+                                               sanitation >= quantile(sanitation)[[2]] - (quantile(sanitation)[[4]] - quantile(sanitation)[[2]])  ~ "Very high",
+                                               sanitation < quantile(sanitation)[[2]] - (quantile(sanitation)[[4]] - quantile(sanitation)[[2]])  ~ "Extremely high",
+                                               TRUE ~ NA))
+      }
+    } %>%
+    {
+      if(quantile(ph_int_table$handwash)[[2]]- (quantile(ph_int_table$handwash)[[4]] - quantile(ph_int_table$handwash)[[2]])<0){
+        dplyr::mutate(.,handwash = case_when(handwash >= quantile(handwash)[[4]]+ (quantile(handwash)[[4]] - quantile(handwash)[[2]])   ~ "Low",
+                                             handwash >= quantile(handwash)[[4]] ~ "Moderate",
+                                             handwash >= quantile(handwash)[[3]] ~ "High",
+                                             handwash >= quantile(handwash)[[2]]~ "Very high",
+                                             handwash < quantile(handwash)[[2]]~ "Extremely high",
+                                             TRUE ~ NA))
+      } else {
+        dplyr::mutate(.,handwash = case_when(handwash >= quantile(handwash)[[4]]  ~ "Low",
+                                             handwash >= quantile(handwash)[[3]] ~ "Moderate",
+                                             handwash >= quantile(handwash)[[2]] ~ "High",
+                                             handwash >= quantile(handwash)[[2]] - (quantile(handwash)[[4]] - quantile(handwash)[[2]])  ~ "Very high",
+                                             handwash < quantile(handwash)[[2]]- (quantile(handwash)[[4]] - quantile(handwash)[[2]])  ~ "Extremely high",
+                                             TRUE ~ NA))
+      }
+    } %>%
+    dplyr::mutate(drinking_water = case_when(drinking_water <= 0.04 ~ "Low",
+                                             drinking_water <= 0.06 ~ "Moderate",
+                                             drinking_water <= 0.08 ~ "High",
+                                             drinking_water <= 0.1 ~ "Very high",
+                                             drinking_water > 0.1 ~ "Extremely high",
+                                             TRUE ~ NA),
+                  distance_healthcare = case_when(distance_healthcare <= 0.1 ~ "Low",
+                                                  distance_healthcare <= 0.2 ~ "Moderate",
+                                                  distance_healthcare <= 0.3 ~ "High",
+                                                  distance_healthcare <= 0.4 ~ "Very high",
+                                                  distance_healthcare > 0.4 ~ "Extremely high",
+                                                  TRUE ~ NA))
+
+  national_df_cat <- national_df %>%
+    dplyr::mutate(children_sick = case_when(children_sick <= 0.1 ~ "Low",
+                                            children_sick <= 0.15 ~ "Moderate",
+                                            children_sick <= 0.2 ~ "High",
+                                            children_sick <= 0.25 ~ "Very high",
+                                            children_sick > 0.25 ~ "Extremely high",
+                                            TRUE ~ NA),
+                  unmet_healthcare = case_when(unmet_healthcare <= 0.1 ~ "Low",
+                                               unmet_healthcare <= 0.15 ~ "Moderate",
+                                               unmet_healthcare <= 0.2 ~ "High",
+                                               unmet_healthcare <= 0.25 ~ "Very high",
+                                               unmet_healthcare > 0.25 ~ "Extremely high",
                                                TRUE ~ NA),
                   fcs_phase = case_when(fcs_phase <= 0.1 ~ "Low",
                                         fcs_phase <= 0.2 ~ "Moderate",
@@ -1674,7 +2180,7 @@ if(mort_collected == "yes") {
 
 source("src/output_table.R")
 
-save.ph.integrated.tables(ph_int_table,ph_int_cat,"PH_Integrated_Table",mort = T,use_template = T)
+save.ph.integrated.tables(ph_int_table,ph_int_cat,national_df, national_df_cat,"PH_Integrated_Table",mort = T,use_template = T)
 
 ## save environment
 list_of_var <- c("admin1","fsl_fcs_cereal","fsl_fcs_legumes","fsl_fcs_veg","FSL_indicators",
@@ -1694,7 +2200,7 @@ list_of_var <- c("admin1","fsl_fcs_cereal","fsl_fcs_legumes","fsl_fcs_veg","FSL_
                  "fsl_lcsi_crisis3","fsl_lcsi_emergency1","fsl_lcsi_emergency2",
                  "hhs_check_columns","hhs_check_columns_freq","died_sheet","uuid_died",
                  "survey_modality","survey_modality_in_person","survey_modality_remote",
-                 "facility","facility_yes","facility_no","facility_no_permission",
+                 "facility","facility_yes","facility_no","facility_no_permission","yes_no_weight","weight",
                  "facility_undefined","facility_observed_water","facility_observed_water_yes",
                  "facility_observed_water_no","facility_observed_soap","lcsi_check_columns",
                  "facility_observed_soap_yes","facility_observed_soap_no","facility_observed_soap_alternative","facility_reported",
@@ -1716,9 +2222,3 @@ if(!file.exists("inputs/environment.Rdata")){
 }
 
 cat("\n> Creation of table completed! You can check your output folder.")
-
-
-
-
-
-# summary(test_thresholds)
