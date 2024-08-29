@@ -342,10 +342,10 @@ add_iycf <- function (.dataset, age_months = "age_months", iycf_1 = "iycf_1",
                     iycf_mmf = dplyr::case_when(is.na(mmf_bf_6to8months) &
                                                   is.na(mmf_bf_9to23months) &
                                                   is.na(mmf_nonbf_6to23months) ~ NA,
-                                                rowSums(across(c(mmf_bf_6to8months,
+                                                rowSums(dplyr::across(c(mmf_bf_6to8months,
                                                                  mmf_bf_9to23months,
                                                                  mmf_nonbf_6to23months), .fns = as.numeric), na.rm = T) > 0 ~ 1,
-                                                rowSums(across(c(mmf_bf_6to8months,
+                                                rowSums(dplyr::across(c(mmf_bf_6to8months,
                                                                  mmf_bf_9to23months,
                                                                  mmf_nonbf_6to23months), .fns = as.numeric), na.rm = T) == 0 ~ 0,
                                                 TRUE ~ NA),
