@@ -1674,7 +1674,7 @@ if(mort_collected == "yes") {
 
 source("src/output_table.R")
 
-save.ph.integrated.tables(ph_int_table,ph_int_cat,"PH_Integrated_Table_flip_quantile_iqr",mort = T,use_template = T)
+save.ph.integrated.tables(ph_int_table,ph_int_cat,"PH_Integrated_Table",mort = T,use_template = T)
 
 ## save environment
 list_of_var <- c("admin1","fsl_fcs_cereal","fsl_fcs_legumes","fsl_fcs_veg","FSL_indicators",
