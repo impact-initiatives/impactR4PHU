@@ -1031,7 +1031,7 @@
       "RemoteRepo": "impactR4PHU",
       "RemoteUsername": "impact-initiatives",
       "RemoteRef": "HEAD",
-      "RemoteSha": "022949b574c873e8ec417f999c44fe6e570d098c",
+      "RemoteSha": "fbf4a9b434cd7d55f82dfd9abd0f55d2e14d6ec7",
       "Requirements": [
         "GGally",
         "R",
@@ -1052,7 +1052,7 @@
         "writexl",
         "zscorer"
       ],
-      "Hash": "8476ef530da1a01f096d0b4846da1b29"
+      "Hash": "b2ebfce3593147340df11910308a86a4"
     },
     "isoband": {
       "Package": "isoband",
@@ -1327,7 +1327,7 @@
     },
     "openxlsx": {
       "Package": "openxlsx",
-      "Version": "4.2.6.1",
+      "Version": "4.2.7",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
@@ -1340,7 +1340,7 @@
         "utils",
         "zip"
       ],
-      "Hash": "bd8fbd2904be3ce8fdf529a4f74a0c29"
+      "Hash": "4eb6bb5d6b95b2e3177f0dd1e7b9ca0e"
     },
     "patchwork": {
       "Package": "patchwork",
