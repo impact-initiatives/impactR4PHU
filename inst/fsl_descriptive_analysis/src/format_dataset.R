@@ -1204,7 +1204,7 @@ if(all(fcm_check_1_columns %in% names(main)) |
    all(fcm_check_5_columns %in% names(main)) |
    all(fcm_check_6_columns %in% names(main))) {
   # FC_PHASE
-  fc_phase_table <- lcsi_survey %>%
+  fc_phase_table <- srvyr::as_survey_design(main) %>%
     filter(!is.na(fsl_fc_phase)) %>%
     group_by(fsl_fc_phase, .add = T) %>%
     summarise(num_samples = n(),
@@ -1215,7 +1215,7 @@ if(all(fcm_check_1_columns %in% names(main)) |
 
 if(all(fclcm_check_columns %in% names(main))) {
   # FCLCM_PHASE
-  fclcm_phase_table <- lcsi_survey %>%
+  fclcm_phase_table <- srvyr::as_survey_design(main) %>%
     filter(!is.na(fclcm_phase)) %>%
     group_by(fclcm_phase, .add = T) %>%
     summarise(num_samples = n(),
