@@ -357,7 +357,7 @@
     },
     "cards": {
       "Package": "cards",
-      "Version": "0.2.1",
+      "Version": "0.2.2",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
@@ -369,7 +369,7 @@
         "tidyr",
         "tidyselect"
       ],
-      "Hash": "721cc0c2adf373692473385e5b684496"
+      "Hash": "b1aff1f353f1f384dfc1fb4dd78d903c"
     },
     "cellranger": {
       "Package": "cellranger",
@@ -927,7 +927,7 @@
       "RemoteRepo": "impactR4PHU",
       "RemoteUsername": "impact-initiatives",
       "RemoteRef": "HEAD",
-      "RemoteSha": "fbf4a9b434cd7d55f82dfd9abd0f55d2e14d6ec7",
+      "RemoteSha": "338df8cec227b961620bfd0e96e3696f2bf15ea9",
       "Requirements": [
         "GGally",
         "R",
@@ -948,7 +948,7 @@
         "writexl",
         "zscorer"
       ],
-      "Hash": "b2ebfce3593147340df11910308a86a4"
+      "Hash": "f4fa97d378e1b8e3900a2a748a41c103"
     },
     "isoband": {
       "Package": "isoband",
