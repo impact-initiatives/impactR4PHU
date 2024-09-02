@@ -570,16 +570,7 @@ crude_age_group <- results_mort_age_group %>%
                                   group == 2~"18-59",
                                   group == 3~"60+"))
 
-under5_age_group <- results_mort_age_group %>%
-  dplyr::mutate(`point.est` = as.numeric(u5dr),
-                `95%lci` = as.numeric(stringr::str_extract(u5dr_ci,"(?<=\\[)[^\\s\\-]*")),
-                `95%uci` = as.numeric(stringr::str_remove(stringr::str_extract(u5dr_ci,"(?<=-)[^\\]]*")," "))) %>%
-  dplyr::select(group,`point.est`,`95%lci`,`95%uci`) %>%
-  dplyr::filter(group ==1) %>% 
-  dplyr::mutate(variable = "u5mr",
-                group = case_when(group == 1~"0-17"))
-
-by_age_group <- rbind(crude_age_group,under5_age_group) %>%
+by_age_group <- rbind(crude_age_group) %>%
   dplyr::relocate(variable, .before = 1)
 ```
 
@@ -589,8 +580,7 @@ DT::datatable(by_age_group)
 
 ```{r, include=FALSE}
 plot_results.summary_age_group <- ggplot2::ggplot(by_age_group %>%
-                                               mutate(variable = case_when(variable == "cmr"~"Crude",
-                                                                           variable == "u5mr"~"Under 5")), ggplot2::aes(x = variable)) +
+                                               mutate(variable = case_when(variable == "cmr"~"Crude")), ggplot2::aes(x = variable)) +
   ggplot2::geom_hline(yintercept=1, linetype='dotted', color = 'black', size =1)+
   ggplot2::geom_hline(yintercept=2, linetype='dotted', color = 'red', size =1)+
   ggplot2::geom_errorbar(ggplot2::aes(ymin =`95%lci`, ymax = `95%uci`, width = 0.2, color = "red"))+
