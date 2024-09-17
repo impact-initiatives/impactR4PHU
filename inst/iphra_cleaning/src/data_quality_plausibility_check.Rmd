@@ -788,7 +788,6 @@ if(all(rcsi_check_columns %in% names(raw.flag.fcs))) {
 }
 ```
 
-#### RCSI Ridge by Enumerator Distribution Plot
 
 ```{r, results='asis'}
 if(all(rcsi_check_columns %in% names(raw.flag.fcs))) {
@@ -798,8 +797,7 @@ if(all(rcsi_check_columns %in% names(raw.flag.fcs))) {
 }
 ```
 
-
-```{r}
+```{r, results='asis'}
 if(all(fcs_check_columns %in% names(raw.flag.fcs)) & 
    all(rcsi_check_columns %in% names(raw.flag.fcs)) & 
    all(hhs_check_columns %in% names(raw.flag.fcs))) {
@@ -808,10 +806,17 @@ if(all(fcs_check_columns %in% names(raw.flag.fcs)) &
 }
 ```
 
-```{r, include = FALSE}
+```{r, results='asis'}
 if(!is.null(raw.child_nutrition)){
   if(all(c("nut_muac_cm","nut_edema_confirm") %in% names(raw.child_nutrition))){
     cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",2), collapse=""), " ", "MUAC/NUTRITION  {.tabset .tabset-fade}"))
+  }
+}
+```
+
+```{r,include=FALSE}
+if(!is.null(raw.child_nutrition)){
+  if(all(c("nut_muac_cm","nut_edema_confirm") %in% names(raw.child_nutrition))){
     raw.flag.nut <- raw.child_nutrition %>% 
       impactR4PHU::add_muac() %>%
       impactR4PHU::add_mfaz() %>% 
@@ -824,7 +829,10 @@ if(!is.null(raw.child_nutrition)){
 }
 ```
 
-```{r, include = FALSE}
+
+
+
+```{r, results='asis', include=FALSE, echo=FALSE}
 if(!is.null(raw.child_nutrition)){
   if(all(c("nut_muac_cm","nut_edema_confirm") %in% names(raw.child_nutrition))){
     overall_nut_plaus <- openxlsx::read.xlsx("./../resources/overall_plaus.xlsx",fillMergedCells = TRUE, sheet = "NUT") %>% 
@@ -848,7 +856,7 @@ if(!is.null(raw.child_nutrition)){
 ```
 
 
-```{r}
+```{r, results='asis'}
 if(!is.null(raw.child_nutrition)){
   if(all(c("nut_muac_cm","nut_edema_confirm") %in% names(raw.child_nutrition))){
     cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",3), collapse=""), " ", "Data Quality NUT {.tabset .tabset-fade}"))
@@ -959,49 +967,49 @@ if(!is.null(raw.child_nutrition)){
 
 
 
-```{r}
+```{r, results='asis'}
 if(!is.null(raw.child_nutrition)){
   if(all(c("nut_muac_cm","nut_edema_confirm") %in% names(raw.child_nutrition))){
     cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",3), collapse=""), " ", "Plots {.tabset .tabset-fade}"))
     cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",4), collapse=""), " ", "Age Month Distribution"))
-    (impactR4PHU::plot_age_distribution(raw.flag.nut,
+    impactR4PHU::plot_age_distribution(raw.flag.nut,
                                         year_or_month = "month",
                                         age_months = "child_age_months",
-                                        age_min = 6, age_max = 59))
+                                        min_age = 6, max_age = 59)
   }
 }
 ```
 
 
-```{r}
+```{r, results='asis'}
 if(!is.null(raw.child_nutrition)){
   if(all(c("nut_muac_cm","nut_edema_confirm") %in% names(raw.child_nutrition))){
     cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",4), collapse=""), " ", "Age Month Distribution per Enumerator"))
-    (impactR4PHU::plot_age_distribution(raw.flag.nut,
+    impactR4PHU::plot_age_distribution(raw.flag.nut,
                                         year_or_month = "month",
                                         age_months = "child_age_months",
-                                        age_min = 6, age_max = 59,
-                                        by_group = "enumerator"))
+                                        min_age = 6, max_age = 59,
+                                        by_group = "enumerator")
   }
 }
 ```
 
 
-```{r}
+```{r, results='asis'}
 if(!is.null(raw.child_nutrition)){
   if(all(c("nut_muac_cm","nut_edema_confirm") %in% names(raw.child_nutrition))){
     cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",4), collapse=""), " ", "Age Distribution Anthro"))
-    (plot_anthro_age_distribution_phu(df = raw.flag.nut, index = "mfaz"))
+    plot_anthro_age_distribution_phu(df = raw.flag.nut, index = "mfaz")
   }
 }
 ```
 
 
-```{r}
+```{r, results='asis'}
 if(!is.null(raw.child_nutrition)){
   if(all(c("nut_muac_cm","nut_edema_confirm") %in% names(raw.child_nutrition))){
     cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",4), collapse=""), " ", "Cumulative Distribution MUAC without Flag"))
-    (plot_cumulative_distribution_phu(df = raw.flag.nut, index = "nut_muac_cm", flags = "no"))
+    plot_cumulative_distribution_phu(df = raw.flag.nut, index = "nut_muac_cm", flags = "no")
   }
 }
 ```
@@ -1011,12 +1019,12 @@ if(!is.null(raw.child_nutrition)){
 if(!is.null(raw.child_nutrition)){
   if(all(c("nut_muac_cm","nut_edema_confirm") %in% names(raw.child_nutrition))){
     cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",4), collapse=""), " ", "Cumulative Distribution MUAC with Flag per Enumerator"))
-    (plot_cumulative_distribution_phu(df = raw.flag.nut, index = "nut_muac_cm", flags = "yes", grouping = "enumerator"))
+    plot_cumulative_distribution_phu(df = raw.flag.nut, index = "nut_muac_cm", flags = "yes", grouping = "enumerator")
   }
 }
 ```
 
-## WATER CONSUMPTION {.tabset .tabset-fade}
+
 
 ```{r, include = FALSE}
 if(!is.null(raw.water_count_loop)){
@@ -1047,7 +1055,10 @@ for(flag in flags_wash_columns) {
     overall_flag <- rbind(overall_flag,flag_overall)
   }
 }
-cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",3), collapse=""), " ", "<strong>Overall Flag Table</strong>"))
+if(nrow(overall_flag)>0) {
+  cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",2), collapse=""), " ", "WATER CONSUMPTION {.tabset .tabset-fade}"))
+  cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",3), collapse=""), " ", "<strong>Overall Flag Table</strong>"))
+}
 subch(DT::datatable(overall_flag, 
                   extensions = 'Buttons', options = list(
                     dom = 'Blfrtip',
@@ -1364,14 +1375,17 @@ if(!is.null(raw.died_member)){
   }
 }
 
-checks_followups <- checks_followups %>% 
-  dplyr::mutate(loops_to_remove = NA) %>% 
-  dplyr::relocate(loops_to_remove, .before = "explanation")
-if(!is.null(raw.died_member)){
-  create.follow.up.requests.data.quality(checks_followups,loop_data = raw.died_member, paste0("./../output/quality_report/",strings['dataset.name.short'],"_followup_requests_",strings['out_date'],".xlsx"), use_template = T)
-} else {
-  create.follow.up.requests.data.quality(checks_followups,loop_data = NULL, paste0("./../output/quality_report/",strings['dataset.name.short'],"_followup_requests_",strings['out_date'],".xlsx"), use_template = T)
+if(nrow(checks_followups)>0){
+  checks_followups <- checks_followups %>% 
+    dplyr::mutate(loops_to_remove = NA) %>% 
+    dplyr::relocate(loops_to_remove, .before = "explanation")
+  if(!is.null(raw.died_member)){
+    create.follow.up.requests.data.quality(checks_followups,loop_data = raw.died_member, paste0("./../output/quality_report/",strings['dataset.name.short'],"_followup_requests_",strings['out_date'],".xlsx"), use_template = T)
+  } else {
+    create.follow.up.requests.data.quality(checks_followups,loop_data = NULL, paste0("./../output/quality_report/",strings['dataset.name.short'],"_followup_requests_",strings['out_date'],".xlsx"), use_template = T)
+  }
 }
+
 ```
 
 
