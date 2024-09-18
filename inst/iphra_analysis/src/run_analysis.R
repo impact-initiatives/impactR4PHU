@@ -2,9 +2,9 @@ rm(list = ls())
 chooseCRANmirror(ind = 1)
 utils::install.packages("renv")
 options(renv.consent = TRUE)
-renv::restore(prompt = F)
+renv::update(prompt = F)
 language <- c(
-  language_assessment = svDialogs::dlgList(c("English","French"), title = "Please Select the language.", rstudio = getOption("svDialogs.rstudio", TRUE))$res# the filename of your data for 
+  language_assessment = svDialogs::dlgList(c("English","French"), title = "Please Select the language.", rstudio = getOption("svDialogs.rstudio", TRUE))$res# the filename of your data for
 )
 ## SET FILENAMES AND OTHER STRINGS  --------------------------------------------
 strings <- c(
@@ -23,7 +23,7 @@ strings <- c(
     "Please select the cleaned data"
   }else{
     "Veuillez sélectionner les données"
-  }, multi = F), 
+  }, multi = F),
   filename.tool = choose.files(caption = if(language['language_assessment'] == "English"){
     "Please select the kobo tool"
   }else{
@@ -40,7 +40,7 @@ combine_folder = "./../temp/combine/"
 
 Sys.setenv(RSTUDIO_PANDOC = "C:/Program Files/RStudio/resources/app/bin/quarto/bin/tools")
 cat(getwd())
-# <- additional indicators and grouping variables are added here 
+# <- additional indicators and grouping variables are added here
 ## TABULAR  -------------------------------------------------------------------
 rmarkdown::render('src/analysis_tabular.Rmd',
 output_file = paste0("./../output/", strings['dataset.name.short'], "_Tabular_Analysis_", strings['out_date'],".html"))
