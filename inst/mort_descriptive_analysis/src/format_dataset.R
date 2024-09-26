@@ -1602,3 +1602,10 @@ admin1_df <- raw.main %>%
 
 data.list[[died_Sheet]] <- data.list[[died_Sheet]] %>%
   dplyr::left_join(admin1_df)
+
+if(exists("popu_group_df")){
+  data.list[[died_Sheet]] <- data.list[[died_Sheet]] %>%
+    dplyr::left_join(popu_group_df %>%
+                       mutate(!!rlang::sym(uuid_died) := uuid) %>%
+                       select(-uuid))
+}
