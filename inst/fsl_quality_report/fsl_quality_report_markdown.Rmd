@@ -1097,7 +1097,7 @@ if(!file.exists("inputs/environment.Rdata")) {
       income_types <- svDialogs::dlg_input(message= "Enter the name of the income_types","income_types")$res
     }
   } else if (length(income_types) > 1){
-    income_types <- tcltk::tk_select.list(income_types, title = "Income Types column")
+    income_types <- tcltk::tk_select.list(income_types, title = "Income Types column", multiple = TRUE)
     if(income_types == ""){
       income_types <- svDialogs::dlg_input(message= "Enter the name of the income_types","income_types")$res
     }

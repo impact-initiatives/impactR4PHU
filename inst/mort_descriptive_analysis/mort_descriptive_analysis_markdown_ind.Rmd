@@ -523,7 +523,8 @@ under5_gender <- results_mort_gender %>%
                                   group == 2~"Female"))
 
 by_gender <- rbind(crude_gender,under5_gender) %>%
-  dplyr::relocate(variable, .before = 1)
+  dplyr::relocate(variable, .before = 1) %>% 
+  dplyr::filter(!is.na(`95%lci`))
 ```
 
 ```{r, results='asis'}
@@ -571,7 +572,8 @@ crude_age_group <- results_mort_age_group %>%
                                   group == 3~"60+"))
 
 by_age_group <- rbind(crude_age_group) %>%
-  dplyr::relocate(variable, .before = 1)
+  dplyr::relocate(variable, .before = 1)%>% 
+  dplyr::filter(!is.na(`95%lci`))
 ```
 
 ```{r, results='asis'}
@@ -622,7 +624,8 @@ under5_pop_group <- results_mort_pop_group %>%
   dplyr::mutate(variable = "u5mr")
 
 by_pop_group <- rbind(crude_pop_group,under5_pop_group) %>%
-  dplyr::relocate(variable, .before = 1)
+  dplyr::relocate(variable, .before = 1)%>% 
+  dplyr::filter(!is.na(`95%lci`))
 ```
 
 ```{r, results='asis'}
@@ -684,7 +687,8 @@ if(is.null(cluster)){
    rename(`point.est` = "x",
           `95%lci` = "x_low",
           `95%uci` = "x_upp") %>%
-   relocate(variable, .before = 1)
+   relocate(variable, .before = 1)%>% 
+  dplyr::filter(!is.na(`95%lci`))
 } else {
   srvey_mortality <- srvyr::as_survey_design(df_mortality_long %>%
                                                              dplyr::mutate(death = ifelse(is.na(death),0,as.numeric(death)),
@@ -716,7 +720,8 @@ if(is.null(cluster)){
           `95%lci` = "x_low",
           `95%uci` = "x_upp",
           `Design effect` = "x_deff") %>%
-   dplyr::relocate(variable, .before = 1)
+   dplyr::relocate(variable, .before = 1)%>% 
+  dplyr::filter(!is.na(`95%lci`))
     
 }
 ```
@@ -771,7 +776,8 @@ under5_admin2 <- results_mort_admin2 %>%
   dplyr::mutate(variable = "u5mr")
 
 by_admin2 <- rbind(crude_admin2,under5_admin2) %>%
-  dplyr::relocate(variable, .before = 1)
+  dplyr::relocate(variable, .before = 1)%>% 
+  dplyr::filter(!is.na(`95%lci`))
 ```
 
 ```{r, results='asis'}
@@ -823,7 +829,8 @@ under5_admin1_pop_group <- results_mort_admin1_pop_group %>%
   dplyr::mutate(variable = "u5mr")
 
 by_admin1_pop_group <- rbind(crude_admin1_pop_group,under5_admin1_pop_group) %>%
-  dplyr::relocate(variable, .before = 1)
+  dplyr::relocate(variable, .before = 1)%>% 
+  dplyr::filter(!is.na(`95%lci`))
 ```
 
 ```{r, results='asis'}
@@ -876,7 +883,8 @@ under5_hoh_gender <- results_mort_hoh_gender %>%
   dplyr::mutate(variable = "u5mr")
 
 by_hoh_gender <- rbind(crude_hoh_gender,under5_hoh_gender) %>%
-  dplyr::relocate(variable, .before = 1)
+  dplyr::relocate(variable, .before = 1)%>% 
+  dplyr::filter(!is.na(`95%lci`))
 ```
 
 ```{r, results='asis'}
@@ -928,7 +936,8 @@ under5_income_source <- results_mort_income_source %>%
   dplyr::mutate(variable = "u5mr")
 
 by_income_source <- rbind(crude_income_source,under5_income_source) %>%
-  dplyr::relocate(variable, .before = 1)
+  dplyr::relocate(variable, .before = 1)%>% 
+  dplyr::filter(!is.na(`95%lci`))
 ```
 
 ```{r, results='asis'}
