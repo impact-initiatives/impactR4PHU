@@ -1597,3 +1597,8 @@ if(collected_df_left){
 if(!file.exists("inputs/environment.Rdata")){
   save(list = list_of_var, file = "inputs/environment.Rdata")
 }
+admin1_df <- raw.main %>%
+  select(uuid_main,admin1)
+
+data.list[[died_Sheet]] <- data.list[[died_Sheet]] %>%
+  dplyr::left_join(admin1_df)
