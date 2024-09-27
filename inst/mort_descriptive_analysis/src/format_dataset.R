@@ -1608,4 +1608,19 @@ if(exists("popu_group_df")){
     dplyr::left_join(popu_group_df %>%
                        mutate(!!rlang::sym(uuid_died) := uuid) %>%
                        select(-uuid))
+  df_mortality_long <- df_mortality_long %>%
+    dplyr::left_join(popu_group_df)
 }
+if(exists("hoh_gender_df")){
+  df_mortality_long <- df_mortality_long %>%
+    dplyr::left_join(hoh_gender_df)
+}
+if(exists("inco_sour_df")){
+  df_mortality_long <- df_mortality_long %>%
+    dplyr::left_join(inco_sour_df %>% select(-total_income))
+}
+
+df_mortality_long <- df_mortality_long %>%
+  dplyr::mutate(age_group_2 = cut(as.numeric(age_years),
+                                  breaks = c(-1, 17, 59, Inf),
+                                  labels = c("0-17", "18-59", "60+")))

@@ -445,6 +445,7 @@ if(yes_no_team == "yes"){
 
 srvey_mortality <- srvyr::as_survey_design(df_mortality_long %>%
                                                              dplyr::mutate(death = ifelse(is.na(death),0,as.numeric(death)),
+                                                                           birth = ifelse(is.na(birth),0,as.numeric(birth)),
                                                                            person_time = as.numeric(person_time),
                                                                            death_under5 = ifelse(is.na(death_under5),0,as.numeric(death_under5)),
                                                                            under_5_pt = ifelse(is.na(under_5_pt),0,as.numeric(under_5_pt))) %>% 
@@ -504,27 +505,35 @@ plot_results.summary
 ##### By Gender Mortality
 
 ```{r, include=FALSE}
-crude_gender <- results_mort_gender %>%
-  dplyr::mutate(`point.est` = as.numeric(cdr),
-                `95%lci` = as.numeric(stringr::str_extract(cdr_ci,"(?<=\\[)[^\\s\\-]*")),
-                `95%uci` = as.numeric(stringr::str_remove(stringr::str_extract(cdr_ci,"(?<=-)[^\\]]*")," "))) %>%
-  dplyr::select(group, `point.est`,`95%lci`,`95%uci`) %>%
-  dplyr::mutate(variable = "cmr",
-                group = case_when(group == 1~"Male",
-                                  group == 2~"Female"))
 
-under5_gender <- results_mort_gender %>%
-  dplyr::mutate(`point.est` = as.numeric(u5dr),
-                `95%lci` = as.numeric(stringr::str_extract(u5dr_ci,"(?<=\\[)[^\\s\\-]*")),
-                `95%uci` = as.numeric(stringr::str_remove(stringr::str_extract(u5dr_ci,"(?<=-)[^\\]]*")," "))) %>%
-  dplyr::select(group,`point.est`,`95%lci`,`95%uci`) %>%
-  dplyr::mutate(variable = "u5mr",
-                group = case_when(group == 1~"Male",
-                                  group == 2~"Female"))
+crude_gender <- srvey_mortality %>%
+  group_by(sex) %>% 
+  srvyr::summarise(x = srvyr::survey_ratio(numerator = death * 10000,
+                                           denominator = person_time,
+                                           vartype = "ci")) %>%
+  dplyr::mutate_at(vars(c(x,x_low,x_upp)),~round(.,2)) %>%
+  dplyr::mutate(variable = "cmr",
+                sex = case_when(sex == 1~"Male",
+                                  sex == 2~"Female")) %>% 
+  filter(!is.na(sex))
+
+under5_gender <- srvey_mortality %>%
+  group_by(sex) %>% 
+    srvyr::summarise(x = srvyr::survey_ratio(numerator = death_under5 * 10000,
+                                             denominator = under_5_pt,
+                                             vartype = "ci"))%>%
+    dplyr::mutate_at(vars(c(x,x_low,x_upp)),~round(.,2)) %>%
+    mutate(variable = "u5mr",
+           sex = case_when(sex == 1~"Male",
+                           sex == 2~"Female"))%>% 
+  filter(!is.na(sex))
 
 by_gender <- rbind(crude_gender,under5_gender) %>%
+  rename(`point.est` = "x",
+          `95%lci` = "x_low",
+          `95%uci` = "x_upp") %>%
   dplyr::relocate(variable, .before = 1) %>% 
-  dplyr::filter(!is.na(`95%lci`))
+  filter(!is.na(`95%lci`))
 ```
 
 ```{r, results='asis'}
@@ -551,7 +560,7 @@ plot_results.summary_gender <- ggplot2::ggplot(by_gender %>%
   ggplot2::xlab("Overall Mortality Rates")+
   ggplot2::labs(caption = c("Black Dotted Line: Crude Threshold (WHO)", "Red Dotted Line: Under 5 Threshold (WHO)")) +
   ggplot2::theme(plot.caption = ggplot2::element_text(hjust = c(0.2,0.8),color = c("black","red")))+
-  ggplot2::facet_wrap(~group)
+  ggplot2::facet_wrap(~sex)
 ```
 
 ```{r}
@@ -561,19 +570,22 @@ plot_results.summary_gender
 ##### By Age Group Mortality
 
 ```{r, include=FALSE}
-crude_age_group <- results_mort_age_group %>%
-  dplyr::mutate(`point.est` = as.numeric(cdr),
-                `95%lci` = as.numeric(stringr::str_extract(cdr_ci,"(?<=\\[)[^\\s\\-]*")),
-                `95%uci` = as.numeric(stringr::str_remove(stringr::str_extract(cdr_ci,"(?<=-)[^\\]]*")," "))) %>%
-  dplyr::select(group, `point.est`,`95%lci`,`95%uci`) %>%
-  dplyr::mutate(variable = "cmr",
-                group = case_when(group == 1~"0-17",
-                                  group == 2~"18-59",
-                                  group == 3~"60+"))
+crude_age_group <- srvey_mortality %>%
+  group_by(age_group_2) %>% 
+  srvyr::summarise(x = srvyr::survey_ratio(numerator = death * 10000,
+                                           denominator = person_time,
+                                           vartype = "ci")) %>%
+  dplyr::mutate_at(vars(c(x,x_low,x_upp)),~round(.,2)) %>%
+  dplyr::mutate(variable = "cmr")
+
 
 by_age_group <- rbind(crude_age_group) %>%
-  dplyr::relocate(variable, .before = 1)%>% 
-  dplyr::filter(!is.na(`95%lci`))
+  dplyr::relocate(variable, .before = 1)%>%
+  rename(`point.est` = "x",
+          `95%lci` = "x_low",
+          `95%uci` = "x_upp") %>%
+  dplyr::relocate(variable, .before = 1) %>% 
+  filter(!is.na(`95%lci`)) 
 ```
 
 ```{r, results='asis'}
@@ -599,7 +611,7 @@ plot_results.summary_age_group <- ggplot2::ggplot(by_age_group %>%
   ggplot2::xlab("Overall Mortality Rates")+
   ggplot2::labs(caption = c("Black Dotted Line: Crude Threshold (WHO)", "Red Dotted Line: Under 5 Threshold (WHO)")) +
   ggplot2::theme(plot.caption = ggplot2::element_text(hjust = c(0.2,0.8),color = c("black","red")))+
-  ggplot2::facet_wrap(~group)
+  ggplot2::facet_wrap(~age_group_2)
 ```
 
 ```{r}
@@ -609,23 +621,30 @@ plot_results.summary_age_group
 ##### By Population Group Mortality
 
 ```{r, include=FALSE}
-crude_pop_group <- results_mort_pop_group %>%
-  dplyr::mutate(`point.est` = as.numeric(cdr),
-                `95%lci` = as.numeric(stringr::str_extract(cdr_ci,"(?<=\\[)[^\\s\\-]*")),
-                `95%uci` = as.numeric(stringr::str_remove(stringr::str_extract(cdr_ci,"(?<=-)[^\\]]*")," "))) %>%
-  dplyr::select(group, `point.est`,`95%lci`,`95%uci`) %>%
+crude_pop_group <- srvey_mortality %>%
+  group_by(!!rlang::sym(population_group)) %>% 
+  srvyr::summarise(x = srvyr::survey_ratio(numerator = death * 10000,
+                                           denominator = person_time,
+                                           vartype = "ci")) %>%
+  dplyr::mutate_at(vars(c(x,x_low,x_upp)),~round(.,2)) %>%
   dplyr::mutate(variable = "cmr")
 
-under5_pop_group <- results_mort_pop_group %>%
-  dplyr::mutate(`point.est` = as.numeric(u5dr),
-                `95%lci` = as.numeric(stringr::str_extract(u5dr_ci,"(?<=\\[)[^\\s\\-]*")),
-                `95%uci` = as.numeric(stringr::str_remove(stringr::str_extract(u5dr_ci,"(?<=-)[^\\]]*")," "))) %>%
-  dplyr::select(group,`point.est`,`95%lci`,`95%uci`) %>%
-  dplyr::mutate(variable = "u5mr")
+
+under5_pop_group <-  srvey_mortality%>%
+  group_by(!!rlang::sym(population_group)) %>% 
+    srvyr::summarise(x = srvyr::survey_ratio(numerator = death_under5 * 10000,
+                                             denominator = under_5_pt,
+                                             vartype = "ci"))%>%
+    dplyr::mutate_at(vars(c(x,x_low,x_upp)),~round(.,2)) %>%
+    mutate(variable = "u5mr")
 
 by_pop_group <- rbind(crude_pop_group,under5_pop_group) %>%
-  dplyr::relocate(variable, .before = 1)%>% 
-  dplyr::filter(!is.na(`95%lci`))
+  rename(`point.est` = "x",
+          `95%lci` = "x_low",
+          `95%uci` = "x_upp") %>%
+  dplyr::relocate(variable, .before = 1) %>% 
+  dplyr::rename("group" = population_group) %>% 
+  filter(!is.na(`95%lci`))
 ```
 
 ```{r, results='asis'}
@@ -664,10 +683,12 @@ plot_results.summary_pop_group
 ```{r, include=FALSE}
 if(is.null(cluster)){
   srvey_mortality <- srvyr::as_survey_design(df_mortality_long %>%
+                                               dplyr::left_join(weight_df) %>% 
                                                              dplyr::mutate(death = ifelse(is.na(death),0,as.numeric(death)),
                                                                            person_time = as.numeric(person_time),
                                                                            death_under5 = ifelse(is.na(death_under5),0,as.numeric(death_under5)),
-                                                                           under_5_pt = ifelse(is.na(under_5_pt),0,as.numeric(under_5_pt))))
+                                                                           under_5_pt = ifelse(is.na(under_5_pt),0,as.numeric(under_5_pt))),
+                                             weights = weight)
   
   crude_admin1 <- srvey_mortality %>%
     dplyr::group_by(admin1) %>%
@@ -687,16 +708,18 @@ if(is.null(cluster)){
    rename(`point.est` = "x",
           `95%lci` = "x_low",
           `95%uci` = "x_upp") %>%
-   relocate(variable, .before = 1)%>% 
-  dplyr::filter(!is.na(`95%lci`))
+   relocate(variable, .before = 1)%>%
+  filter(!is.na(`95%lci`))
 } else {
   srvey_mortality <- srvyr::as_survey_design(df_mortality_long %>%
+                                               dplyr::left_join(weight_df) %>% 
                                                              dplyr::mutate(death = ifelse(is.na(death),0,as.numeric(death)),
                                                                            person_time = as.numeric(person_time),
                                                                            death_under5 = ifelse(is.na(death_under5),0,as.numeric(death_under5)),
                                                                            under_5_pt = ifelse(is.na(under_5_pt),0,as.numeric(under_5_pt))) %>% 
                                                dplyr::filter(!is.na(cluster)), 
-                                             ids = cluster)
+                                             ids = cluster,
+                                             weights = weight)
   
   crude_admin1 <- srvey_mortality %>%
     dplyr::group_by(admin1) %>%
@@ -720,8 +743,8 @@ if(is.null(cluster)){
           `95%lci` = "x_low",
           `95%uci` = "x_upp",
           `Design effect` = "x_deff") %>%
-   dplyr::relocate(variable, .before = 1)%>% 
-  dplyr::filter(!is.na(`95%lci`))
+   dplyr::relocate(variable, .before = 1)%>%
+  filter(!is.na(`95%lci`))
     
 }
 ```
@@ -761,23 +784,31 @@ plot_results.summary_admin1
 ##### By Admin 2 Mortality
 
 ```{r, include=FALSE}
-crude_admin2 <- results_mort_admin2 %>%
-  dplyr::mutate(`point.est` = as.numeric(cdr),
-                `95%lci` = as.numeric(stringr::str_extract(cdr_ci,"(?<=\\[)[^\\s\\-]*")),
-                `95%uci` = as.numeric(stringr::str_remove(stringr::str_extract(cdr_ci,"(?<=-)[^\\]]*")," "))) %>%
-  dplyr::select(group, `point.est`,`95%lci`,`95%uci`) %>%
-  dplyr::mutate(variable = "cmr")
-
-under5_admin2 <- results_mort_admin2 %>%
-  dplyr::mutate(`point.est` = as.numeric(u5dr),
-                `95%lci` = as.numeric(stringr::str_extract(u5dr_ci,"(?<=\\[)[^\\s\\-]*")),
-                `95%uci` = as.numeric(stringr::str_remove(stringr::str_extract(u5dr_ci,"(?<=-)[^\\]]*")," "))) %>%
-  dplyr::select(group,`point.est`,`95%lci`,`95%uci`) %>%
-  dplyr::mutate(variable = "u5mr")
+crude_admin2 <- srvey_mortality %>%
+    dplyr::group_by(admin2) %>%
+    srvyr::summarise(x = srvyr::survey_ratio(numerator = death * 10000,
+                                             denominator = person_time,
+                                             vartype = "ci",
+                                             deff = "replace")) %>%
+    dplyr::mutate_at(vars(c(x,x_low,x_upp,x_deff)),~round(.,2)) %>%
+    dplyr::mutate(variable = "cmr")
+under5_admin2 <-  srvey_mortality %>%
+    dplyr::group_by(admin2) %>%
+    srvyr::summarise(x = srvyr::survey_ratio(numerator = death_under5 * 10000,
+                                             denominator = under_5_pt,
+                                             vartype = "ci",
+                                             deff = "replace"))%>%
+    dplyr::mutate_at(vars(c(x,x_low,x_upp,x_deff)),~round(.,2)) %>%
+    dplyr::mutate(variable = "u5mr")
 
 by_admin2 <- rbind(crude_admin2,under5_admin2) %>%
   dplyr::relocate(variable, .before = 1)%>% 
-  dplyr::filter(!is.na(`95%lci`))
+   dplyr::rename(`point.est` = "x",
+          `95%lci` = "x_low",
+          `95%uci` = "x_upp",
+          `Design effect` = "x_deff") %>%
+   dplyr::relocate(variable, .before = 1)%>%
+  filter(!is.na(`95%lci`))
 ```
 
 ```{r, results='asis'}
@@ -804,7 +835,7 @@ plot_results.summary_admin2 <- ggplot2::ggplot(by_admin2 %>%
   ggplot2::xlab("Overall Mortality Rates")+
   ggplot2::labs(caption = c("Black Dotted Line: Crude Threshold (WHO)", "Red Dotted Line: Under 5 Threshold (WHO)")) +
   ggplot2::theme(plot.caption = ggplot2::element_text(hjust = c(0.2,0.8),color = c("black","red")))+
-  ggplot2::facet_wrap(~group)
+  ggplot2::facet_wrap(~admin2)
 ```
 
 ```{r, fig.height=8,fig.width=7}
@@ -814,23 +845,36 @@ plot_results.summary_admin2
 ##### By Admin 1 by Population Group Mortality
 
 ```{r, include=FALSE}
-crude_admin1_pop_group <- results_mort_admin1_pop_group %>%
-  dplyr::mutate(`point.est` = as.numeric(cdr),
-                `95%lci` = as.numeric(stringr::str_extract(cdr_ci,"(?<=\\[)[^\\s\\-]*")),
-                `95%uci` = as.numeric(stringr::str_remove(stringr::str_extract(cdr_ci,"(?<=-)[^\\]]*")," "))) %>%
-  dplyr::select(group, `point.est`,`95%lci`,`95%uci`) %>%
-  dplyr::mutate(variable = "cmr")
+crude_admin1_pop_group <- srvey_mortality %>%
+    dplyr::group_by(admin1, !!rlang::sym(population_group)) %>%
+    srvyr::summarise(x = srvyr::survey_ratio(numerator = death * 10000,
+                                             denominator = person_time,
+                                             vartype = "ci",
+                                             deff = "replace")) %>%
+    dplyr::mutate_at(vars(c(x,x_low,x_upp,x_deff)),~round(.,2)) %>%
+    dplyr::mutate(variable = "cmr")
 
-under5_admin1_pop_group <- results_mort_admin1_pop_group %>%
-  dplyr::mutate(`point.est` = as.numeric(u5dr),
-                `95%lci` = as.numeric(stringr::str_extract(u5dr_ci,"(?<=\\[)[^\\s\\-]*")),
-                `95%uci` = as.numeric(stringr::str_remove(stringr::str_extract(u5dr_ci,"(?<=-)[^\\]]*")," "))) %>%
-  dplyr::select(group,`point.est`,`95%lci`,`95%uci`) %>%
-  dplyr::mutate(variable = "u5mr")
+under5_admin1_pop_group <- srvey_mortality %>%
+    dplyr::group_by(admin1, !!rlang::sym(population_group)) %>%
+    srvyr::summarise(x = srvyr::survey_ratio(numerator = death_under5 * 10000,
+                                             denominator = under_5_pt,
+                                             vartype = "ci",
+                                             deff = "replace"))%>%
+    dplyr::mutate_at(vars(c(x,x_low,x_upp,x_deff)),~round(.,2)) %>%
+    dplyr::mutate(variable = "u5mr")
+
 
 by_admin1_pop_group <- rbind(crude_admin1_pop_group,under5_admin1_pop_group) %>%
   dplyr::relocate(variable, .before = 1)%>% 
-  dplyr::filter(!is.na(`95%lci`))
+   dplyr::rename(`point.est` = "x",
+          `95%lci` = "x_low",
+          `95%uci` = "x_upp",
+          `Design effect` = "x_deff") %>%
+   dplyr::relocate(variable, .before = 1)%>%
+  filter(!is.na(`95%lci`)) %>% 
+  mutate(admin1_group = paste0(admin1, "_", !!rlang::sym(population_group))) %>% 
+  select(-c(admin1,population_group)) %>% 
+ dplyr::relocate(admin1_group, .before = 2)
 ```
 
 ```{r, results='asis'}
@@ -857,7 +901,7 @@ plot_results.summary_admin1_pop_group <- ggplot2::ggplot(by_admin1_pop_group %>%
   ggplot2::xlab("Overall Mortality Rates")+
   ggplot2::labs(caption = c("Black Dotted Line: Crude Threshold (WHO)", "Red Dotted Line: Under 5 Threshold (WHO)")) +
   ggplot2::theme(plot.caption = ggplot2::element_text(hjust = c(0.2,0.8),color = c("black","red")))+
-  ggplot2::facet_wrap(~group)
+  ggplot2::facet_wrap(~admin1_group)
 ```
 
 ```{r, fig.height=8,fig.width=7}
@@ -868,23 +912,32 @@ plot_results.summary_admin1_pop_group
 ##### By HoH Gender Mortality
 
 ```{r, include=FALSE}
-crude_hoh_gender <- results_mort_hoh_gender %>%
-  dplyr::mutate(`point.est` = as.numeric(cdr),
-                `95%lci` = as.numeric(stringr::str_extract(cdr_ci,"(?<=\\[)[^\\s\\-]*")),
-                `95%uci` = as.numeric(stringr::str_remove(stringr::str_extract(cdr_ci,"(?<=-)[^\\]]*")," "))) %>%
-  dplyr::select(group, `point.est`,`95%lci`,`95%uci`) %>%
-  dplyr::mutate(variable = "cmr")
+crude_hoh_gender <- srvey_mortality %>%
+    dplyr::group_by(!!rlang::sym(hoh_gender)) %>%
+    srvyr::summarise(x = srvyr::survey_ratio(numerator = death * 10000,
+                                             denominator = person_time,
+                                             vartype = "ci",
+                                             deff = "replace")) %>%
+    dplyr::mutate_at(vars(c(x,x_low,x_upp,x_deff)),~round(.,2)) %>%
+    dplyr::mutate(variable = "cmr")
 
-under5_hoh_gender <- results_mort_hoh_gender %>%
-  dplyr::mutate(`point.est` = as.numeric(u5dr),
-                `95%lci` = as.numeric(stringr::str_extract(u5dr_ci,"(?<=\\[)[^\\s\\-]*")),
-                `95%uci` = as.numeric(stringr::str_remove(stringr::str_extract(u5dr_ci,"(?<=-)[^\\]]*")," "))) %>%
-  dplyr::select(group,`point.est`,`95%lci`,`95%uci`) %>%
-  dplyr::mutate(variable = "u5mr")
+under5_hoh_gender <- srvey_mortality %>%
+    dplyr::group_by(!!rlang::sym(hoh_gender)) %>%
+    srvyr::summarise(x = srvyr::survey_ratio(numerator = death_under5 * 10000,
+                                             denominator = under_5_pt,
+                                             vartype = "ci",
+                                             deff = "replace"))%>%
+    dplyr::mutate_at(vars(c(x,x_low,x_upp,x_deff)),~round(.,2)) %>%
+    dplyr::mutate(variable = "u5mr")
 
 by_hoh_gender <- rbind(crude_hoh_gender,under5_hoh_gender) %>%
-  dplyr::relocate(variable, .before = 1)%>% 
-  dplyr::filter(!is.na(`95%lci`))
+  dplyr::relocate(variable, .before = 1) %>% 
+   dplyr::rename(`point.est` = "x",
+          `95%lci` = "x_low",
+          `95%uci` = "x_upp",
+          `Design effect` = "x_deff") %>%
+  filter(!is.na(`95%lci`)) %>% 
+  dplyr::rename("group" = hoh_gender)
 ```
 
 ```{r, results='asis'}
@@ -921,23 +974,33 @@ plot_results.summary_hoh_gender
 ##### By Income Source Mortality
 
 ```{r, include=FALSE}
-crude_income_source <- results_mort_income_source %>%
-  dplyr::mutate(`point.est` = as.numeric(cdr),
-                `95%lci` = as.numeric(stringr::str_extract(cdr_ci,"(?<=\\[)[^\\s\\-]*")),
-                `95%uci` = as.numeric(stringr::str_remove(stringr::str_extract(cdr_ci,"(?<=-)[^\\]]*")," "))) %>%
-  dplyr::select(group, `point.est`,`95%lci`,`95%uci`) %>%
-  dplyr::mutate(variable = "cmr")
+crude_income_source <- srvey_mortality %>%
+    dplyr::group_by(income_source_category) %>%
+    srvyr::summarise(x = srvyr::survey_ratio(numerator = death * 10000,
+                                             denominator = person_time,
+                                             vartype = "ci",
+                                             deff = "replace")) %>%
+    dplyr::mutate_at(vars(c(x,x_low,x_upp,x_deff)),~round(.,2)) %>%
+    dplyr::mutate(variable = "cmr")
 
-under5_income_source <- results_mort_income_source %>%
-  dplyr::mutate(`point.est` = as.numeric(u5dr),
-                `95%lci` = as.numeric(stringr::str_extract(u5dr_ci,"(?<=\\[)[^\\s\\-]*")),
-                `95%uci` = as.numeric(stringr::str_remove(stringr::str_extract(u5dr_ci,"(?<=-)[^\\]]*")," "))) %>%
-  dplyr::select(group,`point.est`,`95%lci`,`95%uci`) %>%
-  dplyr::mutate(variable = "u5mr")
+
+under5_income_source <- srvey_mortality %>%
+    dplyr::group_by(income_source_category) %>%
+    srvyr::summarise(x = srvyr::survey_ratio(numerator = death_under5 * 10000,
+                                             denominator = under_5_pt,
+                                             vartype = "ci",
+                                             deff = "replace"))%>%
+    dplyr::mutate_at(vars(c(x,x_low,x_upp,x_deff)),~round(.,2)) %>%
+    dplyr::mutate(variable = "u5mr")
+
 
 by_income_source <- rbind(crude_income_source,under5_income_source) %>%
-  dplyr::relocate(variable, .before = 1)%>% 
-  dplyr::filter(!is.na(`95%lci`))
+  dplyr::relocate(variable, .before = 1) %>% 
+   dplyr::rename(`point.est` = "x",
+          `95%lci` = "x_low",
+          `95%uci` = "x_upp",
+          `Design effect` = "x_deff") %>%
+  filter(!is.na(`95%lci`)) 
 ```
 
 ```{r, results='asis'}
@@ -948,7 +1011,7 @@ DT::datatable(by_income_source)
 plot_results.summary_income_source <- ggplot2::ggplot(by_income_source %>%
                                                mutate(variable = case_when(variable == "cmr"~"Crude",
                                                                            variable == "u5mr"~"Under 5"),
-                                                      group = factor(group, c("Below 20%", "20% - 40%","40% - 60%","60% - 80%","Above 80%"))), ggplot2::aes(x = variable)) +
+                                                      income_source_category = factor(income_source_category, c("Below 20%", "20% - 40%","40% - 60%","60% - 80%","Above 80%"))), ggplot2::aes(x = variable)) +
   ggplot2::geom_hline(yintercept=1, linetype='dotted', color = 'black', size =1)+
   ggplot2::geom_hline(yintercept=2, linetype='dotted', color = 'red', size =1)+
   ggplot2::geom_errorbar(ggplot2::aes(ymin =`95%lci`, ymax = `95%uci`, width = 0.2, color = "red"))+
@@ -965,7 +1028,7 @@ plot_results.summary_income_source <- ggplot2::ggplot(by_income_source %>%
   ggplot2::xlab("Overall Mortality Rates")+
   ggplot2::labs(caption = c("Black Dotted Line: Crude Threshold (WHO)", "Red Dotted Line: Under 5 Threshold (WHO)")) +
   ggplot2::theme(plot.caption = ggplot2::element_text(hjust = c(0.2,0.8),color = c("black","red")))+
-  ggplot2::facet_wrap(~group, ncol = 5)
+  ggplot2::facet_wrap(~income_source_category, ncol = 5)
 ```
 
 ```{r, fig.height=8,fig.width=7}
@@ -975,10 +1038,25 @@ plot_results.summary_income_source
 ##### Birth
 
 ```{r, include=FALSE}
-birth <- results_mort %>%
-  dplyr::mutate(`point.est` = as.numeric(birth_rate),
-                `95%lci` = as.numeric(stringr::str_extract(birth_rate_ci,"(?<=\\[)[^\\s\\-]*")),
-                `95%uci` = as.numeric(stringr::str_remove(stringr::str_extract(birth_rate_ci,"(?<=-)[^\\]]*")," "))) %>%
+srvey_mortality <- srvyr::as_survey_design(df_mortality_long %>%
+                                                             dplyr::mutate(death = ifelse(is.na(death),0,as.numeric(death)),
+                                                                           birth = ifelse(is.na(birth),0,as.numeric(birth)),
+                                                                           person_time = as.numeric(person_time),
+                                                                           death_under5 = ifelse(is.na(death_under5),0,as.numeric(death_under5)),
+                                                                           under_5_pt = ifelse(is.na(under_5_pt),0,as.numeric(under_5_pt))) %>% 
+                                             dplyr::left_join(weight_df),
+                                           weights = weight)
+  
+birth <-  srvey_mortality %>%
+    srvyr::summarise(x = srvyr::survey_ratio(numerator = birth * 1000,
+                                             denominator = person_time/365,
+                                             vartype = "ci",
+                                             deff = "replace")) %>%
+    dplyr::mutate_at(vars(c(x,x_low,x_upp,x_deff)),~round(.,2)) %>% 
+   dplyr::rename(`point.est` = "x",
+          `95%lci` = "x_low",
+          `95%uci` = "x_upp") %>% 
+
   dplyr::select(`point.est`,`95%lci`,`95%uci`) %>%
   dplyr::mutate(variable = "Birth")
 
@@ -1013,16 +1091,21 @@ plot_results.summary.birth
 ##### Birth By Admin 1
 
 ```{r, include=FALSE}
-birth_admin1 <- results_mort_admin1 %>%
-  dplyr::mutate(`point.est` = as.numeric(birth_rate),
-                `95%lci` = as.numeric(stringr::str_extract(birth_rate_ci,"(?<=\\[)[^\\s\\-]*")),
-                `95%uci` = as.numeric(stringr::str_remove(stringr::str_extract(birth_rate_ci,"(?<=-)[^\\]]*")," "))) %>%
-  dplyr::select(group,`point.est`,`95%lci`,`95%uci`) %>%
-  dplyr::mutate(variable = "Birth") %>%
-  dplyr::relocate(variable, .before = 1)
-```
+birth_admin1 <- srvey_mortality %>%
+  group_by(admin1) %>% 
+    srvyr::summarise(x = srvyr::survey_ratio(numerator = birth * 1000,
+                                             denominator = person_time/365,
+                                             vartype = "ci",
+                                             deff = "replace")) %>%
+    dplyr::mutate_at(vars(c(x,x_low,x_upp,x_deff)),~round(.,2)) %>% 
+   dplyr::rename(`point.est` = "x",
+          `95%lci` = "x_low",
+          `95%uci` = "x_upp") %>% 
 
-```{r, results='asis'}
+  dplyr::select(admin1, `point.est`,`95%lci`,`95%uci`) %>%
+  dplyr::mutate(variable = "Birth")
+
+
 DT::datatable(birth_admin1)
 ```
 
@@ -1039,7 +1122,8 @@ plot_results.summary.birth_admin1 <- ggplot2::ggplot(birth_admin1, ggplot2::aes(
     max(birth_admin1$`95%uci`)
   }))+
   ggplot2::theme(legend.position = "none", axis.title.y = ggplot2::element_blank())+
-  ggplot2::xlab("Overall Birth Rates")
+  ggplot2::xlab("Overall Birth Rates") +
+  ggplot2::facet_wrap(~admin1)
 ```
 
 ```{r}
@@ -1049,13 +1133,20 @@ plot_results.summary.birth_admin1
 ##### Birth By Population Group
 
 ```{r, include=FALSE}
-birth_pop_group <- results_mort_pop_group %>%
-  dplyr::mutate(`point.est` = as.numeric(birth_rate),
-                `95%lci` = as.numeric(stringr::str_extract(birth_rate_ci,"(?<=\\[)[^\\s\\-]*")),
-                `95%uci` = as.numeric(stringr::str_remove(stringr::str_extract(birth_rate_ci,"(?<=-)[^\\]]*")," "))) %>%
-  dplyr::select(group,`point.est`,`95%lci`,`95%uci`) %>%
-  dplyr::mutate(variable = "Birth") %>%
-  dplyr::relocate(variable, .before = 1)
+birth_pop_group <- srvey_mortality %>%
+  group_by(!!rlang::sym(population_group)) %>% 
+    srvyr::summarise(x = srvyr::survey_ratio(numerator = birth * 1000,
+                                             denominator = person_time/365,
+                                             vartype = "ci",
+                                             deff = "replace")) %>%
+    dplyr::mutate_at(vars(c(x,x_low,x_upp,x_deff)),~round(.,2)) %>% 
+   dplyr::rename(`point.est` = "x",
+          `95%lci` = "x_low",
+          `95%uci` = "x_upp") %>% 
+
+  dplyr::select(population_group,`point.est`,`95%lci`,`95%uci`) %>%
+  dplyr::mutate(variable = "Birth") %>% 
+  dplyr::rename("group" =population_group)
 ```
 
 ```{r, results='asis'}
@@ -1075,7 +1166,8 @@ plot_results.summary.birth_pop_group <- ggplot2::ggplot(birth_pop_group, ggplot2
     max(birth_pop_group$`95%uci`)
   }))+
   ggplot2::theme(legend.position = "none", axis.title.y = ggplot2::element_blank())+
-  ggplot2::xlab("Overall Birth Rates")
+  ggplot2::xlab("Overall Birth Rates")+
+  ggplot2::facet_wrap(~group)
 ```
 
 ```{r}
@@ -1177,7 +1269,6 @@ by_overall <- overall %>%
   dplyr::filter(variable == "cmr") %>% 
   dplyr::mutate(admin1 = "national") %>% 
   dplyr::select(admin1, point.est,`95%lci`,`95%uci`)
-
 ## admin1 for MSNA Integrated Analysis Tables
 table_by_admin1 <- by_admin1 %>% 
   dplyr::filter(variable == "cmr") %>% 
