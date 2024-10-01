@@ -913,7 +913,7 @@ plot_results.summary_admin1_pop_group
 
 ```{r, include=FALSE}
 crude_hoh_gender <- srvey_mortality %>%
-    dplyr::group_by(!!rlang::sym(hoh_gender)) %>%
+    dplyr::group_by(hoh_gender) %>%
     srvyr::summarise(x = srvyr::survey_ratio(numerator = death * 10000,
                                              denominator = person_time,
                                              vartype = "ci",
@@ -922,7 +922,7 @@ crude_hoh_gender <- srvey_mortality %>%
     dplyr::mutate(variable = "cmr")
 
 under5_hoh_gender <- srvey_mortality %>%
-    dplyr::group_by(!!rlang::sym(hoh_gender)) %>%
+    dplyr::group_by(hoh_gender) %>%
     srvyr::summarise(x = srvyr::survey_ratio(numerator = death_under5 * 10000,
                                              denominator = under_5_pt,
                                              vartype = "ci",
@@ -937,7 +937,8 @@ by_hoh_gender <- rbind(crude_hoh_gender,under5_hoh_gender) %>%
           `95%uci` = "x_upp",
           `Design effect` = "x_deff") %>%
   filter(!is.na(`95%lci`)) %>% 
-  dplyr::rename("group" = hoh_gender)
+  dplyr::rename("group" = hoh_gender) %>% 
+  filter(!is.na(group))
 ```
 
 ```{r, results='asis'}
