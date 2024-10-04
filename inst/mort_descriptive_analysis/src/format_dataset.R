@@ -1604,8 +1604,6 @@ data.list[[died_Sheet]] <- data.list[[died_Sheet]] %>%
   dplyr::mutate(uuid =uuid_died) %>%
   dplyr::left_join(admin1_df)
 
-To add in src/format_dataset.R mortality descriptive analysis
-
 
 if(exists("popu_group_df")){
   data.list[[died_Sheet]] <- data.list[[died_Sheet]] %>%
