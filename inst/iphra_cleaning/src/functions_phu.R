@@ -1145,28 +1145,28 @@ calculate_plausibility_report_phu <- function (df) {
 
   if (c("age_ratio.pvalue") %in% names(df)) {
     df <- df %>% dplyr::mutate(plaus_ageratio = ifelse(age_ratio.pvalue > 0.1, 0,
-                                                       ifelse(age_ratio.pvalue > 0.05, 2,
-                                                              ifelse(age_ratio.pvalue > 0.001, 4,
-                                                                     ifelse(age_ratio.pvalue <= 0.001, 10, NA)))))
+                                                       ifelse(age_ratio.pvalue > 0.05, 1,
+                                                              ifelse(age_ratio.pvalue > 0.001, 3,
+                                                                     ifelse(age_ratio.pvalue <= 0.001, 5, NA)))))
   }
   if ((c("sex_ratio.pvalue") %in% names(df)) & !(c("cdr") %in%
                                                  names(df))) {
     df <- df %>% dplyr::mutate(plaus_sexratio = ifelse(sex_ratio.pvalue > 0.1, 0,
-                                                       ifelse(sex_ratio.pvalue > 0.05, 2,
-                                                              ifelse(sex_ratio.pvalue > 0.001, 4,
-                                                                     ifelse(sex_ratio.pvalue <= 0.001, 10, NA)))))
+                                                       ifelse(sex_ratio.pvalue > 0.05, 1,
+                                                              ifelse(sex_ratio.pvalue > 0.001, 3,
+                                                                     ifelse(sex_ratio.pvalue <= 0.001, 5, NA)))))
   }
   if (c("dps_muac") %in% names(df)) {
     df <- df %>% dplyr::mutate(plaus_dps_muac = ifelse(dps_muac >= 0 & dps_muac < 8, 0,
-                                                       ifelse(dps_muac >= 8 & dps_muac < 13, 2,
-                                                              ifelse(dps_muac >= 13 & dps_muac < 20, 4,
-                                                                     ifelse(dps_muac >= 20, 10, NA)))))
+                                                       ifelse(dps_muac >= 8 & dps_muac < 13, 1,
+                                                              ifelse(dps_muac >= 13 & dps_muac < 20, 3,
+                                                                     ifelse(dps_muac >= 20, 5, NA)))))
   }
   if (c("flag_perc_mfaz_children") %in% names(df)) {
     df <- df %>% dplyr::mutate(plaus_perc_mfaz_children = ifelse(flag_perc_mfaz_children >= 0 & flag_perc_mfaz_children < 8, 0,
-                                                                 ifelse(flag_perc_mfaz_children >= 8 & flag_perc_mfaz_children < 13, 2,
-                                                                        ifelse(flag_perc_mfaz_children >= 13 & flag_perc_mfaz_children < 20, 4,
-                                                                               ifelse(flag_perc_mfaz_children >= 20, 10, NA)))))
+                                                                 ifelse(flag_perc_mfaz_children >= 8 & flag_perc_mfaz_children < 13, 5,
+                                                                        ifelse(flag_perc_mfaz_children >= 13 & flag_perc_mfaz_children < 10, 4,
+                                                                               ifelse(flag_perc_mfaz_children >= 20, 20, NA)))))
   }
   if (c("n_children_muac") %in% names(df)) {
     df <- df %>% dplyr::mutate(plaus_n_children_muac = ifelse(n_children_muac > 100, 0,
