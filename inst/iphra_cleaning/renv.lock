@@ -757,14 +757,14 @@
     },
     "glue": {
       "Package": "glue",
-      "Version": "1.7.0",
+      "Version": "1.8.0",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
         "R",
         "methods"
       ],
-      "Hash": "e0b3a53876554bd45879e596cdb10a52"
+      "Hash": "5899f1eaa825580172bb56c08266f37c"
     },
     "gtable": {
       "Package": "gtable",
@@ -875,7 +875,7 @@
       "RemoteHost": "api.github.com",
       "RemoteRepo": "impactR4PHU",
       "RemoteUsername": "impact-initiatives",
-      "RemoteSha": "7124a7f34577300450593e2e2d34ba623d186e9d",
+      "RemoteSha": "895dce2ee588839a48db123e14c698e6ecab9506",
       "Requirements": [
         "GGally",
         "R",
@@ -896,7 +896,7 @@
         "writexl",
         "zscorer"
       ],
-      "Hash": "f2040509218867f778ee3c8cf38f8458"
+      "Hash": "660e59047ca7d494cd700ec1143cb74e"
     },
     "isoband": {
       "Package": "isoband",
