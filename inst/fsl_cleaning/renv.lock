@@ -990,7 +990,7 @@
       "RemoteHost": "api.github.com",
       "RemoteRepo": "impactR4PHU",
       "RemoteUsername": "impact-initiatives",
-      "RemoteSha": "895dce2ee588839a48db123e14c698e6ecab9506",
+      "RemoteSha": "f2604deec0b877947b04ed87f987edd76ec5b248",
       "Requirements": [
         "GGally",
         "R",
@@ -1011,7 +1011,7 @@
         "writexl",
         "zscorer"
       ],
-      "Hash": "660e59047ca7d494cd700ec1143cb74e"
+      "Hash": "2c6825d43d2c530297b82d275484a3d0"
     },
     "isoband": {
       "Package": "isoband",
@@ -2031,7 +2031,7 @@
     },
     "xfun": {
       "Package": "xfun",
-      "Version": "0.47",
+      "Version": "0.48",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
@@ -2040,7 +2040,7 @@
         "stats",
         "tools"
       ],
-      "Hash": "36ab21660e2d095fef0d83f689e0477c"
+      "Hash": "89e455b87c84e227eb7f60a1b4e5fe1f"
     },
     "xlsx": {
       "Package": "xlsx",

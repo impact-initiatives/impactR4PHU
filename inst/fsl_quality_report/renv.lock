@@ -190,13 +190,13 @@
     },
     "askpass": {
       "Package": "askpass",
-      "Version": "1.2.0",
+      "Version": "1.2.1",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
         "sys"
       ],
-      "Hash": "cad6cf7f1d5f6e906700b9d3e718c796"
+      "Hash": "c39f4155b3ceb1a9a2799d700fbd4b6a"
     },
     "backports": {
       "Package": "backports",
@@ -244,10 +244,10 @@
     },
     "bitops": {
       "Package": "bitops",
-      "Version": "1.0-8",
+      "Version": "1.0-9",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "da69e6b6f8feebec0827205aad3fdbd8"
+      "Hash": "d972ef991d58c19e6efa71b21f5e144b"
     },
     "blob": {
       "Package": "blob",
@@ -990,7 +990,7 @@
       "RemoteHost": "api.github.com",
       "RemoteRepo": "impactR4PHU",
       "RemoteUsername": "impact-initiatives",
-      "RemoteSha": "895dce2ee588839a48db123e14c698e6ecab9506",
+      "RemoteSha": "f2604deec0b877947b04ed87f987edd76ec5b248",
       "Requirements": [
         "GGally",
         "R",
@@ -1011,7 +1011,7 @@
         "writexl",
         "zscorer"
       ],
-      "Hash": "660e59047ca7d494cd700ec1143cb74e"
+      "Hash": "2c6825d43d2c530297b82d275484a3d0"
     },
     "isoband": {
       "Package": "isoband",
@@ -2031,7 +2031,7 @@
     },
     "xfun": {
       "Package": "xfun",
-      "Version": "0.47",
+      "Version": "0.48",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
@@ -2040,7 +2040,7 @@
         "stats",
         "tools"
       ],
-      "Hash": "36ab21660e2d095fef0d83f689e0477c"
+      "Hash": "89e455b87c84e227eb7f60a1b4e5fe1f"
     },
     "xlsx": {
       "Package": "xlsx",
