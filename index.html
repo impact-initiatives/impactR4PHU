@@ -176,13 +176,12 @@ Inputs of specific columns/values that will be targeted within the quality check
 <div class="section level4">
 <h4 id="fsl-section">FSL Section<a class="anchor" aria-label="anchor" href="#fsl-section"></a>
 </h4>
-<p>After running all the line in the run_fsl_quality_report.R, below are the set of inputs that are required for you to select/fill.</p>
-<details><summary><h3>
+After running all the line in the run_fsl_quality_report.R, below are the set of inputs that are required for you to select/fill.
+<details><summary><h4>
 Details
-</h3>
+</h4>
 </summary><blockquote>
-<p>For a given file, either counts or sorts it and places the output in <code>CounterSorterOutput</code> by default. - If you are sorting, include an <code>s</code> or the word <code>sort</code> after the specified file. - If you are counting, include a <code>c</code> or the word <code>count</code> after the specified file.</p>
-<p>For either option, you may: - Specify a designated output file using the <code>-d</code> or <code>--dest</code> flag. - Specify a sorting function using the <code>-m</code> or <code>--method</code> flag and a key from the <code>SORT_FUNCTIONS</code> dictionary in <code>properties.py</code>. - Invert the sort direction using the <code>-r</code> or <code>--reverse</code> flag. - Ignore the header of the file using the <code>-s</code> or <code>--skip</code> flag and a number of lines to skip.</p>
+<p><code>Raw Data</code> &lt;- Raw Data. <code>Kobo Tool</code> &lt;- Kobo Tool. <code>FSL indicators sheet</code> &lt;- Sheet that includes all the FSL indicators. <code>Label column to choose</code> &lt;- Label you want to choose from the kobo tool. <code>FSL indicators</code> &lt;- FSL indicators you have collected in your data. <code>HH UUID column</code> &lt;- Household unique identifier (usually uuid). If FCS selected <code>fsl_fcs_cereal</code>&lt;- Cereal Column related to Food Consumption Score <code>fsl_fcs_legumes</code>&lt;- Legumes Column related to Food Consumption Score <code>fsl_fcs_veg</code>&lt;- Vegetables Column related to Food Consumption Score <code>fsl_fcs_fruit</code>&lt;- Fruit Column related to Food Consumption Score <code>fsl_fcs_meat</code>&lt;- Meat Column related to Food Consumption Score <code>fsl_fcs_dairy</code>&lt;- Dairy Column related to Food Consumption Score <code>fsl_fcs_sugar</code>&lt;- Sugar Column related to Food Consumption Score <code>fsl_fcs_oil</code>&lt;- Oil Column related to Food Consumption Score If rCSI selected <code>fsl_rcsi_lessquality</code> &lt;- rCSI Less Quality Food Column <code>fsl_rcsi_borrow</code> &lt;- rCSI Borrowing Food Column <code>fsl_rcsi_mealsize</code> &lt;- rCSI Reducing Meal Size Column <code>fsl_rcsi_mealadult</code> &lt;- rCSI Reduce Meals For Adults and Prioritize Child Meals Column <code>fsl_rcsi_mealnb</code> &lt;- rCSI Reduce Meal Numbers Column</p>
 </blockquote>
 </details>
 This section includes:
