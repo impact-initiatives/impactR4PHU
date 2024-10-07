@@ -494,10 +494,10 @@
     },
     "commonmark": {
       "Package": "commonmark",
-      "Version": "1.9.1",
+      "Version": "1.9.2",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "5d8225445acb167abf7797de48b2ee3c"
+      "Hash": "14eb0596f987c71535d07c3aff814742"
     },
     "conflicted": {
       "Package": "conflicted",
@@ -536,7 +536,7 @@
     },
     "credentials": {
       "Package": "credentials",
-      "Version": "2.0.1",
+      "Version": "2.0.2",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
@@ -546,7 +546,7 @@
         "openssl",
         "sys"
       ],
-      "Hash": "c7844b32098dcbd1c59cbd8dddb4ecc6"
+      "Hash": "09fd631e607a236f8cc7f9604db32cb8"
     },
     "curl": {
       "Package": "curl",
@@ -1346,7 +1346,7 @@
       "RemoteHost": "api.github.com",
       "RemoteRepo": "impactR4PHU",
       "RemoteUsername": "impact-initiatives",
-      "RemoteSha": "f2604deec0b877947b04ed87f987edd76ec5b248",
+      "RemoteSha": "12652eb7e3c204ae4ba6ee6ce6c58b6eb53bcbed",
       "Requirements": [
         "GGally",
         "R",
@@ -1367,7 +1367,7 @@
         "writexl",
         "zscorer"
       ],
-      "Hash": "2c6825d43d2c530297b82d275484a3d0"
+      "Hash": "3c6de25f5b27efcb6c854bd1a7039bf5"
     },
     "ini": {
       "Package": "ini",
@@ -2080,13 +2080,13 @@
     },
     "renv": {
       "Package": "renv",
-      "Version": "1.0.9",
+      "Version": "1.0.10",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
         "utils"
       ],
-      "Hash": "ef233f0e9064fc88c898b340c9add5c2"
+      "Hash": "d0387d5687ec933dd7587efd4cfa2d85"
     },
     "reprex": {
       "Package": "reprex",
@@ -2482,10 +2482,10 @@
     },
     "sys": {
       "Package": "sys",
-      "Version": "3.4.2",
+      "Version": "3.4.3",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "3a1be13d68d47a8cd0bfd74739ca1555"
+      "Hash": "de342ebfebdbf40477d0758d05426646"
     },
     "systemfonts": {
       "Package": "systemfonts",
