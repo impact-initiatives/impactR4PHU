@@ -33,7 +33,7 @@ make.filename.xlsx <- function(dir = ".", name, no_date = F) return(gsub("//","/
 
 cat("\n> Loading Kobo tool from", strings['filename.tool'], "...\n")
 
-label_colname <- tcltk::tk_select.list(names(readxl::read_excel(strings['path.tool'],"survey"))[grepl("label",names(readxl::read_excel(strings['path.tool'],"survey")))], title = "Label column to choose", multiple = F)
+label_colname <- tcltk::tk_select.list(names(readxl::read_excel(strings['filename.tool'],"survey"))[grepl("label",names(readxl::read_excel(strings['filename.tool'],"survey")))], title = "Label column to choose", multiple = F)
 
 tool.survey <- load.tool.survey(strings['filename.tool'])
 tool.choices <- load.tool.choices(strings['filename.tool'])
