@@ -21,6 +21,7 @@ Livelihoods, WASH, Nutrition and Health Sectors.
 - [Installation](#installation)
 - [Projects](#projects)
   - [Data Quality](#data-quality)
+    - Execution
     - FSL
     - Mortality
     - IYCF
@@ -93,13 +94,6 @@ alt="Scroll to find the respective projects" />
 projects</figcaption>
 </figure>
 
-<figure>
-<img src="./man/figures/projects_4.png"
-alt="Select all the lines and click run" />
-<figcaption aria-hidden="true">Select all the lines and click
-run</figcaption>
-</figure>
-
 ### Data Quality
 
 The Data Quality and Plausibility Report serves as a crucial tool for
@@ -117,8 +111,64 @@ discrepancies, outliers, or anomalies that may suggest data collection,
 entry errors, or underlying issues that could impact the integrity of
 the findings.
 
+#### Execution
+
+Once the project is selected and saved as shown in the previous section,
+automatically the respective file that you need to run will open. First
+thing, you should select all the line codes in the file, and click run
+as shown in the following picture.
+
+<figure>
+<img src="./man/figures/projects_4.png"
+alt="Select all the lines and click run" />
+<figcaption aria-hidden="true">Select all the lines and click
+run</figcaption>
+</figure>
+
+The next step will requires you to answer/click/select/input some
+information related to the sector that you are trying to check the
+quality for. Generally this will include:
+<ul>
+<li>
+Raw Data to check
+</li>
+<li>
+Kobo Tool respective for the raw data
+</li>
+<li>
+Inputs of specific columns/values that will be targeted within the
+quality check.
+</li>
+</ul>
+
+Details of all the inputs will be explained in each sector’s section
+below.
+
 #### FSL Section
 
+After running all the line in the run_fsl_quality_report.R, below are
+the set of inputs that are required for you to select/fill.
+
+<details>
+<summary>
+<h3>
+Details
+</h3>
+</summary>
+
+> For a given file, either counts or sorts it and places the output in
+> `CounterSorterOutput` by default. - If you are sorting, include an `s`
+> or the word `sort` after the specified file. - If you are counting,
+> include a `c` or the word `count` after the specified file.
+>
+> For either option, you may: - Specify a designated output file using
+> the `-d` or `--dest` flag. - Specify a sorting function using the `-m`
+> or `--method` flag and a key from the `SORT_FUNCTIONS` dictionary in
+> `properties.py`. - Invert the sort direction using the `-r` or
+> `--reverse` flag. - Ignore the header of the file using the `-s` or
+> `--skip` flag and a number of lines to skip.
+
+</details>
 This section includes:
 <ul>
 <li>
