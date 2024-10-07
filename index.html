@@ -66,6 +66,7 @@
 <li>
 <a href="#data-quality">Data Quality</a>
 <ul>
+<li>Execution</li>
 <li>FSL</li>
 <li>Mortality</li>
 <li>IYCF</li>
@@ -146,16 +147,44 @@ Go to File -&gt; New Project…
 Select New Directory
 </figcaption></figure><figure><img src="./reference/figures/projects_3.png" alt="Scroll to find the respective projects"><figcaption aria-hidden="true">
 Scroll to find the respective projects
-</figcaption></figure><figure><img src="./reference/figures/projects_4.png" alt="Select all the lines and click run"><figcaption aria-hidden="true">
-Select all the lines and click run
 </figcaption></figure><div class="section level3">
 <h3 id="data-quality">Data Quality<a class="anchor" aria-label="anchor" href="#data-quality"></a>
 </h3>
 <p>The Data Quality and Plausibility Report serves as a crucial tool for assessing the reliability and accuracy of the data collection of all related public health indicators across different assessments. This comprehensive analysis is designed to identify and address potential issues within the data, ensuring that field teams are being informed on potential issues detected in the data collection.</p>
 <p>The report provides a detailed examination of the datasets, employing a variety of metrics and methodologies to evaluate data quality and plausibility. This includes checks for completeness, consistency, and accuracy of the data collected. This report aims to uncover any discrepancies, outliers, or anomalies that may suggest data collection, entry errors, or underlying issues that could impact the integrity of the findings.</p>
 <div class="section level4">
+<h4 id="execution">Execution<a class="anchor" aria-label="anchor" href="#execution"></a>
+</h4>
+<p>Once the project is selected and saved as shown in the previous section, automatically the respective file that you need to run will open. First thing, you should select all the line codes in the file, and click run as shown in the following picture.</p>
+<figure><img src="./reference/figures/projects_4.png" alt="Select all the lines and click run"><figcaption aria-hidden="true">
+Select all the lines and click run
+</figcaption></figure>
+The next step will requires you to answer/click/select/input some information related to the sector that you are trying to check the quality for. Generally this will include:
+<ul>
+<li>
+Raw Data to check
+</li>
+<li>
+Kobo Tool respective for the raw data
+</li>
+<li>
+Inputs of specific columns/values that will be targeted within the quality check.
+</li>
+</ul>
+<p>Details of all the inputs will be explained in each sector’s section below.</p>
+</div>
+<div class="section level4">
 <h4 id="fsl-section">FSL Section<a class="anchor" aria-label="anchor" href="#fsl-section"></a>
 </h4>
+<p>After running all the line in the run_fsl_quality_report.R, below are the set of inputs that are required for you to select/fill.</p>
+<details><summary><h3>
+Details
+</h3>
+</summary><blockquote>
+<p>For a given file, either counts or sorts it and places the output in <code>CounterSorterOutput</code> by default. - If you are sorting, include an <code>s</code> or the word <code>sort</code> after the specified file. - If you are counting, include a <code>c</code> or the word <code>count</code> after the specified file.</p>
+<p>For either option, you may: - Specify a designated output file using the <code>-d</code> or <code>--dest</code> flag. - Specify a sorting function using the <code>-m</code> or <code>--method</code> flag and a key from the <code>SORT_FUNCTIONS</code> dictionary in <code>properties.py</code>. - Invert the sort direction using the <code>-r</code> or <code>--reverse</code> flag. - Ignore the header of the file using the <code>-s</code> or <code>--skip</code> flag and a number of lines to skip.</p>
+</blockquote>
+</details>
 This section includes:
 <ul>
 <li>
