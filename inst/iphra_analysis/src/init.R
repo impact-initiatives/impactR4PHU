@@ -17,13 +17,13 @@ options(dplyr.summarise.inform = FALSE)
 
 cat("\n> Loading Kobo tool from", strings['filename.tool'], "...\n")
 
-label_colname <- load.label_colname(strings['filename.tool'])
+label_colname <- tcltk::tk_select.list(names(readxl::read_excel(strings['path.tool'],"survey"))[grepl("label",names(readxl::read_excel(strings['path.tool'],"survey")))], title = "Label column to choose", multiple = F)
 
 tool.survey <- load.tool.survey(strings['filename.tool'])
 tool.choices <- load.tool.choices(strings['filename.tool'])
 
 # ensure tool.choices has unique labels:
-labels_groups <- tool.choices %>% select(-name) %>% distinct() %>% 
+labels_groups <- tool.choices %>% select(-name) %>% distinct() %>%
   transmute(uname = paste0(list_name, "/", !!sym(label_colname))) %>%
   group_by(uname) %>% summarise(n = n()) %>% filter(n>1)
 if(nrow(labels_groups) > 0){
@@ -34,7 +34,7 @@ if(nrow(labels_groups) > 0){
 rm(labels_groups)
 cat("\n> ...Done.\n")
 # remove _cat categories
-tool.survey <-  tool.survey %>% 
+tool.survey <-  tool.survey %>%
   filter(!name %in% c("hhs_cat","hhs_score","rcsi_cat","lcsi_cat","fcs_cat"))
 
 ##  LOAD DATA -------------------------------------------------------------------
@@ -59,7 +59,7 @@ if(length(sheet_names) != length(tool_datasheets)){
 }
 
 if(any(sort(tool_datasheets) != sort(sheet_names))){
-  if(params["fix_sheet_names_to_match"] %in% c("data", "data.list", "datalist")){ 
+  if(params["fix_sheet_names_to_match"] %in% c("data", "data.list", "datalist")){
     # the 'datasheet' columns in tool.survey will be fixed to match the data sheet names
     cat(paste0("Mismatch in datasheet names will be fixed by changing tool.survey to match the sheet names from the data.\n"))
     for (sheet in sheet_names[-1]) {
@@ -76,11 +76,11 @@ if(any(sort(tool_datasheets) != sort(sheet_names))){
       tool.survey <- tool.survey %>% mutate(datasheet = ifelse(datasheet %==na% old_sheetname, sheet, datasheet))
     }
     rm(i, first_col, old_sheetname, data_cnames)
-  }else if(params["fix_sheet_names_to_match"] %in% c("tool", "tool.survey", "toolsurvey")){   
+  }else if(params["fix_sheet_names_to_match"] %in% c("tool", "tool.survey", "toolsurvey")){
     # the names for data.list will be fixed to match tool.survey
     cat(paste0("Mismatch in the names of datasheets will be fixed to match the `datasheet` column from tool.survey.\n"))
     names(data.list) <- tool_datasheets[1:length(sheet_names)]
-  } else {         
+  } else {
     # names will not be fixed. Outputs a warning instead. The analysis will most likely break.
     warning(paste0("Mismatch in datasheet names found in tool.survey (", paste(tool_datasheets, collapse = ", "),
                    ") and in the data (", paste(sheet_names, collapse = ", "), ")\n\tThe analysis will most likely break!\n"))
@@ -89,9 +89,9 @@ if(any(sort(tool_datasheets) != sort(sheet_names))){
 
 # check whether main actually has the most columns:
 col_counts <- tibble(sheet = names(data.list)) %>% mutate(num_cols = 0)
-for (s in sheet_names) 
+for (s in sheet_names)
   col_counts[col_counts$sheet == s,]$num_cols <- ncol(data.list[[s]])
-if(max(col_counts$num_cols) != col_counts[col_counts$sheet == "main",]$num_cols)  
+if(max(col_counts$num_cols) != col_counts[col_counts$sheet == "main",]$num_cols)
   warning("Unexpectedly, the 'main' sheet is not the one with the most columns! Check if the data looks good, please!")
 
 rm(sheet_names, tool_datasheets, col_counts)
@@ -102,7 +102,7 @@ cat("\n> ...Done.\n")
 ##  LOAD and check DAF  --------------------------------------------------------
 
 cat("\n> Loading Tabular DAF from", strings['filename.daf.tabular'], "...\n")
-daf <- readxl::read_excel(strings['filename.daf.tabular'], col_types = "text") %>% 
+daf <- readxl::read_excel(strings['filename.daf.tabular'], col_types = "text") %>%
   filter(!is.na(variable))
 
 cat("\n> Checking your DAF...\n")
@@ -123,7 +123,7 @@ necessary.dap.cols <- c(
 )
 
 if(!all(necessary.dap.cols %in% colnames(daf)))
-  stop(paste("Your DAF is missing some necessary columns:", 
+  stop(paste("Your DAF is missing some necessary columns:",
              paste0(necessary.dap.cols[!necessary.dap.cols %in% colnames(daf)], collapse = ", ")))
 
 
@@ -135,7 +135,7 @@ for(daf_col in necessary.dap.cols){
 }
 
 valid.func.params <- c(
-  "mean", "median", "integer", "numeric", # ...? 
+  "mean", "median", "integer", "numeric", # ...?
   "select_one", "select_multiple",
   "count"
 )
@@ -143,8 +143,8 @@ valid.func.params <- c(
 if("func" %in% names(daf)){
   # check if all func's are valid
   if(any(!daf$func %in% valid.func.params)) stop("There are unexpected func parameters in your DAF: ", paste(daf$func[!daf$func %in% valid.func.params], collapse = ", "))
-  type_mismatches <- daf %>% filter(variable %in% tool.survey$name) %>% 
-    left_join(tool.survey %>% select(name, q.type), by = c("variable" = "name")) %>% 
+  type_mismatches <- daf %>% filter(variable %in% tool.survey$name) %>%
+    left_join(tool.survey %>% select(name, q.type), by = c("variable" = "name")) %>%
     filter(func != "count" & (q.type != func & !(q.type %in% c("decimal", "integer", "calculate") & func %in% c("mean", "median", "integer", "numeric"))))
   if(nrow(type_mismatches) > 0) stop("Invalid func parameter for variable(s): ", paste0(type_mismatches$variable, " (",type_mismatches$func, ")", collapse = ", "))
   rm(type_mismatches)
@@ -156,7 +156,7 @@ rm(valid.func.params, necessary.dap.cols, are_na, daf_col)
 ## upgrade DAF with additional columns
 ## -----------------------------------------------------------------------------
 
-list_name <- tool.survey %>% 
+list_name <- tool.survey %>%
   select(name,list_name)
 
 variables_not_in_tool <- daf %>% filter(!variable %in% tool.survey$name) %>% pull(variable) %>% unique
@@ -165,7 +165,7 @@ for (i in variables_not_in_tool){
   list_variables_not_in_tool[[i]] <- "select_one"
 }
 daf <- suppressWarnings(daf %>% mutate(
-  var_type = ifelse(!variable %in% tool.survey$name,list_variables_not_in_tool[variable],get.type(variable))) %>% 
+  var_type = ifelse(!variable %in% tool.survey$name,list_variables_not_in_tool[variable],get.type(variable))) %>%
     left_join(list_name, by = c("variable"="name")))
 
 ## adding missing legacy/optional columns and filling them with default values (NA or something else)
@@ -175,7 +175,7 @@ additional.daf.cols <- c(
   "section"
 )
 for(column in additional.daf.cols){
-  if(!column %in% names(daf)){ 
+  if(!column %in% names(daf)){
     daf[[column]] <- NA
     cat(paste0("\n> Your DAF is missing the '",column,"' column - by default it was filled with NA"))
   }
@@ -192,7 +192,7 @@ if(!"func" %in% names(daf)) {
 
 ## admin - strata if strata in names, otherwise overall
 admin_default <- ifelse("strata" %in% names(data.list$main), "strata", "overall")
-if(!"admin" %in% names(daf)){ 
+if(!"admin" %in% names(daf)){
   cat(paste0("\n> Your DAF is missing the 'admin' column - by default it was set to '", admin_default,"'\n"))
   daf$admin <- admin_default
 }
@@ -205,7 +205,7 @@ if(!"label" %in% names(daf)) {
 
 ## xlsx_name - calculate using variable+admin
 daf_var_unames <- daf %>% mutate(uname = paste0(variable, "_", admin,
-                                                ifelse(isna(disaggregations), "", "_D"))) %>% 
+                                                ifelse(isna(disaggregations), "", "_D"))) %>%
   group_by(variable, uname) %>% pull(uname)
 # if(any(daf_var_unames %>% duplicated) | length(daf_var_unames) != nrow(daf)) daf_var_unames <- paste0(daf_var_unames, "_" ,1:nrow(daf))
 
