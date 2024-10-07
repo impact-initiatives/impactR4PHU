@@ -147,7 +147,11 @@ below.
 #### FSL Section
 
 After running all the line in the run_fsl_quality_report.R, below are
-the set of inputs that are required for you to select/fill.
+the set of inputs that are required for you to select/fill. <strong>
+<p style="color:red">
+Please make sure to select
+</p>
+</strong>
 <details>
 <summary>
 <h4>
@@ -174,10 +178,52 @@ Details
 > Column<br> `fsl_rcsi_mealsize` \<- rCSI Reducing Meal Size Column<br>
 > `fsl_rcsi_mealadult` \<- rCSI Reduce Meals For Adults and Prioritize
 > Child Meals Column<br> `fsl_rcsi_mealnb` \<- rCSI Reduce Meal Numbers
-> Column<br>
+> Column<br> If HHS selected<br> `fsl_hhs_nofoodhh` \<- HHS No Food in
+> the Household Column<br> `fsl_hhs_nofoodhh_freq` \<- HHS Frequency No
+> Food in the Household Column<br> `fsl_hhs_sleephungry` \<- HHS
+> Sleeping Hungry Column<br> `fsl_hhs_sleephungry_freq` \<- HHS
+> Frequency Sleeping Hungry Column<br> `fsl_hhs_alldaynight` \<- HHS All
+> Day and Night Without Eating Column<br> `fsl_hhs_alldaynight_freq` \<-
+> HHS All Day and Night Without Eating Column<br> `Yes Value` \<- HHS
+> Yes value<br> `No Value` \<- HHS No value<br> `Rarely Value` \<- HHS
+> Frequency Rarely value<br> `Sometimes Value` \<- HHS Frequency
+> Sometimes value<br> `Often Value` \<- HHS Frequency Often value<br> If
+> LCSI selected: 4 LCSI Stress, 3 LCSI Crisis, and 3 LCSI Emergency are
+> required<br> `fsl_lcsi_stress1` \<- LCSI Stress 1 Column<br>
+> `fsl_lcsi_stress2` \<- LCSI Stress 2 Column<br> `fsl_lcsi_stress3` \<-
+> LCSI Stress 3 Column<br> `fsl_lcsi_stress4` \<- LCSI Stress 4
+> Column<br> `fsl_lcsi_crisis1` \<- LCSI Crisis 1 Column<br>
+> `fsl_lcsi_crisis1` \<- LCSI Crisis 1 Column<br> `fsl_lcsi_crisis2` \<-
+> LCSI Crisis 2 Column<br> `fsl_lcsi_emergency2` \<- LCSI Emergency 2
+> Column<br> `fsl_lcsi_emergency3` \<- LCSI Emergency 3 Column<br>
+> `fsl_lcsi_emergency3` \<- LCSI Emergency 3 Column<br> `Yes Value` \<-
+> LCSI Yes value<br> `No Value` \<- LCSI No had no need value<br>
+> `Exhausted Value` \<- LCSI No exhausted value<br>
+> `Not Applicable Value` \<- LCSI Not Applicable value<br> If HDDS
+> selected<br> `fsl_hdds_cereals`\<- Cereals Column related to HDDS <br>
+> `fsl_hdds_tubers`\<- Tubers Column related to HDDS <br>
+> `fsl_hdds_veg`\<- Vegetables Column related to HDDS <br>
+> `fsl_hdds_fruit`\<- Fruit Column related to HDDS <br>
+> `fsl_hdds_meat`\<- Meat Column related to HDDS <br> `fsl_hdds_eggs`\<-
+> Eggs Column related to HDDS <br> `fsl_hdds_fish`\<- Fish Column
+> related to HDDS <br> `fsl_hdds_legumes`\<- Legumes Column related to
+> HDDS <br> `fsl_hdds_dairy`\<- Dairy Column related to HDDS <br>
+> `fsl_hdds_sugar`\<- Sugar Column related to HDDS <br>
+> `fsl_hdds_oil`\<- Oil Column related to HDDS <br>
+> `fsl_hdds_condiments`\<- Condiments Column related to HDDS <br>
+> `Yes Value` \<- HDDS Yes value<br> `No Value` \<- HDDS No value<br>
+> `Number of children` \<- Number of Children Under 5 Column<br>
+> `Income Types` \<- Different Income Types Numeric Columns<br>
+> `Residence Status` \<- Residence Status Column
+> (IDP/HH/Refugee/etc.)<br> If Residence Status column exist<br>
+> `IDP Value` \<- IDP value<br>
+> `Teams of Enumerator/Different Organizations` \<- Do you have teams of
+> Enumerators or Different Organizations collecting data<br> If Yes<br>
+> `Teams/Organization` \<- Teams of Enumerator/Organizations Column<br>
+> `Enumerator` \<- Enumerator ID Column<br>
 
 </details>
-This section includes:
+The output includes:
 <ul>
 <li>
 Overall Plausibility Report / By Enumerator
