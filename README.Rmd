@@ -108,27 +108,27 @@ Details of all the inputs will be explained in each sector's section below.
 After running all the line in the run_fsl_quality_report.R, below are the set of inputs that are required for you to select/fill.
 <details><summary><h4>Details</h4></summary>
 
-   >`Raw Data` <- Raw Data.
-   >`Kobo Tool` <- Kobo Tool.
-   >`FSL indicators sheet` <- Sheet that includes all the FSL indicators.
-   >`Label column to choose` <- Label you want to choose from the kobo tool.
-   >`FSL indicators` <- FSL indicators you have collected in your data.
-   >`HH UUID column` <- Household unique identifier (usually uuid).
-   >If FCS selected
-   >`fsl_fcs_cereal`<- Cereal Column related to Food Consumption Score 
-   >`fsl_fcs_legumes`<- Legumes Column related to Food Consumption Score 
-   >`fsl_fcs_veg`<- Vegetables Column related to Food Consumption Score 
-   >`fsl_fcs_fruit`<- Fruit Column related to Food Consumption Score 
-   >`fsl_fcs_meat`<- Meat Column related to Food Consumption Score 
-   >`fsl_fcs_dairy`<- Dairy Column related to Food Consumption Score 
-   >`fsl_fcs_sugar`<- Sugar Column related to Food Consumption Score 
-   >`fsl_fcs_oil`<- Oil Column related to Food Consumption Score 
-   >If rCSI selected
-   >`fsl_rcsi_lessquality` <- rCSI Less Quality Food Column
-   >`fsl_rcsi_borrow` <- rCSI Borrowing Food Column
-   >`fsl_rcsi_mealsize` <- rCSI Reducing Meal Size Column
-   >`fsl_rcsi_mealadult` <- rCSI Reduce Meals For Adults and Prioritize Child Meals Column
-   >`fsl_rcsi_mealnb` <- rCSI Reduce Meal Numbers Column
+   >`Raw Data` <- Raw Data.<br>
+   >`Kobo Tool` <- Kobo Tool.<br>
+   >`FSL indicators sheet` <- Sheet that includes all the FSL indicators.<br>
+   >`Label column to choose` <- Label you want to choose from the kobo tool.<br>
+   >`FSL indicators` <- FSL indicators you have collected in your data.<br>
+   >`HH UUID column` <- Household unique identifier (usually uuid).<br>
+   >If FCS selected<br>
+   >`fsl_fcs_cereal`<- Cereal Column related to Food Consumption Score <br>
+   >`fsl_fcs_legumes`<- Legumes Column related to Food Consumption Score <br>
+   >`fsl_fcs_veg`<- Vegetables Column related to Food Consumption Score <br>
+   >`fsl_fcs_fruit`<- Fruit Column related to Food Consumption Score <br>
+   >`fsl_fcs_meat`<- Meat Column related to Food Consumption Score <br>
+   >`fsl_fcs_dairy`<- Dairy Column related to Food Consumption Score <br>
+   >`fsl_fcs_sugar`<- Sugar Column related to Food Consumption Score <br>
+   >`fsl_fcs_oil`<- Oil Column related to Food Consumption Score <br>
+   >If rCSI selected<br>
+   >`fsl_rcsi_lessquality` <- rCSI Less Quality Food Column<br>
+   >`fsl_rcsi_borrow` <- rCSI Borrowing Food Column<br>
+   >`fsl_rcsi_mealsize` <- rCSI Reducing Meal Size Column<br>
+   >`fsl_rcsi_mealadult` <- rCSI Reduce Meals For Adults and Prioritize Child Meals Column<br>
+   >`fsl_rcsi_mealnb` <- rCSI Reduce Meal Numbers Column<br>
 </details>
 
 
