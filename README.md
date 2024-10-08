@@ -147,11 +147,14 @@ below.
 #### FSL Section
 
 After running all the line in the run_fsl_quality_report.R, below are
-the set of inputs that are required for you to select/fill. <strong>
+the set of inputs that are required for you to select/fill.
+<strong>Please note that in case of a missing column, please proceed in
+selecting cancel. However, make sure with the respective focal point if
+it is an important column.</strong>
+
 <p style="color:red">
-Please make sure to select
+<strong>Please make sure to select/input</strong>
 </p>
-</strong>
 <details>
 <summary>
 <h4>
@@ -237,9 +240,147 @@ Plots showing the distribution of the data.
 </li>
 </ul>
 
+Here is an example of the output:
+
+<figure>
+<img src="./man/figures/fsl_quality.png" alt="HTML Output" />
+<figcaption aria-hidden="true">HTML Output</figcaption>
+</figure>
+
 #### Mortality Section
 
-This section includes:
+After running all the line in the run_mort_quality_report.R, below are
+the set of inputs that are required for you to
+select/fill.<strong>Please note that in case of a missing column, please
+proceed in selecting cancel. However, make sure with the respective
+focal point if it is an important column.</strong>
+
+<p style="color:red">
+<strong>Please make sure to select</strong>
+</p>
+<details>
+<summary>
+<h4>
+Details
+</h4>
+</summary>
+
+> `Assessment Level` \<- Type of assessment: only HH level or Individual
+> level collected<br> `Raw Data` \<- Raw Data.<br> `Kobo Tool` \<- Kobo
+> Tool.<br> `Label column to choose` \<- Label you want to choose from
+> the kobo tool.<br> `Information about leavers` \<- 1 for Yes/2 for No
+> question if you collect extra information about leavers.<br>
+> `Main Sheet` \<- Main HH level sheet from the raw data<br>
+> `HH Roster Sheet` \<- Roster Individual level sheet from the raw
+> data<br> `Died Members Sheet` \<- Died Members Individual level sheet
+> from the raw data<br> `Left Members Sheet` \<- Left Members Individual
+> level sheet from the raw data if Information was collected<br>
+> `Date of Data Collection` \<- Date of Data collection column (usually
+> “today”)<br> `Date of Recall Event` \<- Date of Recall Event column
+> (usually “date_recall_event”)<br>
+> `Teams of Enumerator/Different Organizations` \<- Do you have teams of
+> Enumerators or Different Organizations collecting data<br> If Yes<br>
+> `Teams/Organization` \<- Teams of Enumerator/Organizations Column<br>
+> `Enumerator` \<- Enumerator ID Column<br> `Admin 1` \<- Admin 1
+> column<br> `Admin 2` \<- Admin 2 column<br> `Cluster` \<- Cluster
+> column<br> `HH UUID column` \<- Household unique identifier in main
+> sheet (usually \_uuid)<br> `HH UUID Roster column` \<- Household
+> unique identifier in roster individual sheet(usually
+> \_submission\_\_uuid)<br> `Sex Roster` \<- Sex/Gender Column in the
+> roster individual sheet<br> `Age Year Roster` \<- Age in years Column
+> in the roster individual sheet (usually calc_final_age_years)<br>
+> `Age Month Roster` \<- Age in months Column in the roster individual
+> sheet(column with numbers between 0-11)<br> `Birth Roster` \<- Birth
+> Column in the roster individual sheet with Yes/No answers if date of
+> birth is known<br> `Birthdate Roster` \<- Birth Date Column in the
+> roster individual sheet with final date of birth (Combination of
+> estimated and exact)<br> `Joined Roster` \<- Joined Column in the
+> roster individual sheet with Yes/No answers if date of joining is
+> known<br> `Joineddate Roster` \<- Joined Date Column in the roster
+> individual sheet with final date of joining (Combination of estimated
+> and exact)<br> `HH UUID Left column` \<- Household unique identifier
+> in leavers individual sheet(usually \_submission\_\_uuid). If Leavers
+> details are collected.<br> `Sex Left Roster` \<- Sex/Gender Column in
+> the leavers individual sheet<br> `Age Year Roster` \<- Age in years
+> Column in the leavers individual sheet.<br> `Birth Left Roster` \<-
+> Birth Column in the leavers individual sheet with Yes/No answers if
+> date of birth is known<br> `Birthdate Left Roster` \<- Birth Date
+> Column in the leavers individual sheet with final date of birth
+> (Combination of estimated and exact)<br> `Joined Left Roster` \<-
+> Joined Column in the leavers individual sheet with Yes/No answers if
+> date of joining is known<br> `Joineddate Left Roster` \<- Joined Date
+> Column in the leavers individual sheet with final date of joining
+> (Combination of estimated and exact)<br> `Leftdate Left Roster` \<-
+> Left Date Column in the leavers individual sheet with final date of
+> leaving (Combination of estimated and exact)<br> `HH UUID Died column`
+> \<- Household unique identifier in died members individual
+> sheet(usually \_submission\_\_uuid)<br> `Sex Died Roster` \<-
+> Sex/Gender Column in the died members individual sheet<br>
+> `Age Year Died Roster` \<- Age in years Column in the died members
+> individual sheet (usually calc_final_died_age_years)<br>
+> `Birth Died Roster` \<- Birth Column in the died members individual
+> sheet with Yes/No answers if date of birth is known<br>
+> `Birthdate Died Roster` \<- Birth Date Column in the died members
+> individual sheet with final date of birth (Combination of estimated
+> and exact)<br> `Joined Died Roster` \<- Joined Column in the died
+> members individual sheet with Yes/No answers if date of joining is
+> known<br> `Joineddate Died Roster` \<- Joined Date Column in the died
+> members individual sheet with final date of joining (Combination of
+> estimated and exact)<br> `Deathdate Died Roster` \<- Death Date Column
+> in the died members individual sheet with final date of death
+> (Combination of estimated and exact)<br> `Death Cause` \<- Cause of
+> Death column in died members individual sheet<br> `Death Location` \<-
+> Location of Death column in died members individual sheet<br>
+> `Do you have all the dates collected?[Left/Join/Birth/Death]` \<-
+> Quetion if you collected all the dates of the respective sections<br>
+> `Do you still collect num_join and num_left on HH level?` \<- If some
+> selected, another question is asked to check if general number of
+> joiners and leavers are collected on Household level<br>
+> `Number of Leavers` \<- Number of leavers Column from the main sheet
+> (usually num_left). Appears only if yes is selected in previous
+> question.<br> `Number of Joiners` \<- Number of joiners Column from
+> the main sheet (usually num_join). Appears only if yes is selected in
+> previous question.<br> Filter/slicer for the start and end date
+> quality report<br> `Start Date` \<- Start Date you wish to use<br>
+> `End Date` \<- End Date you wish to use<br> `Male Option` \<- Male
+> option (usually m/male/1)<br> `Female Option` \<- Female option
+> (usually f/female/2)<br> `Format of Date of Data Collection` \<-
+> Format of Date of Data Collection \[mdy,dmy,ymd,ydm,NA\] (“m” for
+> month, “d” for day, “y” for year, NA for Date not collected<br>
+> `Format of Date of Recall Event` \<- Format of Date of Recall Event
+> \[mdy,dmy,ymd,ydm,NA\] (“m” for month, “d” for day, “y” for year, NA
+> for Date not collected<br> `Format of Date of Joiners` \<- Format of
+> Date of Joiners \[mdy,dmy,ymd,ydm,NA\] (“m” for month, “d” for day,
+> “y” for year, NA for Date not collected<br>
+> `Format of Date of Leavers` \<- Format of Date of Leavers
+> \[mdy,dmy,ymd,ydm,NA\] (“m” for month, “d” for day, “y” for year, NA
+> for Date not collected<br> `Format of Date of Birth` \<- Format of
+> Date of Birth \[mdy,dmy,ymd,ydm,NA\] (“m” for month, “d” for day, “y”
+> for year, NA for Date not collected<br> `Unknown Cause of Death` \<-
+> Unknown options for the cause of death<br>
+> `Injury/Trauma Cause of Death` \<- Injury/Trauma related options for
+> the cause of death<br> `Illness Cause of Death` \<- Illness related
+> options for the cause of death<br> `Current Location of Death` \<-
+> Current options for the location of death<br>
+> `During Migration Location of Death` \<- During migration options for
+> the location of death<br> `Last Location of Death` \<- Last options
+> for the location of death<br> `Other Location of Death` \<- Other
+> options for the location of death<br> `Yes Values` \<- Yes/1
+> Values<br> `No/NA Values` \<- No/0/NA Values<br>
+> `Cause of Death related to Women` \<- Women related options for the
+> cause of death<br> `Sex Ratio` \<- Male to Female Ratio in your
+> respective area of study (usually 1/1)<br>
+> `<5 years to >5 years Ratio` \<- \<5 years to \>5 years Ratio in your
+> respective area of study (usually 1/4)<br>
+> `<2 years of age of all children <5 years Ratio` \<- \<2 years of age
+> of all children \<5 years Ratio in your respective area of study
+> (usually ~41%)<br> `<5 years of age out of under-10 children Ratio`
+> \<- \<5 years of age out of under-10 children Ratio in your respective
+> area of study (usually ~52%)<br> `HH average size` \<- HH average size
+> in your respective area of study (usually 5)<br>
+
+</details>
+Here is an example of the output:
 <ul>
 <li>
 Overall Plausibility Report / By Enumerator
@@ -257,9 +398,115 @@ Plots showing the crude, under 5, and birth rates.
 </li>
 </ul>
 
+Here is an example of the output:
+
+![HTML Output](./man/figures/mortality_quality.png) ![Examples of
+plots](./man/figures/plot_quality.png)
+
 #### IYCF Section
 
-This section includes:
+After running all the line in the run_mort_quality_report.R, below are
+the set of inputs that are required for you to
+select/fill.<strong>Please note that in case of a missing column, please
+proceed in selecting cancel. However, make sure with the respective
+focal point if it is an important column.</strong>
+
+<p style="color:red">
+<strong>Please make sure to select</strong>
+</p>
+<details>
+<summary>
+<h4>
+Details
+</h4>
+</summary>
+
+> `Raw Data` \<- Raw Data.<br> `Kobo Tool` \<- Kobo Tool.<br>
+> `IYCF Indicators Sheet` \<- IYCF Indicators Individual level sheet
+> from the raw data<br> `Main Sheet` \<- Main HH level sheet from the
+> raw data<br> `Label column to choose` \<- Label you want to choose
+> from the kobo tool.<br> `HH UUID column` \<- Household unique
+> identifier in main sheet (usually \_uuid)<br>
+> `Teams of Enumerator/Different Organizations` \<- Do you have teams of
+> Enumerators or Different Organizations collecting data<br> If Yes<br>
+> `Teams/Organization` \<- Teams of Enumerator/Organizations Column<br>
+> `Enumerator` \<- Enumerator ID Column<br> `IYCF Sheet UUID column` \<-
+> Household unique identifier in IYCF sheet (usually
+> \_submission\_\_uuid)<br> `Age Month IYCF` \<- Age in months Column in
+> the IYCF individual sheet (column with numbers between 0-11)<br>
+> `Sex IYCF` \<- Sex/Gender Column in the IYCF individual sheet<br>
+> `Male Option` \<- Male option (usually m/male/1)<br> `Female Option`
+> \<- Female option (usually f/female/2)<br> `IYCF Caregiver` \<- Column
+> indicating if caregiver is present (usually iycf_caregiver)<br>
+> `IYCF Ever Breastfed` \<- Column indicating if child ever breastfed
+> (usually iycf_1)<br> `IYCF Breastfeeding After Birth` \<- Column
+> indicating how long the child started breastfeeding after birth
+> (usually iycf_2)<br> `IYCF Exclusive Breastfeeding First 2 Days` \<-
+> Column indicating Exclusive Breastfeeding First 2 Days (usually
+> iycf_3)<br> `IYCF Breastfed Yesterday` \<- Column indicating the child
+> was breastfed yesterday (usually iycf_4)<br>
+> `IYCF Bottle Fed Yesterday` \<- Column indicating the child drink
+> anything from a bottle yesterday (usually iycf_5)<br> `IYCF Water` \<-
+> Column indicating liquid water (usually iycf_6a)<br>
+> `IYCF Liquid Infant Formula` \<- Column indicating Liquid Infant
+> Formula (usually iycf_6b)<br> `IYCF Milk from Animal` \<- Column
+> indicating liquid milk from animal column (usually iycf_6c)<br>
+> `IYCF Liquid Yogurt` \<- Column indicating liquid yogurt (usually
+> iycf_6d)<br> `IYCF Chocolate Liquid` \<- Column indicating liquid
+> chocolate flavoured drink (usually iycf_6e)<br> `IYCF Juice` \<-
+> Column indicating liquid fruit juice or fruit flavored drink (usually
+> iycf_6f)<br> `IYCF Soda` \<- Column indicating liquid
+> sodas/malt/sports/energy drink (usually iycf_6g)<br> `IYCF Tea` \<-
+> Column indicating liquid tea/coffee/herbal drink (usually iycf_6h)<br>
+> `IYCF Broth` \<- Column indicating liquid clear broth/soup (usually
+> iycf_6i)<br> `IYCF Other Liquids` \<- Column indicating other liquids
+> (usually iycf_6j)<br> `IYCF Yogurt` \<- Column indicating yogurt as
+> food (usually iycf_7a)<br> `IYCF Cereals` \<- Column indicating
+> porridge/bread/rice/noodles/pasta (usually iycf_7b)<br>
+> `IYCF Orange/Pumpkin` \<- Column indicating pumpkin/carrots/sweet red
+> peppers/squash/sweet potato (usually iycf_7c)<br> `IYCF Roots` \<-
+> Column indicating plantains/white potato/yams/manioc/cassava (usually
+> iycf_7d)<br> `IYCF Green/Leafs` \<- Column indicating dark green leafy
+> vegetables (usually iycf_7e)<br> `IYCF Other Vegs` \<- Column
+> indicating other vegetables (usually iycf_7f)<br> `IYCF Fruits` \<-
+> Column indicating ripe mangoes/ripe papayas (usually iycf_7g)<br>
+> `IYCF Other Fruits` \<- Column indicating other Fruits (usually
+> iycf_7h)<br> `IYCF Organs` \<- Column indicating liver/kidney/heart
+> (usually iycf_7i)<br> `IYCF Meat` \<- Column indicating sausage/hot
+> dogs/ham/bacon/salami/canned meat (usually iycf_7j)<br>
+> `IYCF Other Meat` \<- Column indicating
+> meat/beef/pork/lamb/goat/chicken/duck (usually iycf_7k)<br> `IYCF Egg`
+> \<- Column indicating eggs (usually iycf_7l)<br> `IYCF Fish` \<-
+> Column indicating fresh/dried/shell fish (usually iycf_7m)<br>
+> `IYCF Legumes` \<- Column indicating beans/peas/lentils/nuts/seeds
+> (usually iycf_7n)<br> `IYCF Cheese` \<- Column indicating hard/soft
+> cheese (usually iycf_7o)<br> `IYCF Sweet` \<- Column indicating sweet
+> foods (usually iycf_7p)<br> `IYCF Crisp/Fries` \<- Column indicating
+> chips/crisps/puffs/french fries (usually iycf_7q)<br>
+> `IYCF Other Foods` \<- Column indicating other foods (usually
+> iycf_7r)<br> `IYCF Meal Frequency` \<- Column indicating meal
+> frequency (usually iycf_8)<br> `IYCF Sweet Milk` \<- Column indicating
+> sweet milk (usually iycf_6c_Swt)<br> `IYCF Sweet Yogurt Liquid` \<-
+> Column indicating sweet yogurt liquid (usually iycf_6d_Swt)<br>
+> `IYCF Sweet Tea` \<- Column indicating sweet tea (usually
+> iycf_6h_Swt)<br> `IYCF Other Sweet Drink` \<- Column indicating other
+> sweet drink (usually iycf_6j_Swt)<br> `Yes Answers` \<- Yes Values<br>
+> `No Answers` \<- No Values<br> `Don't Know Answers` \<- Don’t Know
+> Values<br> `Immediate Answer` \<- Immediately Value If Breastfeeding
+> After Birth Answered<br> `Less Than A Day Answer` \<- Less Than A Day
+> Value If Breastfeeding After Birth Answered<br>
+> `More Than A Day Answer` \<- More Than A Day Value If Breastfeeding
+> After Birth Answered<br> `Sex Ratio` \<- Male to Female Ratio in your
+> respective area of study (usually 1/1)<br>
+> `<6 months to 6-23 months Ratio` \<- \<6 months to 6-23 months Ratio
+> in your respective area of study (usually 1/4)<br>
+> `children are expected prevalence for Minimum Acceptable Diet (MAD) Decimal`
+> \<- children are expected prevalence for Minimum Acceptable Diet (MAD)
+> Decimal in your respective area of study (usually ~30%) \[Decimal
+> between 0 - 1\]<br>
+
+</details>
+Here is an example of the output:
 <ul>
 <li>
 Overall Plausibility Report / By Enumerator
