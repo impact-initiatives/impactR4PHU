@@ -1266,6 +1266,7 @@ Details
 > weighted`<- Question to check if your data is weighted (Yes/No).<br>`Weight`<- If yes, select the weight column in your data.<br>`Died
 > Healthcare\` \<- Did the died person seek healthcare (Yes/No)<br>
 
+</details>
 As you saw in the output folder, you will have another excel file
 outputed from the analysis script.
 <ul>

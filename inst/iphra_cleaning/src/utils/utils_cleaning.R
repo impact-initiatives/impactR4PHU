@@ -117,126 +117,123 @@ save.deletion.requests <- function(df, wb_name, use_template = F){
   openxlsx::addWorksheet(wb, "Sheet3", visible = F)
   openxlsx::writeData(wb, "Sheet3", x = c("Remove","Keep","Change"))
   ## add roster loop_indexes
-  dl_uuids_roster <- df %>%
-    filter(variable == "num_hh" & stringr::str_starts(reason, "hh_roster")) %>%
-    pull(uuid)
-  if(length(dl_uuids_roster)>0){
-    uuid_roster_loops <- raw.hh_roster %>%
-      filter(uuid %in% dl_uuids_roster) %>%
-      dplyr::select(uuid, loop_index)
-    openxlsx::addWorksheet(wb, "Sheet4", visible = F)
-    openxlsx::writeData(wb, "Sheet4",x = uuid_roster_loops)
-  }
-  ## add health loop_indexes
-  dl_uuids_health <- df %>%
-    filter(variable == "num_hh" & stringr::str_starts(reason, "ind_health")) %>%
-    pull(uuid)
-  if(length(dl_uuids_health)>0){
-    uuid_health_loops <- raw.ind_health %>%
-      filter(uuid %in% dl_uuids_health) %>%
-      dplyr::select(uuid, loop_index)
-    openxlsx::addWorksheet(wb, "Sheet5", visible = F)
-    openxlsx::writeData(wb, "Sheet5",x = uuid_health_loops)
-  }
-
-  if(!is.null(raw.water_count_loop)){
-    ## add water loop_indexes
-    dl_uuids_water <- df %>%
-      filter(variable == "num_containers") %>%
+  if("variable"  %in% names(df)){
+    dl_uuids_roster <- df %>%
+      filter(variable == "num_hh" & stringr::str_starts(reason, "hh_roster")) %>%
       pull(uuid)
-    if(length(dl_uuids_water)>0){
-      uuid_water_loops <- raw.water_count_loop %>%
-        filter(uuid %in% dl_uuids_water) %>%
+    if(length(dl_uuids_roster)>0){
+      uuid_roster_loops <- raw.hh_roster %>%
+        filter(uuid %in% dl_uuids_roster) %>%
         dplyr::select(uuid, loop_index)
-      openxlsx::addWorksheet(wb, "Sheet6", visible = F)
-      openxlsx::writeData(wb, "Sheet6",x = uuid_water_loops)
+      openxlsx::addWorksheet(wb, "Sheet4", visible = F)
+      openxlsx::writeData(wb, "Sheet4",x = uuid_roster_loops)
     }
-  }
-
-  ## add child loop_indexes
-  dl_uuids_child <- df %>%
-    filter(variable == "num_hh" & stringr::str_starts(reason, "child")) %>%
-    pull(uuid)
-  if(length(dl_uuids_child)>0){
-    uuid_child_loops <- raw.child_nutrition %>%
-      filter(uuid %in% dl_uuids_child) %>%
-      dplyr::select(uuid, loop_index)
-    openxlsx::addWorksheet(wb, "Sheet7", visible = F)
-    openxlsx::writeData(wb, "Sheet7",x = uuid_child_loops)
-  }
-  if(!is.null(raw.women)){
-    ## add water loop_indexes
-    dl_uuids_women <- df %>%
-      filter(variable == "num_hh" & stringr::str_starts(reason, "women")) %>%
+    ## add health loop_indexes
+    dl_uuids_health <- df %>%
+      filter(variable == "num_hh" & stringr::str_starts(reason, "ind_health")) %>%
       pull(uuid)
-    if(length(dl_uuids_women)>0){
-      uuid_women_loops <- raw.women %>%
-        filter(uuid %in% dl_uuids_women) %>%
+    if(length(dl_uuids_health)>0){
+      uuid_health_loops <- raw.ind_health %>%
+        filter(uuid %in% dl_uuids_health) %>%
         dplyr::select(uuid, loop_index)
-      openxlsx::addWorksheet(wb, "Sheet8", visible = F)
-      openxlsx::writeData(wb, "Sheet8",x = uuid_women_loops)
+      openxlsx::addWorksheet(wb, "Sheet5", visible = F)
+      openxlsx::writeData(wb, "Sheet5",x = uuid_health_loops)
     }
-  }
-
-  if(!is.null(raw.died_member)){
-    ## add died loop_indexes
-    dl_uuids_died <- df %>%
-      filter(variable == "num_died") %>%
+    if(!is.null(raw.water_count_loop)){
+      ## add water loop_indexes
+      dl_uuids_water <- df %>%
+        filter(variable == "num_containers") %>%
+        pull(uuid)
+      if(length(dl_uuids_water)>0){
+        uuid_water_loops <- raw.water_count_loop %>%
+          filter(uuid %in% dl_uuids_water) %>%
+          dplyr::select(uuid, loop_index)
+        openxlsx::addWorksheet(wb, "Sheet6", visible = F)
+        openxlsx::writeData(wb, "Sheet6",x = uuid_water_loops)
+      }
+    }
+    ## add child loop_indexes
+    dl_uuids_child <- df %>%
+      filter(variable == "num_hh" & stringr::str_starts(reason, "child")) %>%
       pull(uuid)
-    if(length(dl_uuids_died)>0){
-      uuid_died_loops <- raw.died_member %>%
-        filter(uuid %in% dl_uuids_died) %>%
+    if(length(dl_uuids_child)>0){
+      uuid_child_loops <- raw.child_nutrition %>%
+        filter(uuid %in% dl_uuids_child) %>%
         dplyr::select(uuid, loop_index)
-      openxlsx::addWorksheet(wb, "Sheet9", visible = F)
-      openxlsx::writeData(wb, "Sheet9",x = uuid_died_loops)
+      openxlsx::addWorksheet(wb, "Sheet7", visible = F)
+      openxlsx::writeData(wb, "Sheet7",x = uuid_child_loops)
+    }
+    if(!is.null(raw.women)){
+      ## add water loop_indexes
+      dl_uuids_women <- df %>%
+        filter(variable == "num_hh" & stringr::str_starts(reason, "women")) %>%
+        pull(uuid)
+      if(length(dl_uuids_women)>0){
+        uuid_women_loops <- raw.women %>%
+          filter(uuid %in% dl_uuids_women) %>%
+          dplyr::select(uuid, loop_index)
+        openxlsx::addWorksheet(wb, "Sheet8", visible = F)
+        openxlsx::writeData(wb, "Sheet8",x = uuid_women_loops)
+      }
+    }
+    if(!is.null(raw.died_member)){
+      ## add died loop_indexes
+      dl_uuids_died <- df %>%
+        filter(variable == "num_died") %>%
+        pull(uuid)
+      if(length(dl_uuids_died)>0){
+        uuid_died_loops <- raw.died_member %>%
+          filter(uuid %in% dl_uuids_died) %>%
+          dplyr::select(uuid, loop_index)
+        openxlsx::addWorksheet(wb, "Sheet9", visible = F)
+        openxlsx::writeData(wb, "Sheet9",x = uuid_died_loops)
+      }
+    }
+    for (i in 1:nrow(df)){
+      if(!is.na(df$variable[i]) & df$variable[i]  == "num_died"){
+        uuid <- df$uuid[i]
+        range_min <- min(which(uuid_died_loops$uuid %in% uuid)) + 1
+        range_max <- max(which(uuid_died_loops$uuid %in% uuid)) + 1
+        validate <- paste0("'Sheet9'!$B",range_min,":$B",range_max)
+        openxlsx::dataValidation(wb, "Sheet2", cols = ncol(df)-1, rows = 1 + i, type = "list", value = validate)
+      }
+      if(!is.na(df$variable[i]) & df$variable[i] == "num_containers"){
+        uuid <- df$uuid[i]
+        range_min <- min(which(uuid_water_loops$uuid %in% uuid)) + 1
+        range_max <- max(which(uuid_water_loops$uuid %in% uuid)) + 1
+        validate <- paste0("'Sheet6'!$B",range_min,":$B",range_max)
+        openxlsx::dataValidation(wb, "Sheet2", cols = ncol(df)-1, rows = 1 + i, type = "list", value = validate)
+      }
+      if(!is.na(df$variable[i]) & df$variable[i] == "num_hh" & stringr::str_starts(df$reason[i], "child")){
+        uuid <- df$uuid[i]
+        range_min <- min(which(uuid_child_loops$uuid %in% uuid)) + 1
+        range_max <- max(which(uuid_child_loops$uuid %in% uuid)) + 1
+        validate <- paste0("'Sheet7'!$B",range_min,":$B",range_max)
+        openxlsx::dataValidation(wb, "Sheet2", cols = ncol(df)-1, rows = 1 + i, type = "list", value = validate)
+      }
+      if(!is.na(df$variable[i]) & df$variable[i] == "num_hh" & stringr::str_starts(df$reason[i], "women")){
+        uuid <- df$uuid[i]
+        range_min <- min(which(uuid_women_loops$uuid %in% uuid)) + 1
+        range_max <- max(which(uuid_women_loops$uuid %in% uuid)) + 1
+        validate <- paste0("'Sheet8'!$B",range_min,":$B",range_max)
+        openxlsx::dataValidation(wb, "Sheet2", cols = ncol(df)-1, rows = 1 + i, type = "list", value = validate)
+      }
+      if(!is.na(df$variable[i]) & df$variable[i] == "num_hh" & stringr::str_starts(df$reason[i], "ind_health")){
+        uuid <- df$uuid[i]
+        range_min <- min(which(uuid_health_loops$uuid %in% uuid)) + 1
+        range_max <- max(which(uuid_health_loops$uuid %in% uuid)) + 1
+        validate <- paste0("'Sheet5'!$B",range_min,":$B",range_max)
+        openxlsx::dataValidation(wb, "Sheet2", cols = ncol(df)-1, rows = 1 + i, type = "list", value = validate)
+      }
+      if(!is.na(df$variable[i]) & df$variable[i] == "num_hh" & stringr::str_starts(df$reason[i], "hh_roster")){
+        uuid <- df$uuid[i]
+        range_min <- min(which(uuid_roster_loops$uuid %in% uuid)) + 1
+        range_max <- max(which(uuid_roster_loops$uuid %in% uuid)) + 1
+        validate <- paste0("'Sheet4'!$B",range_min,":$B",range_max)
+        openxlsx::dataValidation(wb, "Sheet2", cols = ncol(df)-1, rows = 1 + i, type = "list", value = validate)
+      }
     }
   }
-
-  for (i in 1:nrow(df)){
-    if(!is.na(df$variable[i]) & df$variable[i]  == "num_died"){
-      uuid <- df$uuid[i]
-      range_min <- min(which(uuid_died_loops$uuid %in% uuid)) + 1
-      range_max <- max(which(uuid_died_loops$uuid %in% uuid)) + 1
-      validate <- paste0("'Sheet9'!$B",range_min,":$B",range_max)
-      openxlsx::dataValidation(wb, "Sheet2", cols = ncol(df)-1, rows = 1 + i, type = "list", value = validate)
-    }
-    if(!is.na(df$variable[i]) & df$variable[i] == "num_containers"){
-      uuid <- df$uuid[i]
-      range_min <- min(which(uuid_water_loops$uuid %in% uuid)) + 1
-      range_max <- max(which(uuid_water_loops$uuid %in% uuid)) + 1
-      validate <- paste0("'Sheet6'!$B",range_min,":$B",range_max)
-      openxlsx::dataValidation(wb, "Sheet2", cols = ncol(df)-1, rows = 1 + i, type = "list", value = validate)
-    }
-    if(!is.na(df$variable[i]) & df$variable[i] == "num_hh" & stringr::str_starts(df$reason[i], "child")){
-      uuid <- df$uuid[i]
-      range_min <- min(which(uuid_child_loops$uuid %in% uuid)) + 1
-      range_max <- max(which(uuid_child_loops$uuid %in% uuid)) + 1
-      validate <- paste0("'Sheet7'!$B",range_min,":$B",range_max)
-      openxlsx::dataValidation(wb, "Sheet2", cols = ncol(df)-1, rows = 1 + i, type = "list", value = validate)
-    }
-    if(!is.na(df$variable[i]) & df$variable[i] == "num_hh" & stringr::str_starts(df$reason[i], "women")){
-      uuid <- df$uuid[i]
-      range_min <- min(which(uuid_women_loops$uuid %in% uuid)) + 1
-      range_max <- max(which(uuid_women_loops$uuid %in% uuid)) + 1
-      validate <- paste0("'Sheet8'!$B",range_min,":$B",range_max)
-      openxlsx::dataValidation(wb, "Sheet2", cols = ncol(df)-1, rows = 1 + i, type = "list", value = validate)
-    }
-    if(!is.na(df$variable[i]) & df$variable[i] == "num_hh" & stringr::str_starts(df$reason[i], "ind_health")){
-      uuid <- df$uuid[i]
-      range_min <- min(which(uuid_health_loops$uuid %in% uuid)) + 1
-      range_max <- max(which(uuid_health_loops$uuid %in% uuid)) + 1
-      validate <- paste0("'Sheet5'!$B",range_min,":$B",range_max)
-      openxlsx::dataValidation(wb, "Sheet2", cols = ncol(df)-1, rows = 1 + i, type = "list", value = validate)
-    }
-    if(!is.na(df$variable[i]) & df$variable[i] == "num_hh" & stringr::str_starts(df$reason[i], "hh_roster")){
-      uuid <- df$uuid[i]
-      range_min <- min(which(uuid_roster_loops$uuid %in% uuid)) + 1
-      range_max <- max(which(uuid_roster_loops$uuid %in% uuid)) + 1
-      validate <- paste0("'Sheet4'!$B",range_min,":$B",range_max)
-      openxlsx::dataValidation(wb, "Sheet2", cols = ncol(df)-1, rows = 1 + i, type = "list", value = validate)
-    }
-  }
-
   ##Adding data validation
   for (i in 1:nrow(df)){
     validate <- paste0("'Sheet3'!$A1:$A3")
