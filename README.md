@@ -1052,25 +1052,26 @@ Details
 > `FSL indicators sheet` \<- Sheet that includes all the FSL
 > indicators.<br> `Label column to choose` \<- Label you want to choose
 > from the kobo tool.<br> `FSL indicators` \<- FSL indicators you have
-> collected in your data.<br> `HH UUID column` \<- Household unique
-> identifier (usually uuid).<br> If FCS selected<br> `fsl_fcs_cereal`\<-
-> Cereal Column related to Food Consumption Score <br>
-> `fsl_fcs_legumes`\<- Legumes Column related to Food Consumption Score
-> <br> `fsl_fcs_veg`\<- Vegetables Column related to Food Consumption
-> Score <br> `fsl_fcs_fruit`\<- Fruit Column related to Food Consumption
-> Score <br> `fsl_fcs_meat`\<- Meat Column related to Food Consumption
-> Score <br> `fsl_fcs_dairy`\<- Dairy Column related to Food Consumption
-> Score <br> `fsl_fcs_sugar`\<- Sugar Column related to Food Consumption
-> Score <br> `fsl_fcs_oil`\<- Oil Column related to Food Consumption
-> Score <br> If rCSI selected<br> `fsl_rcsi_lessquality` \<- rCSI Less
-> Quality Food Column<br> `fsl_rcsi_borrow` \<- rCSI Borrowing Food
-> Column<br> `fsl_rcsi_mealsize` \<- rCSI Reducing Meal Size Column<br>
-> `fsl_rcsi_mealadult` \<- rCSI Reduce Meals For Adults and Prioritize
-> Child Meals Column<br> `fsl_rcsi_mealnb` \<- rCSI Reduce Meal Numbers
-> Column<br> If HHS selected<br> `fsl_hhs_nofoodhh` \<- HHS No Food in
-> the Household Column<br> `fsl_hhs_nofoodhh_freq` \<- HHS Frequency No
-> Food in the Household Column<br> `fsl_hhs_sleephungry` \<- HHS
-> Sleeping Hungry Column<br> `fsl_hhs_sleephungry_freq` \<- HHS
+> collected in your data.<br> `FSL variables` \<- Exstra variables
+> related to FSL you wish to analyse<br> `HH UUID column` \<- Household
+> unique identifier (usually uuid).<br> If FCS selected<br>
+> `fsl_fcs_cereal`\<- Cereal Column related to Food Consumption Score
+> <br> `fsl_fcs_legumes`\<- Legumes Column related to Food Consumption
+> Score <br> `fsl_fcs_veg`\<- Vegetables Column related to Food
+> Consumption Score <br> `fsl_fcs_fruit`\<- Fruit Column related to Food
+> Consumption Score <br> `fsl_fcs_meat`\<- Meat Column related to Food
+> Consumption Score <br> `fsl_fcs_dairy`\<- Dairy Column related to Food
+> Consumption Score <br> `fsl_fcs_sugar`\<- Sugar Column related to Food
+> Consumption Score <br> `fsl_fcs_oil`\<- Oil Column related to Food
+> Consumption Score <br> If rCSI selected<br> `fsl_rcsi_lessquality` \<-
+> rCSI Less Quality Food Column<br> `fsl_rcsi_borrow` \<- rCSI Borrowing
+> Food Column<br> `fsl_rcsi_mealsize` \<- rCSI Reducing Meal Size
+> Column<br> `fsl_rcsi_mealadult` \<- rCSI Reduce Meals For Adults and
+> Prioritize Child Meals Column<br> `fsl_rcsi_mealnb` \<- rCSI Reduce
+> Meal Numbers Column<br> If HHS selected<br> `fsl_hhs_nofoodhh` \<- HHS
+> No Food in the Household Column<br> `fsl_hhs_nofoodhh_freq` \<- HHS
+> Frequency No Food in the Household Column<br> `fsl_hhs_sleephungry`
+> \<- HHS Sleeping Hungry Column<br> `fsl_hhs_sleephungry_freq` \<- HHS
 > Frequency Sleeping Hungry Column<br> `fsl_hhs_alldaynight` \<- HHS All
 > Day and Night Without Eating Column<br> `fsl_hhs_alldaynight_freq` \<-
 > HHS All Day and Night Without Eating Column<br> `Yes Value` \<- HHS
@@ -1115,7 +1116,7 @@ Details
 
 </details>
 As you saw in the output folder, you will have another excel file
-outputed from the analysis script.
+outputted from the analysis script.
 <ul>
 <li>
 The Excel file includes 2 sheets. The first 2 are all the tables that
@@ -1142,12 +1143,15 @@ Details
 </h4>
 </summary>
 
-> `Assessment Level` \<- Type of assessment: only HH level or Individual
-> level collected<br> `Raw Data` \<- Raw Data.<br> `Kobo Tool` \<- Kobo
-> Tool.<br> `Label column to choose` \<- Label you want to choose from
-> the kobo tool.<br> `Information about leavers` \<- 1 for Yes/2 for No
-> question if you collect extra information about leavers.<br>
-> `Main Sheet` \<- Main HH level sheet from the raw data<br>
+> `Raw Data` \<- Raw Data.<br> `Kobo Tool` \<- Kobo Tool.<br>
+> `Select Multiple Separator` \<- This is the separator used in the data
+> for the select_multiple questions<br> `Assessment Level` \<- Type of
+> assessment: only HH level or Individual level collected<br>
+> `Mortality variables` \<- Exstra variables related to mortality you
+> wish to analyse<br> `Label column to choose` \<- Label you want to
+> choose from the kobo tool<br> `Information about leavers` \<- 1 for
+> Yes/2 for No question if you collect extra information about
+> leavers<br> `Main Sheet` \<- Main HH level sheet from the raw data<br>
 > `HH Roster Sheet` \<- Roster Individual level sheet from the raw
 > data<br> `Died Members Sheet` \<- Died Members Individual level sheet
 > from the raw data<br> `Left Members Sheet` \<- Left Members Individual
@@ -1268,16 +1272,145 @@ Details
 
 </details>
 As you saw in the output folder, you will have another excel file
-outputed from the analysis script.
+outputted from the analysis script.
 <ul>
 <li>
+HTML file including all the extra selected variables for analysis, as
+well as plots and rates or mortality and birth disaggregated on
+different levels as shown in the screenshot below.
+</li>
+<li>
 The Excel file includes 2 sheets. The first 2 are all the tables that
-you see in the different sections of this HTML output. You can navigate
-to respective tables through the first sheet “Table of Contents”.
+you see in the first part of the HTML output. You can navigate to
+respective tables through the first sheet “Table of Contents”.
+</li>
+<li>
+PH integrated table excel file that is used as input for the Integrated
+PH Tables project.
 </li>
 </ul>
 
-### IPHRA
+<figure>
+<img src="./man/figures/mortality_descriptive.png"
+alt="Disaggregations Mortality" />
+<figcaption aria-hidden="true">Disaggregations Mortality</figcaption>
+</figure>
+
+#### IYCF
+
+After running all the line in the run_iycf_descriptive_analysis.R, below
+are the set of inputs that are required for you to
+select/fill.<strong>Please note that in case of a missing column, please
+proceed in selecting cancel. However, make sure with the respective
+focal point if it is an important column.</strong>
+
+<details>
+<summary>
+<h4>
+Details
+</h4>
+</summary>
+
+> `Raw Data` \<- Raw Data.<br> `Kobo Tool` \<- Kobo Tool.<br>
+> `IYCF variables` \<- Exstra variables related to IYCF you wish to
+> analyse<br> `IYCF Indicators Sheet` \<- IYCF Indicators Individual
+> level sheet from the raw data<br> `Main Sheet` \<- Main HH level sheet
+> from the raw data<br> `Label column to choose` \<- Label you want to
+> choose from the kobo tool.<br> `HH UUID column` \<- Household unique
+> identifier in main sheet (usually \_uuid)<br>
+> `Teams of Enumerator/Different Organizations` \<- Do you have teams of
+> Enumerators or Different Organizations collecting data<br> If Yes<br>
+> `Teams/Organization` \<- Teams of Enumerator/Organizations Column<br>
+> `Enumerator` \<- Enumerator ID Column<br> `IYCF Sheet UUID column` \<-
+> Household unique identifier in IYCF sheet (usually
+> \_submission\_\_uuid)<br> `Age Month IYCF` \<- Age in months Column in
+> the IYCF individual sheet (column with numbers between 0-11)<br>
+> `Sex IYCF` \<- Sex/Gender Column in the IYCF individual sheet<br>
+> `Male Option` \<- Male option (usually m/male/1)<br> `Female Option`
+> \<- Female option (usually f/female/2)<br> `IYCF Caregiver` \<- Column
+> indicating if caregiver is present (usually iycf_caregiver)<br>
+> `IYCF Ever Breastfed` \<- Column indicating if child ever breastfed
+> (usually iycf_1)<br> `IYCF Breastfeeding After Birth` \<- Column
+> indicating how long the child started breastfeeding after birth
+> (usually iycf_2)<br> `IYCF Exclusive Breastfeeding First 2 Days` \<-
+> Column indicating Exclusive Breastfeeding First 2 Days (usually
+> iycf_3)<br> `IYCF Breastfed Yesterday` \<- Column indicating the child
+> was breastfed yesterday (usually iycf_4)<br>
+> `IYCF Bottle Fed Yesterday` \<- Column indicating the child drink
+> anything from a bottle yesterday (usually iycf_5)<br> `IYCF Water` \<-
+> Column indicating liquid water (usually iycf_6a)<br>
+> `IYCF Liquid Infant Formula` \<- Column indicating Liquid Infant
+> Formula (usually iycf_6b)<br> `IYCF Milk from Animal` \<- Column
+> indicating liquid milk from animal column (usually iycf_6c)<br>
+> `IYCF Liquid Yogurt` \<- Column indicating liquid yogurt (usually
+> iycf_6d)<br> `IYCF Chocolate Liquid` \<- Column indicating liquid
+> chocolate flavoured drink (usually iycf_6e)<br> `IYCF Juice` \<-
+> Column indicating liquid fruit juice or fruit flavored drink (usually
+> iycf_6f)<br> `IYCF Soda` \<- Column indicating liquid
+> sodas/malt/sports/energy drink (usually iycf_6g)<br> `IYCF Tea` \<-
+> Column indicating liquid tea/coffee/herbal drink (usually iycf_6h)<br>
+> `IYCF Broth` \<- Column indicating liquid clear broth/soup (usually
+> iycf_6i)<br> `IYCF Other Liquids` \<- Column indicating other liquids
+> (usually iycf_6j)<br> `IYCF Yogurt` \<- Column indicating yogurt as
+> food (usually iycf_7a)<br> `IYCF Cereals` \<- Column indicating
+> porridge/bread/rice/noodles/pasta (usually iycf_7b)<br>
+> `IYCF Orange/Pumpkin` \<- Column indicating pumpkin/carrots/sweet red
+> peppers/squash/sweet potato (usually iycf_7c)<br> `IYCF Roots` \<-
+> Column indicating plantains/white potato/yams/manioc/cassava (usually
+> iycf_7d)<br> `IYCF Green/Leafs` \<- Column indicating dark green leafy
+> vegetables (usually iycf_7e)<br> `IYCF Other Vegs` \<- Column
+> indicating other vegetables (usually iycf_7f)<br> `IYCF Fruits` \<-
+> Column indicating ripe mangoes/ripe papayas (usually iycf_7g)<br>
+> `IYCF Other Fruits` \<- Column indicating other Fruits (usually
+> iycf_7h)<br> `IYCF Organs` \<- Column indicating liver/kidney/heart
+> (usually iycf_7i)<br> `IYCF Meat` \<- Column indicating sausage/hot
+> dogs/ham/bacon/salami/canned meat (usually iycf_7j)<br>
+> `IYCF Other Meat` \<- Column indicating
+> meat/beef/pork/lamb/goat/chicken/duck (usually iycf_7k)<br> `IYCF Egg`
+> \<- Column indicating eggs (usually iycf_7l)<br> `IYCF Fish` \<-
+> Column indicating fresh/dried/shell fish (usually iycf_7m)<br>
+> `IYCF Legumes` \<- Column indicating beans/peas/lentils/nuts/seeds
+> (usually iycf_7n)<br> `IYCF Cheese` \<- Column indicating hard/soft
+> cheese (usually iycf_7o)<br> `IYCF Sweet` \<- Column indicating sweet
+> foods (usually iycf_7p)<br> `IYCF Crisp/Fries` \<- Column indicating
+> chips/crisps/puffs/french fries (usually iycf_7q)<br>
+> `IYCF Other Foods` \<- Column indicating other foods (usually
+> iycf_7r)<br> `IYCF Meal Frequency` \<- Column indicating meal
+> frequency (usually iycf_8)<br> `IYCF Sweet Milk` \<- Column indicating
+> sweet milk (usually iycf_6c_Swt)<br> `IYCF Sweet Yogurt Liquid` \<-
+> Column indicating sweet yogurt liquid (usually iycf_6d_Swt)<br>
+> `IYCF Sweet Tea` \<- Column indicating sweet tea (usually
+> iycf_6h_Swt)<br> `IYCF Other Sweet Drink` \<- Column indicating other
+> sweet drink (usually iycf_6j_Swt)<br> `Yes Answers` \<- Yes Values<br>
+> `No Answers` \<- No Values<br> `Don't Know Answers` \<- Don’t Know
+> Values<br> `Immediate Answer` \<- Immediately Value If Breastfeeding
+> After Birth Answered<br> `Less Than A Day Answer` \<- Less Than A Day
+> Value If Breastfeeding After Birth Answered<br>
+> `More Than A Day Answer` \<- More Than A Day Value If Breastfeeding
+> After Birth Answered<br> `Is your data weighted` \<- Question to check
+> if your data is weighted (Yes/No).<br> `Weight` \<- If yes, select the
+> weight column in your data.<br>
+
+</details>
+<ul>
+<li>
+HTML output with the extra analysis done, as well as plots and combined
+tables for IYCF outcome indicators for different age groups
+\[0-23/0-6/12-23/6-8/6-23 months\].
+</li>
+<li>
+The Excel file includes 2 sheets. The first 2 are all the tables that
+you see in the First Part of the HTML output. You can navigate to
+respective tables through the first sheet “Table of Contents”.
+</li>
+</ul>
+
+<figure>
+<img src="./man/figures/iycf_descriptive_1.png" alt="IYCF 1" />
+<figcaption aria-hidden="true">IYCF 1</figcaption>
+</figure>
+
+![IYCF 2](./man/figures/iycf_descriptive_2.png) \### IPHRA
 
 The use case for this toolkit is intended to be in acute crises where
 there is a realistic possibility of deterioration of public health
@@ -1470,10 +1603,10 @@ reported taking more than 60 min to reach health facilities
 </ul>
 
 The project will follow a user input requirements method. Some of the
-WASH inputs might require visiting the humind package
-(impact-initiatives-hppu/humind) to understand the categories of the
-improved/unimproved drinking water and sanitation questions and
-potentially other indicators.
+WASH inputs might require visiting the [humind
+package](https://impact-initiatives-hppu.github.io/humind/), to
+understand the categories of the improved/unimproved drinking water and
+sanitation questions and potentially other indicators.
 
 The output will include 3 sheets:
 
