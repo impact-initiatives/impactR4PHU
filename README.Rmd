@@ -108,7 +108,7 @@ Details of all the inputs will be explained in each sector's section below.
 
 #### FSL Section
 
-After running all the line in the run_fsl_quality_report.R, below are the set of inputs that are required for you to select/fill. <strong>Please note that in case of a missing column, please proceed in selecting cancel. However, make sure with the respective focal point if it is an important column.</strong>
+After running all the line in the run_fsl_quality_report.R, below are the set of inputs that are required for you to select/fill.  <strong>Please note that if the script is asking for a value that is not in your data, then you should select cancel. However, make sure with the respective focal point if these variables are required to get the desired output.</strong>
 
 <details><summary><h4>Details</h4></summary>
 
@@ -201,11 +201,11 @@ Here is an example of the output:
 
 #### Mortality Section
 
-After running all the line in the run_mort_quality_report.R, below are the set of inputs that are required for you to select/fill.<strong>Please note that in case of a missing column, please proceed in selecting cancel. However, make sure with the respective focal point if it is an important column.</strong>
+After running all the line in the run_mort_quality_report.R, below are the set of inputs that are required for you to select/fill. <strong>Please note that if the script is asking for a value that is not in your data, then you should select cancel. However, make sure with the respective focal point if these variables are required to get the desired output.</strong>
 
 <details><summary><h4>Details</h4></summary>
   
-   >`Assessment Level` <- Type of assessment: only HH level or Individual level collected<br>
+   >`Assessment Level` <- Type of assessment: only HH level or Individual level collected. Make sure to select individual if dates of either leaver/joiners/birth/death were collected.<br>
    >`Raw Data` <- Raw Data.<br>
    >`Kobo Tool` <- Kobo Tool.<br>
    >`Label column to choose` <- Label you want to choose from the kobo tool.<br>
@@ -250,7 +250,7 @@ After running all the line in the run_mort_quality_report.R, below are the set o
    >`Deathdate Died Roster` <- Death Date Column in the died members individual sheet with final date of death (Combination of estimated and exact)<br>
    >`Death Cause` <- Cause of Death column in died members individual sheet<br>
    >`Death Location` <- Location of Death column in died members individual sheet<br>
-   >`Do you have all the dates collected?[Left/Join/Birth/Death]` <- Quetion if you collected all the dates of the respective sections<br>
+   >`Do you have all the dates collected?[Left/Join/Birth/Death]` <- Question if you collected all the dates of the respective sections<br>
    >`Do you still collect num_join and num_left on HH level?` <- If some selected, another question is asked to check if general number of joiners and leavers are collected on Household level<br>
    >`Number of Leavers` <- Number of leavers Column from the main sheet (usually num_left). Appears only if yes is selected in previous question.<br>
    >`Number of Joiners` <- Number of joiners Column from the main sheet (usually num_join). Appears only if yes is selected in previous question.<br>
@@ -297,7 +297,7 @@ Here is an example of the output:
 
 #### IYCF Section
 
-After running all the line in the run_iycf_quality_report.R, below are the set of inputs that are required for you to select/fill.<strong>Please note that in case of a missing column, please proceed in selecting cancel. However, make sure with the respective focal point if it is an important column.</strong>
+After running all the line in the run_iycf_quality_report.R, below are the set of inputs that are required for you to select/fill. <strong>Please note that if the script is asking for a value that is not in your data, then you should select cancel. However, make sure with the respective focal point if these variables are required to get the desired output.</strong>
 
 <details><summary><h4>Details</h4></summary>
   
@@ -410,7 +410,7 @@ The next step will requires you to answer/click/select/input some information re
 
 #### FSL Section
 
-After running all the line in the run_fsl_cleaning.R, below are the set of inputs that are required for you to select/fill. <strong>Please note that in case of a missing column, please proceed in selecting cancel. However, make sure with the respective focal point if it is an important column.</strong>
+After running all the line in the run_fsl_cleaning.R, below are the set of inputs that are required for you to select/fill.  <strong>Please note that if the script is asking for a value that is not in your data, then you should select cancel. However, make sure with the respective focal point if these variables are required to get the desired output.</strong>
 
 <details><summary><h4>Details</h4></summary>
 
@@ -514,11 +514,11 @@ The output includes:
 
 #### Mortality Section (Individual Level)
 
-After running all the line in the run_mort_cleaning.R, below are the set of inputs that are required for you to select/fill.<strong>Please note that in case of a missing column, please proceed in selecting cancel. However, make sure with the respective focal point if it is an important column.</strong>
+After running all the line in the run_mort_cleaning.R, below are the set of inputs that are required for you to select/fill. <strong>Please note that if the script is asking for a value that is not in your data, then you should select cancel. However, make sure with the respective focal point if these variables are required to get the desired output.</strong>
 
 <details><summary><h4>Details</h4></summary>
   
-   >`Assessment Level` <- Type of assessment: only HH level or Individual level collected<br>
+   >`Assessment Level` <- Type of assessment: only HH level or Individual level collected. Make sure to select individual if dates of either leaver/joiners/birth/death were collected.<br>
    >`Raw Data` <- Raw Data.<br>
    >`Kobo Tool` <- Kobo Tool.<br>
    >`Label column to choose` <- Label you want to choose from the kobo tool.<br>
@@ -563,7 +563,7 @@ After running all the line in the run_mort_cleaning.R, below are the set of inpu
    >`Deathdate Died Roster` <- Death Date Column in the died members individual sheet with final date of death (Combination of estimated and exact)<br>
    >`Death Cause` <- Cause of Death column in died members individual sheet<br>
    >`Death Location` <- Location of Death column in died members individual sheet<br>
-   >`Do you have all the dates collected?[Left/Join/Birth/Death]` <- Quetion if you collected all the dates of the respective sections<br>
+   >`Do you have all the dates collected?[Left/Join/Birth/Death]` <- Question if you collected all the dates of the respective sections<br>
    >`Do you still collect num_join and num_left on HH level?` <- If some selected, another question is asked to check if general number of joiners and leavers are collected on Household level<br>
    >`Number of Leavers` <- Number of leavers Column from the main sheet (usually num_left). Appears only if yes is selected in previous question.<br>
    >`Number of Joiners` <- Number of joiners Column from the main sheet (usually num_join). Appears only if yes is selected in previous question.<br>
@@ -604,8 +604,8 @@ The output includes:
 <strong>Follow-Up Checks:</strong>
 <ul>
 <li> Check 1: Respondent reported more than 2 death in the HH. </li>
-<li> Check 2:Respondent reported sex of dead person male and a cause of death related to female only. </li>
-<li> Check 3:Respondent reported wrong dates leading to a negative person time. </li>
+<li> Check 2: Respondent reported sex of dead person male and a cause of death related to female only. </li>
+<li> Check 3: Respondent reported wrong dates leading to a negative person time. </li>
 </ul>
 
 #### Mortality Section (Household Level)
@@ -617,7 +617,7 @@ The output includes:
 
 #### IYCF Section
 
-After running all the line in the run_iycf_cleaning.R, below are the set of inputs that are required for you to select/fill.<strong>Please note that in case of a missing column, please proceed in selecting cancel. However, make sure with the respective focal point if it is an important column.</strong>
+After running all the line in the run_iycf_cleaning.R, below are the set of inputs that are required for you to select/fill. <strong>Please note that if the script is asking for a value that is not in your data, then you should select cancel. However, make sure with the respective focal point if these variables are required to get the desired output.</strong>
 
 <details><summary><h4>Details</h4></summary>
   
@@ -717,7 +717,7 @@ The Descriptive Analysis is an analytical platform that presents a multitude of 
 
 #### FSL Section
 
-After running all the line in the run_fsl_descriptive_analysis.R, below are the set of inputs that are required for you to select/fill. <strong>Please note that in case of a missing column, please proceed in selecting cancel. However, make sure with the respective focal point if it is an important column.</strong>
+After running all the line in the run_fsl_descriptive_analysis.R, below are the set of inputs that are required for you to select/fill.  <strong>Please note that if the script is asking for a value that is not in your data, then you should select cancel. However, make sure with the respective focal point if these variables are required to get the desired output.</strong>
 
 <details><summary><h4>Details</h4></summary>
 
@@ -810,15 +810,15 @@ As you saw in the output folder, you will have another excel file outputted from
 
 #### Mortality Section
 
-After running all the line in the run_mort_descriptive_analysis.R, below are the set of inputs that are required for you to select/fill.<strong>Please note that in case of a missing column, please proceed in selecting cancel. However, make sure with the respective focal point if it is an important column.</strong>
+After running all the line in the run_mort_descriptive_analysis.R, below are the set of inputs that are required for you to select/fill. <strong>Please note that if the script is asking for a value that is not in your data, then you should select cancel. However, make sure with the respective focal point if these variables are required to get the desired output.</strong>
 
 <details><summary><h4>Details</h4></summary>
   
    >`Raw Data` <- Raw Data.<br>
    >`Kobo Tool` <- Kobo Tool.<br>
    >`Select Multiple Separator` <- This is the separator used in the data for the select_multiple questions<br>
-   >`Assessment Level` <- Type of assessment: only HH level or Individual level collected<br>
-   >`Mortality variables` <- Exstra variables related to mortality you wish to analyse<br>
+   >`Assessment Level` <- Type of assessment: only HH level or Individual level collected. Make sure to select individual if dates of either leaver/joiners/birth/death were collected.<br>
+   >`Mortality variables` <- Extra variables related to mortality you wish to analyse<br>
    >`Label column to choose` <- Label you want to choose from the kobo tool<br>
    >`Information about leavers` <- 1 for Yes/2 for No question if you collect extra information about leavers<br>
    >`Main Sheet` <- Main HH level sheet from the raw data<br>
@@ -867,7 +867,7 @@ After running all the line in the run_mort_descriptive_analysis.R, below are the
    >`Deathdate Died Roster` <- Death Date Column in the died members individual sheet with final date of death (Combination of estimated and exact)<br>
    >`Death Cause` <- Cause of Death column in died members individual sheet<br>
    >`Death Location` <- Location of Death column in died members individual sheet<br>
-   >`Do you have all the dates collected?[Left/Join/Birth/Death]` <- Quetion if you collected all the dates of the respective sections<br>
+   >`Do you have all the dates collected?[Left/Join/Birth/Death]` <- Question if you collected all the dates of the respective sections<br>
    >`Do you still collect num_join and num_left on HH level?` <- If some selected, another question is asked to check if general number of joiners and leavers are collected on Household level<br>
    >`Number of Leavers` <- Number of leavers Column from the main sheet (usually num_left). Appears only if yes is selected in previous question.<br>
    >`Number of Joiners` <- Number of joiners Column from the main sheet (usually num_join). Appears only if yes is selected in previous question.<br>
@@ -896,7 +896,6 @@ After running all the line in the run_mort_descriptive_analysis.R, below are the
    >`<2 years of age of all children <5 years Ratio` <- <2 years of age of all children <5 years Ratio in your respective area of study (usually ~41%)<br>
    >`<5 years of age out of under-10 children Ratio` <- <5 years of age out of under-10 children Ratio in your respective area of study (usually ~52%)<br>
    >`HH average size` <- HH average size in your respective area of study (usually 5)<br>
-   >``
    >`Is your data weighted` <- Question to check if your data is weighted (Yes/No).<br>
    >`Weight` <- If yes, select the weight column in your data.<br> 
    >`Died Healthcare` <- Did the died person seek healthcare (Yes/No)<br>
@@ -905,7 +904,7 @@ After running all the line in the run_mort_descriptive_analysis.R, below are the
 As you saw in the output folder, you will have another excel file outputted from the analysis script.
 <ul>
 <li>HTML file including all the extra selected variables for analysis, as well as plots and rates or mortality and birth disaggregated on different levels as shown in the screenshot below.</li>
-<li>The Excel file includes 2 sheets. The first 2 are all the tables that you see in the first part of the HTML output. You can navigate to respective tables through the first sheet "Table of Contents".</li>
+<li>The Excel file includes many sheets. The first 2 are all the tables that you see in the first part of the HTML output. You can navigate to respective tables through the first sheet "Table of Contents". The other sheets are teh different disaggregated tables.</li>
 <li>PH integrated table excel file that is used as input for the Integrated PH Tables project.</li>
 </ul>
 
@@ -913,7 +912,7 @@ As you saw in the output folder, you will have another excel file outputted from
 
 #### IYCF
 
-After running all the line in the run_iycf_descriptive_analysis.R, below are the set of inputs that are required for you to select/fill.<strong>Please note that in case of a missing column, please proceed in selecting cancel. However, make sure with the respective focal point if it is an important column.</strong>
+After running all the line in the run_iycf_descriptive_analysis.R, below are the set of inputs that are required for you to select/fill. <strong>Please note that if the script is asking for a value that is not in your data, then you should select cancel. However, make sure with the respective focal point if these variables are required to get the desired output.</strong>
 
 <details><summary><h4>Details</h4></summary>
   
@@ -1091,7 +1090,7 @@ The next step will requires you to answer/click/select/input some information re
 </ul>
 
 
-After running all the line in the run_ph_integrated_tables.R, below are the set of inputs that are required for you to select/fill. <strong>Please note that in case of a missing column, please proceed in selecting cancel. However, make sure with the respective focal point if it is an important column.</strong>
+After running all the line in the run_ph_integrated_tables.R, below are the set of inputs that are required for you to select/fill.  <strong>Please note that if the script is asking for a value that is not in your data, then you should select cancel. However, make sure with the respective focal point if these variables are required to get the desired output.</strong>
 
 <details><summary><h4>Details</h4></summary>
 
@@ -1172,17 +1171,39 @@ After running all the line in the run_ph_integrated_tables.R, below are the set 
    >`Yes Value` <- Yes Value for Reported No Permission Soap Type Question<br>
    >`No Value` <- No Value for Reported No Permission Soap Type Question<br>
    >`Undefined Value` <- Undefined Value for Reported No Permission Soap Type Question<br>
-   
-   
-   >`Number of children` <- Number of Children Under 5 Column<br>
-   >`Income Types` <- Different Income Types Numeric Columns<br>
-   >`Residence Status` <- Residence Status Column (IDP/HH/Refugee/etc.)<br>
-   >If Residence Status column exist<br>
-   >`IDP Value` <- IDP value<br>
-   >`Teams of Enumerator/Different Organizations` <- Do you have teams of Enumerators or Different Organizations collecting data<br>
-   >If Yes<br>
-   >`Teams/Organization` <- Teams of Enumerator/Organizations Column<br>
-   >`Enumerator` <- Enumerator ID Column<br>
+   >`Reported Remote Soap` <- Reported Reported Remote Soap column<br> 
+   >`Yes Value` <- Yes Value for Reported Remote Soap Question<br>
+   >`No Value` <- No Value for Reported Remote Soap Question<br>
+   >`Undefined Value` <- Undefined Value for Reported Remote Soap Question<br>
+   >`Reported Remote Soap Type` <- Reported Reported Remote Soap Type column<br> 
+   >`Yes Value` <- Yes Value for Reported Remote Soap Type Question<br>
+   >`No Value` <- No Value for Reported Remote Soap Type Question<br>
+   >`Undefined Value` <- Undefined Value for Reported Remote Soap Type Question<br>
+   >`Drinking Water Source` <- Main Source of Drinking Water Question<br>
+   >`Improved Value` <- Improved Value for Main Source of Drinking Water Question<br>
+   >`Unimproved Value` <- Unimproved Value for Main Source of Drinking Water Question<br>
+   >`Surface Water Value` <- Surface Water Value for Main Source of Drinking Water Question<br>
+   >`Undefined Value` <- Undefined Value for Main Source of Drinking Water Question<br>
+   >`Sanitation Facility` <- Toilet Sanitation Facility Question<br>
+   >`Improved Value` <- Improved Value forToilet Sanitation Facility Question<br>
+   >`Unimproved Value` <- Unimproved Value for Toilet Sanitation Facility Question<br>
+   >`None Value` <- None Value for Toilet Sanitation Facility Question<br>
+   >`Undefined Value` <- Undefined Value for Toilet Sanitation Facility Question<br>
+   >`Drinking Water Quantity` <- Drinking Water Quantity Question<br>
+   >`Travel Time to Health Facility` <- Travel Time to Health Facility Question<br>
+   >`Healthcare Sheet` <- Healthcare Individual Sheet<br>
+   >`Healthcare is Needed Column` <- Healthcare is Needed Column<br>
+   >`Healthcare is Received Column` <- Healthcare is Received Column<br>
+   >`Individual Age Column` <- Individual Age Column<br>
+   >`Individual Age Column` <- Individual Age Column<br>
+   >`HH UUID Health Loop column` <- Household unique identifier in health members individual sheet(usually _submission__uuid)<br>
+   >`HH UUID Main Sheet column` <- Household unique identifier in main household sheet(usually _uuid)<br>
+   >`Nutrition Sheet` <- Nutrition Individual Sheet<br>
+   >`Under 5 Sick column` <- Under 5 Sick column<br>
+   >`Yes Value` <- Yes Value for Under 5 Sick column<br>
+   >`No Value` <- No Value for Under 5 Sick column<br>
+   >`Undefined Value` <- Undefined Value for Under 5 Sick column<br>
+   >`HH UUID Nutrition Loop column` <- Household unique identifier in nutrition members individual sheet(usually _submission__uuid)<br>
    
 </details>
 
