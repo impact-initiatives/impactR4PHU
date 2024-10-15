@@ -40,6 +40,7 @@ Livelihoods, WASH, Nutrition and Health Sectors.
     - Cleaning
     - Analysis
   - [PH Integrated Tables](#ph-integrated-tables)
+    - Execution
 - [Potential Errors and How to fix
   them](#potential-errors-and-how-to-fix-them)
 - [Standalone Functions](#standalone-functions)
@@ -77,24 +78,11 @@ Health sectors.
 
 To access these projects, follow the following instructions.
 
-<figure>
-<img src="./man/figures/projects_1.png"
-alt="Go to File -&gt; New Project…" />
-<figcaption aria-hidden="true">Go to File -&gt; New
-Project…</figcaption>
-</figure>
+![](./man/figures/projects_1.png)
 
-<figure>
-<img src="./man/figures/projects_2.png" alt="Select New Directory" />
-<figcaption aria-hidden="true">Select New Directory</figcaption>
-</figure>
+![](./man/figures/projects_2.png)
 
-<figure>
-<img src="./man/figures/projects_3.png"
-alt="Scroll to find the respective projects" />
-<figcaption aria-hidden="true">Scroll to find the respective
-projects</figcaption>
-</figure>
+![](./man/figures/projects_3.png)
 
 ### Data Quality
 
@@ -120,12 +108,7 @@ automatically the respective file that you need to run will open. First
 thing, you should select all the line codes in the file, and click run
 as shown in the following picture.
 
-<figure>
-<img src="./man/figures/projects_4.png"
-alt="Select all the lines and click run" />
-<figcaption aria-hidden="true">Select all the lines and click
-run</figcaption>
-</figure>
+![](./man/figures/projects_4.png)
 
 The next step will requires you to answer/click/select/input some
 information related to the sector that you are trying to check the
@@ -241,10 +224,7 @@ Plots showing the distribution of the data.
 
 Here is an example of the output:
 
-<figure>
-<img src="./man/figures/fsl_quality.png" alt="HTML Output" />
-<figcaption aria-hidden="true">HTML Output</figcaption>
-</figure>
+![](./man/figures/fsl_quality.png)
 
 #### Mortality Section
 
@@ -396,8 +376,8 @@ Plots showing the crude, under 5, and birth rates.
 
 Here is an example of the output:
 
-![HTML Output](./man/figures/mortality_quality.png) ![Examples of
-plots](./man/figures/plot_quality.png)
+![](./man/figures/mortality_quality.png)
+![](./man/figures/plot_quality.png)
 
 #### IYCF Section
 
@@ -513,6 +493,17 @@ Plots showing the distribution of the data.
 </li>
 </ul>
 
+![](./man/figures/iycf_quality_1.png)
+
+Here is an explanation of each of the plausibility line:
+
+![](./man/figures/iycf_quality_2.png)
+
+Here are examples of the flags to be checked (details of each flag is
+explained in the cleaning section next):
+
+![](./man/figures/iycf_quality_3.png)
+
 #### What to do next?
 
 Please check each flag and the <strong>ACTION</strong> related to it and
@@ -545,12 +536,7 @@ automatically the respective file that you need to run will open. First
 thing, you should select all the line codes in the file, and click run
 as shown in the following picture.
 
-<figure>
-<img src="./man/figures/projects_4.png"
-alt="Select all the lines and click run" />
-<figcaption aria-hidden="true">Select all the lines and click
-run</figcaption>
-</figure>
+![](./man/figures/projects_4.png)
 
 The next step will requires you to answer/click/select/input some
 information related to the sector that you are trying to check the
@@ -1119,14 +1105,21 @@ As you saw in the output folder, you will have another excel file
 outputted from the analysis script.
 <ul>
 <li>
-The Excel file includes 2 sheets. The first 2 are all the tables that
-you see in the different sections of this HTML output. You can navigate
-to respective tables through the first sheet “Table of Contents”.
+HTML file including all the extra selected variables for analysis, as
+well as the main FSL outcome indicators overalls.
 </li>
 <li>
-Another output as well will include the IPC table.
+The Excel file includes 2 sheets. The first 2 are all the tables that
+you will see in the HTML output. You can navigate to respective tables
+through the first sheet “Table of Contents”.
+</li>
+<li>
+Another output as well is an excel file that includes all the FSL
+outcome indicators formatted for the IPC.
 </li>
 </ul>
+
+![](./man/figures/fsl_descriptive.png)
 
 #### Mortality Section
 
@@ -1290,11 +1283,7 @@ PH Tables project.
 </li>
 </ul>
 
-<figure>
-<img src="./man/figures/mortality_descriptive.png"
-alt="Disaggregations Mortality" />
-<figcaption aria-hidden="true">Disaggregations Mortality</figcaption>
-</figure>
+![](./man/figures/mortality_descriptive.png)
 
 #### IYCF
 
@@ -1396,7 +1385,7 @@ Details
 <li>
 HTML output with the extra analysis done, as well as plots and combined
 tables for IYCF outcome indicators for different age groups
-\[0-23/0-6/12-23/6-8/6-23 months\].
+(0-23/0-6/12-23/6-8/6-23 months).
 </li>
 <li>
 The Excel file includes 2 sheets. The first 2 are all the tables that
@@ -1405,12 +1394,11 @@ respective tables through the first sheet “Table of Contents”.
 </li>
 </ul>
 
-<figure>
-<img src="./man/figures/iycf_descriptive_1.png" alt="IYCF 1" />
-<figcaption aria-hidden="true">IYCF 1</figcaption>
-</figure>
+![](./man/figures/iycf_descriptive_1.png)
 
-![IYCF 2](./man/figures/iycf_descriptive_2.png) \### IPHRA
+![](./man/figures/iycf_descriptive_2.png)
+
+### IPHRA
 
 The use case for this toolkit is intended to be in acute crises where
 there is a realistic possibility of deterioration of public health
@@ -1474,10 +1462,7 @@ the overall risk of excess mortality (RoEM).
 
 Here is a table showing the different indicators and the thresholds
 
-<figure>
-<img src="./man/figures/ph_tables.png" alt="PH TABLES" />
-<figcaption aria-hidden="true">PH TABLES</figcaption>
-</figure>
+![](./man/figures/ph_tables.png)
 
 #### Impact on Population (Health Outcomes)
 
@@ -1608,6 +1593,133 @@ package](https://impact-initiatives-hppu.github.io/humind/), to
 understand the categories of the improved/unimproved drinking water and
 sanitation questions and potentially other indicators.
 
+#### Execution
+
+Once the project is selected and saved as shown in the previous section,
+automatically the respective file that you need to run will open. First
+thing, you should select all the line codes in the file, and click run
+as shown in the following picture.
+
+![](./man/figures/projects_4.png)
+
+The next step will requires you to answer/click/select/input some
+information related to the sector that you are trying to check the
+quality for. Generally this will include:
+<ul>
+<li>
+Data that includes the above mentioned indicators
+</li>
+<li>
+If mortality collected, the PH Integrated related excel file outputted
+from the Mortality Descriptive Analysis Project
+</li>
+<li>
+Inputs of specific columns/values that will be targeted within the
+quality check.
+</li>
+</ul>
+
+After running all the line in the run_ph_integrated_tables.R, below are
+the set of inputs that are required for you to select/fill.
+<strong>Please note that in case of a missing column, please proceed in
+selecting cancel. However, make sure with the respective focal point if
+it is an important column.</strong>
+
+<details>
+<summary>
+<h4>
+Details
+</h4>
+</summary>
+
+> `Data` \<- Dataset.<br> If mortality collected:<br>
+> `Mortality related output` \<- Related mortality integrated outputed
+> from the descriptive analysis script<br> `Is your data weighted` \<-
+> Question to check if your data is weighted (Yes/No).<br> `Weight` \<-
+> If yes, select the weight column in your data. <br> `Death Cause` \<-
+> Cause of Death column in died members individual sheet<br>
+> `HH UUID Died column` \<- Household unique identifier in died members
+> individual sheet(usually \_submission\_\_uuid)<br> `Admin 1` \<- Admin
+> 1 column<br> `FSL indicators` \<- FSL indicators you have collected in
+> your data.<br> `fsl_fcs_cereal`\<- Cereal Column related to Food
+> Consumption Score <br> `fsl_fcs_legumes`\<- Legumes Column related to
+> Food Consumption Score <br> `fsl_fcs_veg`\<- Vegetables Column related
+> to Food Consumption Score <br> `fsl_fcs_fruit`\<- Fruit Column related
+> to Food Consumption Score <br> `fsl_fcs_meat`\<- Meat Column related
+> to Food Consumption Score <br> `fsl_fcs_dairy`\<- Dairy Column related
+> to Food Consumption Score <br> `fsl_fcs_sugar`\<- Sugar Column related
+> to Food Consumption Score <br> `fsl_fcs_oil`\<- Oil Column related to
+> Food Consumption Score <br> If rCSI selected<br>
+> `fsl_rcsi_lessquality` \<- rCSI Less Quality Food Column<br>
+> `fsl_rcsi_borrow` \<- rCSI Borrowing Food Column<br>
+> `fsl_rcsi_mealsize` \<- rCSI Reducing Meal Size Column<br>
+> `fsl_rcsi_mealadult` \<- rCSI Reduce Meals For Adults and Prioritize
+> Child Meals Column<br> `fsl_rcsi_mealnb` \<- rCSI Reduce Meal Numbers
+> Column<br> If HHS selected<br> `fsl_hhs_nofoodhh` \<- HHS No Food in
+> the Household Column<br> `fsl_hhs_nofoodhh_freq` \<- HHS Frequency No
+> Food in the Household Column<br> `fsl_hhs_sleephungry` \<- HHS
+> Sleeping Hungry Column<br> `fsl_hhs_sleephungry_freq` \<- HHS
+> Frequency Sleeping Hungry Column<br> `fsl_hhs_alldaynight` \<- HHS All
+> Day and Night Without Eating Column<br> `fsl_hhs_alldaynight_freq` \<-
+> HHS All Day and Night Without Eating Column<br> `Yes Value` \<- HHS
+> Yes value<br> `No Value` \<- HHS No value<br> `Rarely Value` \<- HHS
+> Frequency Rarely value<br> `Sometimes Value` \<- HHS Frequency
+> Sometimes value<br> `Often Value` \<- HHS Frequency Often value<br> If
+> LCSI selected: 4 LCSI Stress, 3 LCSI Crisis, and 3 LCSI Emergency are
+> required<br> `fsl_lcsi_stress1` \<- LCSI Stress 1 Column<br>
+> `fsl_lcsi_stress2` \<- LCSI Stress 2 Column<br> `fsl_lcsi_stress3` \<-
+> LCSI Stress 3 Column<br> `fsl_lcsi_stress4` \<- LCSI Stress 4
+> Column<br> `fsl_lcsi_crisis1` \<- LCSI Crisis 1 Column<br>
+> `fsl_lcsi_crisis1` \<- LCSI Crisis 1 Column<br> `fsl_lcsi_crisis2` \<-
+> LCSI Crisis 2 Column<br> `fsl_lcsi_emergency2` \<- LCSI Emergency 2
+> Column<br> `fsl_lcsi_emergency3` \<- LCSI Emergency 3 Column<br>
+> `fsl_lcsi_emergency3` \<- LCSI Emergency 3 Column<br> `Yes Value` \<-
+> LCSI Yes value<br> `No Value` \<- LCSI No had no need value<br>
+> `Exhausted Value` \<- LCSI No exhausted value<br>
+> `Not Applicable Value` \<- LCSI Not Applicable value<br> `Yes Value`
+> \<- HDDS Yes value<br> `No Value` \<- HDDS No value<br>
+> `Survey modality` \<- Survey Modality column (remote/face-to-face)<br>
+> `Handwashing Facility` \<- Handwashing Facility column<br> `Yes Value`
+> \<- Yes Value for Handwashing Facility Question<br> `None Value` \<-
+> None Value for Handwashing Facility Question<br> `No Permission Value`
+> \<- No Permission Value for Handwashing Facility Question<br>
+> `Other Value` \<- Other Value for Handwashing Facility Question<br>
+> `Handwashing Facility Observed Water` \<- Handwashing Facility Water
+> Observed column<br> `Yes Value` \<- Yes Value for Handwashing Facility
+> Observed Water Question<br> `No Value` \<- No Value for Handwashing
+> Facility Observed Water Question<br>
+> `Handwashing Facility Observed Soap` \<- Handwashing Facility Soap
+> Observed column<br> `Yes Value` \<- Yes Value for Handwashing Facility
+> Observed Soap Question<br> `No Value` \<- No Value for Handwashing
+> Facility Observed Soap Question<br> `Alternative Value` \<-
+> Alternative Value for Handwashing Facility Observed Soap Question<br>
+> `Handwashing Facility Reported` \<- Handwashing Facility Reported
+> column<br> `Yes Value` \<- Yes Value for Handwashing Facility Reported
+> Question<br> `No Value` \<- No Value for Handwashing Facility Reported
+> Question<br> `Undefined Value` \<- Undefined Value for Handwashing
+> Facility Reported Question<br> `Reported No Permission Soap` \<-
+> Reported No Permission Soap column<br> `Yes Value` \<- Yes Value for
+> Reported No Permission Soap Question<br> `No Value` \<- No Value for
+> Reported No Permission Soap Question<br> `Undefined Value` \<-
+> Undefined Value for Reported No Permission Soap Question<br>
+> `Reported No Permission Soap Type` \<- Reported No Permission Soap
+> Type column<br> `Yes Value` \<- Yes Value for Reported No Permission
+> Soap Type Question<br> `No Value` \<- No Value for Reported No
+> Permission Soap Type Question<br> `Undefined Value` \<- Undefined
+> Value for Reported No Permission Soap Type Question<br>
+
+> `Number of children` \<- Number of Children Under 5 Column<br>
+> `Income Types` \<- Different Income Types Numeric Columns<br>
+> `Residence Status` \<- Residence Status Column
+> (IDP/HH/Refugee/etc.)<br> If Residence Status column exist<br>
+> `IDP Value` \<- IDP value<br>
+> `Teams of Enumerator/Different Organizations` \<- Do you have teams of
+> Enumerators or Different Organizations collecting data<br> If Yes<br>
+> `Teams/Organization` \<- Teams of Enumerator/Organizations Column<br>
+> `Enumerator` \<- Enumerator ID Column<br>
+
+</details>
+
 The output will include 3 sheets:
 
 <ul>
@@ -1625,10 +1737,7 @@ Cat: Categories of the indicators by Admin 1 and National levels
 
 Here is an example (dummy Somalia Data):
 
-<figure>
-<img src="./man/figures/example_ph.png" alt="Example PH TABLES" />
-<figcaption aria-hidden="true">Example PH TABLES</figcaption>
-</figure>
+![](./man/figures/example_ph.png)
 
 ## Potential Errors and How to fix them
 
@@ -1638,23 +1747,23 @@ solve them.
 
 ### lazy-load Error
 
-![Lazy Load Error](./man/figures/just_restart.png) This error usually
-appears after the scripts taking some time (5-10 mins) to load due to
-the upload of the packages. <br> To solve this issue, only restart the
-session or R by going to the tab part -\> Session -\> Restart R (or
-CTRL + SHIFT + F10), and rerun the script again.
+![](./man/figures/just_restart.png) This error usually appears after the
+scripts taking some time (5-10 mins) to load due to the upload of the
+packages. <br> To solve this issue, only restart the session or R by
+going to the tab part -\> Session -\> Restart R (or CTRL + SHIFT + F10),
+and rerun the script again.
 
 ### ‘make’ not found
 
-![make not found](./man/figures/make_error.png) This error usually
-appears during the installation of packages the first time you are
-running the scripts. The projects are wrapped within something called R
-Environment that automatically install and load the necessary packages
-for the project. Some of these packages are constantly maintained by
-their owners and new versions are deployed regularly. The script try to
-check for any updates in the package and upload the newest. However, if
-the error still shows, specially with <strong>Error: Error Installing
-package ‘XXXX’</strong>, you have two options.
+![](./man/figures/make_error.png) This error usually appears during the
+installation of packages the first time you are running the scripts. The
+projects are wrapped within something called R Environment that
+automatically install and load the necessary packages for the project.
+Some of these packages are constantly maintained by their owners and new
+versions are deployed regularly. The script try to check for any updates
+in the package and upload the newest. However, if the error still shows,
+specially with <strong>Error: Error Installing package ‘XXXX’</strong>,
+you have two options.
 <ul>
 <li>
 If you are comfortable handling some debugging, please try to find the
@@ -1677,11 +1786,7 @@ If the first point was gibberish to you, directly contact Abraham Azar
 
 ### Wrong dates in mortality
 
-<figure>
-<img src="./man/figures/wrong_dates.png"
-alt="Wrong dates in mortality" />
-<figcaption aria-hidden="true">Wrong dates in mortality</figcaption>
-</figure>
+![](./man/figures/wrong_dates.png)
 
 If the above error appears while running the mortality quality report or
 descriptive analysis projects, this means that you have a possible issue
