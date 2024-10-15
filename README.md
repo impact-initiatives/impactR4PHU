@@ -133,9 +133,10 @@ below.
 
 After running all the line in the run_fsl_quality_report.R, below are
 the set of inputs that are required for you to select/fill.
-<strong>Please note that in case of a missing column, please proceed in
-selecting cancel. However, make sure with the respective focal point if
-it is an important column.</strong>
+<strong>Please note that if the script is asking for a value that is not
+in your data, then you should select cancel. However, make sure with the
+respective focal point if these variables are required to get the
+desired output.</strong>
 
 <details>
 <summary>
@@ -229,10 +230,11 @@ Here is an example of the output:
 #### Mortality Section
 
 After running all the line in the run_mort_quality_report.R, below are
-the set of inputs that are required for you to
-select/fill.<strong>Please note that in case of a missing column, please
-proceed in selecting cancel. However, make sure with the respective
-focal point if it is an important column.</strong>
+the set of inputs that are required for you to select/fill.
+<strong>Please note that if the script is asking for a value that is not
+in your data, then you should select cancel. However, make sure with the
+respective focal point if these variables are required to get the
+desired output.</strong>
 
 <details>
 <summary>
@@ -242,73 +244,74 @@ Details
 </summary>
 
 > `Assessment Level` \<- Type of assessment: only HH level or Individual
-> level collected<br> `Raw Data` \<- Raw Data.<br> `Kobo Tool` \<- Kobo
-> Tool.<br> `Label column to choose` \<- Label you want to choose from
-> the kobo tool.<br> `Information about leavers` \<- 1 for Yes/2 for No
-> question if you collect extra information about leavers.<br>
-> `Main Sheet` \<- Main HH level sheet from the raw data<br>
-> `HH Roster Sheet` \<- Roster Individual level sheet from the raw
-> data<br> `Died Members Sheet` \<- Died Members Individual level sheet
-> from the raw data<br> `Left Members Sheet` \<- Left Members Individual
-> level sheet from the raw data if Information was collected<br>
-> `Date of Data Collection` \<- Date of Data collection column (usually
-> “today”)<br> `Date of Recall Event` \<- Date of Recall Event column
-> (usually “date_recall_event”)<br>
-> `Teams of Enumerator/Different Organizations` \<- Do you have teams of
-> Enumerators or Different Organizations collecting data<br> If Yes<br>
-> `Teams/Organization` \<- Teams of Enumerator/Organizations Column<br>
-> `Enumerator` \<- Enumerator ID Column<br> `Admin 1` \<- Admin 1
-> column<br> `Admin 2` \<- Admin 2 column<br> `Cluster` \<- Cluster
-> column<br> `HH UUID column` \<- Household unique identifier in main
-> sheet (usually \_uuid)<br> `HH UUID Roster column` \<- Household
-> unique identifier in roster individual sheet(usually
-> \_submission\_\_uuid)<br> `Sex Roster` \<- Sex/Gender Column in the
-> roster individual sheet<br> `Age Year Roster` \<- Age in years Column
-> in the roster individual sheet (usually calc_final_age_years)<br>
-> `Age Month Roster` \<- Age in months Column in the roster individual
-> sheet(column with numbers between 0-11)<br> `Birth Roster` \<- Birth
-> Column in the roster individual sheet with Yes/No answers if date of
-> birth is known<br> `Birthdate Roster` \<- Birth Date Column in the
-> roster individual sheet with final date of birth (Combination of
-> estimated and exact)<br> `Joined Roster` \<- Joined Column in the
-> roster individual sheet with Yes/No answers if date of joining is
-> known<br> `Joineddate Roster` \<- Joined Date Column in the roster
-> individual sheet with final date of joining (Combination of estimated
-> and exact)<br> `HH UUID Left column` \<- Household unique identifier
-> in leavers individual sheet(usually \_submission\_\_uuid). If Leavers
-> details are collected.<br> `Sex Left Roster` \<- Sex/Gender Column in
-> the leavers individual sheet<br> `Age Year Roster` \<- Age in years
-> Column in the leavers individual sheet.<br> `Birth Left Roster` \<-
-> Birth Column in the leavers individual sheet with Yes/No answers if
-> date of birth is known<br> `Birthdate Left Roster` \<- Birth Date
-> Column in the leavers individual sheet with final date of birth
-> (Combination of estimated and exact)<br> `Joined Left Roster` \<-
-> Joined Column in the leavers individual sheet with Yes/No answers if
-> date of joining is known<br> `Joineddate Left Roster` \<- Joined Date
-> Column in the leavers individual sheet with final date of joining
-> (Combination of estimated and exact)<br> `Leftdate Left Roster` \<-
-> Left Date Column in the leavers individual sheet with final date of
-> leaving (Combination of estimated and exact)<br> `HH UUID Died column`
-> \<- Household unique identifier in died members individual
-> sheet(usually \_submission\_\_uuid)<br> `Sex Died Roster` \<-
-> Sex/Gender Column in the died members individual sheet<br>
-> `Age Year Died Roster` \<- Age in years Column in the died members
-> individual sheet (usually calc_final_died_age_years)<br>
-> `Birth Died Roster` \<- Birth Column in the died members individual
-> sheet with Yes/No answers if date of birth is known<br>
-> `Birthdate Died Roster` \<- Birth Date Column in the died members
+> level collected. Make sure to select individual if dates of either
+> leaver/joiners/birth/death were collected.<br> `Raw Data` \<- Raw
+> Data.<br> `Kobo Tool` \<- Kobo Tool.<br> `Label column to choose` \<-
+> Label you want to choose from the kobo tool.<br>
+> `Information about leavers` \<- 1 for Yes/2 for No question if you
+> collect extra information about leavers.<br> `Main Sheet` \<- Main HH
+> level sheet from the raw data<br> `HH Roster Sheet` \<- Roster
+> Individual level sheet from the raw data<br> `Died Members Sheet` \<-
+> Died Members Individual level sheet from the raw data<br>
+> `Left Members Sheet` \<- Left Members Individual level sheet from the
+> raw data if Information was collected<br> `Date of Data Collection`
+> \<- Date of Data collection column (usually “today”)<br>
+> `Date of Recall Event` \<- Date of Recall Event column (usually
+> “date_recall_event”)<br> `Teams of Enumerator/Different Organizations`
+> \<- Do you have teams of Enumerators or Different Organizations
+> collecting data<br> If Yes<br> `Teams/Organization` \<- Teams of
+> Enumerator/Organizations Column<br> `Enumerator` \<- Enumerator ID
+> Column<br> `Admin 1` \<- Admin 1 column<br> `Admin 2` \<- Admin 2
+> column<br> `Cluster` \<- Cluster column<br> `HH UUID column` \<-
+> Household unique identifier in main sheet (usually \_uuid)<br>
+> `HH UUID Roster column` \<- Household unique identifier in roster
+> individual sheet(usually \_submission\_\_uuid)<br> `Sex Roster` \<-
+> Sex/Gender Column in the roster individual sheet<br> `Age Year Roster`
+> \<- Age in years Column in the roster individual sheet (usually
+> calc_final_age_years)<br> `Age Month Roster` \<- Age in months Column
+> in the roster individual sheet(column with numbers between 0-11)<br>
+> `Birth Roster` \<- Birth Column in the roster individual sheet with
+> Yes/No answers if date of birth is known<br> `Birthdate Roster` \<-
+> Birth Date Column in the roster individual sheet with final date of
+> birth (Combination of estimated and exact)<br> `Joined Roster` \<-
+> Joined Column in the roster individual sheet with Yes/No answers if
+> date of joining is known<br> `Joineddate Roster` \<- Joined Date
+> Column in the roster individual sheet with final date of joining
+> (Combination of estimated and exact)<br> `HH UUID Left column` \<-
+> Household unique identifier in leavers individual sheet(usually
+> \_submission\_\_uuid). If Leavers details are collected.<br>
+> `Sex Left Roster` \<- Sex/Gender Column in the leavers individual
+> sheet<br> `Age Year Roster` \<- Age in years Column in the leavers
+> individual sheet.<br> `Birth Left Roster` \<- Birth Column in the
+> leavers individual sheet with Yes/No answers if date of birth is
+> known<br> `Birthdate Left Roster` \<- Birth Date Column in the leavers
 > individual sheet with final date of birth (Combination of estimated
-> and exact)<br> `Joined Died Roster` \<- Joined Column in the died
-> members individual sheet with Yes/No answers if date of joining is
-> known<br> `Joineddate Died Roster` \<- Joined Date Column in the died
-> members individual sheet with final date of joining (Combination of
-> estimated and exact)<br> `Deathdate Died Roster` \<- Death Date Column
-> in the died members individual sheet with final date of death
+> and exact)<br> `Joined Left Roster` \<- Joined Column in the leavers
+> individual sheet with Yes/No answers if date of joining is known<br>
+> `Joineddate Left Roster` \<- Joined Date Column in the leavers
+> individual sheet with final date of joining (Combination of estimated
+> and exact)<br> `Leftdate Left Roster` \<- Left Date Column in the
+> leavers individual sheet with final date of leaving (Combination of
+> estimated and exact)<br> `HH UUID Died column` \<- Household unique
+> identifier in died members individual sheet(usually
+> \_submission\_\_uuid)<br> `Sex Died Roster` \<- Sex/Gender Column in
+> the died members individual sheet<br> `Age Year Died Roster` \<- Age
+> in years Column in the died members individual sheet (usually
+> calc_final_died_age_years)<br> `Birth Died Roster` \<- Birth Column in
+> the died members individual sheet with Yes/No answers if date of birth
+> is known<br> `Birthdate Died Roster` \<- Birth Date Column in the died
+> members individual sheet with final date of birth (Combination of
+> estimated and exact)<br> `Joined Died Roster` \<- Joined Column in the
+> died members individual sheet with Yes/No answers if date of joining
+> is known<br> `Joineddate Died Roster` \<- Joined Date Column in the
+> died members individual sheet with final date of joining (Combination
+> of estimated and exact)<br> `Deathdate Died Roster` \<- Death Date
+> Column in the died members individual sheet with final date of death
 > (Combination of estimated and exact)<br> `Death Cause` \<- Cause of
 > Death column in died members individual sheet<br> `Death Location` \<-
 > Location of Death column in died members individual sheet<br>
 > `Do you have all the dates collected?[Left/Join/Birth/Death]` \<-
-> Quetion if you collected all the dates of the respective sections<br>
+> Question if you collected all the dates of the respective sections<br>
 > `Do you still collect num_join and num_left on HH level?` \<- If some
 > selected, another question is asked to check if general number of
 > joiners and leavers are collected on Household level<br>
@@ -382,10 +385,11 @@ Here is an example of the output:
 #### IYCF Section
 
 After running all the line in the run_iycf_quality_report.R, below are
-the set of inputs that are required for you to
-select/fill.<strong>Please note that in case of a missing column, please
-proceed in selecting cancel. However, make sure with the respective
-focal point if it is an important column.</strong>
+the set of inputs that are required for you to select/fill.
+<strong>Please note that if the script is asking for a value that is not
+in your data, then you should select cancel. However, make sure with the
+respective focal point if these variables are required to get the
+desired output.</strong>
 
 <details>
 <summary>
@@ -558,9 +562,10 @@ quality check.
 
 After running all the line in the run_fsl_cleaning.R, below are the set
 of inputs that are required for you to select/fill. <strong>Please note
-that in case of a missing column, please proceed in selecting cancel.
-However, make sure with the respective focal point if it is an important
-column.</strong>
+that if the script is asking for a value that is not in your data, then
+you should select cancel. However, make sure with the respective focal
+point if these variables are required to get the desired
+output.</strong>
 
 <details>
 <summary>
@@ -686,10 +691,11 @@ score.
 #### Mortality Section (Individual Level)
 
 After running all the line in the run_mort_cleaning.R, below are the set
-of inputs that are required for you to select/fill.<strong>Please note
-that in case of a missing column, please proceed in selecting cancel.
-However, make sure with the respective focal point if it is an important
-column.</strong>
+of inputs that are required for you to select/fill. <strong>Please note
+that if the script is asking for a value that is not in your data, then
+you should select cancel. However, make sure with the respective focal
+point if these variables are required to get the desired
+output.</strong>
 
 <details>
 <summary>
@@ -699,73 +705,74 @@ Details
 </summary>
 
 > `Assessment Level` \<- Type of assessment: only HH level or Individual
-> level collected<br> `Raw Data` \<- Raw Data.<br> `Kobo Tool` \<- Kobo
-> Tool.<br> `Label column to choose` \<- Label you want to choose from
-> the kobo tool.<br> `Information about leavers` \<- 1 for Yes/2 for No
-> question if you collect extra information about leavers.<br>
-> `Main Sheet` \<- Main HH level sheet from the raw data<br>
-> `HH Roster Sheet` \<- Roster Individual level sheet from the raw
-> data<br> `Died Members Sheet` \<- Died Members Individual level sheet
-> from the raw data<br> `Left Members Sheet` \<- Left Members Individual
-> level sheet from the raw data if Information was collected<br>
-> `Date of Data Collection` \<- Date of Data collection column (usually
-> “today”)<br> `Date of Recall Event` \<- Date of Recall Event column
-> (usually “date_recall_event”)<br>
-> `Teams of Enumerator/Different Organizations` \<- Do you have teams of
-> Enumerators or Different Organizations collecting data<br> If Yes<br>
-> `Teams/Organization` \<- Teams of Enumerator/Organizations Column<br>
-> `Enumerator` \<- Enumerator ID Column<br> `Admin 1` \<- Admin 1
-> column<br> `Admin 2` \<- Admin 2 column<br> `Cluster` \<- Cluster
-> column<br> `HH UUID column` \<- Household unique identifier in main
-> sheet (usually \_uuid)<br> `HH UUID Roster column` \<- Household
-> unique identifier in roster individual sheet(usually
-> \_submission\_\_uuid)<br> `Sex Roster` \<- Sex/Gender Column in the
-> roster individual sheet<br> `Age Year Roster` \<- Age in years Column
-> in the roster individual sheet (usually calc_final_age_years)<br>
-> `Age Month Roster` \<- Age in months Column in the roster individual
-> sheet(column with numbers between 0-11)<br> `Birth Roster` \<- Birth
-> Column in the roster individual sheet with Yes/No answers if date of
-> birth is known<br> `Birthdate Roster` \<- Birth Date Column in the
-> roster individual sheet with final date of birth (Combination of
-> estimated and exact)<br> `Joined Roster` \<- Joined Column in the
-> roster individual sheet with Yes/No answers if date of joining is
-> known<br> `Joineddate Roster` \<- Joined Date Column in the roster
-> individual sheet with final date of joining (Combination of estimated
-> and exact)<br> `HH UUID Left column` \<- Household unique identifier
-> in leavers individual sheet(usually \_submission\_\_uuid). If Leavers
-> details are collected.<br> `Sex Left Roster` \<- Sex/Gender Column in
-> the leavers individual sheet<br> `Age Year Roster` \<- Age in years
-> Column in the leavers individual sheet.<br> `Birth Left Roster` \<-
-> Birth Column in the leavers individual sheet with Yes/No answers if
-> date of birth is known<br> `Birthdate Left Roster` \<- Birth Date
-> Column in the leavers individual sheet with final date of birth
-> (Combination of estimated and exact)<br> `Joined Left Roster` \<-
-> Joined Column in the leavers individual sheet with Yes/No answers if
-> date of joining is known<br> `Joineddate Left Roster` \<- Joined Date
-> Column in the leavers individual sheet with final date of joining
-> (Combination of estimated and exact)<br> `Leftdate Left Roster` \<-
-> Left Date Column in the leavers individual sheet with final date of
-> leaving (Combination of estimated and exact)<br> `HH UUID Died column`
-> \<- Household unique identifier in died members individual
-> sheet(usually \_submission\_\_uuid)<br> `Sex Died Roster` \<-
-> Sex/Gender Column in the died members individual sheet<br>
-> `Age Year Died Roster` \<- Age in years Column in the died members
-> individual sheet (usually calc_final_died_age_years)<br>
-> `Birth Died Roster` \<- Birth Column in the died members individual
-> sheet with Yes/No answers if date of birth is known<br>
-> `Birthdate Died Roster` \<- Birth Date Column in the died members
+> level collected. Make sure to select individual if dates of either
+> leaver/joiners/birth/death were collected.<br> `Raw Data` \<- Raw
+> Data.<br> `Kobo Tool` \<- Kobo Tool.<br> `Label column to choose` \<-
+> Label you want to choose from the kobo tool.<br>
+> `Information about leavers` \<- 1 for Yes/2 for No question if you
+> collect extra information about leavers.<br> `Main Sheet` \<- Main HH
+> level sheet from the raw data<br> `HH Roster Sheet` \<- Roster
+> Individual level sheet from the raw data<br> `Died Members Sheet` \<-
+> Died Members Individual level sheet from the raw data<br>
+> `Left Members Sheet` \<- Left Members Individual level sheet from the
+> raw data if Information was collected<br> `Date of Data Collection`
+> \<- Date of Data collection column (usually “today”)<br>
+> `Date of Recall Event` \<- Date of Recall Event column (usually
+> “date_recall_event”)<br> `Teams of Enumerator/Different Organizations`
+> \<- Do you have teams of Enumerators or Different Organizations
+> collecting data<br> If Yes<br> `Teams/Organization` \<- Teams of
+> Enumerator/Organizations Column<br> `Enumerator` \<- Enumerator ID
+> Column<br> `Admin 1` \<- Admin 1 column<br> `Admin 2` \<- Admin 2
+> column<br> `Cluster` \<- Cluster column<br> `HH UUID column` \<-
+> Household unique identifier in main sheet (usually \_uuid)<br>
+> `HH UUID Roster column` \<- Household unique identifier in roster
+> individual sheet(usually \_submission\_\_uuid)<br> `Sex Roster` \<-
+> Sex/Gender Column in the roster individual sheet<br> `Age Year Roster`
+> \<- Age in years Column in the roster individual sheet (usually
+> calc_final_age_years)<br> `Age Month Roster` \<- Age in months Column
+> in the roster individual sheet(column with numbers between 0-11)<br>
+> `Birth Roster` \<- Birth Column in the roster individual sheet with
+> Yes/No answers if date of birth is known<br> `Birthdate Roster` \<-
+> Birth Date Column in the roster individual sheet with final date of
+> birth (Combination of estimated and exact)<br> `Joined Roster` \<-
+> Joined Column in the roster individual sheet with Yes/No answers if
+> date of joining is known<br> `Joineddate Roster` \<- Joined Date
+> Column in the roster individual sheet with final date of joining
+> (Combination of estimated and exact)<br> `HH UUID Left column` \<-
+> Household unique identifier in leavers individual sheet(usually
+> \_submission\_\_uuid). If Leavers details are collected.<br>
+> `Sex Left Roster` \<- Sex/Gender Column in the leavers individual
+> sheet<br> `Age Year Roster` \<- Age in years Column in the leavers
+> individual sheet.<br> `Birth Left Roster` \<- Birth Column in the
+> leavers individual sheet with Yes/No answers if date of birth is
+> known<br> `Birthdate Left Roster` \<- Birth Date Column in the leavers
 > individual sheet with final date of birth (Combination of estimated
-> and exact)<br> `Joined Died Roster` \<- Joined Column in the died
-> members individual sheet with Yes/No answers if date of joining is
-> known<br> `Joineddate Died Roster` \<- Joined Date Column in the died
-> members individual sheet with final date of joining (Combination of
-> estimated and exact)<br> `Deathdate Died Roster` \<- Death Date Column
-> in the died members individual sheet with final date of death
+> and exact)<br> `Joined Left Roster` \<- Joined Column in the leavers
+> individual sheet with Yes/No answers if date of joining is known<br>
+> `Joineddate Left Roster` \<- Joined Date Column in the leavers
+> individual sheet with final date of joining (Combination of estimated
+> and exact)<br> `Leftdate Left Roster` \<- Left Date Column in the
+> leavers individual sheet with final date of leaving (Combination of
+> estimated and exact)<br> `HH UUID Died column` \<- Household unique
+> identifier in died members individual sheet(usually
+> \_submission\_\_uuid)<br> `Sex Died Roster` \<- Sex/Gender Column in
+> the died members individual sheet<br> `Age Year Died Roster` \<- Age
+> in years Column in the died members individual sheet (usually
+> calc_final_died_age_years)<br> `Birth Died Roster` \<- Birth Column in
+> the died members individual sheet with Yes/No answers if date of birth
+> is known<br> `Birthdate Died Roster` \<- Birth Date Column in the died
+> members individual sheet with final date of birth (Combination of
+> estimated and exact)<br> `Joined Died Roster` \<- Joined Column in the
+> died members individual sheet with Yes/No answers if date of joining
+> is known<br> `Joineddate Died Roster` \<- Joined Date Column in the
+> died members individual sheet with final date of joining (Combination
+> of estimated and exact)<br> `Deathdate Died Roster` \<- Death Date
+> Column in the died members individual sheet with final date of death
 > (Combination of estimated and exact)<br> `Death Cause` \<- Cause of
 > Death column in died members individual sheet<br> `Death Location` \<-
 > Location of Death column in died members individual sheet<br>
 > `Do you have all the dates collected?[Left/Join/Birth/Death]` \<-
-> Quetion if you collected all the dates of the respective sections<br>
+> Question if you collected all the dates of the respective sections<br>
 > `Do you still collect num_join and num_left on HH level?` \<- If some
 > selected, another question is asked to check if general number of
 > joiners and leavers are collected on Household level<br>
@@ -828,11 +835,11 @@ HTML file showing the flagged logical checks.
 Check 1: Respondent reported more than 2 death in the HH.
 </li>
 <li>
-Check 2:Respondent reported sex of dead person male and a cause of death
-related to female only.
+Check 2: Respondent reported sex of dead person male and a cause of
+death related to female only.
 </li>
 <li>
-Check 3:Respondent reported wrong dates leading to a negative person
+Check 3: Respondent reported wrong dates leading to a negative person
 time.
 </li>
 </ul>
@@ -849,10 +856,11 @@ Check 1: Respondent reported more than 2 death in the HH.
 #### IYCF Section
 
 After running all the line in the run_iycf_cleaning.R, below are the set
-of inputs that are required for you to select/fill.<strong>Please note
-that in case of a missing column, please proceed in selecting cancel.
-However, make sure with the respective focal point if it is an important
-column.</strong>
+of inputs that are required for you to select/fill. <strong>Please note
+that if the script is asking for a value that is not in your data, then
+you should select cancel. However, make sure with the respective focal
+point if these variables are required to get the desired
+output.</strong>
 
 <details>
 <summary>
@@ -1023,9 +1031,10 @@ create other visualizations.
 
 After running all the line in the run_fsl_descriptive_analysis.R, below
 are the set of inputs that are required for you to select/fill.
-<strong>Please note that in case of a missing column, please proceed in
-selecting cancel. However, make sure with the respective focal point if
-it is an important column.</strong>
+<strong>Please note that if the script is asking for a value that is not
+in your data, then you should select cancel. However, make sure with the
+respective focal point if these variables are required to get the
+desired output.</strong>
 
 <details>
 <summary>
@@ -1124,10 +1133,11 @@ outcome indicators formatted for the IPC.
 #### Mortality Section
 
 After running all the line in the run_mort_descriptive_analysis.R, below
-are the set of inputs that are required for you to
-select/fill.<strong>Please note that in case of a missing column, please
-proceed in selecting cancel. However, make sure with the respective
-focal point if it is an important column.</strong>
+are the set of inputs that are required for you to select/fill.
+<strong>Please note that if the script is asking for a value that is not
+in your data, then you should select cancel. However, make sure with the
+respective focal point if these variables are required to get the
+desired output.</strong>
 
 <details>
 <summary>
@@ -1139,11 +1149,12 @@ Details
 > `Raw Data` \<- Raw Data.<br> `Kobo Tool` \<- Kobo Tool.<br>
 > `Select Multiple Separator` \<- This is the separator used in the data
 > for the select_multiple questions<br> `Assessment Level` \<- Type of
-> assessment: only HH level or Individual level collected<br>
-> `Mortality variables` \<- Exstra variables related to mortality you
-> wish to analyse<br> `Label column to choose` \<- Label you want to
-> choose from the kobo tool<br> `Information about leavers` \<- 1 for
-> Yes/2 for No question if you collect extra information about
+> assessment: only HH level or Individual level collected. Make sure to
+> select individual if dates of either leaver/joiners/birth/death were
+> collected.<br> `Mortality variables` \<- Extra variables related to
+> mortality you wish to analyse<br> `Label column to choose` \<- Label
+> you want to choose from the kobo tool<br> `Information about leavers`
+> \<- 1 for Yes/2 for No question if you collect extra information about
 > leavers<br> `Main Sheet` \<- Main HH level sheet from the raw data<br>
 > `HH Roster Sheet` \<- Roster Individual level sheet from the raw
 > data<br> `Died Members Sheet` \<- Died Members Individual level sheet
@@ -1214,7 +1225,7 @@ Details
 > Death column in died members individual sheet<br> `Death Location` \<-
 > Location of Death column in died members individual sheet<br>
 > `Do you have all the dates collected?[Left/Join/Birth/Death]` \<-
-> Quetion if you collected all the dates of the respective sections<br>
+> Question if you collected all the dates of the respective sections<br>
 > `Do you still collect num_join and num_left on HH level?` \<- If some
 > selected, another question is asked to check if general number of
 > joiners and leavers are collected on Household level<br>
@@ -1259,9 +1270,11 @@ Details
 > (usually ~41%)<br> `<5 years of age out of under-10 children Ratio`
 > \<- \<5 years of age out of under-10 children Ratio in your respective
 > area of study (usually ~52%)<br> `HH average size` \<- HH average size
-> in your respective area of study (usually 5)<br> \```Is your data
-> weighted`<- Question to check if your data is weighted (Yes/No).<br>`Weight`<- If yes, select the weight column in your data.<br>`Died
-> Healthcare\` \<- Did the died person seek healthcare (Yes/No)<br>
+> in your respective area of study (usually 5)<br>
+> `Is your data weighted` \<- Question to check if your data is weighted
+> (Yes/No).<br> `Weight` \<- If yes, select the weight column in your
+> data.<br> `Died Healthcare` \<- Did the died person seek healthcare
+> (Yes/No)<br>
 
 </details>
 As you saw in the output folder, you will have another excel file
@@ -1273,9 +1286,10 @@ well as plots and rates or mortality and birth disaggregated on
 different levels as shown in the screenshot below.
 </li>
 <li>
-The Excel file includes 2 sheets. The first 2 are all the tables that
+The Excel file includes many sheets. The first 2 are all the tables that
 you see in the first part of the HTML output. You can navigate to
-respective tables through the first sheet “Table of Contents”.
+respective tables through the first sheet “Table of Contents”. The other
+sheets are teh different disaggregated tables.
 </li>
 <li>
 PH integrated table excel file that is used as input for the Integrated
@@ -1288,10 +1302,11 @@ PH Tables project.
 #### IYCF
 
 After running all the line in the run_iycf_descriptive_analysis.R, below
-are the set of inputs that are required for you to
-select/fill.<strong>Please note that in case of a missing column, please
-proceed in selecting cancel. However, make sure with the respective
-focal point if it is an important column.</strong>
+are the set of inputs that are required for you to select/fill.
+<strong>Please note that if the script is asking for a value that is not
+in your data, then you should select cancel. However, make sure with the
+respective focal point if these variables are required to get the
+desired output.</strong>
 
 <details>
 <summary>
@@ -1621,9 +1636,10 @@ quality check.
 
 After running all the line in the run_ph_integrated_tables.R, below are
 the set of inputs that are required for you to select/fill.
-<strong>Please note that in case of a missing column, please proceed in
-selecting cancel. However, make sure with the respective focal point if
-it is an important column.</strong>
+<strong>Please note that if the script is asking for a value that is not
+in your data, then you should select cancel. However, make sure with the
+respective focal point if these variables are required to get the
+desired output.</strong>
 
 <details>
 <summary>
@@ -1707,16 +1723,44 @@ Details
 > Soap Type Question<br> `No Value` \<- No Value for Reported No
 > Permission Soap Type Question<br> `Undefined Value` \<- Undefined
 > Value for Reported No Permission Soap Type Question<br>
-
-> `Number of children` \<- Number of Children Under 5 Column<br>
-> `Income Types` \<- Different Income Types Numeric Columns<br>
-> `Residence Status` \<- Residence Status Column
-> (IDP/HH/Refugee/etc.)<br> If Residence Status column exist<br>
-> `IDP Value` \<- IDP value<br>
-> `Teams of Enumerator/Different Organizations` \<- Do you have teams of
-> Enumerators or Different Organizations collecting data<br> If Yes<br>
-> `Teams/Organization` \<- Teams of Enumerator/Organizations Column<br>
-> `Enumerator` \<- Enumerator ID Column<br>
+> `Reported Remote Soap` \<- Reported Reported Remote Soap column<br>
+> `Yes Value` \<- Yes Value for Reported Remote Soap Question<br>
+> `No Value` \<- No Value for Reported Remote Soap Question<br>
+> `Undefined Value` \<- Undefined Value for Reported Remote Soap
+> Question<br> `Reported Remote Soap Type` \<- Reported Reported Remote
+> Soap Type column<br> `Yes Value` \<- Yes Value for Reported Remote
+> Soap Type Question<br> `No Value` \<- No Value for Reported Remote
+> Soap Type Question<br> `Undefined Value` \<- Undefined Value for
+> Reported Remote Soap Type Question<br> `Drinking Water Source` \<-
+> Main Source of Drinking Water Question<br> `Improved Value` \<-
+> Improved Value for Main Source of Drinking Water Question<br>
+> `Unimproved Value` \<- Unimproved Value for Main Source of Drinking
+> Water Question<br> `Surface Water Value` \<- Surface Water Value for
+> Main Source of Drinking Water Question<br> `Undefined Value` \<-
+> Undefined Value for Main Source of Drinking Water Question<br>
+> `Sanitation Facility` \<- Toilet Sanitation Facility Question<br>
+> `Improved Value` \<- Improved Value forToilet Sanitation Facility
+> Question<br> `Unimproved Value` \<- Unimproved Value for Toilet
+> Sanitation Facility Question<br> `None Value` \<- None Value for
+> Toilet Sanitation Facility Question<br> `Undefined Value` \<-
+> Undefined Value for Toilet Sanitation Facility Question<br>
+> `Drinking Water Quantity` \<- Drinking Water Quantity Question<br>
+> `Travel Time to Health Facility` \<- Travel Time to Health Facility
+> Question<br> `Healthcare Sheet` \<- Healthcare Individual Sheet<br>
+> `Healthcare is Needed Column` \<- Healthcare is Needed Column<br>
+> `Healthcare is Received Column` \<- Healthcare is Received Column<br>
+> `Individual Age Column` \<- Individual Age Column<br>
+> `Individual Age Column` \<- Individual Age Column<br>
+> `HH UUID Health Loop column` \<- Household unique identifier in health
+> members individual sheet(usually \_submission\_\_uuid)<br>
+> `HH UUID Main Sheet column` \<- Household unique identifier in main
+> household sheet(usually \_uuid)<br> `Nutrition Sheet` \<- Nutrition
+> Individual Sheet<br> `Under 5 Sick column` \<- Under 5 Sick column<br>
+> `Yes Value` \<- Yes Value for Under 5 Sick column<br> `No Value` \<-
+> No Value for Under 5 Sick column<br> `Undefined Value` \<- Undefined
+> Value for Under 5 Sick column<br> `HH UUID Nutrition Loop column` \<-
+> Household unique identifier in nutrition members individual
+> sheet(usually \_submission\_\_uuid)<br>
 
 </details>
 
