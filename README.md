@@ -2115,6 +2115,22 @@ iycf_flags <- check_iycf_flags(
 )
 ```
 
+## Credits
+
+This R package is an optimized version of Saeed Rahman’s
+[healthyR](https://github.com/SaeedR1987/healthyr) package, developed by
+Abraham Azar. It incorporates additional improvements and features to
+support public health data cleaning/analysis. Contributions to this
+package also come from [Yann Say](https://github.com/yannsay-impact),
+the
+[apyramid](https://cran.r-project.org/web/packages/apyramid/vignettes/intro.html)
+package from R4EPIs projects, and the Public Health Unit at IMPACT
+Initiatives.
+
+For any questions or further information, please contact: - Abraham Azar
+at <abraham.azar@impact-initiatives.org>. - IMPACT GENEVA Public Health
+Unit at <impact.geneva.phu@impact-initiatives.org>
+
 ## Code of Conduct
 
 Please note that the impactR4PHU project is released with a [Contributor
