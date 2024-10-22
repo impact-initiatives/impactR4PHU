@@ -3,7 +3,6 @@ chooseCRANmirror(ind = 1)
 utils::install.packages("renv")
 options(renv.consent = TRUE)
 renv::update(prompt = F)
-devtools::install_github("impact-initiatives-hppu/humind", force = T)
 source("src/init.R")
 library(tidyverse)
 library(dplyr)
@@ -35,7 +34,10 @@ cat("> Found the following datasheets:", paste(sheet_names, collapse = ", "), "\
 
 # the first sheet is always named "main"!!!
 sheet_names[1] <- "main"
-data.list <- list("main" = readxl::read_excel(filename.data, sheet=1, col_types = "text"))
+
+main_sheet <- tcltk::tk_select.list(sheet_names, title = "Main HH Sheet")
+
+data.list <- list("main" = readxl::read_excel(filename.data, sheet=main_sheet, col_types = "text"))
 
 for(sheet in sheet_names[-1]) {
   data.list[[sheet]] <- readxl::read_excel(filename.data, sheet=sheet, col_types = "text")
@@ -2213,7 +2215,7 @@ list_of_var <- c("admin1","fsl_fcs_cereal","fsl_fcs_legumes","fsl_fcs_veg","FSL_
                  "ind_healthcare_needed","ind_healthcare_needed_levels","ind_healthcare_received",
                  "ind_healthcare_received_levels","ind_age","uuid_health_loop","uuid_main","healthcare_sheet",
                  "nut_sheet","under5_sick","uuid_nut","under5_sick_yes","non_trauma_deaths","death_cause",
-                 "facility_reported_remote_soap_undefined","facility_reported_remote_soap_type",
+                 "facility_reported_remote_soap_undefined","facility_reported_remote_soap_type","main_sheet",
                  "facility_reported_remote_soap_type_yes","facility_reported_remote_soap_type_no","facility_reported_remote_soap_type_undefined",
                  "fsl_lcsi_emergency3","yes_val","no_val","exhausted_val","not_applicable_val","distance_healthcare")
 
