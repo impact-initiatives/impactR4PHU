@@ -100,15 +100,15 @@ cat("\n> ...Done.\n")
 
 cat("\n> Creating a DAF...\n")
 
-fsl_daf_variable <- tcltk::tk_select.list(tool.survey %>%
+iycf_daf_variable <- tcltk::tk_select.list(tool.survey %>%
                                             filter(q.type %in% c("decimal","integer",
                                                                  "select_one","select_multiple")) %>%
                                             pull(name),
-                                          title = "FSL variables (not FCS/HHS/LCSI/rCSI/HDDS",
+                                          title = "IYCF variables",
                                           multiple = T)
 
-daf <- data.frame(variable = fsl_daf_variable) %>%
-  dplyr::mutate(section = "FSL_Part1",
+daf <- data.frame(variable = iycf_daf_variable) %>%
+  dplyr::mutate(section = "IYCF_Part1",
                 label = get.label(variable))
 
 

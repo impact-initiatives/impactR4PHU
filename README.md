@@ -19,6 +19,8 @@ Livelihoods, WASH, Nutrition and Health Sectors.
 ## Table of Contents
 
 - [Installation](#installation)
+  - R Tools Version
+  - Package Installation
 - [Projects](#projects)
   - [Data Quality](#data-quality)
     - Execution
@@ -60,6 +62,14 @@ Livelihoods, WASH, Nutrition and Health Sectors.
 
 ## Installation
 
+### R Tools Version
+
+The projects inside this package all requires a minimum R 4.4.0 Version.
+So, please make sure to update your R to the latest version from this
+[link](https://cran.r-project.org/bin/windows/base/).
+
+### Package Installation
+
 You can install the development version from
 [GitHub](https://github.com/) with:
 
@@ -73,7 +83,7 @@ devtools::install_github("impact-initiatives/impactR4PHU")
 Upon installing the impactR4PHU package, you will be able to access
 pre-coded projects related to the various sectors of Public Health.
 These projects aims to support country missions and the research
-department to check/clean/and analyse indicatores related to Public
+department to check/clean/and analyse indicators related to Public
 Health sectors.
 
 To access these projects, follow the following instructions.
@@ -1837,6 +1847,16 @@ descriptive analysis projects, this means that you have a possible issue
 between the birth dates and the death dates in the death loop. Most
 probably, one of the death have a recorded birth date after the recorded
 death date. Make sure to fix the dates before running the scripts.
+
+### GitHub Error
+
+![](./man/figures/GitHub_Issue.png)
+
+If the above error appears while running the PH integrated Tables
+projects, this means that you or other people have reached the maximum
+amount of downloads for a specific package (humind here) from GitHub. To
+fix the issue, you need to wait until the Rate Limit Reset Time is
+reached as shown in the picture.
 
 If any other error is hindering you to run the whole script, or any
 other semantic issues (output do not make any sense), please contact

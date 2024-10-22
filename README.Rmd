@@ -9,7 +9,6 @@ knitr::opts_chunk$set(echo = TRUE)
 # impactR4PHU  <a href='https://www.impact-initiatives.org'><img src='man/figures/impactR4PHU.png' align="right" height="138" /></a>
 
 
-
 <!-- badges: start -->
 [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg)](code_of_conduct.md)
 [![R-CMD-check](https://github.com/impact-initiatives/impactR4PHU/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/impact-initiatives/impactR4PHU/actions/workflows/R-CMD-check.yaml)
@@ -17,12 +16,14 @@ knitr::opts_chunk$set(echo = TRUE)
 <!-- badges: end -->
 
 ## Overview
-`impactR4PHU` is designed for creating quality check reports, cleaning, analysing and outputing results of core outcome indicators of Public Health Unit. This package will target mainly Food Security and Livelihoods, WASH, Nutrition and Health Sectors. 
 
+`impactR4PHU` is designed for creating quality check reports, cleaning, analysing and outputing results of core outcome indicators of Public Health Unit. This package will target mainly Food Security and Livelihoods, WASH, Nutrition and Health Sectors. 
 
 ## Table of Contents
 
 - [Installation](#installation)
+  - R Tools Version
+  - Package Installation
 - [Projects](#projects)
   - [Data Quality](#data-quality)
     - Execution
@@ -63,6 +64,12 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Installation
 
+### R Tools Version
+
+The projects inside this package all requires a minimum R 4.4.0 Version. So, please make sure to update your R to the latest version from this [link](https://cran.r-project.org/bin/windows/base/).
+
+### Package Installation
+
 You can install the development version from [GitHub](https://github.com/) with:
 
 ``` {r, eval=FALSE}
@@ -73,7 +80,7 @@ devtools::install_github("impact-initiatives/impactR4PHU")
 
 ## Projects
 
-Upon installing the impactR4PHU package, you will be able to access pre-coded projects related to the various sectors of Public Health. These projects aims to support country missions and the research department to check/clean/and analyse indicatores related to Public Health sectors. 
+Upon installing the impactR4PHU package, you will be able to access pre-coded projects related to the various sectors of Public Health. These projects aims to support country missions and the research department to check/clean/and analyse indicators related to Public Health sectors. 
 
 To access these projects, follow the following instructions. 
 
@@ -1244,6 +1251,12 @@ This error usually appears during the installation of packages the first time yo
 ![](./man/figures/wrong_dates.png)
 
 If the above error appears while running the mortality quality report or descriptive analysis projects, this means that you have a possible issue between the birth dates and the death dates in the death loop. Most probably, one of the death have a recorded birth date after the recorded death date. Make sure to fix the dates before running the scripts. 
+
+### GitHub Error
+
+![](./man/figures/GitHub_Issue.png)
+
+If the above error appears while running the PH integrated Tables projects, this means that you or other people have reached the maximum amount of downloads for a specific package (humind here) from GitHub. To fix the issue, you need to wait until the Rate Limit Reset Time is reached as shown in the picture. 
 
 If any other error is hindering you to run the whole script, or any other semantic issues (output do not make any sense), please contact Abraham Azar (abraham.azar@impact-initiatives.org) or the PHU team (impact.geneva.phu@impact-initiatives.org) with the error/issue.
 
