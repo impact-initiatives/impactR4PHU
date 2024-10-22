@@ -160,7 +160,7 @@
     },
     "V8": {
       "Package": "V8",
-      "Version": "5.0.1",
+      "Version": "6.0.0",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
@@ -169,7 +169,7 @@
         "jsonlite",
         "utils"
       ],
-      "Hash": "7f3867df00a91c63089beb85b9ef0208"
+      "Hash": "6603bfcbc7883a5fed41fb13042a3899"
     },
     "apyramid": {
       "Package": "apyramid",
@@ -455,14 +455,14 @@
     },
     "data.table": {
       "Package": "data.table",
-      "Version": "1.16.0",
+      "Version": "1.16.2",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
         "R",
         "methods"
       ],
-      "Hash": "fb24e05d4a91d8b1c7ff8e284bde834a"
+      "Hash": "2e00b378fc3be69c865120d9f313039a"
     },
     "dbplyr": {
       "Package": "dbplyr",
@@ -547,13 +547,13 @@
     },
     "evaluate": {
       "Package": "evaluate",
-      "Version": "1.0.0",
+      "Version": "1.0.1",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
         "R"
       ],
-      "Hash": "6b567375113ceb7d9f800de4dd42218e"
+      "Hash": "3fd29944b231036ad67c3edb32e02201"
     },
     "fansi": {
       "Package": "fansi",
@@ -990,7 +990,7 @@
       "RemoteHost": "api.github.com",
       "RemoteRepo": "impactR4PHU",
       "RemoteUsername": "impact-initiatives",
-      "RemoteSha": "5c30ae6c69c8b3723329b4ae987faff8a173d34b",
+      "RemoteSha": "8cad069451e6a27462080559eff10593494f39d9",
       "Requirements": [
         "GGally",
         "R",
@@ -1011,7 +1011,7 @@
         "writexl",
         "zscorer"
       ],
-      "Hash": "359bac9f3526a87ee86f39d61925bbb7"
+      "Hash": "4cc97c80ed6a8710e394677a098554cb"
     },
     "isoband": {
       "Package": "isoband",
@@ -1239,11 +1239,12 @@
     },
     "officer": {
       "Package": "officer",
-      "Version": "0.6.6",
+      "Version": "0.6.7",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
         "R6",
+        "cli",
         "grDevices",
         "graphics",
         "openssl",
@@ -1254,7 +1255,7 @@
         "xml2",
         "zip"
       ],
-      "Hash": "dc703d9a479e428a15dc6f82e268387e"
+      "Hash": "d6c0a4e796301a5d252de42c92a9a8b9"
     },
     "openssl": {
       "Package": "openssl",
@@ -1526,13 +1527,13 @@
     },
     "renv": {
       "Package": "renv",
-      "Version": "1.0.10",
+      "Version": "1.0.11",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
         "utils"
       ],
-      "Hash": "d0387d5687ec933dd7587efd4cfa2d85"
+      "Hash": "47623f66b4e80b3b0587bc5d7b309888"
     },
     "reprex": {
       "Package": "reprex",
@@ -1592,10 +1593,10 @@
     },
     "rstudioapi": {
       "Package": "rstudioapi",
-      "Version": "0.16.0",
+      "Version": "0.17.0",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "96710351d642b70e8f02ddeb237c46a7"
+      "Hash": "fb9f5fce8f609e9b66f0bea5c783f88a"
     },
     "rvest": {
       "Package": "rvest",
