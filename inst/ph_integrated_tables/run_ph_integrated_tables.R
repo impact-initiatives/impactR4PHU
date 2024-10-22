@@ -29,13 +29,13 @@ if(mort_collected == "yes"){
 ## Load Dataset
 cat("\n> Loading data for analysis from", filename.data, "...\n")
 sheet_names <- readxl::excel_sheets(filename.data)
+main_sheet <- tcltk::tk_select.list(sheet_names, title = "Main HH Sheet")
 sheet_names[1] <- paste(sheet_names[1], "(main)")
 cat("> Found the following datasheets:", paste(sheet_names, collapse = ", "), "\n")
 
 # the first sheet is always named "main"!!!
 sheet_names[1] <- "main"
 
-main_sheet <- tcltk::tk_select.list(sheet_names, title = "Main HH Sheet")
 
 data.list <- list("main" = readxl::read_excel(filename.data, sheet=main_sheet, col_types = "text"))
 
