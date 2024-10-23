@@ -37,12 +37,12 @@ Livelihoods, WASH, Nutrition and Health Sectors.
     - FSL
     - Mortality
     - IYCF
+  - [Integrated Public Health Tables](#integrated-public-health-tables)
+    - Execution
   - [IPHRA](#iphra)
     - Quality Report and Plausibility Checks
     - Cleaning
     - Analysis
-  - [PH Integrated Tables](#ph-integrated-tables)
-    - Execution
 - [Potential Errors and How to fix
   them](#potential-errors-and-how-to-fix-them)
 - [Standalone Functions](#standalone-functions)
@@ -209,8 +209,8 @@ Details
 > `fsl_hdds_condiments`\<- Condiments Column related to HDDS <br>
 > `Yes Value` \<- HDDS Yes value<br> `No Value` \<- HDDS No value<br>
 > `Number of children` \<- Number of Children Under 5 Column<br>
-> `Income Types` \<- Different Income Types Numeric Columns<br>
-> `Residence Status` \<- Residence Status Column
+> `Income Types` \<- Different Income Types (Only for Numerical Values
+> and not Ratios)<br> `Residence Status` \<- Residence Status Column
 > (IDP/HH/Refugee/etc.)<br> If Residence Status column exist<br>
 > `IDP Value` \<- IDP value<br>
 > `Teams of Enumerator/Different Organizations` \<- Do you have teams of
@@ -638,8 +638,8 @@ Details
 > `fsl_hdds_condiments`\<- Condiments Column related to HDDS <br>
 > `Yes Value` \<- HDDS Yes value<br> `No Value` \<- HDDS No value<br>
 > `Number of children` \<- Number of Children Under 5 Column<br>
-> `Income Types` \<- Different Income Types Numeric Columns<br>
-> `Residence Status` \<- Residence Status Column
+> `Income Types` \<- Different Income Types (Only for Numerical Values
+> and not Ratios)<br> `Residence Status` \<- Residence Status Column
 > (IDP/HH/Refugee/etc.)<br> If Residence Status column exist<br>
 > `IDP Value` \<- IDP value<br>
 > `Teams of Enumerator/Different Organizations` \<- Do you have teams of
@@ -657,7 +657,14 @@ Excel file resembling a cleaning log to fill for flagged logical checks.
 HTML file showing the flagged logical checks.
 </li>
 </ul>
-<strong>Direct Checks:</strong>
+
+<strong>For the full list of the logical checks, please check the
+following
+[link](https://acted.sharepoint.com/:x:/r/sites/IMPACT-Public_health/_layouts/15/Doc.aspx?sourcedoc=%7B22A07CAC-EBDE-45D7-97E8-2AAC9C8DE3E3%7D&file=2.%20FSL%20Checks%20and%20Flags%20Overview_2024Final_ENG.xlsx&action=default&mobileredirect=true)
+in the FSL Sector Data Quality Section.</strong>
+
+<strong>Direct Checks (logical checks that do not need follow up and are
+directly included in the cleaning log):</strong>
 <ul>
 <li>
 All FCS columns are 0. FCS Score is equal to 0. All values are changed
@@ -682,7 +689,8 @@ The LCSI strategy related to Livestock but HH do not have income type
 related to livestock. Value of LCSI changed to NA.
 </li>
 </ul>
-<strong>Follow-Up Checks:</strong>
+<strong>Follow-Up Checks (logical checks that requires follow-up and
+cleaning if necessary):</strong>
 <ul>
 <li>
 Check 1: rCSI Score is high while protein consumption is also reported
@@ -1108,8 +1116,8 @@ Details
 > `fsl_hdds_condiments`\<- Condiments Column related to HDDS <br>
 > `Yes Value` \<- HDDS Yes value<br> `No Value` \<- HDDS No value<br>
 > `Number of children` \<- Number of Children Under 5 Column<br>
-> `Income Types` \<- Different Income Types Numeric Columns<br>
-> `Residence Status` \<- Residence Status Column
+> `Income Types` \<- Different Income Types (Only for Numerical Values
+> and not Ratios)<br> `Residence Status` \<- Residence Status Column
 > (IDP/HH/Refugee/etc.)<br> If Residence Status column exist<br>
 > `IDP Value` \<- IDP value<br>
 > `Teams of Enumerator/Different Organizations` \<- Do you have teams of
@@ -1133,8 +1141,9 @@ you will see in the HTML output. You can navigate to respective tables
 through the first sheet “Table of Contents”.
 </li>
 <li>
-Another output as well is an excel file that includes all the FSL
-outcome indicators formatted for the IPC.
+<strong>Another output as well is an excel file that includes all the
+FSL outcome indicators formatted for the IPC AFI analysis to be used for
+submission of MSNA data to the IPC AFI.</strong>
 </li>
 </ul>
 
@@ -1181,56 +1190,57 @@ Details
 > column<br> `HH UUID column` \<- Household unique identifier in main
 > sheet (usually \_uuid)<br> `Population Group` \<- Population Group
 > Status Column (IDP/Refugee/Host/etc.)<br> `Income Sources` \<-
-> Different Income Sources Numeric Columns<br>
-> `More than one column for Head of Household Gender` \<- Question to
-> check if tool collect more than one column to define Head of Household
-> Gender<br> `Respondent Gender` \<- Respondent Gender Column (IF
-> yes)<br> `Head of Household column` \<- Column defining if respondent
-> is head of household (Yes/No)<br> `Head of Household Gender column`
-> \<- Column defining Gender of Head of Household<br>
-> `HH UUID Roster column` \<- Household unique identifier in roster
-> individual sheet(usually \_submission\_\_uuid)<br> `Sex Roster` \<-
-> Sex/Gender Column in the roster individual sheet<br> `Age Year Roster`
-> \<- Age in years Column in the roster individual sheet (usually
-> calc_final_age_years)<br> `Age Month Roster` \<- Age in months Column
-> in the roster individual sheet(column with numbers between 0-11)<br>
-> `Birth Roster` \<- Birth Column in the roster individual sheet with
-> Yes/No answers if date of birth is known<br> `Birthdate Roster` \<-
-> Birth Date Column in the roster individual sheet with final date of
-> birth (Combination of estimated and exact)<br> `Joined Roster` \<-
-> Joined Column in the roster individual sheet with Yes/No answers if
-> date of joining is known<br> `Joineddate Roster` \<- Joined Date
-> Column in the roster individual sheet with final date of joining
-> (Combination of estimated and exact)<br> `HH UUID Left column` \<-
-> Household unique identifier in leavers individual sheet(usually
-> \_submission\_\_uuid). If Leavers details are collected.<br>
-> `Sex Left Roster` \<- Sex/Gender Column in the leavers individual
-> sheet<br> `Age Year Roster` \<- Age in years Column in the leavers
-> individual sheet.<br> `Birth Left Roster` \<- Birth Column in the
-> leavers individual sheet with Yes/No answers if date of birth is
-> known<br> `Birthdate Left Roster` \<- Birth Date Column in the leavers
-> individual sheet with final date of birth (Combination of estimated
-> and exact)<br> `Joined Left Roster` \<- Joined Column in the leavers
-> individual sheet with Yes/No answers if date of joining is known<br>
-> `Joineddate Left Roster` \<- Joined Date Column in the leavers
+> Different Income Sources (Only for Numerical Values and not
+> Ratios)<br> `More than one column for Head of Household Gender` \<-
+> Question to check if tool collect more than one column to define Head
+> of Household Gender<br> `Respondent Gender` \<- Respondent Gender
+> Column (IF yes)<br> `Head of Household column` \<- Column defining if
+> respondent is head of household (Yes/No)<br>
+> `Head of Household Gender column` \<- Column defining Gender of Head
+> of Household<br> `HH UUID Roster column` \<- Household unique
+> identifier in roster individual sheet(usually
+> \_submission\_\_uuid)<br> `Sex Roster` \<- Sex/Gender Column in the
+> roster individual sheet<br> `Age Year Roster` \<- Age in years Column
+> in the roster individual sheet (usually calc_final_age_years)<br>
+> `Age Month Roster` \<- Age in months Column in the roster individual
+> sheet(column with numbers between 0-11)<br> `Birth Roster` \<- Birth
+> Column in the roster individual sheet with Yes/No answers if date of
+> birth is known<br> `Birthdate Roster` \<- Birth Date Column in the
+> roster individual sheet with final date of birth (Combination of
+> estimated and exact)<br> `Joined Roster` \<- Joined Column in the
+> roster individual sheet with Yes/No answers if date of joining is
+> known<br> `Joineddate Roster` \<- Joined Date Column in the roster
 > individual sheet with final date of joining (Combination of estimated
-> and exact)<br> `Leftdate Left Roster` \<- Left Date Column in the
-> leavers individual sheet with final date of leaving (Combination of
-> estimated and exact)<br> `HH UUID Died column` \<- Household unique
-> identifier in died members individual sheet(usually
-> \_submission\_\_uuid)<br> `Sex Died Roster` \<- Sex/Gender Column in
-> the died members individual sheet<br> `Age Year Died Roster` \<- Age
-> in years Column in the died members individual sheet (usually
-> calc_final_died_age_years)<br> `Birth Died Roster` \<- Birth Column in
-> the died members individual sheet with Yes/No answers if date of birth
-> is known<br> `Birthdate Died Roster` \<- Birth Date Column in the died
-> members individual sheet with final date of birth (Combination of
-> estimated and exact)<br> `Joined Died Roster` \<- Joined Column in the
-> died members individual sheet with Yes/No answers if date of joining
-> is known<br> `Joineddate Died Roster` \<- Joined Date Column in the
-> died members individual sheet with final date of joining (Combination
-> of estimated and exact)<br> `Deathdate Died Roster` \<- Death Date
-> Column in the died members individual sheet with final date of death
+> and exact)<br> `HH UUID Left column` \<- Household unique identifier
+> in leavers individual sheet(usually \_submission\_\_uuid). If Leavers
+> details are collected.<br> `Sex Left Roster` \<- Sex/Gender Column in
+> the leavers individual sheet<br> `Age Year Roster` \<- Age in years
+> Column in the leavers individual sheet.<br> `Birth Left Roster` \<-
+> Birth Column in the leavers individual sheet with Yes/No answers if
+> date of birth is known<br> `Birthdate Left Roster` \<- Birth Date
+> Column in the leavers individual sheet with final date of birth
+> (Combination of estimated and exact)<br> `Joined Left Roster` \<-
+> Joined Column in the leavers individual sheet with Yes/No answers if
+> date of joining is known<br> `Joineddate Left Roster` \<- Joined Date
+> Column in the leavers individual sheet with final date of joining
+> (Combination of estimated and exact)<br> `Leftdate Left Roster` \<-
+> Left Date Column in the leavers individual sheet with final date of
+> leaving (Combination of estimated and exact)<br> `HH UUID Died column`
+> \<- Household unique identifier in died members individual
+> sheet(usually \_submission\_\_uuid)<br> `Sex Died Roster` \<-
+> Sex/Gender Column in the died members individual sheet<br>
+> `Age Year Died Roster` \<- Age in years Column in the died members
+> individual sheet (usually calc_final_died_age_years)<br>
+> `Birth Died Roster` \<- Birth Column in the died members individual
+> sheet with Yes/No answers if date of birth is known<br>
+> `Birthdate Died Roster` \<- Birth Date Column in the died members
+> individual sheet with final date of birth (Combination of estimated
+> and exact)<br> `Joined Died Roster` \<- Joined Column in the died
+> members individual sheet with Yes/No answers if date of joining is
+> known<br> `Joineddate Died Roster` \<- Joined Date Column in the died
+> members individual sheet with final date of joining (Combination of
+> estimated and exact)<br> `Deathdate Died Roster` \<- Death Date Column
+> in the died members individual sheet with final date of death
 > (Combination of estimated and exact)<br> `Death Cause` \<- Cause of
 > Death column in died members individual sheet<br> `Death Location` \<-
 > Location of Death column in died members individual sheet<br>
@@ -1423,67 +1433,18 @@ respective tables through the first sheet “Table of Contents”.
 
 ![](./man/figures/iycf_descriptive_2.png)
 
-### IPHRA
-
-The use case for this toolkit is intended to be in acute crises where
-there is a realistic possibility of deterioration of public health
-outcomes in the population to be assessed. This is not intended to be an
-urgent rapid assessment done within the first 72 hours, which tend to be
-more qualitative, but instead the intended timeline should be after an
-initial stabilization of a situation and population movements, maybe one
-month after an initial shock or hazard, depending on the situation. The
-general objective and purpose of an IPHRA assessment is “to assess the
-severity of the public health situation and identify initial public
-health priorities for response to mitigate excess morbidity,
-malnutrition, and mortality.”
-
-Please follow the instructions provided in the recorded training
-sessions in the
-<a href = "https://acted.sharepoint.com/sites/IMPACT-Public_health/SitePages/Toolkits.aspx">PHU
-Intranet Page</a> to learn how to run the scripts.
-
-#### Quality Report and Plausibility Checks
-
-The Data Quality and Plausibility Report serves as a crucial tool for
-assessing the reliability and accuracy of the IPHRA data collection
-across different sectors such as Nutrition, Mortality, Water, Sanitation
-and Hygiene (WASH), Food Security, and Livelihoods. This comprehensive
-analysis is designed to identify and address potential issues within the
-data, ensuring that field teams are being informed on potential issues
-detected in the data collection.each of these sectors, the report
-provides a detailed examination of the datasets, employing a variety of
-metrics and methodologies to evaluate data quality and plausibility.
-This includes checks for completeness, consistency, and accuracy of the
-data collected. This report aims to uncover any discrepancies, outliers,
-or anomalies that may suggest data collection, entry errors, or
-underlying issues that could impact the integrity of the findings.
-
-#### Cleaning
-
-The IPHRA Cleaning toolkit is a tailored project to clean the collected
-data following IMPACT’s guidance of quantitative data cleaning. The
-project is divided in batches files that can be ran outside of R Studio
-to reduce the interactions with R and allow any person run the scripts.
-You are required to have R Tools and RStudio installed on your device to
-be able to run the scripts.
-
-#### Analysis
-
-The IPHRA Tabular Analysis is an analytical platform that presents a
-multitude of quantitative data tables. It encompasses a wide range of
-indicators collected through the IPHRA assessment process, empowering
-users to examine and interpret complex datasets effectively. This tool
-is structured to support understanding the distribution of your data and
-support you writing your factsheets/outputs/reports, and create other
-visualizations.
-
-### PH Integrated Tables
+### Integrated Public Health Tables
 
 The Integrated Table serves as a comprehensive tool for evaluating
-public health outcomes by assigning severity thresholds to various
-indicators. These thresholds are categorized into different levels
-(Extremely High, Very High, High, Moderate, Low) and are used to assess
-the overall risk of excess mortality (RoEM).
+public health outcomes and related contributing factors through severity
+categorization based on existing or tailored standards. These categories
+are set by thresholds across 5 different levels (Extremely High, Very
+High, High, Moderate, Low). The core indicators were selected against
+the Risk of Excess Loss of Life conceptual framework internal to REACH
+Initiative. Additionally, other relevant indicators or data (IPC AMN
+classification for instance) can be added manually to the table, in
+consultation with PHU if support is needed to identify indicators or
+thresholds.
 
 Here is a table showing the different indicators and the thresholds
 
@@ -1792,6 +1753,64 @@ Cat: Categories of the indicators by Admin 1 and National levels
 Here is an example (dummy Somalia Data):
 
 ![](./man/figures/example_ph.png)
+
+### IPHRA
+
+The use case for this toolkit is intended to be in acute crises where
+there is a realistic possibility of deterioration of public health
+outcomes in the population to be assessed. This is not intended to be an
+urgent rapid assessment done within the first 72 hours, which tend to be
+more qualitative, but instead the intended timeline should be after an
+initial stabilization of a situation and population movements, maybe one
+month after an initial shock or hazard, depending on the situation. The
+general objective and purpose of an IPHRA assessment is “to assess the
+severity of the public health situation and identify initial public
+health priorities for response to mitigate excess morbidity,
+malnutrition, and mortality.”
+
+Please follow the instructions provided in the recorded training
+sessions as well as powerpoints in the
+<a href = "https://acted.sharepoint.com/:f:/r/sites/IMPACT-Public_health/Shared%20Documents/Toolkits/Cross-cutting/Integrated%20Public%20Health%20Rapid%20Assessment%20Toolkit%20(IPHRA)/4.%20Training%20Materials?csf=1&web=1&e=XehtzM">PHU
+Intranet Page</a> to learn how to run the scripts.
+
+<strong>Disclaimer: These scripts are only built to run IPHRA tools and
+assessments. Please make sure to follow the guidance provided in the
+Intranet to be able to run the scripts successfully.</strong>
+
+#### Quality Report and Plausibility Checks
+
+The Data Quality and Plausibility Report serves as a crucial tool for
+assessing the reliability and accuracy of the IPHRA data collection
+across different sectors such as Nutrition, Mortality, Water, Sanitation
+and Hygiene (WASH), Food Security, and Livelihoods. This comprehensive
+analysis is designed to identify and address potential issues within the
+data, ensuring that field teams are being informed on potential issues
+detected in the data collection.each of these sectors, the report
+provides a detailed examination of the datasets, employing a variety of
+metrics and methodologies to evaluate data quality and plausibility.
+This includes checks for completeness, consistency, and accuracy of the
+data collected. This report aims to uncover any discrepancies, outliers,
+or anomalies that may suggest data collection, entry errors, or
+underlying issues that could impact the integrity of the findings.
+
+#### Cleaning
+
+The IPHRA Cleaning toolkit is a tailored project to clean the collected
+data following IMPACT’s guidance of quantitative data cleaning. The
+project is divided in batches files that can be ran outside of R Studio
+to reduce the interactions with R and allow any person run the scripts.
+You are required to have R Tools and RStudio installed on your device to
+be able to run the scripts.
+
+#### Analysis
+
+The IPHRA Tabular Analysis is an analytical platform that presents a
+multitude of quantitative data tables. It encompasses a wide range of
+indicators collected through the IPHRA assessment process, empowering
+users to examine and interpret complex datasets effectively. This tool
+is structured to support understanding the distribution of your data and
+support you writing your factsheets/outputs/reports, and create other
+visualizations.
 
 ## Potential Errors and How to fix them
 
