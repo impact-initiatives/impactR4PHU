@@ -1721,7 +1721,6 @@ Details
 > `Healthcare is Needed Column` \<- Healthcare is Needed Column<br>
 > `Healthcare is Received Column` \<- Healthcare is Received Column<br>
 > `Individual Age Column` \<- Individual Age Column<br>
-> `Individual Age Column` \<- Individual Age Column<br>
 > `HH UUID Health Loop column` \<- Household unique identifier in health
 > members individual sheet(usually \_submission\_\_uuid)<br>
 > `HH UUID Main Sheet column` \<- Household unique identifier in main
