@@ -1184,7 +1184,6 @@ After running all the line in the run_ph_integrated_tables.R, below are the set 
    >`Healthcare is Needed Column` <- Healthcare is Needed Column<br>
    >`Healthcare is Received Column` <- Healthcare is Received Column<br>
    >`Individual Age Column` <- Individual Age Column<br>
-   >`Individual Age Column` <- Individual Age Column<br>
    >`HH UUID Health Loop column` <- Household unique identifier in health members individual sheet(usually _submission__uuid)<br>
    >`HH UUID Main Sheet column` <- Household unique identifier in main household sheet(usually _uuid)<br>
    >`Nutrition Sheet` <- Nutrition Individual Sheet<br>
