@@ -1521,8 +1521,18 @@ if(!file.exists("inputs/environment.Rdata")) {
   } else if (length(ind_healthcare_needed) == 0) {
     ind_healthcare_needed <- svDialogs::dlg_input(message= "Enter the name of the healthcare is needed","health_ind_healthcare_needed")$res
   }
+
+  ## To comment out line 1527 and 1528 (In case new version humind change the levels)
+
   ind_healthcare_needed_levels <- unique(unlist(data.list[[healthcare_sheet]][,ind_healthcare_needed]))
   ind_healthcare_needed_levels <- ind_healthcare_needed_levels[!is.na(ind_healthcare_needed_levels)]
+
+  ## To uncomment out line 1532, 1533, and 1534 (In case new version humind change the levels)
+
+  # ind_healthcare_needed_yes <- tcltk::tk_select.list(unique(unlist(data.list[[healthcare_sheet]][,ind_healthcare_needed])), title = "Yes Value")
+  # ind_healthcare_needed_no <- tcltk::tk_select.list(unique(unlist(data.list[[healthcare_sheet]][,ind_healthcare_needed])), title = "No Value")
+  # ind_healthcare_needed_undefined <- tcltk::tk_select.list(unique(unlist(data.list[[healthcare_sheet]][,ind_healthcare_needed])), title = "Undefined Value", multiple =T)
+
 
   ## healthcare is needed
   ind_healthcare_received <- names(data.list[[healthcare_sheet]])[grepl("healthcare_received",names(data.list[[healthcare_sheet]]))]
@@ -1539,9 +1549,19 @@ if(!file.exists("inputs/environment.Rdata")) {
   } else if (length(ind_healthcare_received) == 0) {
     ind_healthcare_received <- svDialogs::dlg_input(message= "Enter the name of the healthcare is received","health_ind_healthcare_received")$res
   }
+
+  ## To comment out line 1555 and 1556 (In case new version humind change the levels)
+
   ind_healthcare_received_levels <- unique(unlist(data.list[[healthcare_sheet]][,ind_healthcare_received]))
   ind_healthcare_received_levels <- ind_healthcare_received_levels[!is.na(ind_healthcare_received_levels)]
   ## ind age
+
+  ## To uncomment out line 1561, 1562, and 1563 (In case new version humind change the levels)
+
+  # ind_healthcare_received_yes <- tcltk::tk_select.list(unique(unlist(data.list[[healthcare_sheet]][,ind_healthcare_received])), title = "Yes Value")
+  # ind_healthcare_received_no <- tcltk::tk_select.list(unique(unlist(data.list[[healthcare_sheet]][,ind_healthcare_received])), title = "No Value")
+  # ind_healthcare_received_undefined <- tcltk::tk_select.list(unique(unlist(data.list[[healthcare_sheet]][,ind_healthcare_received])), title = "Undefined Value", multiple =T)
+
   ind_age <- names(data.list[[healthcare_sheet]])[grepl("ind_age",names(data.list[[healthcare_sheet]]))]
   if(length(ind_age) == 1){
     yes_no <- svDialogs::dlg_message(paste0("Is '", ind_age, "' the correct column for age of individual?"), type = "yesno")$res
@@ -1590,6 +1610,8 @@ if(!file.exists("inputs/environment.Rdata")) {
   }
 }
 
+## To comment out line 1615 to 1627 (In case new version humind change the levels)
+
 unmet_loop_df <- data.list[[healthcare_sheet]] %>%
   humind::add_loop_healthcare_needed_cat(ind_healthcare_needed = ind_healthcare_needed,
                                          ind_healthcare_needed_levels = ind_healthcare_needed_levels,
@@ -1604,6 +1626,28 @@ unmet_loop_df <- data.list[[healthcare_sheet]] %>%
                    unmet_healthcare = sum/n) %>%
   dplyr::select(admin1,unmet_healthcare)
 
+## To uncomment out line 1631 to 1647 (In case new version humind change the levels)
+
+# unmet_loop_df <- data.list[[healthcare_sheet]] %>%
+#   humind::add_loop_healthcare_needed_cat(ind_healthcare_needed = ind_healthcare_needed,
+#                                          ind_healthcare_needed_yes = ind_healthcare_needed_yes,
+#                                          ind_healthcare_needed_no = ind_healthcare_needed_no,
+#                                          ind_healthcare_needed_undefined = ind_healthcare_needed_undefined,
+#                                          ind_healthcare_received = ind_healthcare_received,
+#                                          ind_healthcare_received_yes = ind_healthcare_received_yes,
+#                                          ind_healthcare_received_no = ind_healthcare_received_no,
+#                                          ind_healthcare_received_undefined = ind_healthcare_received_undefined,
+#                                          ind_age = ind_age) %>%
+#   srvyr::as_survey_design(weights = weight) %>%
+#   dplyr::mutate(admin1 = !!rlang::sym(admin1)) %>%
+#   dplyr::group_by(admin1) %>%
+#   dplyr::summarise(n = n(),
+#                    sum = srvyr::survey_total(health_ind_healthcare_needed_yes_unmet),
+#                    unmet_healthcare = sum/n) %>%
+#   dplyr::select(admin1,unmet_healthcare)
+
+## To comment out line 1651 to 1663 (In case new version humind change the levels)
+
 unmet_loop_df_national <- data.list[[healthcare_sheet]] %>%
   humind::add_loop_healthcare_needed_cat(ind_healthcare_needed = ind_healthcare_needed,
                                          ind_healthcare_needed_levels = ind_healthcare_needed_levels,
@@ -1617,6 +1661,26 @@ unmet_loop_df_national <- data.list[[healthcare_sheet]] %>%
                    sum = srvyr::survey_total(health_ind_healthcare_needed_yes_unmet),
                    unmet_healthcare = sum/n) %>%
   dplyr::select(admin1,unmet_healthcare)
+
+## To uncomment out line 1667 to 1683 (In case new version humind change the levels)
+
+# unmet_loop_df_national <- data.list[[healthcare_sheet]] %>%
+#   humind::add_loop_healthcare_needed_cat(ind_healthcare_needed = ind_healthcare_needed,
+#                                          ind_healthcare_needed_yes = ind_healthcare_needed_yes,
+#                                          ind_healthcare_needed_no = ind_healthcare_needed_no,
+#                                          ind_healthcare_needed_undefined = ind_healthcare_needed_undefined,
+#                                          ind_healthcare_received = ind_healthcare_received,
+#                                          ind_healthcare_received_yes = ind_healthcare_received_yes,
+#                                          ind_healthcare_received_no = ind_healthcare_received_no,
+#                                          ind_healthcare_received_undefined = ind_healthcare_received_undefined,
+#                                          ind_age = ind_age) %>%
+#   srvyr::as_survey_design(weights = weight) %>%
+#   dplyr::mutate(admin1 = "national") %>%
+#   dplyr::group_by(admin1) %>%
+#   dplyr::summarise(n = n(),
+#                    sum = srvyr::survey_total(health_ind_healthcare_needed_yes_unmet),
+#                    unmet_healthcare = sum/n) %>%
+#   dplyr::select(admin1,unmet_healthcare)
 
 
 ## Nutrition
