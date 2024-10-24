@@ -1148,7 +1148,7 @@
       "RemoteHost": "api.github.com",
       "RemoteRepo": "impactR4PHU",
       "RemoteUsername": "impact-initiatives",
-      "RemoteSha": "8cad069451e6a27462080559eff10593494f39d9",
+      "RemoteSha": "29a5ad74a7b7c1692b665c771a0b9aedb47d5768",
       "Requirements": [
         "GGally",
         "R",
@@ -1169,7 +1169,7 @@
         "writexl",
         "zscorer"
       ],
-      "Hash": "4cc97c80ed6a8710e394677a098554cb"
+      "Hash": "d489b46c6f3c07f2f5c1fe4fabd58c36"
     },
     "isoband": {
       "Package": "isoband",
@@ -1838,10 +1838,10 @@
     },
     "rstudioapi": {
       "Package": "rstudioapi",
-      "Version": "0.17.0",
+      "Version": "0.17.1",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "fb9f5fce8f609e9b66f0bea5c783f88a"
+      "Hash": "5f90cd73946d706cfe26024294236113"
     },
     "rvest": {
       "Package": "rvest",

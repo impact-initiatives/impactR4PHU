@@ -1048,10 +1048,17 @@ if(!file.exists("inputs/environment.Rdata")) {
   } else if (length(facility) == 0) {
     facility <- svDialogs::dlg_input(message= "Enter the name of the handwashing facility","wash_handwashing_facility")$res
   }
-  facility_yes <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility])), title = "Yes Value")
-  facility_no <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility])), title = "None Value")
-  facility_no_permission <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility])), title = "No permission Value")
-  facility_undefined <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility])), title = "Other Value")
+  if(length(facility)>0){
+    facility_yes <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility])), title = "Yes Value")
+    facility_no <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility])), title = "None Value")
+    facility_no_permission <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility])), title = "No permission Value")
+    facility_undefined <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility])), title = "Other Value")
+  } else {
+    facility_yes <- NULL
+    facility_no <- NULL
+    facility_no_permission <- NULL
+    facility_undefined <- NULL
+  }
 
   # Observed water of handwashing facility
   facility_observed_water <- names(data.list$main)[grepl("facility_observed_water",names(data.list$main))]
@@ -1068,8 +1075,13 @@ if(!file.exists("inputs/environment.Rdata")) {
   } else if (length(facility_observed_water) == 0) {
     facility_observed_water <- svDialogs::dlg_input(message= "Enter the name of the handwashing facility observed water","wash_handwashing_facility_observed_water")$res
   }
-  facility_observed_water_yes <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_observed_water])), title = "Yes Value")
-  facility_observed_water_no <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_observed_water])), title = "No Value")
+  if(length(facility_observed_water)>0){
+    facility_observed_water_yes <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_observed_water])), title = "Yes Value")
+    facility_observed_water_no <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_observed_water])), title = "No Value")
+  } else {
+    facility_observed_water_yes <- NULL
+    facility_observed_water_no <- NULL
+  }
 
   ## Observed Soap Handwashing Facility
   facility_observed_soap <- names(data.list$main)[grepl("facility_observed_soap",names(data.list$main))]
@@ -1086,9 +1098,15 @@ if(!file.exists("inputs/environment.Rdata")) {
   } else if (length(facility_observed_soap) == 0) {
     facility_observed_soap <- svDialogs::dlg_input(message= "Enter the name of the handwashing facility observed soap","wash_handwashing_facility_observed_soap")$res
   }
-  facility_observed_soap_yes <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_observed_soap])), title = "Yes Value")
-  facility_observed_soap_no <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_observed_soap])), title = "No Value")
-  facility_observed_soap_alternative <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_observed_soap])), title = "Alternative Value")
+  if(length(facility_observed_soap)>0){
+    facility_observed_soap_yes <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_observed_soap])), title = "Yes Value")
+    facility_observed_soap_no <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_observed_soap])), title = "No Value")
+    facility_observed_soap_alternative <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_observed_soap])), title = "Alternative Value")
+  } else {
+    facility_observed_soap_yes <- NULL
+    facility_observed_soap_no <- NULL
+    facility_observed_soap_alternative <- NULL
+  }
 
   ## Reported Handwashing Facility
   facility_reported <- names(data.list$main)[grepl("facility_reported",names(data.list$main))]
@@ -1105,9 +1123,15 @@ if(!file.exists("inputs/environment.Rdata")) {
   } else if (length(facility_reported) == 0) {
     facility_reported <- svDialogs::dlg_input(message= "Enter the name of the handwashing facility reported","wash_handwashing_facility_reported")$res
   }
-  facility_reported_yes <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_reported])), title = "Yes Value", multiple = TRUE)
-  facility_reported_no <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_reported])), title = "No Value", multiple = TRUE)
-  facility_reported_undefined <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_reported])), title = "Undefined Value", multiple = TRUE)
+  if(length(facility_reported)>0){
+    facility_reported_yes <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_reported])), title = "Yes Value", multiple = TRUE)
+    facility_reported_no <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_reported])), title = "No Value", multiple = TRUE)
+    facility_reported_undefined <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_reported])), title = "Undefined Value", multiple = TRUE)
+  } else {
+    facility_reported_yes <- NULL
+    facility_reported_no <- NULL
+    facility_reported_undefined <- NULL
+  }
 
   ## Reported no permission soap
   facility_reported_no_permission_soap <- names(data.list$main)[grepl("soap_observed",names(data.list$main))]
@@ -1124,9 +1148,15 @@ if(!file.exists("inputs/environment.Rdata")) {
   } else if (length(facility_reported_no_permission_soap) == 0) {
     facility_reported_no_permission_soap <- svDialogs::dlg_input(message= "Enter the name of the reported no permission soap","wash_soap_observed")$res
   }
-  facility_reported_no_permission_soap_yes <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_reported_no_permission_soap])), title = "Yes Value", multiple = TRUE)
-  facility_reported_no_permission_soap_no <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_reported_no_permission_soap])), title = "No Value")
-  facility_reported_no_permission_soap_undefined <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_reported_no_permission_soap])), title = "Undefined Value", multiple = TRUE)
+  if(length(facility_reported_no_permission_soap)>0){
+    facility_reported_no_permission_soap_yes <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_reported_no_permission_soap])), title = "Yes Value", multiple = TRUE)
+    facility_reported_no_permission_soap_no <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_reported_no_permission_soap])), title = "No Value")
+    facility_reported_no_permission_soap_undefined <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_reported_no_permission_soap])), title = "Undefined Value", multiple = TRUE)
+  } else {
+    facility_reported_no_permission_soap_yes <- NULL
+    facility_reported_no_permission_soap_no <- NULL
+    facility_reported_no_permission_soap_undefined <- NULL
+  }
 
   ## Reported no permission soap type
   facility_reported_no_permission_soap_type <- names(data.list$main)[grepl("soap_observed_type",names(data.list$main))]
@@ -1143,9 +1173,15 @@ if(!file.exists("inputs/environment.Rdata")) {
   } else if (length(facility_reported_no_permission_soap_type) == 0) {
     facility_reported_no_permission_soap_type <- svDialogs::dlg_input(message= "Enter the name of the reported no permission soap type","wash_soap_observed_type")$res
   }
-  facility_reported_no_permission_soap_type_yes <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_reported_no_permission_soap_type])), title = "Yes Value", multiple = TRUE)
-  facility_reported_no_permission_soap_type_no <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_reported_no_permission_soap_type])), title = "No Value")
-  facility_reported_no_permission_soap_type_undefined <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_reported_no_permission_soap_type])), title = "Undefined Value", multiple = TRUE)
+  if(length(facility_reported_no_permission_soap_type)>0){
+    facility_reported_no_permission_soap_type_yes <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_reported_no_permission_soap_type])), title = "Yes Value", multiple = TRUE)
+    facility_reported_no_permission_soap_type_no <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_reported_no_permission_soap_type])), title = "No Value")
+    facility_reported_no_permission_soap_type_undefined <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_reported_no_permission_soap_type])), title = "Undefined Value", multiple = TRUE)
+  } else {
+    facility_reported_no_permission_soap_type_yes <- NULL
+    facility_reported_no_permission_soap_type_no <- NULL
+    facility_reported_no_permission_soap_type_undefined <- NULL
+  }
 
   ## Reported remote soap
   facility_reported_remote_soap <- names(data.list$main)[grepl("soap_reported",names(data.list$main))]
@@ -1162,9 +1198,15 @@ if(!file.exists("inputs/environment.Rdata")) {
   } else if (length(facility_reported_remote_soap) == 0) {
     facility_reported_remote_soap <- svDialogs::dlg_input(message= "Enter the name of the reported remote soap","wash_soap_reported")$res
   }
-  facility_reported_remote_soap_yes <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_reported_remote_soap])), title = "Yes Value")
-  facility_reported_remote_soap_no <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_reported_remote_soap])), title = "No Value")
-  facility_reported_remote_soap_undefined <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_reported_remote_soap])), title = "Undefined Value", multiple = TRUE)
+  if(length(facility_reported_remote_soap)>0){
+    facility_reported_remote_soap_yes <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_reported_remote_soap])), title = "Yes Value")
+    facility_reported_remote_soap_no <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_reported_remote_soap])), title = "No Value")
+    facility_reported_remote_soap_undefined <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_reported_remote_soap])), title = "Undefined Value", multiple = TRUE)
+  } else {
+    facility_reported_remote_soap_yes <- NULL
+    facility_reported_remote_soap_no <- NULL
+    facility_reported_remote_soap_undefined <- NULL
+  }
 
   ## Reported remote soap type
   facility_reported_remote_soap_type <- names(data.list$main)[grepl("soap_reported_type",names(data.list$main))]
@@ -1181,9 +1223,15 @@ if(!file.exists("inputs/environment.Rdata")) {
   } else if (length(facility_reported_remote_soap_type) == 0) {
     facility_reported_remote_soap_type <- svDialogs::dlg_input(message= "Enter the name of the reported remote soap type","wash_soap_reported_type")$res
   }
-  facility_reported_remote_soap_type_yes <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_reported_remote_soap_type])), title = "Yes Value", multiple = TRUE)
-  facility_reported_remote_soap_type_no <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_reported_remote_soap_type])), title = "No Value", multiple = TRUE)
-  facility_reported_remote_soap_type_undefined <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_reported_remote_soap_type])), title = "Undefined Value", multiple = TRUE)
+  if(length(facility_reported_remote_soap_type)>0){
+    facility_reported_remote_soap_type_yes <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_reported_remote_soap_type])), title = "Yes Value", multiple = TRUE)
+    facility_reported_remote_soap_type_no <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_reported_remote_soap_type])), title = "No Value", multiple = TRUE)
+    facility_reported_remote_soap_type_undefined <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_reported_remote_soap_type])), title = "Undefined Value", multiple = TRUE)
+  } else {
+    facility_reported_remote_soap_type_yes <- NULL
+    facility_reported_remote_soap_type_no <- NULL
+    facility_reported_remote_soap_type_undefined <- NULL
+  }
 }
 
 handwash_df <- data.list$main %>%
