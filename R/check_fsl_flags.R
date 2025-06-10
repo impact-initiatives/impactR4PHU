@@ -67,18 +67,6 @@
 #' @param fsl_hdds_score the name of the variable that indicates the household dietary diversity score
 #' @param fsl_fc_cell the name of the variable that indicates the food consumption matrix score
 #' @param fsl_fc_phase the name of the variable that indicates the food consumption matrix phase
-#' @param num_children the name of the variable that indicates the number of children available in each household
-#' @param income_types a vector of the three income_types variables. By default,
-#'  c("fsl_first_income_types","fsl_second_income_types","fsl_third_income_types")
-#' @param sell_agri_prod the "sell_agri_prod" choice value of the variables that indicates
-#'  income from agriculture
-#' @param sell_anim_prod the "sell_anim_prod" choice value of the variables that indicates
-#'  income from animal
-#' @param residency_status the name of the variable that indicates the residency status of HH,
-#'  By default, "residency_status"
-#' @param value_idp the name of the choice value representing the idp residency status. By default, "idp"
-#' @param tool.survey This is the tool.survey dataset. By default NULL
-#' @param label_colname This is the label column in the tool survey. By default label::English
 #' @param uuid uuid variable
 #'
 #' @return a dataframe that includes all the logical flags related to food security and livelihoods.
@@ -99,9 +87,6 @@
 #' - flag_lcsi_coherence
 #' - flag_lcsi_severity
 #' - flag_lcsi_na
-#' - flag_lcsi_liv_agriculture
-#' - flag_lcsi_liv_livestock
-#' - flag_lcsi_displ
 #' - flag_fc_cell
 #' - flag_low_sugar_cond_hdds
 #' @export
@@ -166,11 +151,6 @@
 #'   fsl_hdds_score= c(10,0),
 #'   fsl_fc_cell= c(22,33),
 #'   fsl_fc_phase= c("Phase 2 FC","Phase 3 FC"),
-#'   num_children= c(2,3),
-#'   fsl_first_income_types = c("sell_agri_prod","trader"),
-#'   fsl_second_income_types = c("daily_labour_skilled","sell_anim_prod"),
-#'   fsl_third_income_types = c("hum_assistance","none"),
-#'   residency_status = c("idp", "host"),
 #'   enumerator = c("team1","team2"),
 #'   uuid= c("31d0cfb8-21d7-414b4f-94999f-04a15ce39d78","205d37b1-5a6f-44484d-b3b1ba-4eafbdc50873")
 #'   )
@@ -237,31 +217,12 @@ check_fsl_flags <- function(.dataset,
                            fsl_hdds_score = "fsl_hdds_score",
                            fsl_fc_cell = "fsl_fc_cell",
                            fsl_fc_phase = "fsl_fc_phase",
-                           num_children = "num_children",
-                           income_types = c("fsl_first_income_types","fsl_second_income_types","fsl_third_income_types"),
-                           sell_agri_prod = "sell_agri_prod",
-                           sell_anim_prod = "sell_anim_prod",
-                           residency_status = "residency_status",
-                           value_idp = "idp",
-                           tool.survey = NULL,
-                           label_colname = "label::English",
                            uuid = "uuid") {
 
   options(warn = -1)
   ## Throw an error if a dataset wasn't provided as a first argument
   if (!is.data.frame(.dataset)) {
     stop("First argument should be a dataset")
-  }
-
-  ## Throw an error if the tool is empty
-  if(is.null(tool.survey)) stop("Tool survey not available")
-
-  if (!is.data.frame(tool.survey)) {
-    stop("tool.survey should be a dataset")
-  }
-
-  if (nrow(tool.survey) == 0) {
-    stop("tool.survey is empty")
   }
 
   ## Throw an error if the dataset is empty
@@ -272,8 +233,8 @@ check_fsl_flags <- function(.dataset,
   if (!uuid %in% names(.dataset)) stop("uuid argument incorrect, or not available in the dataset")
 
   # combine all fcs_columns together
-  fcs_flag_columns <- c(fsl_fcs_cereal,fsl_fcs_legumes,fsl_fcs_dairy,fsl_fcs_meat,
-                        fsl_fcs_veg,fsl_fcs_fruit,fsl_fcs_oil,fsl_fcs_sugar,fsl_fcs_score)
+  fcs_flag_columns <- c("fsl_fcs_cereal","fsl_fcs_legumes","fsl_fcs_dairy","fsl_fcs_meat",
+                        "fsl_fcs_veg","fsl_fcs_fruit","fsl_fcs_oil","fsl_fcs_sugar","fsl_fcs_score")
 
 
   if(length(setdiff(length(fcs_flag_columns),9)) != 0) {
@@ -283,10 +244,13 @@ check_fsl_flags <- function(.dataset,
     .dataset <- .dataset %>%
       dplyr::mutate_at(dplyr::vars(fcs_flag_columns),as.numeric)%>%
       dplyr::mutate(flag_meat_cereal_ratio = ifelse(is.na(!!rlang::sym(fsl_fcs_cereal)), NA, ifelse(!!rlang::sym(fsl_fcs_cereal) < !!rlang::sym(fsl_fcs_meat), 1, 0)),
-                    flag_low_cereal = ifelse(is.na(!!rlang::sym(fsl_fcs_cereal)), NA, ifelse(!!rlang::sym(fsl_fcs_cereal) < 5, 1, 0)),
-                    flag_low_fcs = ifelse(is.na(!!rlang::sym(fsl_fcs_score)),NA, ifelse(!!rlang::sym(fsl_fcs_score)<=10,1,0)),
-                    flag_high_fcs = ifelse(is.na(!!rlang::sym(fsl_fcs_score)),NA, ifelse(!!rlang::sym(fsl_fcs_score)>=56,1,0)),
-                    flag_low_oil = ifelse(is.na(!!rlang::sym(fsl_fcs_cereal)), NA, ifelse(!!rlang::sym(fsl_fcs_oil) < 5, 1, 0))) %>%
+                    flag_low_cereal = ifelse(is.na(!!rlang::sym(fsl_fcs_cereal)), NA, ifelse(!!rlang::sym(fsl_fcs_cereal) < 4, 1, 0)),
+                    flag_low_fcs = ifelse(is.na(!!rlang::sym(fsl_fcs_score)),NA, ifelse(!!rlang::sym(fsl_fcs_score)<=14,1,0)),
+                    flag_high_fcs = ifelse(is.na(!!rlang::sym(fsl_fcs_score)),NA, ifelse(!!rlang::sym(fsl_fcs_score)>=100,1,0)),
+                    flag_full_fcs = ifelse(is.na(!!rlang::sym(fsl_fcs_score)),NA, ifelse(!!rlang::sym(fsl_fcs_score) == 112,1,0)),
+                    flag_fcs_zero = ifelse(is.na(!!rlang::sym(fsl_fcs_score)),NA, ifelse(!!rlang::sym(fsl_fcs_score) == 0,1,0)),
+                    flag_low_oil = ifelse(is.na(!!rlang::sym(fsl_fcs_cereal)), NA, ifelse(!!rlang::sym(fsl_fcs_oil) < 3, 1, 0)),
+                    flag_high_protein = ifelse(is.na(!!rlang::sym(fsl_fcs_cereal)), NA, ifelse(!!rlang::sym(fsl_fcs_meat) >= 5 | !!rlang::sym(fsl_fcs_dairy) >= 5 , 1, 0))) %>%
       dplyr::rowwise() %>%
       dplyr::mutate(sd_foods = stats::sd(c(!!rlang::sym(fsl_fcs_cereal), !!rlang::sym(fsl_fcs_legumes), !!rlang::sym(fsl_fcs_dairy),
                                     !!rlang::sym(fsl_fcs_meat), !!rlang::sym(fsl_fcs_veg), !!rlang::sym(fsl_fcs_fruit),
@@ -317,22 +281,10 @@ check_fsl_flags <- function(.dataset,
                     flag_fcs_rcsi = ifelse(is.na(!!rlang::sym(fsl_rcsi_score)), NA,
                                            ifelse(is.na(!!rlang::sym(fsl_fcs_score)), NA,
                                                   ifelse(!!rlang::sym(fsl_fcs_score) < 35 &
-                                                           !!rlang::sym(fsl_rcsi_score) <= 4, 1, 0 ))),
+                                                           !!rlang::sym(fsl_rcsi_score) <= 3, 1, 0 ))),
                     flag_high_rcsi = ifelse(is.na(!!rlang::sym(fsl_rcsi_score)), NA,
-                                            ifelse(!!rlang::sym(fsl_rcsi_score) >= 43, 1, 0)))
-    if(!is.null(num_children)){
-      if(!num_children %in% names(.dataset)) {
-        warning("num_children argument incorrect or not available in the dataset.")
-        .dataset <- .dataset %>%
-          dplyr::mutate(flag_rcsi_children = NA)
-      } else{
-        .dataset <- .dataset %>%
-          dplyr::mutate(flag_rcsi_children = ifelse(is.na(!!rlang::sym(fsl_rcsi_mealadult)) |
-                                                      is.na(!!rlang::sym(num_children)), NA,
-                                                    ifelse(as.numeric(!!rlang::sym(fsl_rcsi_mealadult)) > 0 &
-                                                             as.numeric(!!rlang::sym(num_children)) == 0, 1,0)))
-      }
-    }
+                                            ifelse(!!rlang::sym(fsl_rcsi_score) >= 42, 1, 0)))
+
     .dataset <- .dataset %>%
       dplyr::mutate(flag_fcsrcsi_box = dplyr::case_when(is.na(!!rlang::sym(fsl_rcsi_score)) |
                                                           is.na(!!rlang::sym(fsl_fcs_score)) ~ NA,
@@ -385,45 +337,10 @@ check_fsl_flags <- function(.dataset,
 
     .dataset <- .dataset %>%
       dplyr::mutate(flag_lcsi_na = dplyr::case_when(is.na(lcsi.count.na) ~ NA,
-                                                    lcsi.count.na == 10 ~ 1,
+                                                    lcsi.count.na >= 4 ~ 1,
                                                     TRUE ~ 0))
 
-    suppressWarnings(
-      agric <- lcs_variables[which(grepl("agriculture|crop|crops|farm",get.label(lcs_variables,
-                                                                                 tool.survey = tool.survey,
-                                                                                 label_colname = label_colname)))]
-    )
 
-    suppressWarnings(
-      livest <- lcs_variables[which(grepl("livestock|livestocks|animal",get.label(lcs_variables,
-                                                                                  tool.survey = tool.survey,
-                                                                                  label_colname = label_colname)))]
-
-    )
-
-    suppressWarnings(
-      displ <- lcs_variables[which(grepl("displaced|migration|migrated",get.label(lcs_variables,
-                                                                                  tool.survey = tool.survey,
-                                                                                  label_colname = label_colname)))]
-    )
-
-    if(!is.null(income_types)){
-      if(all(income_types %in% names(.dataset))){
-        if(length(agric)>0){
-          .dataset$flag_lcsi_liv_agriculture <-  dplyr::case_when(rowSums(sapply(.dataset[agric], function(i) grepl(fsl_lcsi_yes_value,i))) > 0 & rowSums(sapply(.dataset[income_types], function(i) grepl(sell_agri_prod,i))) > 0 ~ 1, TRUE ~ 0)
-        }
-        if(length(livest)>0){
-          .dataset$flag_lcsi_liv_livestock  <- dplyr::case_when(rowSums(sapply(.dataset[livest], function(i) grepl(fsl_lcsi_yes_value,i))) > 0 & rowSums(sapply(.dataset[income_types], function(i) grepl(sell_anim_prod,i))) > 0 ~ 1, TRUE ~ 0)
-        }
-      }
-    }
-    if(!is.null(residency_status)){
-      if(residency_status %in% names(.dataset)){
-        if(length(displ)>0){
-          .dataset$flag_lcsi_displ <- dplyr::case_when(rowSums(sapply(.dataset[displ], function(i) grepl(fsl_lcsi_yes_value,i))) > 0 & .dataset[residency_status] == value_idp ~ 1, TRUE ~ 0)
-        }
-      }
-    }
   }
 
   fc_phase_col <- c(fsl_fc_cell,fsl_fc_phase)
@@ -442,15 +359,57 @@ check_fsl_flags <- function(.dataset,
                          fsl_hdds_oil,fsl_hdds_condiments,fsl_hdds_cat,fsl_hdds_score)
 
 
-  if(length(setdiff(length(fc_phase_col),14)) != 0) {
+  if(length(setdiff(length(hdds_flag_columns),14)) != 0) {
     warning("Missing hdds columns")
   } else{
     .dataset <- .dataset %>%
-      dplyr::mutate(flag_low_sugar_cond_hdds = ifelse(is.na(!!rlang::sym(fsl_hdds_score)), NA,
-                                                      ifelse((!!rlang::sym(fsl_hdds_score) <= 2 & !!rlang::sym(fsl_hdds_sugar) == fsl_hdds_yes_value & !!rlang::sym(fsl_hdds_condiments) == fsl_hdds_yes_value) |
-                                                               (!!rlang::sym(fsl_hdds_score) <= 1 & !!rlang::sym(fsl_hdds_sugar) == fsl_hdds_yes_value) |
-                                                               (!!rlang::sym(fsl_hdds_score) <= 1 & !!rlang::sym(fsl_hdds_condiments) == fsl_hdds_yes_value), 1, 0)))
+      dplyr::mutate(flag_low_hdds = ifelse(is.na(!!rlang::sym(fsl_hdds_score)), NA, ifelse(!!rlang::sym(fsl_hdds_score) == 0, 1, 0)),
+                    flag_high_hdds = ifelse(is.na(!!rlang::sym(fsl_hdds_score)), NA, ifelse(!!rlang::sym(fsl_hdds_score) == 12, 1, 0)))
   }
+
+  # flag hdds and fcs cols
+
+  fcs_hdds_flag_columns <- c(fsl_hdds_cereals,fsl_hdds_tubers,fsl_hdds_legumes,fsl_hdds_veg,fsl_hdds_fruit,
+                         fsl_hdds_meat,fsl_hdds_fish,fsl_hdds_dairy,fsl_hdds_eggs,fsl_hdds_sugar,
+                         fsl_hdds_oil,fsl_hdds_condiments,fsl_hdds_cat,fsl_hdds_score,
+
+                         fsl_fcs_cereal,fsl_fcs_legumes,fsl_fcs_dairy,fsl_fcs_meat,
+                         fsl_fcs_veg,fsl_fcs_fruit,fsl_fcs_oil,fsl_fcs_sugar,fsl_fcs_score)
+
+  if(length(setdiff(length(fcs_hdds_flag_columns),14)) != 0) {
+    warning("Missing fcs and hdds columns for combined checks")
+  } else{
+
+    .dataset <- .dataset %>%
+      dplyr::mutate(chk_fcs_hdds_cereal1 = ifelse(is.na(!!rlang::sym(fsl_fcs_cereal)) | is.na(!!rlang::sym(fsl_hdds_cereals)), NA, ifelse(!!rlang::sym(fsl_fcs_cereal) == 7 & !!rlang::sym(fsl_hdds_cereals) != fsl_hdds_yes_value , 1, 0)),
+                    chk_fcs_hdds_cereal2 = ifelse(is.na(!!rlang::sym(fsl_fcs_cereal)) | is.na(!!rlang::sym(fsl_hdds_cereals)), NA, ifelse(!!rlang::sym(fsl_fcs_cereal) == 0 & !!rlang::sym(fsl_hdds_cereals) == fsl_hdds_yes_value , 1, 0)),
+
+                    chk_fcs_hdds_legumes1 = ifelse(is.na(!!rlang::sym(fsl_fcs_legumes)) | is.na(!!rlang::sym(fsl_hdds_legumes)), NA, ifelse(!!rlang::sym(fsl_fcs_legumes) == 7 & !!rlang::sym(fsl_hdds_legumes) != fsl_hdds_yes_value , 1, 0)),
+                    chk_fcs_hdds_legumes2 = ifelse(is.na(!!rlang::sym(fsl_fcs_legumes)) | is.na(!!rlang::sym(fsl_hdds_legumes)), NA, ifelse(!!rlang::sym(fsl_fcs_legumes) == 0 & !!rlang::sym(fsl_hdds_legumes) == fsl_hdds_yes_value , 1, 0)),
+
+                    chk_fcs_hdds_dairy1 = ifelse(is.na(!!rlang::sym(fsl_fcs_dairy)) | is.na(!!rlang::sym(fsl_hdds_dairy)), NA, ifelse(!!rlang::sym(fsl_fcs_dairy) == 7 & !!rlang::sym(fsl_hdds_dairy) != fsl_hdds_yes_value , 1, 0)),
+                    chk_fcs_hdds_dairy2 = ifelse(is.na(!!rlang::sym(fsl_fcs_dairy)) | is.na(!!rlang::sym(fsl_hdds_dairy)), NA, ifelse(!!rlang::sym(fsl_fcs_dairy) == 0 & !!rlang::sym(fsl_hdds_dairy) == fsl_hdds_yes_value , 1, 0)),
+
+                    chk_fcs_hdds_meat1 = ifelse(is.na(!!rlang::sym(fsl_fcs_meat)) | is.na(!!rlang::sym(fsl_hdds_meat)), NA, ifelse(!!rlang::sym(fsl_fcs_meat) == 7 & !!rlang::sym(fsl_hdds_meat) != fsl_hdds_yes_value , 1, 0)),
+                    chk_fcs_hdds_meat2 = ifelse(is.na(!!rlang::sym(fsl_fcs_meat)) | is.na(!!rlang::sym(fsl_hdds_meat)), NA, ifelse(!!rlang::sym(fsl_fcs_meat) == 0 & !!rlang::sym(fsl_hdds_meat) == fsl_hdds_yes_value , 1, 0)),
+
+                    chk_fcs_hdds_veg1 = ifelse(is.na(!!rlang::sym(fsl_fcs_veg)) | is.na(!!rlang::sym(fsl_hdds_veg)), NA, ifelse(!!rlang::sym(fsl_fcs_veg) == 7 & !!rlang::sym(fsl_hdds_veg) != fsl_hdds_yes_value , 1, 0)),
+                    chk_fcs_hdds_veg2 = ifelse(is.na(!!rlang::sym(fsl_fcs_veg)) | is.na(!!rlang::sym(fsl_hdds_veg)), NA, ifelse(!!rlang::sym(fsl_fcs_veg) == 0 & !!rlang::sym(fsl_hdds_veg) == fsl_hdds_yes_value , 1, 0)),
+
+                    chk_fcs_hdds_fruit1 = ifelse(is.na(!!rlang::sym(fsl_fcs_fruit)) | is.na(!!rlang::sym(fsl_hdds_fruit)), NA, ifelse(!!rlang::sym(fsl_fcs_fruit) == 7 & !!rlang::sym(fsl_hdds_fruit) != fsl_hdds_yes_value , 1, 0)),
+                    chk_fcs_hdds_fruit2 = ifelse(is.na(!!rlang::sym(fsl_fcs_fruit)) | is.na(!!rlang::sym(fsl_hdds_fruit)), NA, ifelse(!!rlang::sym(fsl_fcs_fruit) == 0 & !!rlang::sym(fsl_hdds_fruit) == fsl_hdds_yes_value , 1, 0)),
+
+                   ) %>%
+      dplyr::rowwise() %>%
+      dplyr::mutate(sum_fcs_hdds_chks1 = sum(chk_fcs_hdds_cereal1,chk_fcs_hdds_legumes1,chk_fcs_hdds_dairy1,chk_fcs_hdds_meat1,chk_fcs_hdds_veg1,chk_fcs_hdds_fruit1, na.rm = T),
+                    sum_fcs_hdds_chks2 = sum(chk_fcs_hdds_cereal2,chk_fcs_hdds_legumes2,chk_fcs_hdds_dairy2,chk_fcs_hdds_meat2,chk_fcs_hdds_veg2,chk_fcs_hdds_fruit2, na.rm = T)) %>%
+      dplyr::ungroup() %>%
+      dplyr::mutate(flag_hdds_fcs_1 = ifelse(sum_fcs_hdds_chks1 > 0, 1, 0),
+                    flag_hdds_fcs_2 = ifelse(sum_fcs_hdds_chks2 > 0, 1, 0)
+      )
+
+  }
+
   options(warn = 0)
   return(.dataset)
 }
