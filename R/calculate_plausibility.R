@@ -133,52 +133,64 @@ calculate_plausibility <- function(.dataset){
                                                                TRUE ~ 0))
   }
   if (c("flag_low_fcs") %in% names(.dataset)) {
-    .dataset <- .dataset %>% dplyr::mutate(plaus_flag_low_fcs = dplyr::case_when(flag_low_fcs < 2 ~ 0,
-                                                                     flag_low_fcs >= 2 & flag_low_fcs < 10 ~ 2,
+    .dataset <- .dataset %>% dplyr::mutate(plaus_flag_low_fcs = dplyr::case_when(flag_low_fcs < 5 ~ 0,
+                                                                     flag_low_fcs >= 5 & flag_low_fcs < 10 ~ 2,
                                                                      flag_low_fcs >= 10 ~ 4,
                                                                      TRUE ~ 0))
   }
-  if (c("flag_high_fcs") %in% names(.dataset)) {
-    .dataset <- .dataset %>% dplyr::mutate(plaus_flag_high_fcs = dplyr::case_when(flag_high_fcs < 2 ~ 0,
-                                                                      flag_high_fcs >= 2 & flag_high_fcs < 10 ~ 1,
-                                                                      flag_high_fcs >= 10 ~ 2,
+  if (c("flag_fcs_zero") %in% names(.dataset)) {
+    .dataset <- .dataset %>% dplyr::mutate(plaus_flag_low_fcs = dplyr::case_when(flag_fcs_zero < 5 ~ 0,
+                                                                                 flag_fcs_zero >= 5 & flag_fcs_zero < 10 ~ 2,
+                                                                                 flag_fcs_zero >= 10 ~ 4,
+                                                                                 TRUE ~ 0))
+  }
+  if (c("flag_fcs_zero") %in% names(.dataset)) {
+    .dataset <- .dataset %>% dplyr::mutate(plaus_flag_low_fcs = dplyr::case_when(flag_fcs_zero < 5 ~ 0,
+                                                                                 flag_fcs_zero >= 5 & flag_fcs_zero < 10 ~ 2,
+                                                                                 flag_fcs_zero >= 10 ~ 4,
+                                                                                 TRUE ~ 0))
+  }
+  if (c("flag_full_fcs") %in% names(.dataset)) {
+    .dataset <- .dataset %>% dplyr::mutate(plaus_flag_high_fcs = dplyr::case_when(flag_high_fcs < 5 ~ 0,
+                                                                      flag_full_fcs >= 5 & flag_full_fcs < 10 ~ 1,
+                                                                      flag_full_fcs >= 10 ~ 2,
                                                                       TRUE ~ 0))
   }
   if (c("flag_sd_foodgroup") %in% names(.dataset)) { # maybe only 3 cat
-    .dataset <- .dataset %>% dplyr::mutate(plaus_flag_sd_foodgroup = dplyr::case_when(flag_sd_foodgroup < 2 ~ 0,
-                                                                          flag_sd_foodgroup >= 2 & flag_sd_foodgroup < 10 ~ 4,
+    .dataset <- .dataset %>% dplyr::mutate(plaus_flag_sd_foodgroup = dplyr::case_when(flag_sd_foodgroup < 5 ~ 0,
+                                                                          flag_sd_foodgroup >= 5 & flag_sd_foodgroup < 10 ~ 4,
                                                                           flag_sd_foodgroup >= 10 ~ 6,
                                                                           TRUE ~ 0))
   }
   if (c("flag_meat_cereal_ratio") %in% names(.dataset)) {
-    .dataset <- .dataset %>% dplyr::mutate(plaus_flag_meat_cereal_ratio = dplyr::case_when(flag_meat_cereal_ratio < 2 ~ 0,
-                                                                               flag_meat_cereal_ratio >= 2 & flag_meat_cereal_ratio < 10 ~ 2,
+    .dataset <- .dataset %>% dplyr::mutate(plaus_flag_meat_cereal_ratio = dplyr::case_when(flag_meat_cereal_ratio < 5 ~ 0,
+                                                                               flag_meat_cereal_ratio >= 5 & flag_meat_cereal_ratio < 10 ~ 2,
                                                                                flag_meat_cereal_ratio >= 10 ~ 4,
                                                                                TRUE ~ 0))
   }
-  if (c("flag_low_sugar_cond_hdds") %in% names(.dataset)) {
-    .dataset <- .dataset %>% dplyr::mutate(plaus_flag_low_sugar_cond_hdds = dplyr::case_when(flag_low_sugar_cond_hdds < 2 ~ 0,
-                                                                                 flag_low_sugar_cond_hdds >= 2 & flag_low_sugar_cond_hdds < 10 ~ 2,
-                                                                                 flag_low_sugar_cond_hdds >= 10 ~ 4,
-                                                                                 TRUE ~ 0))
-  }
+  # if (c("flag_low_sugar_cond_hdds") %in% names(.dataset)) {
+  #   .dataset <- .dataset %>% dplyr::mutate(plaus_flag_low_sugar_cond_hdds = dplyr::case_when(flag_low_sugar_cond_hdds < 2 ~ 0,
+  #                                                                                flag_low_sugar_cond_hdds >= 2 & flag_low_sugar_cond_hdds < 10 ~ 2,
+  #                                                                                flag_low_sugar_cond_hdds >= 10 ~ 4,
+  #                                                                                TRUE ~ 0))
+  # }
+
   fcs_plaus_vars <- c("plaus_sd_fcs", "plaus_flag_low_fcs",
                       "plaus_flag_high_fcs", "plaus_flag_sd_foodgroup",
-                      "plaus_flag_meat_cereal_ratio",
-                      "plaus_flag_low_sugar_cond_hdds")
-  if (length(setdiff(c(fcs_plaus_vars), names(.dataset))) < 6) {
+                      "plaus_flag_meat_cereal_ratio")
+  if (length(setdiff(c(fcs_plaus_vars), names(.dataset))) < 5) {
     plaus_nms <- intersect(fcs_plaus_vars, names(.dataset))
     .dataset <- .dataset %>% dplyr::rowwise() %>% dplyr::mutate(plaus_fcs = sum(!!!rlang::syms(plaus_nms), na.rm = TRUE)) %>% dplyr::ungroup()
   }
   if (c("flag_high_rcsi") %in% names(.dataset)) {
-    .dataset <- .dataset %>% dplyr::mutate(plaus_flag_high_rcsi = dplyr::case_when(flag_high_rcsi < 2 ~ 0,
-                                                                       flag_high_rcsi >= 2 & flag_high_rcsi < 10 ~ 4,
+    .dataset <- .dataset %>% dplyr::mutate(plaus_flag_high_rcsi = dplyr::case_when(flag_high_rcsi < 5 ~ 0,
+                                                                       flag_high_rcsi >= 5 & flag_high_rcsi < 10 ~ 4,
                                                                        flag_high_rcsi >= 10 ~ 5,
                                                                        TRUE ~ 0))
   }
   if (c("flag_sd_rcsicoping") %in% names(.dataset)) {
-    .dataset <- .dataset %>% dplyr::mutate(plaus_flag_sd_rcsicoping = dplyr::case_when(flag_sd_rcsicoping < 2 ~ 0,
-                                                                           flag_sd_rcsicoping >= 2 & flag_sd_rcsicoping < 10 ~ 4,
+    .dataset <- .dataset %>% dplyr::mutate(plaus_flag_sd_rcsicoping = dplyr::case_when(flag_sd_rcsicoping < 5 ~ 0,
+                                                                           flag_sd_rcsicoping >= 5 & flag_sd_rcsicoping < 10 ~ 4,
                                                                            flag_sd_rcsicoping >= 10 ~ 6,
                                                                            TRUE ~ 0))
   }
@@ -191,14 +203,14 @@ calculate_plausibility <- function(.dataset){
                                                                 TRUE ~ 0))
   }
   if (c("flag_protein_rcsi") %in% names(.dataset)) {
-    .dataset <- .dataset %>% dplyr::mutate(plaus_flag_protein_rcsi = dplyr::case_when(flag_protein_rcsi < 2 ~ 0,
-                                                                          flag_protein_rcsi >= 2 & flag_protein_rcsi < 10 ~ 2,
+    .dataset <- .dataset %>% dplyr::mutate(plaus_flag_protein_rcsi = dplyr::case_when(flag_protein_rcsi < 5 ~ 0,
+                                                                          flag_protein_rcsi >= 5 & flag_protein_rcsi < 10 ~ 2,
                                                                           flag_protein_rcsi >= 10 ~ 3,
                                                                           TRUE ~ 0))
   }
   if (c("flag_rcsi_children") %in% names(.dataset)) {
-    .dataset <- .dataset %>% dplyr::mutate(plaus_flag_rcsi_children = dplyr::case_when(flag_rcsi_children < 2 ~ 0,
-                                                                           flag_protein_rcsi >= 2 & flag_protein_rcsi < 10 ~ 2,
+    .dataset <- .dataset %>% dplyr::mutate(plaus_flag_rcsi_children = dplyr::case_when(flag_rcsi_children < 5 ~ 0,
+                                                                           flag_protein_rcsi >= 5 & flag_protein_rcsi < 10 ~ 2,
                                                                            flag_protein_rcsi >= 10 ~ 3,
                                                                            TRUE ~ 0))
   }
@@ -247,20 +259,20 @@ calculate_plausibility <- function(.dataset){
     }
   }
   if (c("flag_lcsi_coherence") %in% names(.dataset)) {
-    .dataset <- .dataset %>% dplyr::mutate(plaus_flag_lcsi_coherence = dplyr::case_when(flag_lcsi_coherence < 2 ~ 0,
-                                                                            flag_lcsi_coherence >= 2 & flag_lcsi_coherence < 10 ~ 5,
+    .dataset <- .dataset %>% dplyr::mutate(plaus_flag_lcsi_coherence = dplyr::case_when(flag_lcsi_coherence < 5 ~ 0,
+                                                                            flag_lcsi_coherence >= 5 & flag_lcsi_coherence < 10 ~ 5,
                                                                             flag_lcsi_coherence >= 10 ~ 7,
                                                                             TRUE ~ 0))
   }
   if (c("flag_lcsi_na") %in% names(.dataset)) {
-    .dataset <- .dataset %>% dplyr::mutate(plaus_flag_lcsi_na = dplyr::case_when(flag_lcsi_na < 2 ~ 0,
-                                                                     flag_lcsi_na >= 2 & flag_lcsi_na < 10 ~ 3,
+    .dataset <- .dataset %>% dplyr::mutate(plaus_flag_lcsi_na = dplyr::case_when(flag_lcsi_na < 5 ~ 0,
+                                                                     flag_lcsi_na >= 5 & flag_lcsi_na < 10 ~ 3,
                                                                      flag_lcsi_na >= 10 ~ 5,
                                                                      TRUE ~ 0))
   }
   if (c("flag_lcsi_severity") %in% names(.dataset)) {
-    .dataset <- .dataset %>% dplyr::mutate(plaus_flag_lcsi_severity = dplyr::case_when(flag_lcsi_severity < 2 ~ 0,
-                                                                           flag_lcsi_severity >= 2 & flag_lcsi_severity < 10 ~ 3,
+    .dataset <- .dataset %>% dplyr::mutate(plaus_flag_lcsi_severity = dplyr::case_when(flag_lcsi_severity < 5 ~ 0,
+                                                                           flag_lcsi_severity >= 5 & flag_lcsi_severity < 10 ~ 3,
                                                                            flag_lcsi_severity >= 10 ~ 5,
                                                                            TRUE ~ 0))
   }
@@ -300,14 +312,14 @@ calculate_plausibility <- function(.dataset){
                                                                    ifelse(prop_fc_flags >= 0.1, 4, 0))))
   }
   if (c("flag_fcsrcsi_box") %in% names(.dataset)) {
-    .dataset <- .dataset %>% dplyr::mutate(plaus_flag_fcsrcsi_box = dplyr::case_when(flag_fcsrcsi_box < 2 ~ 0,
-                                                                         flag_fcsrcsi_box >= 2 & flag_fcsrcsi_box < 10 ~ 1,
+    .dataset <- .dataset %>% dplyr::mutate(plaus_flag_fcsrcsi_box = dplyr::case_when(flag_fcsrcsi_box < 5 ~ 0,
+                                                                         flag_fcsrcsi_box >= 5 & flag_fcsrcsi_box < 10 ~ 1,
                                                                          flag_fcsrcsi_box >= 10 ~ 3,
                                                                          TRUE ~ 0))
   }
   if (c("flag_fcs_rcsi") %in% names(.dataset)) {
-    .dataset <- .dataset %>% dplyr::mutate(plaus_flag_fcs_rcsi = dplyr::case_when(flag_fcs_rcsi < 2 ~ 0,
-                                                                      flag_fcs_rcsi >= 2 & flag_fcs_rcsi < 10 ~ 1,
+    .dataset <- .dataset %>% dplyr::mutate(plaus_flag_fcs_rcsi = dplyr::case_when(flag_fcs_rcsi < 5 ~ 0,
+                                                                      flag_fcs_rcsi >= 5 & flag_fcs_rcsi < 10 ~ 1,
                                                                       flag_fcs_rcsi >= 10 ~ 3,
                                                                       TRUE ~ 0))
   }
@@ -327,9 +339,9 @@ calculate_plausibility <- function(.dataset){
       dplyr::rowwise() %>%
       dplyr::mutate(plaus_fsl_score = sum(!!!rlang::syms(plaus_nms), na.rm = TRUE)) %>%
       dplyr::ungroup() %>%
-      dplyr::mutate(plaus_fsl_cat = dplyr::case_when(plaus_fsl_score < 20 ~ "Good",
-                                                     plaus_fsl_score >= 20 & plaus_fsl_score < 30 ~ "Moderate",
-                                                     plaus_fsl_score >= 30 ~ "Problematic"))
+      dplyr::mutate(plaus_fsl_cat = dplyr::case_when(plaus_fsl_score < 30 ~ "Good",
+                                                     plaus_fsl_score >= 30 & plaus_fsl_score < 60 ~ "Moderate",
+                                                     plaus_fsl_score >= 60 ~ "Problematic"))
   }
   if (c("sex_ratio.pvalue") %in% names(.dataset)) {
     .dataset <- .dataset %>% dplyr::mutate(plaus_sexratio = ifelse(sex_ratio.pvalue > 0.1, 0,
