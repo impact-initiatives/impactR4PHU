@@ -65,15 +65,6 @@ check_fsl_flags(
   fsl_hdds_score = "fsl_hdds_score",
   fsl_fc_cell = "fsl_fc_cell",
   fsl_fc_phase = "fsl_fc_phase",
-  num_children = "num_children",
-  income_types = c("fsl_first_income_types", "fsl_second_income_types",
-    "fsl_third_income_types"),
-  sell_agri_prod = "sell_agri_prod",
-  sell_anim_prod = "sell_anim_prod",
-  residency_status = "residency_status",
-  value_idp = "idp",
-  tool.survey = NULL,
-  label_colname = "label::English",
   uuid = "uuid"
 )
 }
@@ -205,26 +196,6 @@ It has to be a string.}
 
 \item{fsl_fc_phase}{the name of the variable that indicates the food consumption matrix phase}
 
-\item{num_children}{the name of the variable that indicates the number of children available in each household}
-
-\item{income_types}{a vector of the three income_types variables. By default,
-c("fsl_first_income_types","fsl_second_income_types","fsl_third_income_types")}
-
-\item{sell_agri_prod}{the "sell_agri_prod" choice value of the variables that indicates
-income from agriculture}
-
-\item{sell_anim_prod}{the "sell_anim_prod" choice value of the variables that indicates
-income from animal}
-
-\item{residency_status}{the name of the variable that indicates the residency status of HH,
-By default, "residency_status"}
-
-\item{value_idp}{the name of the choice value representing the idp residency status. By default, "idp"}
-
-\item{tool.survey}{This is the tool.survey dataset. By default NULL}
-
-\item{label_colname}{This is the label column in the tool survey. By default label::English}
-
 \item{uuid}{uuid variable}
 }
 \value{
@@ -246,9 +217,6 @@ This includes:
 - flag_lcsi_coherence
 - flag_lcsi_severity
 - flag_lcsi_na
-- flag_lcsi_liv_agriculture
-- flag_lcsi_liv_livestock
-- flag_lcsi_displ
 - flag_fc_cell
 - flag_low_sugar_cond_hdds
 }
@@ -315,11 +283,6 @@ df <- data.frame(
   fsl_hdds_score= c(10,0),
   fsl_fc_cell= c(22,33),
   fsl_fc_phase= c("Phase 2 FC","Phase 3 FC"),
-  num_children= c(2,3),
-  fsl_first_income_types = c("sell_agri_prod","trader"),
-  fsl_second_income_types = c("daily_labour_skilled","sell_anim_prod"),
-  fsl_third_income_types = c("hum_assistance","none"),
-  residency_status = c("idp", "host"),
   enumerator = c("team1","team2"),
   uuid= c("31d0cfb8-21d7-414b4f-94999f-04a15ce39d78","205d37b1-5a6f-44484d-b3b1ba-4eafbdc50873")
   )
