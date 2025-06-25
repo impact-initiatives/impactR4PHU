@@ -7,8 +7,9 @@ rm(list = ls())
 
 library(tidyverse)
 library(impactR4PHU)
+source("R/run_fsl_plaus_html_report.R")
 
-data.test <- readxl::read_xlsx()
+data.test <- readxl::read_xlsx("2024-08-14 HTI2401 MSNA DEPARTEMENTS Clean recoded data + loops (1).xlsx", sheet = "Clean Data")
 
 data.test2 <- data.test %>%
   dplyr::select(!ends_with("_recoded")) %>%
