@@ -158,7 +158,7 @@ list_of_var <- c("uuid_main","FSL_indicators","num_children","income_types", "fs
 
 ```{r, include = FALSE}
 ## Read the Plausibility excel file
-overall_fsl_plaus <- openxlsx::read.xlsx(xlsxFile = "overall_plaus.xlsx", fillMergedCells = TRUE, sheet = "FSL") %>%
+overall_fsl_plaus <- openxlsx::read.xlsx(xlsxFile = "resources/overall_plaus.xlsx", fillMergedCells = TRUE, sheet = "FSL") %>%
   dplyr::distinct()
 
 result <- impactR4PHU::create_fsl_plaus(raw.flag.fcs,
