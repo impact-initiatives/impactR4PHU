@@ -157,8 +157,8 @@ create_fsl_plaus <- function(.dataset,
 
     draft_result <- .dataset %>%
       dplyr::filter(group %in% filtered_group) %>% dplyr::group_by(group) %>%
-        dplyr::summarise(corr.fcs_rcsi = round(as.numeric(stats::cor.test(fsl_fcs_score, fsl_rcsi_score)[4]), 2),
-                         corr.fcs_rcsi.pvalue = as.numeric(stats::cor.test(fsl_fcs_score, fsl_rcsi_score)[3]))
+      dplyr::summarise(corr.fcs_rcsi = round(as.numeric(stats::cor.test(fsl_fcs_score, fsl_rcsi_score)[4]), 2),
+                       corr.fcs_rcsi.pvalue = as.numeric(stats::cor.test(fsl_fcs_score, fsl_rcsi_score)[3]))
 
     results2 <- results2 %>%
       dplyr::left_join(draft_result)
@@ -170,8 +170,8 @@ create_fsl_plaus <- function(.dataset,
     }
   } else {
     results2 <- .dataset %>% dplyr::group_by(group) %>%
-        dplyr::summarise(corr.fcs_rcsi = NA,
-                         corr.fcs_rcsi.pvalue = NA)
+      dplyr::summarise(corr.fcs_rcsi = NA,
+                       corr.fcs_rcsi.pvalue = NA)
     if (!exists("results")) {
       results <- results2
     }else {
@@ -208,8 +208,8 @@ create_fsl_plaus <- function(.dataset,
     }
   } else {
     results2 <- .dataset %>% dplyr::group_by(group) %>%
-        dplyr::summarise(corr.fcs_hhs = NA,
-                         corr.fcs_hhs.pvalue = NA)
+      dplyr::summarise(corr.fcs_hhs = NA,
+                       corr.fcs_hhs.pvalue = NA)
     if (!exists("results")) {
       results <- results2
     }else {
@@ -284,8 +284,8 @@ create_fsl_plaus <- function(.dataset,
     }
   } else {
     results2 <- .dataset %>% dplyr::group_by(group) %>%
-        dplyr::summarise(corr.hdds_rcsi = NA,
-                         corr.hdds_rcsi.pvalue = NA)
+      dplyr::summarise(corr.hdds_rcsi = NA,
+                       corr.hdds_rcsi.pvalue = NA)
     if (!exists("results")) {
       results <- results2
     }else {
@@ -322,8 +322,8 @@ create_fsl_plaus <- function(.dataset,
     }
   } else {
     results2 <- .dataset %>% dplyr::group_by(group) %>%
-        dplyr::summarise(corr.hhs_rcsi = NA,
-                         corr.hhs_rcsi.pvalue = NA)
+      dplyr::summarise(corr.hhs_rcsi = NA,
+                       corr.hhs_rcsi.pvalue = NA)
     if (!exists("results")) {
       results <- results2
     }else {
@@ -355,15 +355,15 @@ create_fsl_plaus <- function(.dataset,
   results <- results %>% dplyr::select(c(1, n, dplyr::everything()))
   if ("flag_fc_cell" %in% names(.dataset)) {
     results2 <- .dataset %>% dplyr::mutate(p1 = ifelse(is.na(fsl_fc_phase), NA,
-                                                 ifelse(fsl_fc_phase == "Phase 1 FC", 1, 0)),
-                                     p2 = ifelse(is.na(fsl_fc_phase), NA,
-                                                 ifelse(fsl_fc_phase == "Phase 2 FC", 1, 0)),
-                                     p3 = ifelse(is.na(fsl_fc_phase), NA,
-                                                 ifelse(fsl_fc_phase == "Phase 3 FC", 1, 0)),
-                                     p4 = ifelse(is.na(fsl_fc_phase), NA,
-                                                 ifelse(fsl_fc_phase == "Phase 4 FC", 1, 0)),
-                                     p5 = ifelse(is.na(fsl_fc_phase), NA,
-                                                 ifelse(fsl_fc_phase == "Phase 5 FC", 1, 0))) %>%
+                                                       ifelse(fsl_fc_phase == "Phase 1 FC", 1, 0)),
+                                           p2 = ifelse(is.na(fsl_fc_phase), NA,
+                                                       ifelse(fsl_fc_phase == "Phase 2 FC", 1, 0)),
+                                           p3 = ifelse(is.na(fsl_fc_phase), NA,
+                                                       ifelse(fsl_fc_phase == "Phase 3 FC", 1, 0)),
+                                           p4 = ifelse(is.na(fsl_fc_phase), NA,
+                                                       ifelse(fsl_fc_phase == "Phase 4 FC", 1, 0)),
+                                           p5 = ifelse(is.na(fsl_fc_phase), NA,
+                                                       ifelse(fsl_fc_phase == "Phase 5 FC", 1, 0))) %>%
       dplyr::group_by(group) %>%
       dplyr::summarise(prop_fc_flags = sum(flag_fc_cell, na.rm = TRUE)/sum(!is.na(fsl_fc_cell), na.rm = TRUE),
                        fews_p1 = round(sum(p1, na.rm = TRUE)/sum(!is.na(fsl_fc_cell)), 2),
@@ -380,7 +380,7 @@ create_fsl_plaus <- function(.dataset,
       dplyr::select(c(1, n, dplyr::everything()))
   }
 
-  results <- impactR4PHU::calculate_plausibility(.dataset = results)
+  results <- local_calculate_plausibility(.dataset = results)
   a <- c("n", "fews_p1", "fews_p2", "fews_p3", "fews_p4",
          "fews_p5", "flag_severe_hhs", "flag_lcsi_severity",
          "plaus_fcs", "plaus_rcsi", "plaus_hhs", "plaus_lcsi",
