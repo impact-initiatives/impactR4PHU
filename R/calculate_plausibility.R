@@ -140,16 +140,23 @@ calculate_plausibility <- function(.dataset){
   }
 
   if (c("flag_fcs_zero") %in% names(.dataset)) {
-    .dataset <- .dataset %>% dplyr::mutate(flag_fcs_zero = dplyr::case_when(flag_fcs_zero < 5 ~ 0,
-                                                                            flag_fcs_zero >= 5 & flag_fcs_zero < 10 ~ 2,
-                                                                            flag_fcs_zero >= 10 ~ 4,
-                                                                            TRUE ~ 0))
+    .dataset <- .dataset %>% dplyr::mutate(plaus_flag_fcs_zero = dplyr::case_when(flag_fcs_zero < 5 ~ 0,
+                                                                                  flag_fcs_zero >= 5 & flag_fcs_zero < 10 ~ 2,
+                                                                                  flag_fcs_zero >= 10 ~ 4,
+                                                                                  TRUE ~ 0))
   }
   if (c("flag_full_fcs") %in% names(.dataset)) {
-    .dataset <- .dataset %>% dplyr::mutate(flag_full_fcs = dplyr::case_when(flag_high_fcs < 5 ~ 0,
-                                                                            flag_full_fcs >= 5 & flag_full_fcs < 10 ~ 2,
-                                                                            flag_full_fcs >= 10 ~ 4,
-                                                                            TRUE ~ 0))
+    .dataset <- .dataset %>% dplyr::mutate(plaus_flag_full_fcs = dplyr::case_when(flag_full_fcs < 5 ~ 0,
+                                                                                  flag_full_fcs >= 5 & flag_full_fcs < 10 ~ 2,
+                                                                                  flag_full_fcs >= 10 ~ 4,
+                                                                                  TRUE ~ 0))
+  }
+  if (c("flag_high_fcs") %in% names(.dataset)) {
+    .dataset <- .dataset %>% dplyr::mutate(plaus_flag_high_fcs = dplyr::case_when(flag_high_fcs < 5 ~ 0,
+                                                                                  flag_high_fcs >= 5 & flag_high_fcs < 10 ~ 1,
+                                                                                  flag_high_fcs >= 10 ~ 2,
+                                                                                  TRUE ~ 0))
+
   }
   if (c("flag_sd_foodgroup") %in% names(.dataset)) { # maybe only 3 cat
     .dataset <- .dataset %>% dplyr::mutate(plaus_flag_sd_foodgroup = dplyr::case_when(flag_sd_foodgroup < 5 ~ 0,

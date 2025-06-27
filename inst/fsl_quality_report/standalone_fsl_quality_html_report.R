@@ -6,9 +6,19 @@
 rm(list = ls())
 
 library(tidyverse)
-library(impactR4PHU)
+# library(impactR4PHU)
 
-data.test <- readxl::read_xlsx("2024-08-14 HTI2401 MSNA DEPARTEMENTS Clean recoded data + loops (1).xlsx", sheet = "Clean Data")
+data.test <- readxl::read_xlsx("inputs/REACH_MMR_MMR2402_MSNA_Dataset_toshare (1).xlsx", sheet = "01_clean_data_main")
+
+# Set Parameters
+
+loop_var <- "admin1"
+grouping_var <- "survey_modality"
+uuidVar <- "_uuid"
+
+
+# Add FSL Indicators for Plausibility
+
 
 data.test2 <- data.test %>%
   dplyr::select(!ends_with("_recoded")) %>%
@@ -49,13 +59,40 @@ data.test2 <- data.test %>%
     hdds_categories_low = "Low",
     hdds_categories_medium = "Medium",
     hdds_categories_high = "High"
-  )
+  ) %>%
+  impactR4PHU::add_lcsi(
+    fsl_lcsi_stress1 = "fsl_lcsi_stress_1", fsl_lcsi_stress2 = "fsl_lcsi_stress_2" , fsl_lcsi_stress3 = "fsl_lcsi_stress_3", fsl_lcsi_stress4 = "fsl_lcsi_stress_4",
+    fsl_lcsi_crisis1 = "fsl_lcsi_crisis_1" , fsl_lcsi_crisis2 = "fsl_lcsi_crisis_2", fsl_lcsi_crisis3 = "fsl_lcsi_crisis_3",
+    fsl_lcsi_emergency1 = "fsl_lcsi_emergency_1", fsl_lcsi_emergency2 = "fsl_lcsi_emergency_2", fsl_lcsi_emergency3 = "fsl_lcsi_emergency_3",
+    yes_val = "yes" , no_val = "no_had_no_need", exhausted_val = "no_exhausted" , not_applicable_val = "not_applicable"
+  )%>%
+  dplyr::rename("fsl_lcsi_stress1" = "fsl_lcsi_stress_1", "fsl_lcsi_stress2" = "fsl_lcsi_stress_2" , "fsl_lcsi_stress3" = "fsl_lcsi_stress_3", "fsl_lcsi_stress4" = "fsl_lcsi_stress_4",
+                "fsl_lcsi_crisis1" = "fsl_lcsi_crisis_1" , "fsl_lcsi_crisis2" = "fsl_lcsi_crisis_2", "fsl_lcsi_crisis3" = "fsl_lcsi_crisis_3",
+                "fsl_lcsi_emergency1" = "fsl_lcsi_emergency_1", "fsl_lcsi_emergency2" = "fsl_lcsi_emergency_2", "fsl_lcsi_emergency3" = "fsl_lcsi_emergency_3")
 
-run_fsl_plaus_html_report(.dataset = data.test2,
-                          uuid_var = "uuid", yes_no_team = "no",
-                          team_var = "admin2",
-                          group_var = "enum_id",
-                          output_dir = "reports/", output_file = "testing.html")
+
+loop_values <- unique(data.test2[[loop_var]])
+
+for (i in 1:length(loop_values)) {
+
+  print(loop_values[[i]])
+
+  dir.create("reports/")
+
+  file_name <- paste0("fsl_plaus_report_", loop_values[[i]], "_", Sys.Date(), ".html")
+
+  data.test3 <- data.test2 %>% dplyr::filter(!!sym(loop_var) == loop_values[[i]])
+
+  run_fsl_plaus_html_report(.dataset = data.test3,
+                            uuid_var = uuidVar,
+                            group_var = grouping_var,
+                            output_dir = "reports/", output_file = file_name)
+
+}
+
+
+
+
 
 
 
