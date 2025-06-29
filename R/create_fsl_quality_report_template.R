@@ -10,8 +10,6 @@
 #' create_fsl_quality_report_template("path/to/folder")
 #' }
 create_fsl_quality_report_template <- function(folder_path, ...) {
-
   from <- system.file("fsl_quality_report", package = "impactR4PHU")
   fs::dir_copy(from, folder_path, overwrite = FALSE)
-
 }

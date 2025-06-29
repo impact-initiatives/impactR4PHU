@@ -120,26 +120,58 @@
 #' @examples
 #' \dontrun{add_iycf(df1)}
 
-
-add_iycf <- function (.dataset, age_months = "age_months", iycf_1 = "iycf_1",
-                      iycf_2 = "iycf_2", iycf_3 = "iycf_3", iycf_4 = "iycf_4",
-                      iycf_5 = "iycf_5", iycf_6a = "iycf_6a", iycf_6b = "iycf_6b",
-                      iycf_6c = "iycf_6c", iycf_6d = "iycf_6d", iycf_6e = "iycf_6e",
-                      iycf_6f = "iycf_6f", iycf_6g = "iycf_6g", iycf_6h = "iycf_6h",
-                      iycf_6i = "iycf_6i", iycf_6j = "iycf_6j", iycf_7a = "iycf_7a",
-                      iycf_7b = "iycf_7b", iycf_7c = "iycf_7c", iycf_7d = "iycf_7d",
-                      iycf_7e = "iycf_7e", iycf_7f = "iycf_7f", iycf_7g = "iycf_7g",
-                      iycf_7h = "iycf_7h", iycf_7i = "iycf_7i", iycf_7j = "iycf_7j",
-                      iycf_7k = "iycf_7k", iycf_7l = "iycf_7l", iycf_7m = "iycf_7m",
-                      iycf_7n = "iycf_7n", iycf_7o = "iycf_7o", iycf_7p = "iycf_7p",
-                      iycf_7q = "iycf_7q", iycf_7r = "iycf_7r", iycf_8 = "iycf_8",
-                      iycf_6c_swt = "iycf_6c_swt", iycf_6d_swt = "iycf_6d_swt",
-                      iycf_6h_swt = "iycf_6h_swt", iycf_6j_swt = "iycf_6j_swt",
-                      yes_value = "yes", no_value = "no", dnk_value = "dont_know",
-                      pna_value = "pna", iycf2_immediate_value = "immediately",
-                      iycf2_lessday_value = "less_than_one_day", iycf2_moreday_value = "more_than_one_day",
-                      grouping = NULL, uuid = "uuid", loop_index = NULL)
-{
+add_iycf <- function(
+  .dataset,
+  age_months = "age_months",
+  iycf_1 = "iycf_1",
+  iycf_2 = "iycf_2",
+  iycf_3 = "iycf_3",
+  iycf_4 = "iycf_4",
+  iycf_5 = "iycf_5",
+  iycf_6a = "iycf_6a",
+  iycf_6b = "iycf_6b",
+  iycf_6c = "iycf_6c",
+  iycf_6d = "iycf_6d",
+  iycf_6e = "iycf_6e",
+  iycf_6f = "iycf_6f",
+  iycf_6g = "iycf_6g",
+  iycf_6h = "iycf_6h",
+  iycf_6i = "iycf_6i",
+  iycf_6j = "iycf_6j",
+  iycf_7a = "iycf_7a",
+  iycf_7b = "iycf_7b",
+  iycf_7c = "iycf_7c",
+  iycf_7d = "iycf_7d",
+  iycf_7e = "iycf_7e",
+  iycf_7f = "iycf_7f",
+  iycf_7g = "iycf_7g",
+  iycf_7h = "iycf_7h",
+  iycf_7i = "iycf_7i",
+  iycf_7j = "iycf_7j",
+  iycf_7k = "iycf_7k",
+  iycf_7l = "iycf_7l",
+  iycf_7m = "iycf_7m",
+  iycf_7n = "iycf_7n",
+  iycf_7o = "iycf_7o",
+  iycf_7p = "iycf_7p",
+  iycf_7q = "iycf_7q",
+  iycf_7r = "iycf_7r",
+  iycf_8 = "iycf_8",
+  iycf_6c_swt = "iycf_6c_swt",
+  iycf_6d_swt = "iycf_6d_swt",
+  iycf_6h_swt = "iycf_6h_swt",
+  iycf_6j_swt = "iycf_6j_swt",
+  yes_value = "yes",
+  no_value = "no",
+  dnk_value = "dont_know",
+  pna_value = "pna",
+  iycf2_immediate_value = "immediately",
+  iycf2_lessday_value = "less_than_one_day",
+  iycf2_moreday_value = "more_than_one_day",
+  grouping = NULL,
+  uuid = "uuid",
+  loop_index = NULL
+) {
   options(warn = -1)
   if (!is.data.frame(.dataset)) {
     stop("First argument should be a dataset")
@@ -149,319 +181,726 @@ add_iycf <- function (.dataset, age_months = "age_months", iycf_1 = "iycf_1",
   }
   if (is.null(grouping)) {
     .dataset <- .dataset %>% dplyr::mutate(group = "All")
-  }
-  else {
+  } else {
     .dataset <- .dataset %>% dplyr::mutate(group = !!rlang::sym(grouping))
   }
-  if (!age_months %in% names(.dataset))
+  if (!age_months %in% names(.dataset)) {
     stop("Missing age_months column in dataset")
-  if (!uuid %in% names(.dataset))
+  }
+  if (!uuid %in% names(.dataset)) {
     stop("Missing uuid column in dataset")
+  }
   if (!is.null(iycf_1)) {
     if (!iycf_1 %in% names(.dataset)) {
-      warning("IYCF 1 not found in dataset.\nIYCF Indicator 1: Ever Breastfed not calculated")
-    }
-    else {
-      .dataset <- .dataset %>% dplyr::mutate(iycf_evbf = dplyr::case_when(!!rlang::sym(iycf_1) ==
-                                                                            yes_value ~ 1, !!rlang::sym(iycf_1) != yes_value ~
-                                                                            0, TRUE ~ NA), iycf_evbf = dplyr::case_when(as.numeric(!!rlang::sym(age_months)) >=
-                                                                                                                          24 | is.na(!!rlang::sym(age_months)) ~ NA, TRUE ~
-                                                                                                                          iycf_evbf))
+      warning(
+        "IYCF 1 not found in dataset.\nIYCF Indicator 1: Ever Breastfed not calculated"
+      )
+    } else {
+      .dataset <- .dataset %>%
+        dplyr::mutate(
+          iycf_evbf = dplyr::case_when(
+            !!rlang::sym(iycf_1) == yes_value ~ 1,
+            !!rlang::sym(iycf_1) != yes_value ~ 0,
+            TRUE ~ NA
+          ),
+          iycf_evbf = dplyr::case_when(
+            as.numeric(!!rlang::sym(age_months)) >= 24 |
+              is.na(!!rlang::sym(age_months)) ~
+              NA,
+            TRUE ~ iycf_evbf
+          )
+        )
     }
   }
   if (!is.null(iycf_2)) {
     if (!iycf_2 %in% names(.dataset)) {
-      warning("IYCF 2 not found in dataset.\nIYCF Indicator 2: Early Initiation of Breastfeeding not calculated")
-    }
-    else {
-      .dataset <- .dataset %>% dplyr::mutate(iycf_eibf = dplyr::case_when(!!rlang::sym(iycf_2) %in%
-                                                                            c(iycf2_immediate_value, iycf2_lessday_value,
-                                                                              iycf2_moreday_value) ~ 1, !!rlang::sym(iycf_2) %notin%
-                                                                            c(iycf2_immediate_value, iycf2_lessday_value,
-                                                                              iycf2_moreday_value) ~ 0, TRUE ~ NA), iycf_eibf = dplyr::case_when(as.numeric(!!rlang::sym(age_months)) >=
-                                                                                                                                                   24 | is.na(!!rlang::sym(age_months)) ~ NA, TRUE ~
-                                                                                                                                                   iycf_eibf))
+      warning(
+        "IYCF 2 not found in dataset.\nIYCF Indicator 2: Early Initiation of Breastfeeding not calculated"
+      )
+    } else {
+      .dataset <- .dataset %>%
+        dplyr::mutate(
+          iycf_eibf = dplyr::case_when(
+            !!rlang::sym(iycf_2) %in%
+              c(
+                iycf2_immediate_value,
+                iycf2_lessday_value,
+                iycf2_moreday_value
+              ) ~
+              1,
+            !!rlang::sym(iycf_2) %notin%
+              c(
+                iycf2_immediate_value,
+                iycf2_lessday_value,
+                iycf2_moreday_value
+              ) ~
+              0,
+            TRUE ~ NA
+          ),
+          iycf_eibf = dplyr::case_when(
+            as.numeric(!!rlang::sym(age_months)) >= 24 |
+              is.na(!!rlang::sym(age_months)) ~
+              NA,
+            TRUE ~ iycf_eibf
+          )
+        )
     }
   }
   if (!is.null(iycf_3)) {
     if (!iycf_3 %in% names(.dataset)) {
-      warning("IYCF 3 not found in dataset.\nIYCF Indicator 3: Exclusive Breastfeeding First 2 Days After Birth not calculated")
-    }
-    else {
-      .dataset <- .dataset %>% dplyr::mutate(iycf_ebf2d = dplyr::case_when(!!rlang::sym(iycf_3) ==
-                                                                             no_value ~ 1, !!rlang::sym(iycf_3) != no_value ~
-                                                                             0, TRUE ~ NA), iycf_ebf2d = dplyr::case_when(as.numeric(!!rlang::sym(age_months)) >=
-                                                                                                                            24 | is.na(!!rlang::sym(age_months)) ~ NA, TRUE ~
-                                                                                                                            iycf_ebf2d))
+      warning(
+        "IYCF 3 not found in dataset.\nIYCF Indicator 3: Exclusive Breastfeeding First 2 Days After Birth not calculated"
+      )
+    } else {
+      .dataset <- .dataset %>%
+        dplyr::mutate(
+          iycf_ebf2d = dplyr::case_when(
+            !!rlang::sym(iycf_3) == no_value ~ 1,
+            !!rlang::sym(iycf_3) != no_value ~ 0,
+            TRUE ~ NA
+          ),
+          iycf_ebf2d = dplyr::case_when(
+            as.numeric(!!rlang::sym(age_months)) >= 24 |
+              is.na(!!rlang::sym(age_months)) ~
+              NA,
+            TRUE ~ iycf_ebf2d
+          )
+        )
     }
   }
-  ebf_foods <- c(iycf_7a, iycf_7b, iycf_7c, iycf_7d, iycf_7e,
-                 iycf_7f, iycf_7g, iycf_7h, iycf_7i, iycf_7j, iycf_7k,
-                 iycf_7l, iycf_7m, iycf_7o, iycf_7n, iycf_7p, iycf_7q,
-                 iycf_7r)
-  ebf_liquids <- c(iycf_6a, iycf_6b, iycf_6c, iycf_6d, iycf_6e,
-                   iycf_6f, iycf_6g, iycf_6h, iycf_6i, iycf_6j)
+  ebf_foods <- c(
+    iycf_7a,
+    iycf_7b,
+    iycf_7c,
+    iycf_7d,
+    iycf_7e,
+    iycf_7f,
+    iycf_7g,
+    iycf_7h,
+    iycf_7i,
+    iycf_7j,
+    iycf_7k,
+    iycf_7l,
+    iycf_7m,
+    iycf_7o,
+    iycf_7n,
+    iycf_7p,
+    iycf_7q,
+    iycf_7r
+  )
+  ebf_liquids <- c(
+    iycf_6a,
+    iycf_6b,
+    iycf_6c,
+    iycf_6d,
+    iycf_6e,
+    iycf_6f,
+    iycf_6g,
+    iycf_6h,
+    iycf_6i,
+    iycf_6j
+  )
   required_columns <- c(ebf_foods, ebf_liquids, iycf_4)
   if (length(setdiff(length(required_columns), 29)) != 0) {
-    warning("Your dataset appears not to have all the foods/liquids from the standard IYCF 2021 question sequence.\nIt is advised you ask about all recommended foods/liquids or there is a risk of overestimating EBF.\nIYCF Indicator 4: Exclusive Breastfeeding not calculated ")
-    warning(paste0("Missing the following variables ", setdiff(c(ebf_foods,
-                                                                 ebf_liquids), names(.dataset))))
-  }
-  else {
-    if(!is.null(iycf_7a)){
+    warning(
+      "Your dataset appears not to have all the foods/liquids from the standard IYCF 2021 question sequence.\nIt is advised you ask about all recommended foods/liquids or there is a risk of overestimating EBF.\nIYCF Indicator 4: Exclusive Breastfeeding not calculated "
+    )
+    warning(paste0(
+      "Missing the following variables ",
+      setdiff(c(ebf_foods, ebf_liquids), names(.dataset))
+    ))
+  } else {
+    if (!is.null(iycf_7a)) {
       .dataset <- .dataset %>%
-        dplyr::mutate_at(dplyr::vars(iycf_7a), ~dplyr::case_when(as.numeric(.)>0~yes_value,
-                                                                 as.numeric(.)==0~no_value,
-                                                                 TRUE ~ NA))
+        dplyr::mutate_at(
+          dplyr::vars(iycf_7a),
+          ~ dplyr::case_when(
+            as.numeric(.) > 0 ~ yes_value,
+            as.numeric(.) == 0 ~ no_value,
+            TRUE ~ NA
+          )
+        )
     }
-    .dataset <- .dataset %>% dplyr::mutate(iycf_7c_zero = !!rlang::sym(iycf_7c),
-                                           iycf_7e_zero = !!rlang::sym(iycf_7e), iycf_7f_zero = !!rlang::sym(iycf_7f),
-                                           iycf_7g_zero = !!rlang::sym(iycf_7g), iycf_7h_zero = !!rlang::sym(iycf_7h)) %>%
-      dplyr::mutate_at(dplyr::vars(ebf_foods,ebf_liquids), ~dplyr::case_when(. == yes_value ~ 1, . == no_value ~ 0, TRUE ~ NA))  %>%
-      dplyr::mutate(count_foods = rowSums(dplyr::across(c(ebf_foods), .fns = as.numeric), na.rm = T),
-                    count_liquids = rowSums(dplyr::across(c(ebf_liquids), .fns = as.numeric), na.rm = T),
-                    iycf_ebf = dplyr::case_when(!!rlang::sym(iycf_4) == yes_value & count_foods == 0 & count_liquids == 0 ~ 1,
-                                                TRUE ~ 0),
-                    iycf_ebf = dplyr::case_when(as.numeric(!!rlang::sym(age_months)) >= 6 | is.na(!!rlang::sym(age_months)) ~ NA,
-                                                TRUE ~ iycf_ebf))
+    .dataset <- .dataset %>%
+      dplyr::mutate(
+        iycf_7c_zero = !!rlang::sym(iycf_7c),
+        iycf_7e_zero = !!rlang::sym(iycf_7e),
+        iycf_7f_zero = !!rlang::sym(iycf_7f),
+        iycf_7g_zero = !!rlang::sym(iycf_7g),
+        iycf_7h_zero = !!rlang::sym(iycf_7h)
+      ) %>%
+      dplyr::mutate_at(
+        dplyr::vars(ebf_foods, ebf_liquids),
+        ~ dplyr::case_when(. == yes_value ~ 1, . == no_value ~ 0, TRUE ~ NA)
+      ) %>%
+      dplyr::mutate(
+        count_foods = rowSums(
+          dplyr::across(c(ebf_foods), .fns = as.numeric),
+          na.rm = T
+        ),
+        count_liquids = rowSums(
+          dplyr::across(c(ebf_liquids), .fns = as.numeric),
+          na.rm = T
+        ),
+        iycf_ebf = dplyr::case_when(
+          !!rlang::sym(iycf_4) == yes_value &
+            count_foods == 0 &
+            count_liquids == 0 ~
+            1,
+          TRUE ~ 0
+        ),
+        iycf_ebf = dplyr::case_when(
+          as.numeric(!!rlang::sym(age_months)) >= 6 |
+            is.na(!!rlang::sym(age_months)) ~
+            NA,
+          TRUE ~ iycf_ebf
+        )
+      )
   }
   required_columns <- c(iycf_4, iycf_6b, iycf_6c)
   if (length(setdiff(length(required_columns), 3)) != 0) {
-    warning("IYCF 4 or IYCF 6b or IYCF 6c not found in dataset.\nIYCF Indicator 5: Mixed Milk Feeding (MIxMF) not calculated")
-  }
-  else {
-    .dataset <- .dataset %>% dplyr::mutate(iycf_mixmf = dplyr::case_when(!!rlang::sym(iycf_4) ==
-                                                                           yes_value & (!!rlang::sym(iycf_6b) == 1 | !!rlang::sym(iycf_6c) ==
-                                                                                          1) ~ 1, !!rlang::sym(iycf_4) != yes_value | (!!rlang::sym(iycf_6b) !=
-                                                                                                                                         1 & !!rlang::sym(iycf_6c) != 1) ~ 0, TRUE ~ NA),
-                                           iycf_mixmf = dplyr::case_when(as.numeric(!!rlang::sym(age_months)) >=
-                                                                           6 | is.na(!!rlang::sym(age_months)) ~ NA, TRUE ~
-                                                                           iycf_mixmf))
+    warning(
+      "IYCF 4 or IYCF 6b or IYCF 6c not found in dataset.\nIYCF Indicator 5: Mixed Milk Feeding (MIxMF) not calculated"
+    )
+  } else {
+    .dataset <- .dataset %>%
+      dplyr::mutate(
+        iycf_mixmf = dplyr::case_when(
+          !!rlang::sym(iycf_4) == yes_value &
+            (!!rlang::sym(iycf_6b) == 1 | !!rlang::sym(iycf_6c) == 1) ~
+            1,
+          !!rlang::sym(iycf_4) != yes_value |
+            (!!rlang::sym(iycf_6b) != 1 & !!rlang::sym(iycf_6c) != 1) ~
+            0,
+          TRUE ~ NA
+        ),
+        iycf_mixmf = dplyr::case_when(
+          as.numeric(!!rlang::sym(age_months)) >= 6 |
+            is.na(!!rlang::sym(age_months)) ~
+            NA,
+          TRUE ~ iycf_mixmf
+        )
+      )
   }
   if (!is.null(iycf_4)) {
     if (!iycf_4 %in% names(.dataset)) {
-      warning("IYCF 4 not found in dataset.\nIYCF Indicator 6: Continued Breastfeeding 12-23 months not calculated")
-    }
-    else {
-      .dataset <- .dataset %>% dplyr::mutate(iycf_cbf = dplyr::case_when(!!rlang::sym(iycf_4) ==
-                                                                           yes_value ~ 1, !!rlang::sym(iycf_4) != yes_value ~
-                                                                           0, TRUE ~ NA), iycf_cbf = dplyr::case_when(as.numeric(!!rlang::sym(age_months)) <
-                                                                                                                        12 | as.numeric(!!rlang::sym(age_months)) >=
-                                                                                                                        24 | is.na(!!rlang::sym(age_months)) ~ NA, TRUE ~
-                                                                                                                        iycf_cbf))
+      warning(
+        "IYCF 4 not found in dataset.\nIYCF Indicator 6: Continued Breastfeeding 12-23 months not calculated"
+      )
+    } else {
+      .dataset <- .dataset %>%
+        dplyr::mutate(
+          iycf_cbf = dplyr::case_when(
+            !!rlang::sym(iycf_4) == yes_value ~ 1,
+            !!rlang::sym(iycf_4) != yes_value ~ 0,
+            TRUE ~ NA
+          ),
+          iycf_cbf = dplyr::case_when(
+            as.numeric(!!rlang::sym(age_months)) < 12 |
+              as.numeric(!!rlang::sym(age_months)) >= 24 |
+              is.na(!!rlang::sym(age_months)) ~
+              NA,
+            TRUE ~ iycf_cbf
+          )
+        )
     }
   }
   required_columns <- c(ebf_foods)
   if (length(setdiff(length(required_columns), 18)) != 0) {
-    warning("Your dataset appears not to have all the foods from the standard IYCF 2021 question sequence.\nIYCF Indicator 7: Introduction of Solid, Semi-Solid, or Soft Foods (ISSSF) not calculated")
-    warning(paste0("Missing the following variables ", setdiff(ebf_foods,
-                                                               names(.dataset))))
+    warning(
+      "Your dataset appears not to have all the foods from the standard IYCF 2021 question sequence.\nIYCF Indicator 7: Introduction of Solid, Semi-Solid, or Soft Foods (ISSSF) not calculated"
+    )
+    warning(paste0(
+      "Missing the following variables ",
+      setdiff(ebf_foods, names(.dataset))
+    ))
+  } else {
+    .dataset <- .dataset %>%
+      dplyr::mutate(
+        iycf_isssf = dplyr::case_when(
+          count_foods > 0 ~ 1,
+          count_foods == 0 ~ 0,
+          TRUE ~ NA
+        ),
+        iycf_isssf = dplyr::case_when(
+          as.numeric(!!rlang::sym(age_months)) < 6 |
+            as.numeric(!!rlang::sym(age_months)) > 8 |
+            is.na(!!rlang::sym(age_months)) ~
+            NA,
+          TRUE ~ iycf_isssf
+        )
+      )
   }
-  else {
-    .dataset <- .dataset %>% dplyr::mutate(iycf_isssf = dplyr::case_when(count_foods > 0 ~ 1,
-                                                                         count_foods == 0 ~ 0, TRUE ~ NA),
-                                           iycf_isssf = dplyr::case_when(as.numeric(!!rlang::sym(age_months)) < 6 |
-                                                                           as.numeric(!!rlang::sym(age_months)) > 8 | is.na(!!rlang::sym(age_months)) ~  NA,
-                                                                         TRUE ~ iycf_isssf))
-  }
-  mdd_columns <- c(iycf_4, iycf_6b, iycf_6c, iycf_6d, iycf_7a,
-                   iycf_7b, iycf_7c, iycf_7d, iycf_7e, iycf_7f, iycf_7g,
-                   iycf_7h, iycf_7i, iycf_7j, iycf_7k, iycf_7l, iycf_7m,
-                   iycf_7n, iycf_7o)
+  mdd_columns <- c(
+    iycf_4,
+    iycf_6b,
+    iycf_6c,
+    iycf_6d,
+    iycf_7a,
+    iycf_7b,
+    iycf_7c,
+    iycf_7d,
+    iycf_7e,
+    iycf_7f,
+    iycf_7g,
+    iycf_7h,
+    iycf_7i,
+    iycf_7j,
+    iycf_7k,
+    iycf_7l,
+    iycf_7m,
+    iycf_7n,
+    iycf_7o
+  )
   if (length(setdiff(length(mdd_columns), 19)) != 0) {
-    warning("Minimum Dietary Diversity related columns not found in dataset.\nIYCF Indicator 8: Minimum Dietary Diversity 6-23 months (MDD) not calculated")
-  }
-  else {
-    .dataset <- .dataset %>% dplyr::mutate(mdd1 = dplyr::case_when(!!rlang::sym(iycf_4) ==
-                                                                     yes_value ~ 1, !!rlang::sym(iycf_4) != yes_value ~
-                                                                     0, TRUE ~ NA), mdd2 = dplyr::case_when(is.na(!!rlang::sym(iycf_7b)) |
-                                                                                                              is.na(!!rlang::sym(iycf_7d)) ~ NA_real_, !!rlang::sym(iycf_7b) ==
-                                                                                                              1 | !!rlang::sym(iycf_7d) == 1 ~ 1, TRUE ~ 0), mdd3 = dplyr::case_when(is.na(!!rlang::sym(iycf_7n)) ~
-                                                                                                                                                                                       NA_real_, !!rlang::sym(iycf_7n) == 1 ~ 1, TRUE ~
-                                                                                                                                                                                       0), mdd4 = dplyr::case_when(is.na(!!rlang::sym(iycf_6b)) |
-                                                                                                                                                                                                                     is.na(!!rlang::sym(iycf_6c)) | is.na(!!rlang::sym(iycf_6d)) |
-                                                                                                                                                                                                                     is.na(!!rlang::sym(iycf_7a)) | is.na(!!rlang::sym(iycf_7o)) ~
-                                                                                                                                                                                                                     NA_real_, !!rlang::sym(iycf_6b) == 1 | !!rlang::sym(iycf_6c) ==
-                                                                                                                                                                                                                     1 | !!rlang::sym(iycf_6d) == 1 | !!rlang::sym(iycf_7a) ==
-                                                                                                                                                                                                                     1 | !!rlang::sym(iycf_7o) == 1 ~ 1, TRUE ~ 0), mdd5 = dplyr::case_when(is.na(!!rlang::sym(iycf_7i)) |
-                                                                                                                                                                                                                                                                                              is.na(!!rlang::sym(iycf_7j)) | is.na(!!rlang::sym(iycf_7k)) |
-                                                                                                                                                                                                                                                                                              is.na(!!rlang::sym(iycf_7m)) ~ NA_real_, !!rlang::sym(iycf_7i) ==
-                                                                                                                                                                                                                                                                                              1 | !!rlang::sym(iycf_7j) == 1 | !!rlang::sym(iycf_7k) ==
-                                                                                                                                                                                                                                                                                              1 | !!rlang::sym(iycf_7m) == 1 ~ 1, TRUE ~ 0), mdd6 = dplyr::case_when(is.na(!!rlang::sym(iycf_7l)) ~
-                                                                                                                                                                                                                                                                                                                                                                       NA_real_, !!rlang::sym(iycf_7l) == 1 ~ 1, TRUE ~
-                                                                                                                                                                                                                                                                                                                                                                       0), mdd7 = dplyr::case_when(is.na(!!rlang::sym(iycf_7c)) |
-                                                                                                                                                                                                                                                                                                                                                                                                     is.na(!!rlang::sym(iycf_7e)) | is.na(!!rlang::sym(iycf_7g)) ~
-                                                                                                                                                                                                                                                                                                                                                                                                     NA_real_, !!rlang::sym(iycf_7c) == 1 | !!rlang::sym(iycf_7e) ==
-                                                                                                                                                                                                                                                                                                                                                                                                     1 | !!rlang::sym(iycf_7g) == 1 ~ 1, TRUE ~ 0), mdd8 = dplyr::case_when(is.na(!!rlang::sym(iycf_7f)) |
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                              is.na(!!rlang::sym(iycf_7h)) ~ NA_real_, !!rlang::sym(iycf_7f) ==
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                              1 | !!rlang::sym(iycf_7h) == 1 ~ 1, TRUE ~ 0)) %>%
-      dplyr::mutate(iycf_mdd_score = rowSums(dplyr::across(c(mdd1,
-                                                             mdd2, mdd3, mdd4, mdd5, mdd6, mdd7, mdd8), .fns = as.numeric),
-                                             na.rm = T), iycf_mdd_cat = dplyr::case_when(as.numeric(!!rlang::sym(age_months)) >=
-                                                                                           6 & as.numeric(!!rlang::sym(age_months)) < 24 &
-                                                                                           iycf_mdd_score >= 5 ~ 1, as.numeric(!!rlang::sym(age_months)) >=
-                                                                                           6 & as.numeric(!!rlang::sym(age_months)) < 24 &
-                                                                                           iycf_mdd_score < 5 ~ 0, TRUE ~ NA), iycf_mdd_score = dplyr::case_when(as.numeric(!!rlang::sym(age_months)) <
-                                                                                                                                                                   6 | as.numeric(!!rlang::sym(age_months)) >=
-                                                                                                                                                                   24 ~ NA, TRUE ~ iycf_mdd_score), iycf_mdd_cat = dplyr::case_when(as.numeric(!!rlang::sym(age_months)) <
-                                                                                                                                                                                                                                      6 | as.numeric(!!rlang::sym(age_months)) >=
-                                                                                                                                                                                                                                      24 ~ NA, TRUE ~ iycf_mdd_cat))
+    warning(
+      "Minimum Dietary Diversity related columns not found in dataset.\nIYCF Indicator 8: Minimum Dietary Diversity 6-23 months (MDD) not calculated"
+    )
+  } else {
+    .dataset <- .dataset %>%
+      dplyr::mutate(
+        mdd1 = dplyr::case_when(
+          !!rlang::sym(iycf_4) == yes_value ~ 1,
+          !!rlang::sym(iycf_4) != yes_value ~ 0,
+          TRUE ~ NA
+        ),
+        mdd2 = dplyr::case_when(
+          is.na(!!rlang::sym(iycf_7b)) |
+            is.na(!!rlang::sym(iycf_7d)) ~
+            NA_real_,
+          !!rlang::sym(iycf_7b) == 1 | !!rlang::sym(iycf_7d) == 1 ~ 1,
+          TRUE ~ 0
+        ),
+        mdd3 = dplyr::case_when(
+          is.na(!!rlang::sym(iycf_7n)) ~ NA_real_,
+          !!rlang::sym(iycf_7n) == 1 ~ 1,
+          TRUE ~ 0
+        ),
+        mdd4 = dplyr::case_when(
+          is.na(!!rlang::sym(iycf_6b)) |
+            is.na(!!rlang::sym(iycf_6c)) |
+            is.na(!!rlang::sym(iycf_6d)) |
+            is.na(!!rlang::sym(iycf_7a)) |
+            is.na(!!rlang::sym(iycf_7o)) ~
+            NA_real_,
+          !!rlang::sym(iycf_6b) == 1 |
+            !!rlang::sym(iycf_6c) == 1 |
+            !!rlang::sym(iycf_6d) == 1 |
+            !!rlang::sym(iycf_7a) == 1 |
+            !!rlang::sym(iycf_7o) == 1 ~
+            1,
+          TRUE ~ 0
+        ),
+        mdd5 = dplyr::case_when(
+          is.na(!!rlang::sym(iycf_7i)) |
+            is.na(!!rlang::sym(iycf_7j)) |
+            is.na(!!rlang::sym(iycf_7k)) |
+            is.na(!!rlang::sym(iycf_7m)) ~
+            NA_real_,
+          !!rlang::sym(iycf_7i) == 1 |
+            !!rlang::sym(iycf_7j) == 1 |
+            !!rlang::sym(iycf_7k) == 1 |
+            !!rlang::sym(iycf_7m) == 1 ~
+            1,
+          TRUE ~ 0
+        ),
+        mdd6 = dplyr::case_when(
+          is.na(!!rlang::sym(iycf_7l)) ~ NA_real_,
+          !!rlang::sym(iycf_7l) == 1 ~ 1,
+          TRUE ~ 0
+        ),
+        mdd7 = dplyr::case_when(
+          is.na(!!rlang::sym(iycf_7c)) |
+            is.na(!!rlang::sym(iycf_7e)) |
+            is.na(!!rlang::sym(iycf_7g)) ~
+            NA_real_,
+          !!rlang::sym(iycf_7c) == 1 |
+            !!rlang::sym(iycf_7e) == 1 |
+            !!rlang::sym(iycf_7g) == 1 ~
+            1,
+          TRUE ~ 0
+        ),
+        mdd8 = dplyr::case_when(
+          is.na(!!rlang::sym(iycf_7f)) |
+            is.na(!!rlang::sym(iycf_7h)) ~
+            NA_real_,
+          !!rlang::sym(iycf_7f) == 1 | !!rlang::sym(iycf_7h) == 1 ~ 1,
+          TRUE ~ 0
+        )
+      ) %>%
+      dplyr::mutate(
+        iycf_mdd_score = rowSums(
+          dplyr::across(
+            c(mdd1, mdd2, mdd3, mdd4, mdd5, mdd6, mdd7, mdd8),
+            .fns = as.numeric
+          ),
+          na.rm = T
+        ),
+        iycf_mdd_cat = dplyr::case_when(
+          as.numeric(!!rlang::sym(age_months)) >= 6 &
+            as.numeric(!!rlang::sym(age_months)) < 24 &
+            iycf_mdd_score >= 5 ~
+            1,
+          as.numeric(!!rlang::sym(age_months)) >= 6 &
+            as.numeric(!!rlang::sym(age_months)) < 24 &
+            iycf_mdd_score < 5 ~
+            0,
+          TRUE ~ NA
+        ),
+        iycf_mdd_score = dplyr::case_when(
+          as.numeric(!!rlang::sym(age_months)) < 6 |
+            as.numeric(!!rlang::sym(age_months)) >= 24 ~
+            NA,
+          TRUE ~ iycf_mdd_score
+        ),
+        iycf_mdd_cat = dplyr::case_when(
+          as.numeric(!!rlang::sym(age_months)) < 6 |
+            as.numeric(!!rlang::sym(age_months)) >= 24 ~
+            NA,
+          TRUE ~ iycf_mdd_cat
+        )
+      )
   }
   mmf_columns <- c(iycf_4, ebf_liquids, iycf_8)
   if (length(setdiff(length(mmf_columns), 12)) != 0) {
-    warning("Minimum Meal Frequency related columns not found in dataset.\nIYCF Indicator 9: Minimum Meal Frequency 6-23 months (MMF) not calculated")
-  }
-  else {
+    warning(
+      "Minimum Meal Frequency related columns not found in dataset.\nIYCF Indicator 9: Minimum Meal Frequency 6-23 months (MMF) not calculated"
+    )
+  } else {
     .dataset <- .dataset %>%
-      dplyr::mutate(mmf_bf_6to8months = dplyr::case_when(!!rlang::sym(iycf_4) == yes_value & as.numeric(!!rlang::sym(iycf_8)) >= 2 ~ 1,
-                                                         !!rlang::sym(iycf_4) != yes_value | as.numeric(!!rlang::sym(iycf_8)) < 2 ~ 0,
-                                                         TRUE ~ NA),
-                    mmf_bf_6to8months = dplyr::case_when(as.numeric(!!rlang::sym(age_months)) < 6 |
-                                                           as.numeric(!!rlang::sym(age_months)) >= 8 |
-                                                           is.na(!!rlang::sym(age_months)) ~ NA,
-                                                         TRUE ~ mmf_bf_6to8months),
-                    mmf_bf_9to23months = dplyr::case_when(!!rlang::sym(iycf_4) == yes_value &
-                                                            as.numeric(!!rlang::sym(iycf_8)) >= 3 ~ 1,
-                                                          !!rlang::sym(iycf_4) != yes_value |
-                                                            as.numeric(!!rlang::sym(iycf_8)) < 3 ~ 0,
-                                                          TRUE ~ NA),
-                    mmf_bf_9to23months = dplyr::case_when(as.numeric(!!rlang::sym(age_months)) < 9 |
-                                                            as.numeric(!!rlang::sym(age_months)) >= 24 |
-                                                            is.na(!!rlang::sym(age_months)) ~ NA,
-                                                          TRUE ~ mmf_bf_9to23months),
-                    count_6b_6c_6d_8 = rowSums(dplyr::across(c(iycf_6b, iycf_6c, iycf_6d, iycf_8), .fns = as.numeric), na.rm = T),
-                    mmf_nonbf_6to23months = dplyr::case_when(!!rlang::sym(iycf_4) != yes_value &
-                                                               count_6b_6c_6d_8 >= 4 & as.numeric(!!rlang::sym(iycf_8)) >= 1 ~ 1,
-                                                             !!rlang::sym(iycf_4) == yes_value |
-                                                               count_6b_6c_6d_8 < 4 &
-                                                               as.numeric(!!rlang::sym(iycf_8)) < 1 ~ 0,
-                                                             TRUE ~ NA),
-                    mmf_nonbf_6to23months = dplyr::case_when(as.numeric(!!rlang::sym(age_months)) < 6 |
-                                                               as.numeric(!!rlang::sym(age_months)) >= 24 |
-                                                               is.na(!!rlang::sym(age_months)) ~ NA, TRUE ~ mmf_nonbf_6to23months),
-                    iycf_mmf = dplyr::case_when(is.na(mmf_bf_6to8months) &
-                                                  is.na(mmf_bf_9to23months) &
-                                                  is.na(mmf_nonbf_6to23months) ~ NA,
-                                                rowSums(dplyr::across(c(mmf_bf_6to8months,
-                                                                 mmf_bf_9to23months,
-                                                                 mmf_nonbf_6to23months), .fns = as.numeric), na.rm = T) > 0 ~ 1,
-                                                rowSums(dplyr::across(c(mmf_bf_6to8months,
-                                                                 mmf_bf_9to23months,
-                                                                 mmf_nonbf_6to23months), .fns = as.numeric), na.rm = T) == 0 ~ 0,
-                                                TRUE ~ NA),
-                    iycf_mmf = dplyr::case_when(as.numeric(!!rlang::sym(age_months)) <
-                                                  6 | as.numeric(!!rlang::sym(age_months)) >=
-                                                  24 | is.na(!!rlang::sym(age_months)) ~ NA, TRUE ~
-                                                  iycf_mmf))
+      dplyr::mutate(
+        mmf_bf_6to8months = dplyr::case_when(
+          !!rlang::sym(iycf_4) == yes_value &
+            as.numeric(!!rlang::sym(iycf_8)) >= 2 ~
+            1,
+          !!rlang::sym(iycf_4) != yes_value |
+            as.numeric(!!rlang::sym(iycf_8)) < 2 ~
+            0,
+          TRUE ~ NA
+        ),
+        mmf_bf_6to8months = dplyr::case_when(
+          as.numeric(!!rlang::sym(age_months)) < 6 |
+            as.numeric(!!rlang::sym(age_months)) >= 8 |
+            is.na(!!rlang::sym(age_months)) ~
+            NA,
+          TRUE ~ mmf_bf_6to8months
+        ),
+        mmf_bf_9to23months = dplyr::case_when(
+          !!rlang::sym(iycf_4) == yes_value &
+            as.numeric(!!rlang::sym(iycf_8)) >= 3 ~
+            1,
+          !!rlang::sym(iycf_4) != yes_value |
+            as.numeric(!!rlang::sym(iycf_8)) < 3 ~
+            0,
+          TRUE ~ NA
+        ),
+        mmf_bf_9to23months = dplyr::case_when(
+          as.numeric(!!rlang::sym(age_months)) < 9 |
+            as.numeric(!!rlang::sym(age_months)) >= 24 |
+            is.na(!!rlang::sym(age_months)) ~
+            NA,
+          TRUE ~ mmf_bf_9to23months
+        ),
+        count_6b_6c_6d_8 = rowSums(
+          dplyr::across(
+            c(iycf_6b, iycf_6c, iycf_6d, iycf_8),
+            .fns = as.numeric
+          ),
+          na.rm = T
+        ),
+        mmf_nonbf_6to23months = dplyr::case_when(
+          !!rlang::sym(iycf_4) != yes_value &
+            count_6b_6c_6d_8 >= 4 &
+            as.numeric(!!rlang::sym(iycf_8)) >= 1 ~
+            1,
+          !!rlang::sym(iycf_4) == yes_value |
+            count_6b_6c_6d_8 < 4 &
+              as.numeric(!!rlang::sym(iycf_8)) < 1 ~
+            0,
+          TRUE ~ NA
+        ),
+        mmf_nonbf_6to23months = dplyr::case_when(
+          as.numeric(!!rlang::sym(age_months)) < 6 |
+            as.numeric(!!rlang::sym(age_months)) >= 24 |
+            is.na(!!rlang::sym(age_months)) ~
+            NA,
+          TRUE ~ mmf_nonbf_6to23months
+        ),
+        iycf_mmf = dplyr::case_when(
+          is.na(mmf_bf_6to8months) &
+            is.na(mmf_bf_9to23months) &
+            is.na(mmf_nonbf_6to23months) ~
+            NA,
+          rowSums(
+            dplyr::across(
+              c(mmf_bf_6to8months, mmf_bf_9to23months, mmf_nonbf_6to23months),
+              .fns = as.numeric
+            ),
+            na.rm = T
+          ) >
+            0 ~
+            1,
+          rowSums(
+            dplyr::across(
+              c(mmf_bf_6to8months, mmf_bf_9to23months, mmf_nonbf_6to23months),
+              .fns = as.numeric
+            ),
+            na.rm = T
+          ) ==
+            0 ~
+            0,
+          TRUE ~ NA
+        ),
+        iycf_mmf = dplyr::case_when(
+          as.numeric(!!rlang::sym(age_months)) < 6 |
+            as.numeric(!!rlang::sym(age_months)) >= 24 |
+            is.na(!!rlang::sym(age_months)) ~
+            NA,
+          TRUE ~ iycf_mmf
+        )
+      )
   }
-  mmff_columns <- c(iycf_4,  ebf_liquids, ebf_foods)
+  mmff_columns <- c(iycf_4, ebf_liquids, ebf_foods)
   if (length(setdiff(length(mmff_columns), 29)) != 0) {
-    warning("Minimum Milk Feeding Frequency related columns not found in dataset.\nIYCF Indicator 10: Minimum Milk Feeding Frequency For Non-Breastfed Children 6-23 months (MMFF) not calculated")
+    warning(
+      "Minimum Milk Feeding Frequency related columns not found in dataset.\nIYCF Indicator 10: Minimum Milk Feeding Frequency For Non-Breastfed Children 6-23 months (MMFF) not calculated"
+    )
+  } else {
+    .dataset <- .dataset %>%
+      dplyr::mutate(
+        count_dairy = rowSums(
+          dplyr::across(c(iycf_6b, iycf_6c, iycf_6d, iycf_7a)),
+          na.rm = T
+        ),
+        iycf_mmff = dplyr::case_when(
+          !!rlang::sym(iycf_4) != yes_value & count_dairy >= 2 ~ 1,
+          !!rlang::sym(iycf_4) == yes_value | count_dairy < 2 ~ 0,
+          TRUE ~ NA
+        ),
+        iycf_mmff = dplyr::case_when(
+          as.numeric(!!rlang::sym(age_months)) < 6 |
+            as.numeric(!!rlang::sym(age_months)) >= 24 |
+            is.na(!!rlang::sym(age_months)) ~
+            NA,
+          TRUE ~ iycf_mmff
+        )
+      )
   }
-  else {
-    .dataset <- .dataset %>% dplyr::mutate(count_dairy = rowSums(dplyr::across(c(iycf_6b,
-                                                                                 iycf_6c, iycf_6d, iycf_7a)), na.rm = T),
-                                           iycf_mmff = dplyr::case_when(!!rlang::sym(iycf_4) !=
-                                                                          yes_value & count_dairy >= 2 ~ 1, !!rlang::sym(iycf_4) ==
-                                                                          yes_value | count_dairy < 2 ~ 0, TRUE ~ NA),
-                                           iycf_mmff = dplyr::case_when(as.numeric(!!rlang::sym(age_months)) <
-                                                                          6 | as.numeric(!!rlang::sym(age_months)) >=
-                                                                          24 | is.na(!!rlang::sym(age_months)) ~ NA, TRUE ~
-                                                                          iycf_mmff))
-  }
-  ind_11_columns <- c(iycf_4, "iycf_mmf", "iycf_mdd_cat",
-                      "iycf_mmff", ebf_liquids, ebf_foods)
+  ind_11_columns <- c(
+    iycf_4,
+    "iycf_mmf",
+    "iycf_mdd_cat",
+    "iycf_mmff",
+    ebf_liquids,
+    ebf_foods
+  )
   if (length(setdiff(length(ind_11_columns), 32)) != 0) {
-    warning("Minimum Acceptable Diet 6-23 months related columns not found in dataset.\nIYCF Indicator 11: Minimum Acceptable Diet 6-23 months (MAD) not calculated")
+    warning(
+      "Minimum Acceptable Diet 6-23 months related columns not found in dataset.\nIYCF Indicator 11: Minimum Acceptable Diet 6-23 months (MAD) not calculated"
+    )
+  } else {
+    .dataset <- .dataset %>%
+      dplyr::mutate(
+        iycf_mad = dplyr::case_when(
+          (!!rlang::sym(iycf_4) == yes_value | iycf_mmff == 1) &
+            iycf_mdd_cat == 1 &
+            iycf_mmf == 1 ~
+            1,
+          (!!rlang::sym(iycf_4) != yes_value &
+            iycf_mmff != 1) |
+            iycf_mdd_cat != 1 & iycf_mmf != 1 ~
+            0,
+          TRUE ~ NA
+        ),
+        iycf_mad = dplyr::case_when(
+          as.numeric(!!rlang::sym(age_months)) < 6 |
+            as.numeric(!!rlang::sym(age_months)) >= 24 |
+            is.na(!!rlang::sym(age_months)) ~
+            NA,
+          TRUE ~ iycf_mad
+        )
+      )
   }
-  else {
-    .dataset <- .dataset %>% dplyr::mutate(iycf_mad = dplyr::case_when((!!rlang::sym(iycf_4) ==
-                                                                          yes_value | iycf_mmff == 1) & iycf_mdd_cat == 1 &
-                                                                         iycf_mmf == 1 ~ 1, (!!rlang::sym(iycf_4) != yes_value &
-                                                                                               iycf_mmff != 1) | iycf_mdd_cat != 1 & iycf_mmf !=
-                                                                         1 ~ 0, TRUE ~ NA), iycf_mad = dplyr::case_when(as.numeric(!!rlang::sym(age_months)) <
-                                                                                                                          6 | as.numeric(!!rlang::sym(age_months)) >= 24 |
-                                                                                                                          is.na(!!rlang::sym(age_months)) ~ NA, TRUE ~ iycf_mad))
-  }
-  ind_12_columns <- c(iycf_7i, iycf_7j, iycf_7k, iycf_7l,
-                      iycf_7m)
+  ind_12_columns <- c(iycf_7i, iycf_7j, iycf_7k, iycf_7l, iycf_7m)
   if (length(setdiff(length(ind_12_columns), 5)) != 0) {
-    warning("Eggs & Flesh Foods Consumption related columns not found in dataset.\nIYCF Indicator 12: Eggs & Flesh Foods Consumption 6-23 months (EFF) not calculated")
+    warning(
+      "Eggs & Flesh Foods Consumption related columns not found in dataset.\nIYCF Indicator 12: Eggs & Flesh Foods Consumption 6-23 months (EFF) not calculated"
+    )
+  } else {
+    .dataset <- .dataset %>%
+      dplyr::mutate(
+        iycf_eff = dplyr::case_when(
+          !!rlang::sym(iycf_7i) == 1 |
+            !!rlang::sym(iycf_7j) == 1 |
+            !!rlang::sym(iycf_7k) == 1 |
+            !!rlang::sym(iycf_7l) == 1 |
+            !!rlang::sym(iycf_7m) == 1 ~
+            1,
+          !!rlang::sym(iycf_7i) != 1 &
+            !!rlang::sym(iycf_7j) != 1 &
+            !!rlang::sym(iycf_7k) != 1 &
+            !!rlang::sym(iycf_7l) != 1 &
+            !!rlang::sym(iycf_7m) != 1 ~
+            0,
+          TRUE ~ NA
+        ),
+        iycf_eff = dplyr::case_when(
+          as.numeric(!!rlang::sym(age_months)) < 6 |
+            as.numeric(!!rlang::sym(age_months)) >= 24 |
+            is.na(!!rlang::sym(age_months)) ~
+            NA,
+          TRUE ~ iycf_eff
+        )
+      )
   }
-  else {
-    .dataset <- .dataset %>% dplyr::mutate(iycf_eff = dplyr::case_when(!!rlang::sym(iycf_7i) ==
-                                                                         1 | !!rlang::sym(iycf_7j) == 1 | !!rlang::sym(iycf_7k) ==
-                                                                         1 | !!rlang::sym(iycf_7l) == 1 | !!rlang::sym(iycf_7m) ==
-                                                                         1 ~ 1, !!rlang::sym(iycf_7i) != 1 & !!rlang::sym(iycf_7j) !=
-                                                                         1 & !!rlang::sym(iycf_7k) != 1 & !!rlang::sym(iycf_7l) !=
-                                                                         1 & !!rlang::sym(iycf_7m) != 1 ~ 0, TRUE ~ NA),
-                                           iycf_eff = dplyr::case_when(as.numeric(!!rlang::sym(age_months)) <
-                                                                         6 | as.numeric(!!rlang::sym(age_months)) >=
-                                                                         24 | is.na(!!rlang::sym(age_months)) ~ NA, TRUE ~
-                                                                         iycf_eff))
-  }
-  sweet_col <- c(iycf_6c_swt, iycf_6d_swt, iycf_6h_swt, iycf_6j_swt,
-                 iycf_6e, iycf_6f, iycf_6g)
+  sweet_col <- c(
+    iycf_6c_swt,
+    iycf_6d_swt,
+    iycf_6h_swt,
+    iycf_6j_swt,
+    iycf_6e,
+    iycf_6f,
+    iycf_6g
+  )
   if (length(setdiff(length(sweet_col), 7)) != 0) {
-    warning("Sweet Beverage Consumption  related columns not found in dataset.\nIYCF Indicator 13: Sweet Beverage Consumption 6-23 months (SWB) not calculated")
-  }
-  else {
-    .dataset <- .dataset %>% dplyr::mutate(iycf_swb = dplyr::case_when(!!rlang::sym(iycf_6c_swt) ==
-                                                                         yes_value | !!rlang::sym(iycf_6d_swt) == yes_value |
-                                                                         !!rlang::sym(iycf_6h_swt) == yes_value | !!rlang::sym(iycf_6j_swt) ==
-                                                                         yes_value | !!rlang::sym(iycf_6e) == yes_value |
-                                                                         !!rlang::sym(iycf_6f) == yes_value | !!rlang::sym(iycf_6g) ==
-                                                                         yes_value ~ 1, !!rlang::sym(iycf_6c_swt) != yes_value &
-                                                                         !!rlang::sym(iycf_6d_swt) != yes_value & !!rlang::sym(iycf_6h_swt) !=
-                                                                         yes_value & !!rlang::sym(iycf_6j_swt) != yes_value &
-                                                                         !!rlang::sym(iycf_6e) != yes_value & !!rlang::sym(iycf_6f) !=
-                                                                         yes_value & !!rlang::sym(iycf_6g) != yes_value ~
-                                                                         0, TRUE ~ NA), iycf_swb = dplyr::case_when(as.numeric(!!rlang::sym(age_months)) <
-                                                                                                                      6 | as.numeric(!!rlang::sym(age_months)) >= 24 |
-                                                                                                                      is.na(!!rlang::sym(age_months)) ~ NA, TRUE ~ iycf_swb))
+    warning(
+      "Sweet Beverage Consumption  related columns not found in dataset.\nIYCF Indicator 13: Sweet Beverage Consumption 6-23 months (SWB) not calculated"
+    )
+  } else {
+    .dataset <- .dataset %>%
+      dplyr::mutate(
+        iycf_swb = dplyr::case_when(
+          !!rlang::sym(iycf_6c_swt) == yes_value |
+            !!rlang::sym(iycf_6d_swt) == yes_value |
+            !!rlang::sym(iycf_6h_swt) == yes_value |
+            !!rlang::sym(iycf_6j_swt) == yes_value |
+            !!rlang::sym(iycf_6e) == yes_value |
+            !!rlang::sym(iycf_6f) == yes_value |
+            !!rlang::sym(iycf_6g) == yes_value ~
+            1,
+          !!rlang::sym(iycf_6c_swt) != yes_value &
+            !!rlang::sym(iycf_6d_swt) != yes_value &
+            !!rlang::sym(iycf_6h_swt) != yes_value &
+            !!rlang::sym(iycf_6j_swt) != yes_value &
+            !!rlang::sym(iycf_6e) != yes_value &
+            !!rlang::sym(iycf_6f) != yes_value &
+            !!rlang::sym(iycf_6g) != yes_value ~
+            0,
+          TRUE ~ NA
+        ),
+        iycf_swb = dplyr::case_when(
+          as.numeric(!!rlang::sym(age_months)) < 6 |
+            as.numeric(!!rlang::sym(age_months)) >= 24 |
+            is.na(!!rlang::sym(age_months)) ~
+            NA,
+          TRUE ~ iycf_swb
+        )
+      )
   }
   if (length(setdiff(length(c(iycf_7p, iycf_7q)), 2)) != 0) {
-    warning("Unhealthy Food Consumption related columns not found in dataset.\nIYCF Indicator 14: Unhealthy Food Consumption (UFC) not calculated")
+    warning(
+      "Unhealthy Food Consumption related columns not found in dataset.\nIYCF Indicator 14: Unhealthy Food Consumption (UFC) not calculated"
+    )
+  } else {
+    .dataset <- .dataset %>%
+      dplyr::mutate(
+        iycf_ufc = dplyr::case_when(
+          !!rlang::sym(iycf_7p) == yes_value |
+            !!rlang::sym(iycf_7q) == yes_value ~
+            1,
+          !!rlang::sym(iycf_7p) != yes_value &
+            !!rlang::sym(iycf_7q) != yes_value ~
+            0,
+          TRUE ~ NA
+        ),
+        iycf_ufc = dplyr::case_when(
+          as.numeric(!!rlang::sym(age_months)) < 6 |
+            as.numeric(!!rlang::sym(age_months)) >= 24 |
+            is.na(!!rlang::sym(age_months)) ~
+            NA,
+          TRUE ~ iycf_ufc
+        )
+      )
   }
-  else {
-    .dataset <- .dataset %>% dplyr::mutate(iycf_ufc = dplyr::case_when(!!rlang::sym(iycf_7p) ==
-                                                                         yes_value | !!rlang::sym(iycf_7q) == yes_value ~
-                                                                         1, !!rlang::sym(iycf_7p) != yes_value & !!rlang::sym(iycf_7q) !=
-                                                                         yes_value ~ 0, TRUE ~ NA), iycf_ufc = dplyr::case_when(as.numeric(!!rlang::sym(age_months)) <
-                                                                                                                                  6 | as.numeric(!!rlang::sym(age_months)) >= 24 |
-                                                                                                                                  is.na(!!rlang::sym(age_months)) ~ NA, TRUE ~ iycf_ufc))
-  }
-  zero_columns <- c("iycf_7c_zero", "iycf_7e_zero", "iycf_7f_zero",
-                    "iycf_7g_zero", "iycf_7h_zero", ebf_liquids, ebf_foods)
+  zero_columns <- c(
+    "iycf_7c_zero",
+    "iycf_7e_zero",
+    "iycf_7f_zero",
+    "iycf_7g_zero",
+    "iycf_7h_zero",
+    ebf_liquids,
+    ebf_foods
+  )
   if (length(setdiff(length(zero_columns), 33)) != 0) {
-    warning("Zero Vegetable or Fruit Consumption related columns not found in dataset.\nIYCF Indicator 15: Zero Vegetable or Fruit Consumption 6-23 months (ZVF) not calculated")
-  }
-  else {
-    .dataset <- .dataset %>% dplyr::mutate_at(dplyr::vars("iycf_7c_zero", "iycf_7e_zero", "iycf_7f_zero",
-                                                          "iycf_7g_zero", "iycf_7h_zero"),
-                                              ~dplyr::case_when(. == no_value ~ 1, . != no_value ~
-                                                                  0, TRUE ~ NA)) %>% dplyr::mutate(zvf_sum = rowSums(dplyr::across(c("iycf_7c_zero", "iycf_7e_zero", "iycf_7f_zero",
-                                                                                                                                     "iycf_7g_zero", "iycf_7h_zero"),
-                                                                                                                                   .fns = as.numeric), na.rm = T), iycf_zvf = dplyr::case_when(zvf_sum ==
-                                                                                                                                                                                                 5 ~ 1, zvf_sum < 5 ~ 0, TRUE ~ NA), iycf_zvf = dplyr::case_when(as.numeric(!!rlang::sym(age_months)) <
-                                                                                                                                                                                                                                                                   6 | as.numeric(!!rlang::sym(age_months)) >= 24 |
-                                                                                                                                                                                                                                                                   is.na(!!rlang::sym(age_months)) ~ NA, TRUE ~ iycf_zvf))
+    warning(
+      "Zero Vegetable or Fruit Consumption related columns not found in dataset.\nIYCF Indicator 15: Zero Vegetable or Fruit Consumption 6-23 months (ZVF) not calculated"
+    )
+  } else {
+    .dataset <- .dataset %>%
+      dplyr::mutate_at(
+        dplyr::vars(
+          "iycf_7c_zero",
+          "iycf_7e_zero",
+          "iycf_7f_zero",
+          "iycf_7g_zero",
+          "iycf_7h_zero"
+        ),
+        ~ dplyr::case_when(. == no_value ~ 1, . != no_value ~ 0, TRUE ~ NA)
+      ) %>%
+      dplyr::mutate(
+        zvf_sum = rowSums(
+          dplyr::across(
+            c(
+              "iycf_7c_zero",
+              "iycf_7e_zero",
+              "iycf_7f_zero",
+              "iycf_7g_zero",
+              "iycf_7h_zero"
+            ),
+            .fns = as.numeric
+          ),
+          na.rm = T
+        ),
+        iycf_zvf = dplyr::case_when(
+          zvf_sum == 5 ~ 1,
+          zvf_sum < 5 ~ 0,
+          TRUE ~ NA
+        ),
+        iycf_zvf = dplyr::case_when(
+          as.numeric(!!rlang::sym(age_months)) < 6 |
+            as.numeric(!!rlang::sym(age_months)) >= 24 |
+            is.na(!!rlang::sym(age_months)) ~
+            NA,
+          TRUE ~ iycf_zvf
+        )
+      )
   }
   if (!is.null(iycf_5)) {
     if (!iycf_5 %in% names(.dataset)) {
-      warning("IYCF 5 column not found in dataset.\nIYCF Indicator 16: Bottle Feeding 0-23 months not calculated")
-    }
-    else {
-      .dataset <- .dataset %>% dplyr::mutate(iycf_bof = dplyr::case_when(!!rlang::sym(iycf_5) ==
-                                                                           yes_value ~ 1, !!rlang::sym(iycf_5) != yes_value ~
-                                                                           0, TRUE ~ NA), iycf_bof = dplyr::case_when(as.numeric(!!rlang::sym(age_months)) >=
-                                                                                                                        24 | is.na(!!rlang::sym(age_months)) | is.na(!!rlang::sym(iycf_5)) ~
-                                                                                                                        NA, TRUE ~ iycf_bof))
+      warning(
+        "IYCF 5 column not found in dataset.\nIYCF Indicator 16: Bottle Feeding 0-23 months not calculated"
+      )
+    } else {
+      .dataset <- .dataset %>%
+        dplyr::mutate(
+          iycf_bof = dplyr::case_when(
+            !!rlang::sym(iycf_5) == yes_value ~ 1,
+            !!rlang::sym(iycf_5) != yes_value ~ 0,
+            TRUE ~ NA
+          ),
+          iycf_bof = dplyr::case_when(
+            as.numeric(!!rlang::sym(age_months)) >= 24 |
+              is.na(!!rlang::sym(age_months)) |
+              is.na(!!rlang::sym(iycf_5)) ~
+              NA,
+            TRUE ~ iycf_bof
+          )
+        )
     }
   }
   if (is.null(loop_index)) {
-    .dataset <- .dataset %>% dplyr::mutate(loop_index = paste0("loop_iycf_",
-                                                               dplyr::row_number()))
+    .dataset <- .dataset %>%
+      dplyr::mutate(loop_index = paste0("loop_iycf_", dplyr::row_number()))
   }
   options(warn = 0)
   return(.dataset)

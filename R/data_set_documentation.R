@@ -1,6 +1,5 @@
 ############################### data documentation #######################
 
-
 #' Survey data
 #'
 #' These data sets include HH data used for the readme
@@ -9,7 +8,6 @@
 #' @format NULL
 #' @examples
 #' impactR4PHU_data_template
-
 
 #' @title IPHRA template dataset (example)
 #' @name impactR4PHU_data_template

@@ -23,7 +23,23 @@ dir.responses <- "output/checking/responses/"
 enum_colname <- "enumerator"
 
 # ------------------------------------------------------------------------------
-# small utility function 
-make.short.name <- function(name, no_date = F) return(gsub("__","_", paste0(dataset.name.short,"_", name, ifelse(no_date, "", paste0("_", strings['out_date'])))))
-make.filename.xlsx <- function(dir = ".", name, no_date = F) return(gsub("//","/", paste0(dir, "/", make.short.name(name, no_date), ".xlsx")))
-
+# small utility function
+make.short.name <- function(name, no_date = F) {
+  return(gsub(
+    "__",
+    "_",
+    paste0(
+      dataset.name.short,
+      "_",
+      name,
+      ifelse(no_date, "", paste0("_", strings['out_date']))
+    )
+  ))
+}
+make.filename.xlsx <- function(dir = ".", name, no_date = F) {
+  return(gsub(
+    "//",
+    "/",
+    paste0(dir, "/", make.short.name(name, no_date), ".xlsx")
+  ))
+}

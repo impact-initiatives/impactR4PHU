@@ -11,6 +11,6 @@
 #' a %notin% c(3,4)
 #' }
 
-"%notin%" <- function (a,b) {
+"%notin%" <- function(a, b) {
   !a %in% b
 }

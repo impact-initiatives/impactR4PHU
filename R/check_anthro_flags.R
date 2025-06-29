@@ -32,13 +32,14 @@
 #'
 #' @examples
 #' \dontrun{check_anthro_flags(df)}
-check_anthro_flags <- function(.dataset,
-                            nut_muac_cm = "nut_muac_cm",
-                            edema_confirm = "nut_edema_confirm",
-                            value_edema_confirm = "yes",
-                            uuid = "uuid",
-                            loop_index = NULL) {
-
+check_anthro_flags <- function(
+  .dataset,
+  nut_muac_cm = "nut_muac_cm",
+  edema_confirm = "nut_edema_confirm",
+  value_edema_confirm = "yes",
+  uuid = "uuid",
+  loop_index = NULL
+) {
   options(warn = -1)
   ## Throw an error if a dataset wasn't provided as a first argument
   if (!is.data.frame(.dataset)) {
@@ -53,54 +54,118 @@ check_anthro_flags <- function(.dataset,
   if (is.null(loop_index)) {
     ## initiate the return output
     .dataset <- .dataset %>%
-      dplyr::mutate(loop_index = paste0("loop_nut_",dplyr::row_number()))
+      dplyr::mutate(loop_index = paste0("loop_nut_", dplyr::row_number()))
   }
   # combine all mfaz_cols together
-  mfaz_cols <- c("mfaz","severe_mfaz","moderate_mfaz","global_mfaz")
+  mfaz_cols <- c("mfaz", "severe_mfaz", "moderate_mfaz", "global_mfaz")
 
-  if(length(setdiff(length(mfaz_cols),4)) != 0) {
+  if (length(setdiff(length(mfaz_cols), 4)) != 0) {
     stop("Missing mfaz columns")
-  } else{
+  } else {
     .dataset <- .dataset
 
-    mean_mfaz_dataset <- mean(.dataset$mfaz, na.rm=T)
+    mean_mfaz_dataset <- mean(.dataset$mfaz, na.rm = T)
 
     .dataset <- .dataset %>%
-      dplyr::mutate(flag_sd_mfaz = ifelse(is.na(mfaz),NA,
-                                          ifelse(mfaz < mean_mfaz_dataset - 4 | mfaz > mean_mfaz_dataset + 3, 1, 0)),
-                    mfaz_who_flag = ifelse(is.na(mfaz), NA, ifelse(mfaz < -5 | mfaz > 5, 1, 0)),
-                    mfaz_noflag = ifelse(is.na(mfaz) | flag_sd_mfaz == 1, NA, mfaz),
-                    mean_mfaz_noflag = round(mean(mfaz_noflag, na.rm = TRUE),3),
-                    sd_mfaz_noflag = round(stats::sd(mfaz_noflag, na.rm = TRUE),2),
-                    global_mfaz_noflag = ifelse(is.na(global_mfaz), NA, ifelse(is.na(flag_sd_mfaz), global_mfaz, ifelse(flag_sd_mfaz == 1, NA, global_mfaz))),
-                    moderate_mfaz_noflag = ifelse(is.na(moderate_mfaz), NA, ifelse(is.na(flag_sd_mfaz), moderate_mfaz, ifelse(flag_sd_mfaz == 1, NA, moderate_mfaz))),
-                    severe_mfaz_noflag = ifelse(is.na(severe_mfaz), NA, ifelse(is.na(flag_sd_mfaz), severe_mfaz, ifelse(flag_sd_mfaz == 1, NA, severe_mfaz))))
-
+      dplyr::mutate(
+        flag_sd_mfaz = ifelse(
+          is.na(mfaz),
+          NA,
+          ifelse(
+            mfaz < mean_mfaz_dataset - 4 | mfaz > mean_mfaz_dataset + 3,
+            1,
+            0
+          )
+        ),
+        mfaz_who_flag = ifelse(
+          is.na(mfaz),
+          NA,
+          ifelse(mfaz < -5 | mfaz > 5, 1, 0)
+        ),
+        mfaz_noflag = ifelse(is.na(mfaz) | flag_sd_mfaz == 1, NA, mfaz),
+        mean_mfaz_noflag = round(mean(mfaz_noflag, na.rm = TRUE), 3),
+        sd_mfaz_noflag = round(stats::sd(mfaz_noflag, na.rm = TRUE), 2),
+        global_mfaz_noflag = ifelse(
+          is.na(global_mfaz),
+          NA,
+          ifelse(
+            is.na(flag_sd_mfaz),
+            global_mfaz,
+            ifelse(flag_sd_mfaz == 1, NA, global_mfaz)
+          )
+        ),
+        moderate_mfaz_noflag = ifelse(
+          is.na(moderate_mfaz),
+          NA,
+          ifelse(
+            is.na(flag_sd_mfaz),
+            moderate_mfaz,
+            ifelse(flag_sd_mfaz == 1, NA, moderate_mfaz)
+          )
+        ),
+        severe_mfaz_noflag = ifelse(
+          is.na(severe_mfaz),
+          NA,
+          ifelse(
+            is.na(flag_sd_mfaz),
+            severe_mfaz,
+            ifelse(flag_sd_mfaz == 1, NA, severe_mfaz)
+          )
+        )
+      )
   }
   # combine all muac_cols together
-  muac_cols <- c(nut_muac_cm,"sam_muac","mam_muac","gam_muac")
+  muac_cols <- c(nut_muac_cm, "sam_muac", "mam_muac", "gam_muac")
 
-  if(length(setdiff(length(muac_cols),4)) != 0) {
+  if (length(setdiff(length(muac_cols), 4)) != 0) {
     stop("Missing muac columns")
-  } else{
+  } else {
     .dataset <- .dataset %>%
-      dplyr::mutate(flag_extreme_muac = ifelse(is.na(!!rlang::sym(nut_muac_cm)), NA,
-                                               ifelse(!!rlang::sym(nut_muac_cm) < 7 | !!rlang::sym(nut_muac_cm) > 22, 1, 0)),
-                    muac_noflag = ifelse(is.na(!!rlang::sym(nut_muac_cm)), NA, ifelse(flag_extreme_muac == 1, NA, !!rlang::sym(nut_muac_cm))),
-                    gam_muac_noflag = ifelse(is.na(!!rlang::sym(nut_muac_cm)), NA, ifelse(flag_extreme_muac == 1, NA, gam_muac)),
-                    mam_muac_noflag = ifelse(is.na(!!rlang::sym(nut_muac_cm)), NA, ifelse(flag_extreme_muac == 1, NA, mam_muac)),
-                    sam_muac_noflag = ifelse(is.na(!!rlang::sym(nut_muac_cm)), NA, ifelse(flag_extreme_muac == 1, NA, sam_muac)))
-
+      dplyr::mutate(
+        flag_extreme_muac = ifelse(
+          is.na(!!rlang::sym(nut_muac_cm)),
+          NA,
+          ifelse(
+            !!rlang::sym(nut_muac_cm) < 7 | !!rlang::sym(nut_muac_cm) > 22,
+            1,
+            0
+          )
+        ),
+        muac_noflag = ifelse(
+          is.na(!!rlang::sym(nut_muac_cm)),
+          NA,
+          ifelse(flag_extreme_muac == 1, NA, !!rlang::sym(nut_muac_cm))
+        ),
+        gam_muac_noflag = ifelse(
+          is.na(!!rlang::sym(nut_muac_cm)),
+          NA,
+          ifelse(flag_extreme_muac == 1, NA, gam_muac)
+        ),
+        mam_muac_noflag = ifelse(
+          is.na(!!rlang::sym(nut_muac_cm)),
+          NA,
+          ifelse(flag_extreme_muac == 1, NA, mam_muac)
+        ),
+        sam_muac_noflag = ifelse(
+          is.na(!!rlang::sym(nut_muac_cm)),
+          NA,
+          ifelse(flag_extreme_muac == 1, NA, sam_muac)
+        )
+      )
   }
   ## Test if all columns are in the dataset
-  if(!is.null(edema_confirm)){
-    if(!edema_confirm %in% names(.dataset)) {
+  if (!is.null(edema_confirm)) {
+    if (!edema_confirm %in% names(.dataset)) {
       stop("Missing edema_confirm columns")
-    } else{
+    } else {
       .dataset <- .dataset %>%
-        dplyr::mutate(flag_edema_pitting = ifelse(is.na(!!rlang::sym(edema_confirm)), NA,
-                                                  ifelse(!!rlang::sym(edema_confirm) == value_edema_confirm,1,0)))
-
+        dplyr::mutate(
+          flag_edema_pitting = ifelse(
+            is.na(!!rlang::sym(edema_confirm)),
+            NA,
+            ifelse(!!rlang::sym(edema_confirm) == value_edema_confirm, 1, 0)
+          )
+        )
     }
   }
 

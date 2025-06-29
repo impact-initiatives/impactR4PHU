@@ -46,84 +46,127 @@
 #'   data_container_loop = df_containers
 #' )
 
-check_wash_flags <- function(.dataset,
-                             data_container_loop = NULL,
-                             container_type = "wash_container_type",
-                             container_litre_other = "wash_container_litre_other",
-                             container_journey_collection = "wash_container_journey_collection",
-                             num_containers = "wash_num_containers",
-                             wash_water_collect_time = "wash_water_collect_time",
-                             value_on_premise = "on_premise",
-                             num_hh = "num_hh",
-                             uuid = "uuid") {
-
+check_wash_flags <- function(
+  .dataset,
+  data_container_loop = NULL,
+  container_type = "wash_container_type",
+  container_litre_other = "wash_container_litre_other",
+  container_journey_collection = "wash_container_journey_collection",
+  num_containers = "wash_num_containers",
+  wash_water_collect_time = "wash_water_collect_time",
+  value_on_premise = "on_premise",
+  num_hh = "num_hh",
+  uuid = "uuid"
+) {
   options(warn = -1)
   ## Throw an error if a dataset wasn't provided as a first argument
   if (!is.data.frame(.dataset)) {
     stop("First argument should be a dataset")
   }
 
-
   ## Throw an error if the dataset is empty
   if (nrow(.dataset) == 0) {
     stop("Dataset is empty")
   }
 
-  if(!is.null(data_container_loop)){
+  if (!is.null(data_container_loop)) {
     ## Throw an error if the dataset is empty
     if (!is.data.frame(data_container_loop)) {
       stop("data_container_loop should be a dataset")
     }
   }
 
-  if(!is.null(data_container_loop)){
+  if (!is.null(data_container_loop)) {
     ## Throw an error if the dataset is empty
     if (nrow(data_container_loop) == 0) {
       stop("raw.water_count_loop is empty")
     }
   }
 
-  if (!uuid %in% names(.dataset)) stop("uuid argument incorrect, or not available in the dataset")
+  if (!uuid %in% names(.dataset)) {
+    stop("uuid argument incorrect, or not available in the dataset")
+  }
 
-
-  if(!is.null(data_container_loop)){
+  if (!is.null(data_container_loop)) {
     ## calculate liters per person per day
     calculate_data_container_loop <- data_container_loop %>%
       dplyr::rowwise() %>%
-      mutate(container_type_litre = stringr::str_remove(stringr::str_extract(!!rlang::sym(container_type), "([^\\__]+$)"), "l"),
-             litre = ifelse(!!rlang::sym(container_type) == "other", as.numeric(!!rlang::sym(container_litre_other)),as.numeric(container_type_litre)),
-             litre_per_day = ifelse(is.na(!!rlang::sym(container_journey_collection)), litre, litre * as.numeric(!!rlang::sym(container_journey_collection)))) %>%
+      mutate(
+        container_type_litre = stringr::str_remove(
+          stringr::str_extract(!!rlang::sym(container_type), "([^\\__]+$)"),
+          "l"
+        ),
+        litre = ifelse(
+          !!rlang::sym(container_type) == "other",
+          as.numeric(!!rlang::sym(container_litre_other)),
+          as.numeric(container_type_litre)
+        ),
+        litre_per_day = ifelse(
+          is.na(!!rlang::sym(container_journey_collection)),
+          litre,
+          litre * as.numeric(!!rlang::sym(container_journey_collection))
+        )
+      ) %>%
       dplyr::ungroup() %>%
       dplyr::group_by(uuid) %>%
       dplyr::summarise(litre_per_day_per_hh = sum(litre_per_day))
 
     .dataset <- .dataset %>%
       dplyr::left_join(calculate_data_container_loop) %>%
-      dplyr::mutate(litre_per_day_per_person = litre_per_day_per_hh / as.numeric(!!rlang::sym(num_hh)))
+      dplyr::mutate(
+        litre_per_day_per_person = litre_per_day_per_hh /
+          as.numeric(!!rlang::sym(num_hh))
+      )
 
     ## FLAGS (Litres per person per day)
-    mean_litre_dataset <-  mean(.dataset$litre_per_day_per_person, na.rm = T)
+    mean_litre_dataset <- mean(.dataset$litre_per_day_per_person, na.rm = T)
     sd_litre_dataset <- stats::sd(.dataset$litre_per_day_per_person, na.rm = T)
 
     .dataset <- .dataset %>%
-      dplyr::mutate(litre_z_score = (litre_per_day_per_person - mean_litre_dataset) / sd_litre_dataset)
+      dplyr::mutate(
+        litre_z_score = (litre_per_day_per_person - mean_litre_dataset) /
+          sd_litre_dataset
+      )
 
     mean_litre_zscore <- mean(.dataset$litre_z_score, na.rm = T)
 
-
     .dataset <- .dataset %>%
-      dplyr::mutate(flag_sd_litre = ifelse(is.na(litre_z_score), NA,
-                                           ifelse(litre_z_score < mean_litre_zscore - 3 | litre_z_score > mean_litre_zscore + 3, 1, 0)),
-                    flag_low_litre = ifelse(is.na(litre_per_day_per_person), NA,
-                                            ifelse(litre_per_day_per_person <= 1, 1, 0)),
-                    flag_high_litre = ifelse(is.na(litre_per_day_per_person),NA,
-                                             ifelse(litre_per_day_per_person >=50, 1, 0)),
-                    flag_high_container = ifelse(is.na(!!rlang::sym(num_containers)),NA ,
-                                                 ifelse(as.numeric(!!rlang::sym(num_containers)) > 20, 1, 0)),
-                    flag_no_container = dplyr::case_when(is.na(!!rlang::sym(wash_water_collect_time)) & is.na(!!rlang::sym(num_containers)) ~ NA,
-                                                         !!rlang::sym(wash_water_collect_time) != value_on_premise & !!rlang::sym(num_containers) == "0" ~ 1,
-                                                         TRUE ~ 0))
-
+      dplyr::mutate(
+        flag_sd_litre = ifelse(
+          is.na(litre_z_score),
+          NA,
+          ifelse(
+            litre_z_score < mean_litre_zscore - 3 |
+              litre_z_score > mean_litre_zscore + 3,
+            1,
+            0
+          )
+        ),
+        flag_low_litre = ifelse(
+          is.na(litre_per_day_per_person),
+          NA,
+          ifelse(litre_per_day_per_person <= 1, 1, 0)
+        ),
+        flag_high_litre = ifelse(
+          is.na(litre_per_day_per_person),
+          NA,
+          ifelse(litre_per_day_per_person >= 50, 1, 0)
+        ),
+        flag_high_container = ifelse(
+          is.na(!!rlang::sym(num_containers)),
+          NA,
+          ifelse(as.numeric(!!rlang::sym(num_containers)) > 20, 1, 0)
+        ),
+        flag_no_container = dplyr::case_when(
+          is.na(!!rlang::sym(wash_water_collect_time)) &
+            is.na(!!rlang::sym(num_containers)) ~
+            NA,
+          !!rlang::sym(wash_water_collect_time) != value_on_premise &
+            !!rlang::sym(num_containers) == "0" ~
+            1,
+          TRUE ~ 0
+        )
+      )
   } else {
     warning("No Container loop to check WASH flags.")
   }

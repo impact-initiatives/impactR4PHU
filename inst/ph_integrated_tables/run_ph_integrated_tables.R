@@ -9,20 +9,25 @@ library(dplyr)
 
 
 ## check if environment exist
-if(file.exists("inputs/environment.Rdata")) {
+if (file.exists("inputs/environment.Rdata")) {
   load("inputs/environment.Rdata")
 }
 
 ## Set up the date for the excel outputs
-out_date <-  stringr::str_sub(stringr::str_remove_all(Sys.Date(), '-'), 3)
+out_date <- stringr::str_sub(stringr::str_remove_all(Sys.Date(), '-'), 3)
 
 ## Upload Dataset
 filename.data <- choose.files(caption = "Select the Dataset", multi = F)
 
-mort_collected <- svDialogs::dlg_message("Have you collected Mortality?", type = "yesno")$res
-if(mort_collected == "yes"){
-  filename.mortality <- choose.files(caption = "Select the related mortality integrated outputed from the descriptive analysis script",
-                                     multi = F)
+mort_collected <- svDialogs::dlg_message(
+  "Have you collected Mortality?",
+  type = "yesno"
+)$res
+if (mort_collected == "yes") {
+  filename.mortality <- choose.files(
+    caption = "Select the related mortality integrated outputed from the descriptive analysis script",
+    multi = F
+  )
 }
 
 
@@ -31,271 +36,511 @@ cat("\n> Loading data for analysis from", filename.data, "...\n")
 sheet_names <- readxl::excel_sheets(filename.data)
 main_sheet <- tcltk::tk_select.list(sheet_names, title = "Main HH Sheet")
 sheet_names[1] <- paste(sheet_names[1], "(main)")
-cat("> Found the following datasheets:", paste(sheet_names, collapse = ", "), "\n")
+cat(
+  "> Found the following datasheets:",
+  paste(sheet_names, collapse = ", "),
+  "\n"
+)
 
 # the first sheet is always named "main"!!!
 sheet_names[1] <- "main"
 
 
-data.list <- list("main" = readxl::read_excel(filename.data, sheet=main_sheet, col_types = "text"))
+data.list <- list(
+  "main" = readxl::read_excel(
+    filename.data,
+    sheet = main_sheet,
+    col_types = "text"
+  )
+)
 
-for(sheet in sheet_names[-1]) {
-  data.list[[sheet]] <- readxl::read_excel(filename.data, sheet=sheet, col_types = "text")
+for (sheet in sheet_names[-1]) {
+  data.list[[sheet]] <- readxl::read_excel(
+    filename.data,
+    sheet = sheet,
+    col_types = "text"
+  )
 }
 
 ## Weights
-yes_no_weight <- svDialogs::dlg_message("Is your data weighted?", type = "yesno")$res
-if(yes_no_weight == "yes"){
-  weight <- names(data.list$main)[grepl("weight",names(data.list$main))]
-  if(length(weight) == 1){
-    yes_no <- svDialogs::dlg_message(paste0("Is '", weight, "' the correct weight column?"), type = "yesno")$res
+yes_no_weight <- svDialogs::dlg_message(
+  "Is your data weighted?",
+  type = "yesno"
+)$res
+if (yes_no_weight == "yes") {
+  weight <- names(data.list$main)[grepl("weight", names(data.list$main))]
+  if (length(weight) == 1) {
+    yes_no <- svDialogs::dlg_message(
+      paste0("Is '", weight, "' the correct weight column?"),
+      type = "yesno"
+    )$res
     if (yes_no == "no") {
-      weight <- svDialogs::dlg_input(message= "Enter the name of the weight column","weight")$res
+      weight <- svDialogs::dlg_input(
+        message = "Enter the name of the weight column",
+        "weight"
+      )$res
     }
-  } else if (length(weight) > 1){
+  } else if (length(weight) > 1) {
     weight <- tcltk::tk_select.list(weight, title = "Weight column")
-    if(weight == "") {
-      weight <- svDialogs::dlg_input(message= "Enter the name of the weight column","weight")$res
+    if (weight == "") {
+      weight <- svDialogs::dlg_input(
+        message = "Enter the name of the weight column",
+        "weight"
+      )$res
     }
   } else if (length(weight) == 0) {
-    weight <- svDialogs::dlg_input(message= "Enter the name of the weight column","weight")$res
+    weight <- svDialogs::dlg_input(
+      message = "Enter the name of the weight column",
+      "weight"
+    )$res
   }
 } else {
   weight <- 1
 }
-if(yes_no_weight == "yes"){
-  for(sheet in names(data.list)){
+if (yes_no_weight == "yes") {
+  for (sheet in names(data.list)) {
     data.list[[sheet]] <- data.list[[sheet]] %>%
       mutate(weight = as.numeric(!!rlang::sym(weight))) %>%
-      mutate_at(vars(everything()),~ifelse(. == "",NA,.))
+      mutate_at(vars(everything()), ~ ifelse(. == "", NA, .))
   }
 } else {
-  for(sheet in names(data.list)){
+  for (sheet in names(data.list)) {
     data.list[[sheet]] <- data.list[[sheet]] %>%
       mutate(weight = 1) %>%
-      mutate_at(vars(everything()),~ifelse(. == "",NA,.))
+      mutate_at(vars(everything()), ~ ifelse(. == "", NA, .))
   }
 }
 
 ## Load Mortality
-if(mort_collected == "yes"){
+if (mort_collected == "yes") {
   mort_data <- readxl::read_excel(filename.mortality, col_types = "text") %>%
-    dplyr::rename("mort" = point.est,
-                  "mort_lci"=`95%lci`,
-                  "mort_uci"=`95%uci`)
+    dplyr::rename(
+      "mort" = point.est,
+      "mort_lci" = `95%lci`,
+      "mort_uci" = `95%uci`
+    )
 }
 
 ## Mortality
-if(mort_collected == "yes"){
-  if(!file.exists("inputs/environment.Rdata")) {
-    died_sheet <- tcltk::tk_select.list(sheet_names, title = "Sheet including mortality data")
+if (mort_collected == "yes") {
+  if (!file.exists("inputs/environment.Rdata")) {
+    died_sheet <- tcltk::tk_select.list(
+      sheet_names,
+      title = "Sheet including mortality data"
+    )
     died_member <- data.list[[died_sheet]]
 
     ## Detect death_cause column
-    death_cause <- names(died_member)[grepl("cause",names(died_member))]
+    death_cause <- names(died_member)[grepl("cause", names(died_member))]
 
-    if(length(death_cause) == 1){
-      yes_no <- svDialogs::dlg_message(paste0("Is '", death_cause, "' the correct death_cause column?"), type = "yesno")$res
-      if(yes_no == "no"){
-        death_cause <- svDialogs::dlg_input(message= "Enter the name of the Cause of Death Column","death_cause")$res
+    if (length(death_cause) == 1) {
+      yes_no <- svDialogs::dlg_message(
+        paste0("Is '", death_cause, "' the correct death_cause column?"),
+        type = "yesno"
+      )$res
+      if (yes_no == "no") {
+        death_cause <- svDialogs::dlg_input(
+          message = "Enter the name of the Cause of Death Column",
+          "death_cause"
+        )$res
       }
-    } else if (length(death_cause) > 1){
-      death_cause <- tcltk::tk_select.list(death_cause, title = "Cause of Death Column")
-      if(death_cause == "") {
-        death_cause <- svDialogs::dlg_input(message= "Enter the name of the Cause of Death Column","death_cause")$res
+    } else if (length(death_cause) > 1) {
+      death_cause <- tcltk::tk_select.list(
+        death_cause,
+        title = "Cause of Death Column"
+      )
+      if (death_cause == "") {
+        death_cause <- svDialogs::dlg_input(
+          message = "Enter the name of the Cause of Death Column",
+          "death_cause"
+        )$res
       }
     } else if (length(death_cause) == 0) {
-      death_cause <- svDialogs::dlg_input(message= "Enter the name of the Cause of Death Column","death_cause")$res
+      death_cause <- svDialogs::dlg_input(
+        message = "Enter the name of the Cause of Death Column",
+        "death_cause"
+      )$res
     }
 
     ## Detect uuid_died column
-    uuid_died <- names(died_member)[grepl("uuid",names(died_member))]
+    uuid_died <- names(died_member)[grepl("uuid", names(died_member))]
 
-    if(length(uuid_died) == 1){
-      yes_no <- svDialogs::dlg_message(paste0("Is '", uuid_died, "' the correct uuid died HH column?"), type = "yesno")$res
-      if(yes_no == "no"){
-        uuid_died <- svDialogs::dlg_input(message= "Enter the name of the uuid died HH Column","uuid")$res
+    if (length(uuid_died) == 1) {
+      yes_no <- svDialogs::dlg_message(
+        paste0("Is '", uuid_died, "' the correct uuid died HH column?"),
+        type = "yesno"
+      )$res
+      if (yes_no == "no") {
+        uuid_died <- svDialogs::dlg_input(
+          message = "Enter the name of the uuid died HH Column",
+          "uuid"
+        )$res
       }
-    } else if (length(uuid_died) > 1){
-      uuid_died <- tcltk::tk_select.list(uuid_died, title = "uuid died HH Column")
-      if(uuid_died == "") {
-        uuid_died <- svDialogs::dlg_input(message= "Enter the name of the uuid died HH Column","uuid")$res
+    } else if (length(uuid_died) > 1) {
+      uuid_died <- tcltk::tk_select.list(
+        uuid_died,
+        title = "uuid died HH Column"
+      )
+      if (uuid_died == "") {
+        uuid_died <- svDialogs::dlg_input(
+          message = "Enter the name of the uuid died HH Column",
+          "uuid"
+        )$res
       }
     } else if (length(uuid_died) == 0) {
-      uuid_died <- svDialogs::dlg_input(message= "Enter the name of the uuid died HH Column","uuid")$res
+      uuid_died <- svDialogs::dlg_input(
+        message = "Enter the name of the uuid died HH Column",
+        "uuid"
+      )$res
     }
 
-    non_trauma_deaths <- tcltk::tk_select.list(unlist(unique(died_member[death_cause])), multiple = T, title = "Non Injury/Trauma Death Causes")
+    non_trauma_deaths <- tcltk::tk_select.list(
+      unlist(unique(died_member[death_cause])),
+      multiple = T,
+      title = "Non Injury/Trauma Death Causes"
+    )
   }
 }
 
-if(!file.exists("inputs/environment.Rdata")) {
+if (!file.exists("inputs/environment.Rdata")) {
   ## Detect Admin1 column
-  admin1 <- names(data.list$main)[grepl("admin",names(data.list$main))]
+  admin1 <- names(data.list$main)[grepl("admin", names(data.list$main))]
 
-  if(length(admin1) == 1){
-    yes_no <- svDialogs::dlg_message(paste0("Is '", admin1, "' the correct admin1 column?"), type = "yesno")$res
-    if(yes_no == "no"){
-      admin1 <- svDialogs::dlg_input(message= "Enter the name of the Admin 1 Column","admin1")$res
+  if (length(admin1) == 1) {
+    yes_no <- svDialogs::dlg_message(
+      paste0("Is '", admin1, "' the correct admin1 column?"),
+      type = "yesno"
+    )$res
+    if (yes_no == "no") {
+      admin1 <- svDialogs::dlg_input(
+        message = "Enter the name of the Admin 1 Column",
+        "admin1"
+      )$res
     }
-  } else if (length(admin1) > 1){
+  } else if (length(admin1) > 1) {
     admin1 <- tcltk::tk_select.list(admin1, title = "Admin 1 Column")
-    if(admin1 == "") {
-      admin1 <- svDialogs::dlg_input(message= "Enter the name of the Admin 1 Column","admin1")$res
+    if (admin1 == "") {
+      admin1 <- svDialogs::dlg_input(
+        message = "Enter the name of the Admin 1 Column",
+        "admin1"
+      )$res
     }
   } else if (length(admin1) == 0) {
-    admin1 <- svDialogs::dlg_input(message= "Enter the name of the Admin 1 Column","admin1")$res
+    admin1 <- svDialogs::dlg_input(
+      message = "Enter the name of the Admin 1 Column",
+      "admin1"
+    )$res
   }
   ## FSL Inputs
-  FSL_indicators <- tcltk::tk_select.list(c("FCS","rCSI","HHS","LCSI"), title = "FSL indicators", multiple = T)
+  FSL_indicators <- tcltk::tk_select.list(
+    c("FCS", "rCSI", "HHS", "LCSI"),
+    title = "FSL indicators",
+    multiple = T
+  )
 }
 
 # FSL
-if(!file.exists("inputs/environment.Rdata")) {
-  if ("FCS" %in% FSL_indicators){
-    fsl_fcs_cereal <- names(data.list$main)[grepl("cereal",names(data.list$main))]
-    if(length(fsl_fcs_cereal) == 1){
-      yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_fcs_cereal, "' the correct fsl_fcs_cereal column?"), type = "yesno")$res
-      if(yes_no == "no"){
-        fsl_fcs_cereal <- svDialogs::dlg_input(message= "Enter the name of the fsl_fcs_cereal","fsl_fcs_cereal")$res
+if (!file.exists("inputs/environment.Rdata")) {
+  if ("FCS" %in% FSL_indicators) {
+    fsl_fcs_cereal <- names(data.list$main)[grepl(
+      "cereal",
+      names(data.list$main)
+    )]
+    if (length(fsl_fcs_cereal) == 1) {
+      yes_no <- svDialogs::dlg_message(
+        paste0("Is '", fsl_fcs_cereal, "' the correct fsl_fcs_cereal column?"),
+        type = "yesno"
+      )$res
+      if (yes_no == "no") {
+        fsl_fcs_cereal <- svDialogs::dlg_input(
+          message = "Enter the name of the fsl_fcs_cereal",
+          "fsl_fcs_cereal"
+        )$res
       }
-    } else if (length(fsl_fcs_cereal) > 1){
-      fsl_fcs_cereal <- tcltk::tk_select.list(fsl_fcs_cereal, title = "FCS Cereal column")
-      if(fsl_fcs_cereal == ""){
-        fsl_fcs_cereal <- svDialogs::dlg_input(message= "Enter the name of the fsl_fcs_cereal","fsl_fcs_cereal")$res
+    } else if (length(fsl_fcs_cereal) > 1) {
+      fsl_fcs_cereal <- tcltk::tk_select.list(
+        fsl_fcs_cereal,
+        title = "FCS Cereal column"
+      )
+      if (fsl_fcs_cereal == "") {
+        fsl_fcs_cereal <- svDialogs::dlg_input(
+          message = "Enter the name of the fsl_fcs_cereal",
+          "fsl_fcs_cereal"
+        )$res
       }
     } else if (length(fsl_fcs_cereal) == 0) {
-      fsl_fcs_cereal <- svDialogs::dlg_input(message= "Enter the name of the fsl_fcs_cereal","fsl_fcs_cereal")$res
+      fsl_fcs_cereal <- svDialogs::dlg_input(
+        message = "Enter the name of the fsl_fcs_cereal",
+        "fsl_fcs_cereal"
+      )$res
     }
 
-    fsl_fcs_legumes <- names(data.list$main)[grepl("legume|pulse|bean|nuts|noix",names(data.list$main))]
-    if(length(fsl_fcs_legumes) == 1){
-      yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_fcs_legumes, "' the correct fsl_fcs_legumes column?"), type = "yesno")$res
+    fsl_fcs_legumes <- names(data.list$main)[grepl(
+      "legume|pulse|bean|nuts|noix",
+      names(data.list$main)
+    )]
+    if (length(fsl_fcs_legumes) == 1) {
+      yes_no <- svDialogs::dlg_message(
+        paste0(
+          "Is '",
+          fsl_fcs_legumes,
+          "' the correct fsl_fcs_legumes column?"
+        ),
+        type = "yesno"
+      )$res
       if (yes_no == "no") {
-        fsl_fcs_legumes <- svDialogs::dlg_input(message= "Enter the name of the fsl_fcs_legumes","fsl_fcs_legumes")$res
+        fsl_fcs_legumes <- svDialogs::dlg_input(
+          message = "Enter the name of the fsl_fcs_legumes",
+          "fsl_fcs_legumes"
+        )$res
       }
-    } else if (length(fsl_fcs_legumes) > 1){
-      fsl_fcs_legumes <- tcltk::tk_select.list(fsl_fcs_legumes, title = "FCS Legumes/Pulses column")
-      if(fsl_fcs_legumes == ""){
-        fsl_fcs_legumes <- svDialogs::dlg_input(message= "Enter the name of the fsl_fcs_legumes","fsl_fcs_legumes")$res
+    } else if (length(fsl_fcs_legumes) > 1) {
+      fsl_fcs_legumes <- tcltk::tk_select.list(
+        fsl_fcs_legumes,
+        title = "FCS Legumes/Pulses column"
+      )
+      if (fsl_fcs_legumes == "") {
+        fsl_fcs_legumes <- svDialogs::dlg_input(
+          message = "Enter the name of the fsl_fcs_legumes",
+          "fsl_fcs_legumes"
+        )$res
       }
     } else if (length(fsl_fcs_legumes) == 0) {
-      fsl_fcs_legumes <- svDialogs::dlg_input(message= "Enter the name of the fsl_fcs_legumes","fsl_fcs_legumes")$res
+      fsl_fcs_legumes <- svDialogs::dlg_input(
+        message = "Enter the name of the fsl_fcs_legumes",
+        "fsl_fcs_legumes"
+      )$res
     }
 
-    fsl_fcs_veg <- names(data.list$main)[grepl("veg|legume",names(data.list$main))]
-    if(length(fsl_fcs_veg) == 1){
-      yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_fcs_veg, "' the correct fsl_fcs_veg column?"), type = "yesno")$res
+    fsl_fcs_veg <- names(data.list$main)[grepl(
+      "veg|legume",
+      names(data.list$main)
+    )]
+    if (length(fsl_fcs_veg) == 1) {
+      yes_no <- svDialogs::dlg_message(
+        paste0("Is '", fsl_fcs_veg, "' the correct fsl_fcs_veg column?"),
+        type = "yesno"
+      )$res
       if (yes_no == "no") {
-        fsl_fcs_veg <- svDialogs::dlg_input(message= "Enter the name of the fsl_fcs_veg","fsl_fcs_veg")$res
+        fsl_fcs_veg <- svDialogs::dlg_input(
+          message = "Enter the name of the fsl_fcs_veg",
+          "fsl_fcs_veg"
+        )$res
       }
-    } else if (length(fsl_fcs_veg) > 1){
-      fsl_fcs_veg <- tcltk::tk_select.list(fsl_fcs_veg, title = "FCS Vegetables column")
-      if(fsl_fcs_veg == ""){
-        fsl_fcs_veg <- svDialogs::dlg_input(message= "Enter the name of the fsl_fcs_veg","fsl_fcs_veg")$res
+    } else if (length(fsl_fcs_veg) > 1) {
+      fsl_fcs_veg <- tcltk::tk_select.list(
+        fsl_fcs_veg,
+        title = "FCS Vegetables column"
+      )
+      if (fsl_fcs_veg == "") {
+        fsl_fcs_veg <- svDialogs::dlg_input(
+          message = "Enter the name of the fsl_fcs_veg",
+          "fsl_fcs_veg"
+        )$res
       }
     } else if (length(fsl_fcs_veg) == 0) {
-      fsl_fcs_veg <- svDialogs::dlg_input(message= "Enter the name of the fsl_fcs_veg","fsl_fcs_veg")$res
+      fsl_fcs_veg <- svDialogs::dlg_input(
+        message = "Enter the name of the fsl_fcs_veg",
+        "fsl_fcs_veg"
+      )$res
     }
 
-    fsl_fcs_fruit <- names(data.list$main)[grepl("fruit",names(data.list$main))]
-    if(length(fsl_fcs_fruit) == 1){
-      yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_fcs_fruit, "' the correct fsl_fcs_fruit column?"), type = "yesno")$res
+    fsl_fcs_fruit <- names(data.list$main)[grepl(
+      "fruit",
+      names(data.list$main)
+    )]
+    if (length(fsl_fcs_fruit) == 1) {
+      yes_no <- svDialogs::dlg_message(
+        paste0("Is '", fsl_fcs_fruit, "' the correct fsl_fcs_fruit column?"),
+        type = "yesno"
+      )$res
       if (yes_no == "no") {
-        fsl_fcs_fruit <- svDialogs::dlg_input(message= "Enter the name of the fsl_fcs_fruit","fsl_fcs_fruit")$res
+        fsl_fcs_fruit <- svDialogs::dlg_input(
+          message = "Enter the name of the fsl_fcs_fruit",
+          "fsl_fcs_fruit"
+        )$res
       }
-    } else if (length(fsl_fcs_fruit) > 1){
-      fsl_fcs_fruit <- tcltk::tk_select.list(fsl_fcs_fruit, title = "FCS Fruits column")
-      if(fsl_fcs_fruit == ""){
-        fsl_fcs_fruit <- svDialogs::dlg_input(message= "Enter the name of the fsl_fcs_fruit","fsl_fcs_fruit")$res
+    } else if (length(fsl_fcs_fruit) > 1) {
+      fsl_fcs_fruit <- tcltk::tk_select.list(
+        fsl_fcs_fruit,
+        title = "FCS Fruits column"
+      )
+      if (fsl_fcs_fruit == "") {
+        fsl_fcs_fruit <- svDialogs::dlg_input(
+          message = "Enter the name of the fsl_fcs_fruit",
+          "fsl_fcs_fruit"
+        )$res
       }
     } else if (length(fsl_fcs_fruit) == 0) {
-      fsl_fcs_fruit <- svDialogs::dlg_input(message= "Enter the name of the fsl_fcs_fruit","fsl_fcs_fruit")$res
+      fsl_fcs_fruit <- svDialogs::dlg_input(
+        message = "Enter the name of the fsl_fcs_fruit",
+        "fsl_fcs_fruit"
+      )$res
     }
 
-    fsl_fcs_meat <- names(data.list$main)[grepl("meat|viande",names(data.list$main))]
-    if(length(fsl_fcs_meat) == 1){
-      yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_fcs_meat, "' the correct fsl_fcs_meat column?"), type = "yesno")$res
+    fsl_fcs_meat <- names(data.list$main)[grepl(
+      "meat|viande",
+      names(data.list$main)
+    )]
+    if (length(fsl_fcs_meat) == 1) {
+      yes_no <- svDialogs::dlg_message(
+        paste0("Is '", fsl_fcs_meat, "' the correct fsl_fcs_meat column?"),
+        type = "yesno"
+      )$res
       if (yes_no == "no") {
-        fsl_fcs_meat <- svDialogs::dlg_input(message= "Enter the name of the fsl_fcs_meat","fsl_fcs_meat")$res
+        fsl_fcs_meat <- svDialogs::dlg_input(
+          message = "Enter the name of the fsl_fcs_meat",
+          "fsl_fcs_meat"
+        )$res
       }
-    } else if (length(fsl_fcs_meat) > 1){
-      fsl_fcs_meat <- tcltk::tk_select.list(fsl_fcs_meat, title = "FCS Meat column")
-      if(fsl_fcs_meat == ""){
-        fsl_fcs_meat <- svDialogs::dlg_input(message= "Enter the name of the fsl_fcs_meat","fsl_fcs_meat")$res
+    } else if (length(fsl_fcs_meat) > 1) {
+      fsl_fcs_meat <- tcltk::tk_select.list(
+        fsl_fcs_meat,
+        title = "FCS Meat column"
+      )
+      if (fsl_fcs_meat == "") {
+        fsl_fcs_meat <- svDialogs::dlg_input(
+          message = "Enter the name of the fsl_fcs_meat",
+          "fsl_fcs_meat"
+        )$res
       }
     } else if (length(fsl_fcs_meat) == 0) {
-      fsl_fcs_meat <- svDialogs::dlg_input(message= "Enter the name of the fsl_fcs_meat","fsl_fcs_meat")$res
+      fsl_fcs_meat <- svDialogs::dlg_input(
+        message = "Enter the name of the fsl_fcs_meat",
+        "fsl_fcs_meat"
+      )$res
     }
 
-    fsl_fcs_dairy <- names(data.list$main)[grepl("dairy|milk|lait",names(data.list$main))]
-    if(length(fsl_fcs_dairy) == 1){
-      yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_fcs_dairy, "' the correct fsl_fcs_dairy column?"), type = "yesno")$res
+    fsl_fcs_dairy <- names(data.list$main)[grepl(
+      "dairy|milk|lait",
+      names(data.list$main)
+    )]
+    if (length(fsl_fcs_dairy) == 1) {
+      yes_no <- svDialogs::dlg_message(
+        paste0("Is '", fsl_fcs_dairy, "' the correct fsl_fcs_dairy column?"),
+        type = "yesno"
+      )$res
       if (yes_no == "no") {
-        fsl_fcs_dairy <- svDialogs::dlg_input(message= "Enter the name of the fsl_fcs_dairy","fsl_fcs_dairy")$res
+        fsl_fcs_dairy <- svDialogs::dlg_input(
+          message = "Enter the name of the fsl_fcs_dairy",
+          "fsl_fcs_dairy"
+        )$res
       }
-    } else if (length(fsl_fcs_dairy) > 1){
-      fsl_fcs_dairy <- tcltk::tk_select.list(fsl_fcs_dairy, title = "FCS Dairy/Milk column")
-      if(fsl_fcs_dairy == ""){
-        fsl_fcs_dairy <- svDialogs::dlg_input(message= "Enter the name of the fsl_fcs_dairy","fsl_fcs_dairy")$res
+    } else if (length(fsl_fcs_dairy) > 1) {
+      fsl_fcs_dairy <- tcltk::tk_select.list(
+        fsl_fcs_dairy,
+        title = "FCS Dairy/Milk column"
+      )
+      if (fsl_fcs_dairy == "") {
+        fsl_fcs_dairy <- svDialogs::dlg_input(
+          message = "Enter the name of the fsl_fcs_dairy",
+          "fsl_fcs_dairy"
+        )$res
       }
     } else if (length(fsl_fcs_dairy) == 0) {
-      fsl_fcs_dairy <- svDialogs::dlg_input(message= "Enter the name of the fsl_fcs_dairy","fsl_fcs_dairy")$res
+      fsl_fcs_dairy <- svDialogs::dlg_input(
+        message = "Enter the name of the fsl_fcs_dairy",
+        "fsl_fcs_dairy"
+      )$res
     }
 
-    fsl_fcs_sugar <- names(data.list$main)[grepl("sugar|sucre",names(data.list$main))]
-    if(length(fsl_fcs_sugar) == 1){
-      yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_fcs_sugar, "' the correct fsl_fcs_sugar column?"), type = "yesno")$res
+    fsl_fcs_sugar <- names(data.list$main)[grepl(
+      "sugar|sucre",
+      names(data.list$main)
+    )]
+    if (length(fsl_fcs_sugar) == 1) {
+      yes_no <- svDialogs::dlg_message(
+        paste0("Is '", fsl_fcs_sugar, "' the correct fsl_fcs_sugar column?"),
+        type = "yesno"
+      )$res
       if (yes_no == "no") {
-        fsl_fcs_sugar <- svDialogs::dlg_input(message= "Enter the name of the fsl_fcs_sugar","fsl_fcs_sugar")$res
+        fsl_fcs_sugar <- svDialogs::dlg_input(
+          message = "Enter the name of the fsl_fcs_sugar",
+          "fsl_fcs_sugar"
+        )$res
       }
-    } else if (length(fsl_fcs_sugar) > 1){
-      fsl_fcs_sugar <- tcltk::tk_select.list(fsl_fcs_sugar, title = "FCS Sugar column")
-      if(fsl_fcs_sugar == ""){
-        fsl_fcs_sugar <- svDialogs::dlg_input(message= "Enter the name of the fsl_fcs_sugar","fsl_fcs_sugar")$res
+    } else if (length(fsl_fcs_sugar) > 1) {
+      fsl_fcs_sugar <- tcltk::tk_select.list(
+        fsl_fcs_sugar,
+        title = "FCS Sugar column"
+      )
+      if (fsl_fcs_sugar == "") {
+        fsl_fcs_sugar <- svDialogs::dlg_input(
+          message = "Enter the name of the fsl_fcs_sugar",
+          "fsl_fcs_sugar"
+        )$res
       }
     } else if (length(fsl_fcs_sugar) == 0) {
-      fsl_fcs_sugar <- svDialogs::dlg_input(message= "Enter the name of the fsl_fcs_sugar","fsl_fcs_sugar")$res
+      fsl_fcs_sugar <- svDialogs::dlg_input(
+        message = "Enter the name of the fsl_fcs_sugar",
+        "fsl_fcs_sugar"
+      )$res
     }
 
-    fsl_fcs_oil <- names(data.list$main)[grepl("oil|huile",names(data.list$main))]
-    if(length(fsl_fcs_oil) == 1){
-      yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_fcs_oil, "' the correct fsl_fcs_oil column?"), type = "yesno")$res
+    fsl_fcs_oil <- names(data.list$main)[grepl(
+      "oil|huile",
+      names(data.list$main)
+    )]
+    if (length(fsl_fcs_oil) == 1) {
+      yes_no <- svDialogs::dlg_message(
+        paste0("Is '", fsl_fcs_oil, "' the correct fsl_fcs_oil column?"),
+        type = "yesno"
+      )$res
       if (yes_no == "no") {
-        fsl_fcs_oil <- svDialogs::dlg_input(message= "Enter the name of the fsl_fcs_oil","fsl_fcs_oil")$res
+        fsl_fcs_oil <- svDialogs::dlg_input(
+          message = "Enter the name of the fsl_fcs_oil",
+          "fsl_fcs_oil"
+        )$res
       }
-    } else if (length(fsl_fcs_oil) > 1){
-      fsl_fcs_oil <- tcltk::tk_select.list(fsl_fcs_oil, title = "FCS Oil column")
-      if(fsl_fcs_oil == ""){
-        fsl_fcs_oil <- svDialogs::dlg_input(message= "Enter the name of the fsl_fcs_oil","fsl_fcs_oil")$res
+    } else if (length(fsl_fcs_oil) > 1) {
+      fsl_fcs_oil <- tcltk::tk_select.list(
+        fsl_fcs_oil,
+        title = "FCS Oil column"
+      )
+      if (fsl_fcs_oil == "") {
+        fsl_fcs_oil <- svDialogs::dlg_input(
+          message = "Enter the name of the fsl_fcs_oil",
+          "fsl_fcs_oil"
+        )$res
       }
     } else if (length(fsl_fcs_oil) == 0) {
-      fsl_fcs_oil <- svDialogs::dlg_input(message= "Enter the name of the fsl_fcs_oil","fsl_fcs_oil")$res
+      fsl_fcs_oil <- svDialogs::dlg_input(
+        message = "Enter the name of the fsl_fcs_oil",
+        "fsl_fcs_oil"
+      )$res
     }
 
-    fcs_check_columns <- c(fsl_fcs_cereal,
-                           fsl_fcs_legumes,
-                           fsl_fcs_veg,
-                           fsl_fcs_fruit,
-                           fsl_fcs_meat,
-                           fsl_fcs_dairy,
-                           fsl_fcs_sugar,
-                           fsl_fcs_oil)
+    fcs_check_columns <- c(
+      fsl_fcs_cereal,
+      fsl_fcs_legumes,
+      fsl_fcs_veg,
+      fsl_fcs_fruit,
+      fsl_fcs_meat,
+      fsl_fcs_dairy,
+      fsl_fcs_sugar,
+      fsl_fcs_oil
+    )
 
-    if(!all(fcs_check_columns %in% names(data.list$main))) {
-      svDialogs::dlg_message("Please check if the FCS columns selected are correct and available in the dataset")
-      stop("Please check if the FCS columns selected are correct and available in the dataset")
+    if (!all(fcs_check_columns %in% names(data.list$main))) {
+      svDialogs::dlg_message(
+        "Please check if the FCS columns selected are correct and available in the dataset"
+      )
+      stop(
+        "Please check if the FCS columns selected are correct and available in the dataset"
+      )
     } else {
       data.list$main <- data.list$main %>%
-        impactR4PHU::add_fcs(cutoffs = "normal",
-                             fsl_fcs_cereal = fsl_fcs_cereal,
-                             fsl_fcs_legumes = fsl_fcs_legumes,
-                             fsl_fcs_veg = fsl_fcs_veg,
-                             fsl_fcs_fruit = fsl_fcs_fruit,
-                             fsl_fcs_meat = fsl_fcs_meat,
-                             fsl_fcs_dairy = fsl_fcs_dairy,
-                             fsl_fcs_sugar = fsl_fcs_sugar,
-                             fsl_fcs_oil = fsl_fcs_oil)
+        impactR4PHU::add_fcs(
+          cutoffs = "normal",
+          fsl_fcs_cereal = fsl_fcs_cereal,
+          fsl_fcs_legumes = fsl_fcs_legumes,
+          fsl_fcs_veg = fsl_fcs_veg,
+          fsl_fcs_fruit = fsl_fcs_fruit,
+          fsl_fcs_meat = fsl_fcs_meat,
+          fsl_fcs_dairy = fsl_fcs_dairy,
+          fsl_fcs_sugar = fsl_fcs_sugar,
+          fsl_fcs_oil = fsl_fcs_oil
+        )
     }
   } else {
     fsl_fcs_cereal <- "fsl_fcs_cereal"
@@ -306,123 +551,245 @@ if(!file.exists("inputs/environment.Rdata")) {
     fsl_fcs_dairy <- "fsl_fcs_dairy"
     fsl_fcs_sugar <- "fsl_fcs_sugar"
     fsl_fcs_oil <- "fsl_fcs_oil"
-    fcs_check_columns <- c(fsl_fcs_cereal,
-                           fsl_fcs_legumes,
-                           fsl_fcs_veg,
-                           fsl_fcs_fruit,
-                           fsl_fcs_meat,
-                           fsl_fcs_dairy,
-                           fsl_fcs_sugar,
-                           fsl_fcs_oil)
+    fcs_check_columns <- c(
+      fsl_fcs_cereal,
+      fsl_fcs_legumes,
+      fsl_fcs_veg,
+      fsl_fcs_fruit,
+      fsl_fcs_meat,
+      fsl_fcs_dairy,
+      fsl_fcs_sugar,
+      fsl_fcs_oil
+    )
   }
 } else {
-  if("FCS" %in% FSL_indicators){
+  if ("FCS" %in% FSL_indicators) {
     data.list$main <- data.list$main %>%
-      impactR4PHU::add_fcs(cutoffs = "normal",
-                           fsl_fcs_cereal = fsl_fcs_cereal,
-                           fsl_fcs_legumes = fsl_fcs_legumes,
-                           fsl_fcs_veg = fsl_fcs_veg,
-                           fsl_fcs_fruit = fsl_fcs_fruit,
-                           fsl_fcs_meat = fsl_fcs_meat,
-                           fsl_fcs_dairy = fsl_fcs_dairy,
-                           fsl_fcs_sugar = fsl_fcs_sugar,
-                           fsl_fcs_oil = fsl_fcs_oil)
+      impactR4PHU::add_fcs(
+        cutoffs = "normal",
+        fsl_fcs_cereal = fsl_fcs_cereal,
+        fsl_fcs_legumes = fsl_fcs_legumes,
+        fsl_fcs_veg = fsl_fcs_veg,
+        fsl_fcs_fruit = fsl_fcs_fruit,
+        fsl_fcs_meat = fsl_fcs_meat,
+        fsl_fcs_dairy = fsl_fcs_dairy,
+        fsl_fcs_sugar = fsl_fcs_sugar,
+        fsl_fcs_oil = fsl_fcs_oil
+      )
   }
 }
 
-if(!file.exists("inputs/environment.Rdata")) {
-  if ("rCSI" %in% FSL_indicators){
-    fsl_rcsi_lessquality <- names(data.list$main)[grepl("less|quality|lessquality|moins",names(data.list$main))]
-    if(length(fsl_rcsi_lessquality) == 1){
-      yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_rcsi_lessquality, "' the correct fsl_rcsi_lessquality column?"), type = "yesno")$res
+if (!file.exists("inputs/environment.Rdata")) {
+  if ("rCSI" %in% FSL_indicators) {
+    fsl_rcsi_lessquality <- names(data.list$main)[grepl(
+      "less|quality|lessquality|moins",
+      names(data.list$main)
+    )]
+    if (length(fsl_rcsi_lessquality) == 1) {
+      yes_no <- svDialogs::dlg_message(
+        paste0(
+          "Is '",
+          fsl_rcsi_lessquality,
+          "' the correct fsl_rcsi_lessquality column?"
+        ),
+        type = "yesno"
+      )$res
       if (yes_no == "no") {
-        fsl_rcsi_lessquality <- svDialogs::dlg_input(message= "Enter the name of the fsl_rcsi_lessquality","fsl_rcsi_lessquality")$res
+        fsl_rcsi_lessquality <- svDialogs::dlg_input(
+          message = "Enter the name of the fsl_rcsi_lessquality",
+          "fsl_rcsi_lessquality"
+        )$res
       }
-    } else if (length(fsl_rcsi_lessquality) > 1){
-      fsl_rcsi_lessquality <- tcltk::tk_select.list(fsl_rcsi_lessquality, title = "rCSI Less Quality column")
-      if(fsl_rcsi_lessquality == ""){
-        fsl_rcsi_lessquality <- svDialogs::dlg_input(message= "Enter the name of the fsl_rcsi_lessquality","fsl_rcsi_lessquality")$res
+    } else if (length(fsl_rcsi_lessquality) > 1) {
+      fsl_rcsi_lessquality <- tcltk::tk_select.list(
+        fsl_rcsi_lessquality,
+        title = "rCSI Less Quality column"
+      )
+      if (fsl_rcsi_lessquality == "") {
+        fsl_rcsi_lessquality <- svDialogs::dlg_input(
+          message = "Enter the name of the fsl_rcsi_lessquality",
+          "fsl_rcsi_lessquality"
+        )$res
       }
     } else if (length(fsl_rcsi_lessquality) == 0) {
-      fsl_rcsi_lessquality <- svDialogs::dlg_input(message= "Enter the name of the fsl_rcsi_lessquality","fsl_rcsi_lessquality")$res
+      fsl_rcsi_lessquality <- svDialogs::dlg_input(
+        message = "Enter the name of the fsl_rcsi_lessquality",
+        "fsl_rcsi_lessquality"
+      )$res
     }
 
-    fsl_rcsi_borrow <- names(data.list$main)[grepl("borrow|emprunt",names(data.list$main))]
-    if(length(fsl_rcsi_borrow) == 1){
-      yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_rcsi_borrow, "' the correct fsl_rcsi_borrow column?"), type = "yesno")$res
+    fsl_rcsi_borrow <- names(data.list$main)[grepl(
+      "borrow|emprunt",
+      names(data.list$main)
+    )]
+    if (length(fsl_rcsi_borrow) == 1) {
+      yes_no <- svDialogs::dlg_message(
+        paste0(
+          "Is '",
+          fsl_rcsi_borrow,
+          "' the correct fsl_rcsi_borrow column?"
+        ),
+        type = "yesno"
+      )$res
       if (yes_no == "no") {
-        fsl_rcsi_borrow <- svDialogs::dlg_input(message= "Enter the name of the fsl_rcsi_borrow","fsl_rcsi_borrow")$res
+        fsl_rcsi_borrow <- svDialogs::dlg_input(
+          message = "Enter the name of the fsl_rcsi_borrow",
+          "fsl_rcsi_borrow"
+        )$res
       }
-    } else if (length(fsl_rcsi_borrow) > 1){
-      fsl_rcsi_borrow <- tcltk::tk_select.list(fsl_rcsi_borrow, title = "rCSI Borrow column")
-      if(fsl_rcsi_borrow == ""){
-        fsl_rcsi_borrow <- svDialogs::dlg_input(message= "Enter the name of the fsl_rcsi_borrow","fsl_rcsi_borrow")$res
+    } else if (length(fsl_rcsi_borrow) > 1) {
+      fsl_rcsi_borrow <- tcltk::tk_select.list(
+        fsl_rcsi_borrow,
+        title = "rCSI Borrow column"
+      )
+      if (fsl_rcsi_borrow == "") {
+        fsl_rcsi_borrow <- svDialogs::dlg_input(
+          message = "Enter the name of the fsl_rcsi_borrow",
+          "fsl_rcsi_borrow"
+        )$res
       }
     } else if (length(fsl_rcsi_borrow) == 0) {
-      fsl_rcsi_borrow <- svDialogs::dlg_input(message= "Enter the name of the fsl_rcsi_borrow","fsl_rcsi_borrow")$res
+      fsl_rcsi_borrow <- svDialogs::dlg_input(
+        message = "Enter the name of the fsl_rcsi_borrow",
+        "fsl_rcsi_borrow"
+      )$res
     }
 
-    fsl_rcsi_mealsize <- names(data.list$main)[grepl("mealsize|limit|portion|diminu",names(data.list$main))]
-    if(length(fsl_rcsi_mealsize) == 1){
-      yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_rcsi_mealsize, "' the correct fsl_rcsi_mealsize column?"), type = "yesno")$res
+    fsl_rcsi_mealsize <- names(data.list$main)[grepl(
+      "mealsize|limit|portion|diminu",
+      names(data.list$main)
+    )]
+    if (length(fsl_rcsi_mealsize) == 1) {
+      yes_no <- svDialogs::dlg_message(
+        paste0(
+          "Is '",
+          fsl_rcsi_mealsize,
+          "' the correct fsl_rcsi_mealsize column?"
+        ),
+        type = "yesno"
+      )$res
       if (yes_no == "no") {
-        fsl_rcsi_mealsize <- svDialogs::dlg_input(message= "Enter the name of the fsl_rcsi_mealsize","fsl_rcsi_mealsize")$res
+        fsl_rcsi_mealsize <- svDialogs::dlg_input(
+          message = "Enter the name of the fsl_rcsi_mealsize",
+          "fsl_rcsi_mealsize"
+        )$res
       }
-    } else if (length(fsl_rcsi_mealsize) > 1){
-      fsl_rcsi_mealsize <- tcltk::tk_select.list(fsl_rcsi_mealsize, title = "rCSI Meal Size column")
-      if(fsl_rcsi_mealsize == ""){
-        fsl_rcsi_mealsize <- svDialogs::dlg_input(message= "Enter the name of the fsl_rcsi_mealsize","fsl_rcsi_mealsize")$res
+    } else if (length(fsl_rcsi_mealsize) > 1) {
+      fsl_rcsi_mealsize <- tcltk::tk_select.list(
+        fsl_rcsi_mealsize,
+        title = "rCSI Meal Size column"
+      )
+      if (fsl_rcsi_mealsize == "") {
+        fsl_rcsi_mealsize <- svDialogs::dlg_input(
+          message = "Enter the name of the fsl_rcsi_mealsize",
+          "fsl_rcsi_mealsize"
+        )$res
       }
     } else if (length(fsl_rcsi_mealsize) == 0) {
-      fsl_rcsi_mealsize <- svDialogs::dlg_input(message= "Enter the name of the fsl_rcsi_mealsize","fsl_rcsi_mealsize")$res
+      fsl_rcsi_mealsize <- svDialogs::dlg_input(
+        message = "Enter the name of the fsl_rcsi_mealsize",
+        "fsl_rcsi_mealsize"
+      )$res
     }
 
-    fsl_rcsi_mealadult <- names(data.list$main)[grepl("mealadult|restrict|consommation",names(data.list$main))]
-    if(length(fsl_rcsi_mealadult) == 1){
-      yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_rcsi_mealadult, "' the correct fsl_rcsi_mealadult column?"), type = "yesno")$res
+    fsl_rcsi_mealadult <- names(data.list$main)[grepl(
+      "mealadult|restrict|consommation",
+      names(data.list$main)
+    )]
+    if (length(fsl_rcsi_mealadult) == 1) {
+      yes_no <- svDialogs::dlg_message(
+        paste0(
+          "Is '",
+          fsl_rcsi_mealadult,
+          "' the correct fsl_rcsi_mealadult column?"
+        ),
+        type = "yesno"
+      )$res
       if (yes_no == "no") {
-        fsl_rcsi_mealadult <- svDialogs::dlg_input(message= "Enter the name of the fsl_rcsi_mealadult","fsl_rcsi_mealadult")$res
+        fsl_rcsi_mealadult <- svDialogs::dlg_input(
+          message = "Enter the name of the fsl_rcsi_mealadult",
+          "fsl_rcsi_mealadult"
+        )$res
       }
-    } else if (length(fsl_rcsi_mealadult) > 1){
-      fsl_rcsi_mealadult <- tcltk::tk_select.list(fsl_rcsi_mealadult, title = "rCSI Meal Adult column")
-      if(fsl_rcsi_mealadult == ""){
-        fsl_rcsi_mealadult <- svDialogs::dlg_input(message= "Enter the name of the fsl_rcsi_mealadult","fsl_rcsi_mealadult")$res
+    } else if (length(fsl_rcsi_mealadult) > 1) {
+      fsl_rcsi_mealadult <- tcltk::tk_select.list(
+        fsl_rcsi_mealadult,
+        title = "rCSI Meal Adult column"
+      )
+      if (fsl_rcsi_mealadult == "") {
+        fsl_rcsi_mealadult <- svDialogs::dlg_input(
+          message = "Enter the name of the fsl_rcsi_mealadult",
+          "fsl_rcsi_mealadult"
+        )$res
       }
     } else if (length(fsl_rcsi_mealadult) == 0) {
-      fsl_rcsi_mealadult <- svDialogs::dlg_input(message= "Enter the name of the fsl_rcsi_mealadult","fsl_rcsi_mealadult")$res
+      fsl_rcsi_mealadult <- svDialogs::dlg_input(
+        message = "Enter the name of the fsl_rcsi_mealadult",
+        "fsl_rcsi_mealadult"
+      )$res
     }
 
-    fsl_rcsi_mealnb <- names(data.list$main)[grepl("mealnb|reduce|meals|nb|repas",names(data.list$main))]
-    if(length(fsl_rcsi_mealnb) == 1){
-      yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_rcsi_mealnb, "' the correct fsl_rcsi_mealnb column?"), type = "yesno")$res
+    fsl_rcsi_mealnb <- names(data.list$main)[grepl(
+      "mealnb|reduce|meals|nb|repas",
+      names(data.list$main)
+    )]
+    if (length(fsl_rcsi_mealnb) == 1) {
+      yes_no <- svDialogs::dlg_message(
+        paste0(
+          "Is '",
+          fsl_rcsi_mealnb,
+          "' the correct fsl_rcsi_mealnb column?"
+        ),
+        type = "yesno"
+      )$res
       if (yes_no == "no") {
-        fsl_rcsi_mealnb <- svDialogs::dlg_input(message= "Enter the name of the fsl_rcsi_mealnb","fsl_rcsi_mealnb")$res
+        fsl_rcsi_mealnb <- svDialogs::dlg_input(
+          message = "Enter the name of the fsl_rcsi_mealnb",
+          "fsl_rcsi_mealnb"
+        )$res
       }
-    } else if (length(fsl_rcsi_mealnb) > 1){
-      fsl_rcsi_mealnb <- tcltk::tk_select.list(fsl_rcsi_mealnb, title = "rCSI Meal Number column")
-      if(fsl_rcsi_mealnb == ""){
-        fsl_rcsi_mealnb <- svDialogs::dlg_input(message= "Enter the name of the fsl_rcsi_mealnb","fsl_rcsi_mealnb")$res
+    } else if (length(fsl_rcsi_mealnb) > 1) {
+      fsl_rcsi_mealnb <- tcltk::tk_select.list(
+        fsl_rcsi_mealnb,
+        title = "rCSI Meal Number column"
+      )
+      if (fsl_rcsi_mealnb == "") {
+        fsl_rcsi_mealnb <- svDialogs::dlg_input(
+          message = "Enter the name of the fsl_rcsi_mealnb",
+          "fsl_rcsi_mealnb"
+        )$res
       }
     } else if (length(fsl_rcsi_mealnb) == 0) {
-      fsl_rcsi_mealnb <- svDialogs::dlg_input(message= "Enter the name of the fsl_rcsi_mealnb","fsl_rcsi_mealnb")$res
+      fsl_rcsi_mealnb <- svDialogs::dlg_input(
+        message = "Enter the name of the fsl_rcsi_mealnb",
+        "fsl_rcsi_mealnb"
+      )$res
     }
 
-    rcsi_check_columns <- c(fsl_rcsi_lessquality,
-                            fsl_rcsi_borrow,
-                            fsl_rcsi_mealsize,
-                            fsl_rcsi_mealadult,
-                            fsl_rcsi_mealnb)
+    rcsi_check_columns <- c(
+      fsl_rcsi_lessquality,
+      fsl_rcsi_borrow,
+      fsl_rcsi_mealsize,
+      fsl_rcsi_mealadult,
+      fsl_rcsi_mealnb
+    )
 
-    if(!all(rcsi_check_columns %in% names(data.list$main))) {
-      svDialogs::dlg_message("Please check if the rCSI columns selected are correct and available in the dataset")
-      stop("Please check if the rCSI columns selected are correct and available in the dataset")
+    if (!all(rcsi_check_columns %in% names(data.list$main))) {
+      svDialogs::dlg_message(
+        "Please check if the rCSI columns selected are correct and available in the dataset"
+      )
+      stop(
+        "Please check if the rCSI columns selected are correct and available in the dataset"
+      )
     } else {
       data.list$main <- data.list$main %>%
-        impactR4PHU::add_rcsi(fsl_rcsi_lessquality = fsl_rcsi_lessquality,
-                              fsl_rcsi_borrow = fsl_rcsi_borrow,
-                              fsl_rcsi_mealsize = fsl_rcsi_mealsize,
-                              fsl_rcsi_mealadult = fsl_rcsi_mealadult,
-                              fsl_rcsi_mealnb = fsl_rcsi_mealnb)
+        impactR4PHU::add_rcsi(
+          fsl_rcsi_lessquality = fsl_rcsi_lessquality,
+          fsl_rcsi_borrow = fsl_rcsi_borrow,
+          fsl_rcsi_mealsize = fsl_rcsi_mealsize,
+          fsl_rcsi_mealadult = fsl_rcsi_mealadult,
+          fsl_rcsi_mealnb = fsl_rcsi_mealnb
+        )
     }
   } else {
     fsl_rcsi_lessquality <- "fsl_rcsi_lessquality"
@@ -430,153 +797,328 @@ if(!file.exists("inputs/environment.Rdata")) {
     fsl_rcsi_mealsize <- "fsl_rcsi_mealsize"
     fsl_rcsi_mealadult <- "fsl_rcsi_mealadult"
     fsl_rcsi_mealnb <- "fsl_rcsi_mealnb"
-    rcsi_check_columns <- c(fsl_rcsi_lessquality,
-                            fsl_rcsi_borrow,
-                            fsl_rcsi_mealsize,
-                            fsl_rcsi_mealadult,
-                            fsl_rcsi_mealnb)
+    rcsi_check_columns <- c(
+      fsl_rcsi_lessquality,
+      fsl_rcsi_borrow,
+      fsl_rcsi_mealsize,
+      fsl_rcsi_mealadult,
+      fsl_rcsi_mealnb
+    )
   }
 } else {
-  if("rCSI" %in% FSL_indicators){
+  if ("rCSI" %in% FSL_indicators) {
     data.list$main <- data.list$main %>%
-      impactR4PHU::add_rcsi(fsl_rcsi_lessquality = fsl_rcsi_lessquality,
-                            fsl_rcsi_borrow = fsl_rcsi_borrow,
-                            fsl_rcsi_mealsize = fsl_rcsi_mealsize,
-                            fsl_rcsi_mealadult = fsl_rcsi_mealadult,
-                            fsl_rcsi_mealnb = fsl_rcsi_mealnb)
+      impactR4PHU::add_rcsi(
+        fsl_rcsi_lessquality = fsl_rcsi_lessquality,
+        fsl_rcsi_borrow = fsl_rcsi_borrow,
+        fsl_rcsi_mealsize = fsl_rcsi_mealsize,
+        fsl_rcsi_mealadult = fsl_rcsi_mealadult,
+        fsl_rcsi_mealnb = fsl_rcsi_mealnb
+      )
   }
 }
 
-if(!file.exists("inputs/environment.Rdata")) {
-  if ("HHS" %in% FSL_indicators){
-    fsl_hhs_nofoodhh <- names(data.list$main)[grepl("nofood|lack|aucun",names(data.list$main))]
-    if(length(fsl_hhs_nofoodhh) == 1){
-      yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_hhs_nofoodhh, "' the correct fsl_hhs_nofoodhh column?"), type = "yesno")$res
+if (!file.exists("inputs/environment.Rdata")) {
+  if ("HHS" %in% FSL_indicators) {
+    fsl_hhs_nofoodhh <- names(data.list$main)[grepl(
+      "nofood|lack|aucun",
+      names(data.list$main)
+    )]
+    if (length(fsl_hhs_nofoodhh) == 1) {
+      yes_no <- svDialogs::dlg_message(
+        paste0(
+          "Is '",
+          fsl_hhs_nofoodhh,
+          "' the correct fsl_hhs_nofoodhh column?"
+        ),
+        type = "yesno"
+      )$res
       if (yes_no == "no") {
-        fsl_hhs_nofoodhh <- svDialogs::dlg_input(message= "Enter the name of the fsl_hhs_nofoodhh","fsl_hhs_nofoodhh")$res
+        fsl_hhs_nofoodhh <- svDialogs::dlg_input(
+          message = "Enter the name of the fsl_hhs_nofoodhh",
+          "fsl_hhs_nofoodhh"
+        )$res
       }
-    } else if (length(fsl_hhs_nofoodhh) > 1){
-      fsl_hhs_nofoodhh <- tcltk::tk_select.list(fsl_hhs_nofoodhh, title = "HHS No Food HH column")
-      if(fsl_hhs_nofoodhh == ""){
-        fsl_hhs_nofoodhh <- svDialogs::dlg_input(message= "Enter the name of the fsl_hhs_nofoodhh","fsl_hhs_nofoodhh")$res
+    } else if (length(fsl_hhs_nofoodhh) > 1) {
+      fsl_hhs_nofoodhh <- tcltk::tk_select.list(
+        fsl_hhs_nofoodhh,
+        title = "HHS No Food HH column"
+      )
+      if (fsl_hhs_nofoodhh == "") {
+        fsl_hhs_nofoodhh <- svDialogs::dlg_input(
+          message = "Enter the name of the fsl_hhs_nofoodhh",
+          "fsl_hhs_nofoodhh"
+        )$res
       }
     } else if (length(fsl_hhs_nofoodhh) == 0) {
-      fsl_hhs_nofoodhh <- svDialogs::dlg_input(message= "Enter the name of the fsl_hhs_nofoodhh","fsl_hhs_nofoodhh")$res
+      fsl_hhs_nofoodhh <- svDialogs::dlg_input(
+        message = "Enter the name of the fsl_hhs_nofoodhh",
+        "fsl_hhs_nofoodhh"
+      )$res
     }
 
-    fsl_hhs_nofoodhh_freq <- names(data.list$main)[grepl("nofood|lack|aucun",names(data.list$main))]
-    if(length(fsl_hhs_nofoodhh_freq) == 1){
-      yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_hhs_nofoodhh_freq, "' the correct fsl_hhs_nofoodhh_freq column?"), type = "yesno")$res
+    fsl_hhs_nofoodhh_freq <- names(data.list$main)[grepl(
+      "nofood|lack|aucun",
+      names(data.list$main)
+    )]
+    if (length(fsl_hhs_nofoodhh_freq) == 1) {
+      yes_no <- svDialogs::dlg_message(
+        paste0(
+          "Is '",
+          fsl_hhs_nofoodhh_freq,
+          "' the correct fsl_hhs_nofoodhh_freq column?"
+        ),
+        type = "yesno"
+      )$res
       if (yes_no == "no") {
-        fsl_hhs_nofoodhh_freq <- svDialogs::dlg_input(message= "Enter the name of the fsl_hhs_nofoodhh_freq","fsl_hhs_nofoodhh_freq")$res
+        fsl_hhs_nofoodhh_freq <- svDialogs::dlg_input(
+          message = "Enter the name of the fsl_hhs_nofoodhh_freq",
+          "fsl_hhs_nofoodhh_freq"
+        )$res
       }
-    } else if (length(fsl_hhs_nofoodhh_freq) > 1){
-      fsl_hhs_nofoodhh_freq <- tcltk::tk_select.list(fsl_hhs_nofoodhh_freq, title = "HHS No Food HH Freq column")
-      if(fsl_hhs_nofoodhh_freq == ""){
-        fsl_hhs_nofoodhh_freq <- svDialogs::dlg_input(message= "Enter the name of the fsl_hhs_nofoodhh_freq","fsl_hhs_nofoodhh_freq")$res
+    } else if (length(fsl_hhs_nofoodhh_freq) > 1) {
+      fsl_hhs_nofoodhh_freq <- tcltk::tk_select.list(
+        fsl_hhs_nofoodhh_freq,
+        title = "HHS No Food HH Freq column"
+      )
+      if (fsl_hhs_nofoodhh_freq == "") {
+        fsl_hhs_nofoodhh_freq <- svDialogs::dlg_input(
+          message = "Enter the name of the fsl_hhs_nofoodhh_freq",
+          "fsl_hhs_nofoodhh_freq"
+        )$res
       }
     } else if (length(fsl_hhs_nofoodhh_freq) == 0) {
-      fsl_hhs_nofoodhh_freq <- svDialogs::dlg_input(message= "Enter the name of the fsl_hhs_nofoodhh_freq","fsl_hhs_nofoodhh_freq")$res
+      fsl_hhs_nofoodhh_freq <- svDialogs::dlg_input(
+        message = "Enter the name of the fsl_hhs_nofoodhh_freq",
+        "fsl_hhs_nofoodhh_freq"
+      )$res
     }
 
-    fsl_hhs_sleephungry <- names(data.list$main)[grepl("sleephungry|sleep|dormir",names(data.list$main))]
-    if(length(fsl_hhs_sleephungry) == 1){
-      yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_hhs_sleephungry, "' the correct fsl_hhs_sleephungry column?"), type = "yesno")$res
+    fsl_hhs_sleephungry <- names(data.list$main)[grepl(
+      "sleephungry|sleep|dormir",
+      names(data.list$main)
+    )]
+    if (length(fsl_hhs_sleephungry) == 1) {
+      yes_no <- svDialogs::dlg_message(
+        paste0(
+          "Is '",
+          fsl_hhs_sleephungry,
+          "' the correct fsl_hhs_sleephungry column?"
+        ),
+        type = "yesno"
+      )$res
       if (yes_no == "no") {
-        fsl_hhs_sleephungry <- svDialogs::dlg_input(message= "Enter the name of the fsl_hhs_sleephungry","fsl_hhs_sleephungry")$res
+        fsl_hhs_sleephungry <- svDialogs::dlg_input(
+          message = "Enter the name of the fsl_hhs_sleephungry",
+          "fsl_hhs_sleephungry"
+        )$res
       }
-    } else if (length(fsl_hhs_sleephungry) > 1){
-      fsl_hhs_sleephungry <- tcltk::tk_select.list(fsl_hhs_sleephungry, title = "HHS Sleep Hungry column")
-      if(fsl_hhs_sleephungry == ""){
-        fsl_hhs_sleephungry <- svDialogs::dlg_input(message= "Enter the name of the fsl_hhs_sleephungry","fsl_hhs_sleephungry")$res
+    } else if (length(fsl_hhs_sleephungry) > 1) {
+      fsl_hhs_sleephungry <- tcltk::tk_select.list(
+        fsl_hhs_sleephungry,
+        title = "HHS Sleep Hungry column"
+      )
+      if (fsl_hhs_sleephungry == "") {
+        fsl_hhs_sleephungry <- svDialogs::dlg_input(
+          message = "Enter the name of the fsl_hhs_sleephungry",
+          "fsl_hhs_sleephungry"
+        )$res
       }
     } else if (length(fsl_hhs_sleephungry) == 0) {
-      fsl_hhs_sleephungry <- svDialogs::dlg_input(message= "Enter the name of the fsl_hhs_sleephungry","fsl_hhs_sleephungry")$res
+      fsl_hhs_sleephungry <- svDialogs::dlg_input(
+        message = "Enter the name of the fsl_hhs_sleephungry",
+        "fsl_hhs_sleephungry"
+      )$res
     }
 
-    fsl_hhs_sleephungry_freq <- names(data.list$main)[grepl("sleephungry|sleep|dormir",names(data.list$main))]
-    if(length(fsl_hhs_sleephungry_freq) == 1){
-      yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_hhs_sleephungry_freq, "' the correct fsl_hhs_sleephungry_freq column?"), type = "yesno")$res
+    fsl_hhs_sleephungry_freq <- names(data.list$main)[grepl(
+      "sleephungry|sleep|dormir",
+      names(data.list$main)
+    )]
+    if (length(fsl_hhs_sleephungry_freq) == 1) {
+      yes_no <- svDialogs::dlg_message(
+        paste0(
+          "Is '",
+          fsl_hhs_sleephungry_freq,
+          "' the correct fsl_hhs_sleephungry_freq column?"
+        ),
+        type = "yesno"
+      )$res
       if (yes_no == "no") {
-        fsl_hhs_sleephungry_freq <- svDialogs::dlg_input(message= "Enter the name of the fsl_hhs_sleephungry_freq","fsl_hhs_sleephungry_freq")$res
+        fsl_hhs_sleephungry_freq <- svDialogs::dlg_input(
+          message = "Enter the name of the fsl_hhs_sleephungry_freq",
+          "fsl_hhs_sleephungry_freq"
+        )$res
       }
-    } else if (length(fsl_hhs_sleephungry_freq) > 1){
-      fsl_hhs_sleephungry_freq <- tcltk::tk_select.list(fsl_hhs_sleephungry_freq, title = "HHS Sleep Hungry Freq column")
-      if(fsl_hhs_sleephungry_freq == ""){
-        fsl_hhs_sleephungry_freq <- svDialogs::dlg_input(message= "Enter the name of the fsl_hhs_sleephungry_freq","fsl_hhs_sleephungry_freq")$res
+    } else if (length(fsl_hhs_sleephungry_freq) > 1) {
+      fsl_hhs_sleephungry_freq <- tcltk::tk_select.list(
+        fsl_hhs_sleephungry_freq,
+        title = "HHS Sleep Hungry Freq column"
+      )
+      if (fsl_hhs_sleephungry_freq == "") {
+        fsl_hhs_sleephungry_freq <- svDialogs::dlg_input(
+          message = "Enter the name of the fsl_hhs_sleephungry_freq",
+          "fsl_hhs_sleephungry_freq"
+        )$res
       }
     } else if (length(fsl_hhs_sleephungry_freq) == 0) {
-      fsl_hhs_sleephungry_freq <- svDialogs::dlg_input(message= "Enter the name of the fsl_hhs_sleephungry_freq","fsl_hhs_sleephungry_freq")$res
+      fsl_hhs_sleephungry_freq <- svDialogs::dlg_input(
+        message = "Enter the name of the fsl_hhs_sleephungry_freq",
+        "fsl_hhs_sleephungry_freq"
+      )$res
     }
 
-    fsl_hhs_alldaynight <- names(data.list$main)[grepl("alldaynight|daynoteating|wholeday|assez",names(data.list$main))]
-    if(length(fsl_hhs_alldaynight) == 1){
-      yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_hhs_alldaynight, "' the correct fsl_hhs_alldaynight column?"), type = "yesno")$res
+    fsl_hhs_alldaynight <- names(data.list$main)[grepl(
+      "alldaynight|daynoteating|wholeday|assez",
+      names(data.list$main)
+    )]
+    if (length(fsl_hhs_alldaynight) == 1) {
+      yes_no <- svDialogs::dlg_message(
+        paste0(
+          "Is '",
+          fsl_hhs_alldaynight,
+          "' the correct fsl_hhs_alldaynight column?"
+        ),
+        type = "yesno"
+      )$res
       if (yes_no == "no") {
-        fsl_hhs_alldaynight <- svDialogs::dlg_input(message= "Enter the name of the fsl_hhs_alldaynight","fsl_hhs_alldaynight")$res
+        fsl_hhs_alldaynight <- svDialogs::dlg_input(
+          message = "Enter the name of the fsl_hhs_alldaynight",
+          "fsl_hhs_alldaynight"
+        )$res
       }
-    } else if (length(fsl_hhs_alldaynight) > 1){
-      fsl_hhs_alldaynight <- tcltk::tk_select.list(fsl_hhs_alldaynight, title = "HHS All Day Night column")
-      if(fsl_hhs_alldaynight == ""){
-        fsl_hhs_alldaynight <- svDialogs::dlg_input(message= "Enter the name of the fsl_hhs_alldaynight","fsl_hhs_alldaynight")$res
+    } else if (length(fsl_hhs_alldaynight) > 1) {
+      fsl_hhs_alldaynight <- tcltk::tk_select.list(
+        fsl_hhs_alldaynight,
+        title = "HHS All Day Night column"
+      )
+      if (fsl_hhs_alldaynight == "") {
+        fsl_hhs_alldaynight <- svDialogs::dlg_input(
+          message = "Enter the name of the fsl_hhs_alldaynight",
+          "fsl_hhs_alldaynight"
+        )$res
       }
     } else if (length(fsl_hhs_alldaynight) == 0) {
-      fsl_hhs_alldaynight <- svDialogs::dlg_input(message= "Enter the name of the fsl_hhs_alldaynight","fsl_hhs_alldaynight")$res
+      fsl_hhs_alldaynight <- svDialogs::dlg_input(
+        message = "Enter the name of the fsl_hhs_alldaynight",
+        "fsl_hhs_alldaynight"
+      )$res
     }
 
-    fsl_hhs_alldaynight_freq <- names(data.list$main)[grepl("alldaynight|daynoteating|wholeday|assez",names(data.list$main))]
-    if(length(fsl_hhs_alldaynight_freq) == 1){
-      yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_hhs_alldaynight_freq, "' the correct fsl_hhs_alldaynight_freq column?"), type = "yesno")$res
+    fsl_hhs_alldaynight_freq <- names(data.list$main)[grepl(
+      "alldaynight|daynoteating|wholeday|assez",
+      names(data.list$main)
+    )]
+    if (length(fsl_hhs_alldaynight_freq) == 1) {
+      yes_no <- svDialogs::dlg_message(
+        paste0(
+          "Is '",
+          fsl_hhs_alldaynight_freq,
+          "' the correct fsl_hhs_alldaynight_freq column?"
+        ),
+        type = "yesno"
+      )$res
       if (yes_no == "no") {
-        fsl_hhs_alldaynight_freq <- svDialogs::dlg_input(message= "Enter the name of the fsl_hhs_alldaynight_freq","fsl_hhs_alldaynight_freq")$res
+        fsl_hhs_alldaynight_freq <- svDialogs::dlg_input(
+          message = "Enter the name of the fsl_hhs_alldaynight_freq",
+          "fsl_hhs_alldaynight_freq"
+        )$res
       }
-    } else if (length(fsl_hhs_alldaynight_freq) > 1){
-      fsl_hhs_alldaynight_freq <- tcltk::tk_select.list(fsl_hhs_alldaynight_freq, title = "HHS all Day Night Freq column")
-      if(fsl_hhs_alldaynight_freq == ""){
-        fsl_hhs_alldaynight_freq <- svDialogs::dlg_input(message= "Enter the name of the fsl_hhs_alldaynight_freq","fsl_hhs_alldaynight_freq")$res
+    } else if (length(fsl_hhs_alldaynight_freq) > 1) {
+      fsl_hhs_alldaynight_freq <- tcltk::tk_select.list(
+        fsl_hhs_alldaynight_freq,
+        title = "HHS all Day Night Freq column"
+      )
+      if (fsl_hhs_alldaynight_freq == "") {
+        fsl_hhs_alldaynight_freq <- svDialogs::dlg_input(
+          message = "Enter the name of the fsl_hhs_alldaynight_freq",
+          "fsl_hhs_alldaynight_freq"
+        )$res
       }
     } else if (length(fsl_hhs_alldaynight_freq) == 0) {
-      fsl_hhs_alldaynight_freq <- svDialogs::dlg_input(message= "Enter the name of the fsl_hhs_alldaynight_freq","fsl_hhs_alldaynight_freq")$res
+      fsl_hhs_alldaynight_freq <- svDialogs::dlg_input(
+        message = "Enter the name of the fsl_hhs_alldaynight_freq",
+        "fsl_hhs_alldaynight_freq"
+      )$res
     }
 
-    hhs_check_columns <- c(fsl_hhs_nofoodhh,
-                           fsl_hhs_sleephungry,
-                           fsl_hhs_alldaynight)
+    hhs_check_columns <- c(
+      fsl_hhs_nofoodhh,
+      fsl_hhs_sleephungry,
+      fsl_hhs_alldaynight
+    )
 
-    hhs_check_columns_freq <- c(fsl_hhs_nofoodhh_freq,
-                                fsl_hhs_sleephungry_freq,
-                                fsl_hhs_alldaynight_freq)
+    hhs_check_columns_freq <- c(
+      fsl_hhs_nofoodhh_freq,
+      fsl_hhs_sleephungry_freq,
+      fsl_hhs_alldaynight_freq
+    )
 
-    if(!all(c(hhs_check_columns,hhs_check_columns_freq) %in% names(data.list$main))) {
-      svDialogs::dlg_message("Please check if the HHS columns selected are correct and available in the dataset")
-      stop("Please check if the HHS columns selected are correct and available in the dataset")
-    } else{
-      yes_answer <- tcltk::tk_select.list(unique(unlist(data.list$main[,hhs_check_columns])), title = "Yes Value")
-      no_answer <- tcltk::tk_select.list(unique(unlist(data.list$main[,hhs_check_columns])), title = "No Value")
-      rarely_answer <- tcltk::tk_select.list(unique(unlist(data.list$main[,hhs_check_columns_freq])), title = "Rarely Value")
-      sometimes_answer <- tcltk::tk_select.list(unique(unlist(data.list$main[,hhs_check_columns_freq])), title = "Sometimes Value")
-      often_answer <- tcltk::tk_select.list(unique(unlist(data.list$main[,hhs_check_columns_freq])), title = "Often Value")
+    if (
+      !all(
+        c(hhs_check_columns, hhs_check_columns_freq) %in% names(data.list$main)
+      )
+    ) {
+      svDialogs::dlg_message(
+        "Please check if the HHS columns selected are correct and available in the dataset"
+      )
+      stop(
+        "Please check if the HHS columns selected are correct and available in the dataset"
+      )
+    } else {
+      yes_answer <- tcltk::tk_select.list(
+        unique(unlist(data.list$main[, hhs_check_columns])),
+        title = "Yes Value"
+      )
+      no_answer <- tcltk::tk_select.list(
+        unique(unlist(data.list$main[, hhs_check_columns])),
+        title = "No Value"
+      )
+      rarely_answer <- tcltk::tk_select.list(
+        unique(unlist(data.list$main[, hhs_check_columns_freq])),
+        title = "Rarely Value"
+      )
+      sometimes_answer <- tcltk::tk_select.list(
+        unique(unlist(data.list$main[, hhs_check_columns_freq])),
+        title = "Sometimes Value"
+      )
+      often_answer <- tcltk::tk_select.list(
+        unique(unlist(data.list$main[, hhs_check_columns_freq])),
+        title = "Often Value"
+      )
       data.list$main <- data.list$main %>%
         dplyr::select(-contains("_recoded"))
       data.list$main <- data.list$main %>%
-        dplyr::mutate_at(vars(hhs_check_columns),~case_when(. == yes_answer ~ yes_answer,
-                                                            . == no_answer ~ no_answer,
-                                                            TRUE ~ NA)) %>%
-        dplyr::mutate_at(vars(hhs_check_columns_freq),~case_when(. == rarely_answer ~ rarely_answer,
-                                                                 . == sometimes_answer ~ sometimes_answer,
-                                                                 . == often_answer ~ often_answer,
-                                                                 TRUE ~ NA)) %>%
-        impactR4PHU::add_hhs(fsl_hhs_nofoodhh = fsl_hhs_nofoodhh,
-                             fsl_hhs_nofoodhh_freq = fsl_hhs_nofoodhh_freq,
-                             fsl_hhs_sleephungry = fsl_hhs_sleephungry,
-                             fsl_hhs_sleephungry_freq = fsl_hhs_sleephungry_freq,
-                             fsl_hhs_alldaynight = fsl_hhs_alldaynight,
-                             fsl_hhs_alldaynight_freq = fsl_hhs_alldaynight_freq,
-                             yes_answer = yes_answer,
-                             no_answer = no_answer,
-                             rarely_answer = rarely_answer,
-                             sometimes_answer = sometimes_answer,
-                             often_answer = often_answer)
+        dplyr::mutate_at(
+          vars(hhs_check_columns),
+          ~ case_when(
+            . == yes_answer ~ yes_answer,
+            . == no_answer ~ no_answer,
+            TRUE ~ NA
+          )
+        ) %>%
+        dplyr::mutate_at(
+          vars(hhs_check_columns_freq),
+          ~ case_when(
+            . == rarely_answer ~ rarely_answer,
+            . == sometimes_answer ~ sometimes_answer,
+            . == often_answer ~ often_answer,
+            TRUE ~ NA
+          )
+        ) %>%
+        impactR4PHU::add_hhs(
+          fsl_hhs_nofoodhh = fsl_hhs_nofoodhh,
+          fsl_hhs_nofoodhh_freq = fsl_hhs_nofoodhh_freq,
+          fsl_hhs_sleephungry = fsl_hhs_sleephungry,
+          fsl_hhs_sleephungry_freq = fsl_hhs_sleephungry_freq,
+          fsl_hhs_alldaynight = fsl_hhs_alldaynight,
+          fsl_hhs_alldaynight_freq = fsl_hhs_alldaynight_freq,
+          yes_answer = yes_answer,
+          no_answer = no_answer,
+          rarely_answer = rarely_answer,
+          sometimes_answer = sometimes_answer,
+          often_answer = often_answer
+        )
     }
   } else {
     fsl_hhs_nofoodhh <- "fsl_hhs_nofoodhh"
@@ -585,224 +1127,491 @@ if(!file.exists("inputs/environment.Rdata")) {
     fsl_hhs_sleephungry_freq <- "fsl_hhs_sleephungry_freq"
     fsl_hhs_alldaynight <- "fsl_hhs_alldaynight"
     fsl_hhs_alldaynight_freq <- "fsl_hhs_alldaynight_freq"
-    hhs_check_columns <- c(fsl_hhs_nofoodhh,
-                           fsl_hhs_sleephungry,
-                           fsl_hhs_alldaynight)
+    hhs_check_columns <- c(
+      fsl_hhs_nofoodhh,
+      fsl_hhs_sleephungry,
+      fsl_hhs_alldaynight
+    )
 
-    hhs_check_columns_freq <- c(fsl_hhs_nofoodhh_freq,
-                                fsl_hhs_sleephungry_freq,
-                                fsl_hhs_alldaynight_freq)
+    hhs_check_columns_freq <- c(
+      fsl_hhs_nofoodhh_freq,
+      fsl_hhs_sleephungry_freq,
+      fsl_hhs_alldaynight_freq
+    )
   }
 } else {
-  if("HHS" %in% FSL_indicators){
+  if ("HHS" %in% FSL_indicators) {
     data.list$main <- data.list$main %>%
       dplyr::select(-contains("_recoded"))
     data.list$main <- data.list$main %>%
-      dplyr::mutate_at(vars(hhs_check_columns),~case_when(. == yes_answer ~ yes_answer,
-                                                          . == no_answer ~ no_answer,
-                                                          TRUE ~ NA)) %>%
-      dplyr::mutate_at(vars(hhs_check_columns_freq),~case_when(. == rarely_answer ~ rarely_answer,
-                                                               . == sometimes_answer ~ sometimes_answer,
-                                                               . == often_answer ~ often_answer,
-                                                               TRUE ~ NA)) %>%
-      impactR4PHU::add_hhs(fsl_hhs_nofoodhh = fsl_hhs_nofoodhh,
-                           fsl_hhs_nofoodhh_freq = fsl_hhs_nofoodhh_freq,
-                           fsl_hhs_sleephungry = fsl_hhs_sleephungry,
-                           fsl_hhs_sleephungry_freq = fsl_hhs_sleephungry_freq,
-                           fsl_hhs_alldaynight = fsl_hhs_alldaynight,
-                           fsl_hhs_alldaynight_freq = fsl_hhs_alldaynight_freq,
-                           yes_answer = yes_answer,
-                           no_answer = no_answer,
-                           rarely_answer = rarely_answer,
-                           sometimes_answer = sometimes_answer,
-                           often_answer = often_answer)
+      dplyr::mutate_at(
+        vars(hhs_check_columns),
+        ~ case_when(
+          . == yes_answer ~ yes_answer,
+          . == no_answer ~ no_answer,
+          TRUE ~ NA
+        )
+      ) %>%
+      dplyr::mutate_at(
+        vars(hhs_check_columns_freq),
+        ~ case_when(
+          . == rarely_answer ~ rarely_answer,
+          . == sometimes_answer ~ sometimes_answer,
+          . == often_answer ~ often_answer,
+          TRUE ~ NA
+        )
+      ) %>%
+      impactR4PHU::add_hhs(
+        fsl_hhs_nofoodhh = fsl_hhs_nofoodhh,
+        fsl_hhs_nofoodhh_freq = fsl_hhs_nofoodhh_freq,
+        fsl_hhs_sleephungry = fsl_hhs_sleephungry,
+        fsl_hhs_sleephungry_freq = fsl_hhs_sleephungry_freq,
+        fsl_hhs_alldaynight = fsl_hhs_alldaynight,
+        fsl_hhs_alldaynight_freq = fsl_hhs_alldaynight_freq,
+        yes_answer = yes_answer,
+        no_answer = no_answer,
+        rarely_answer = rarely_answer,
+        sometimes_answer = sometimes_answer,
+        often_answer = often_answer
+      )
   }
 }
 
-if(!file.exists("inputs/environment.Rdata")) {
-  if ("LCSI" %in% FSL_indicators){
-    fsl_lcsi_stress1 <- names(data.list$main)[grepl("stress|stress1",names(data.list$main))]
-    if(length(fsl_lcsi_stress1) == 1){
-      yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_lcsi_stress1, "' the correct fsl_lcsi_stress1 column?"), type = "yesno")$res
+if (!file.exists("inputs/environment.Rdata")) {
+  if ("LCSI" %in% FSL_indicators) {
+    fsl_lcsi_stress1 <- names(data.list$main)[grepl(
+      "stress|stress1",
+      names(data.list$main)
+    )]
+    if (length(fsl_lcsi_stress1) == 1) {
+      yes_no <- svDialogs::dlg_message(
+        paste0(
+          "Is '",
+          fsl_lcsi_stress1,
+          "' the correct fsl_lcsi_stress1 column?"
+        ),
+        type = "yesno"
+      )$res
       if (yes_no == "no") {
-        fsl_lcsi_stress1 <- svDialogs::dlg_input(message= "Enter the name of the fsl_lcsi_stress1","fsl_lcsi_stress1")$res
+        fsl_lcsi_stress1 <- svDialogs::dlg_input(
+          message = "Enter the name of the fsl_lcsi_stress1",
+          "fsl_lcsi_stress1"
+        )$res
       }
-    } else if (length(fsl_lcsi_stress1) > 1){
-      fsl_lcsi_stress1 <- tcltk::tk_select.list(fsl_lcsi_stress1, title = "LCSI Stress 1 column")
-      if(fsl_lcsi_stress1 == ""){
-        fsl_lcsi_stress1 <- svDialogs::dlg_input(message= "Enter the name of the fsl_lcsi_stress1","fsl_lcsi_stress1")$res
+    } else if (length(fsl_lcsi_stress1) > 1) {
+      fsl_lcsi_stress1 <- tcltk::tk_select.list(
+        fsl_lcsi_stress1,
+        title = "LCSI Stress 1 column"
+      )
+      if (fsl_lcsi_stress1 == "") {
+        fsl_lcsi_stress1 <- svDialogs::dlg_input(
+          message = "Enter the name of the fsl_lcsi_stress1",
+          "fsl_lcsi_stress1"
+        )$res
       }
     } else if (length(fsl_lcsi_stress1) == 0) {
-      fsl_lcsi_stress1 <- svDialogs::dlg_input(message= "Enter the name of the fsl_lcsi_stress1","fsl_lcsi_stress1")$res
+      fsl_lcsi_stress1 <- svDialogs::dlg_input(
+        message = "Enter the name of the fsl_lcsi_stress1",
+        "fsl_lcsi_stress1"
+      )$res
     }
-    fsl_lcsi_stress2 <- names(data.list$main)[grepl("stress|stress2",names(data.list$main))]
-    if(length(fsl_lcsi_stress2) == 1){
-      yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_lcsi_stress2, "' the correct fsl_lcsi_stress2 column?"), type = "yesno")$res
+    fsl_lcsi_stress2 <- names(data.list$main)[grepl(
+      "stress|stress2",
+      names(data.list$main)
+    )]
+    if (length(fsl_lcsi_stress2) == 1) {
+      yes_no <- svDialogs::dlg_message(
+        paste0(
+          "Is '",
+          fsl_lcsi_stress2,
+          "' the correct fsl_lcsi_stress2 column?"
+        ),
+        type = "yesno"
+      )$res
       if (yes_no == "no") {
-        fsl_lcsi_stress2 <- svDialogs::dlg_input(message= "Enter the name of the fsl_lcsi_stress2","fsl_lcsi_stress2")$res
+        fsl_lcsi_stress2 <- svDialogs::dlg_input(
+          message = "Enter the name of the fsl_lcsi_stress2",
+          "fsl_lcsi_stress2"
+        )$res
       }
-    } else if (length(fsl_lcsi_stress2) > 1){
-      fsl_lcsi_stress2 <- tcltk::tk_select.list(fsl_lcsi_stress2, title = "LCSI Stress 2 column")
-      if(fsl_lcsi_stress2 == ""){
-        fsl_lcsi_stress2 <- svDialogs::dlg_input(message= "Enter the name of the fsl_lcsi_stress2","fsl_lcsi_stress2")$res
+    } else if (length(fsl_lcsi_stress2) > 1) {
+      fsl_lcsi_stress2 <- tcltk::tk_select.list(
+        fsl_lcsi_stress2,
+        title = "LCSI Stress 2 column"
+      )
+      if (fsl_lcsi_stress2 == "") {
+        fsl_lcsi_stress2 <- svDialogs::dlg_input(
+          message = "Enter the name of the fsl_lcsi_stress2",
+          "fsl_lcsi_stress2"
+        )$res
       }
     } else if (length(fsl_lcsi_stress2) == 0) {
-      fsl_lcsi_stress2 <- svDialogs::dlg_input(message= "Enter the name of the fsl_lcsi_stress2","fsl_lcsi_stress2")$res
+      fsl_lcsi_stress2 <- svDialogs::dlg_input(
+        message = "Enter the name of the fsl_lcsi_stress2",
+        "fsl_lcsi_stress2"
+      )$res
     }
 
-    fsl_lcsi_stress3 <- names(data.list$main)[grepl("stress|stress3",names(data.list$main))]
-    if(length(fsl_lcsi_stress3) == 1){
-      yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_lcsi_stress3, "' the correct fsl_lcsi_stress3 column?"), type = "yesno")$res
+    fsl_lcsi_stress3 <- names(data.list$main)[grepl(
+      "stress|stress3",
+      names(data.list$main)
+    )]
+    if (length(fsl_lcsi_stress3) == 1) {
+      yes_no <- svDialogs::dlg_message(
+        paste0(
+          "Is '",
+          fsl_lcsi_stress3,
+          "' the correct fsl_lcsi_stress3 column?"
+        ),
+        type = "yesno"
+      )$res
       if (yes_no == "no") {
-        fsl_lcsi_stress3 <- svDialogs::dlg_input(message= "Enter the name of the fsl_lcsi_stress3","fsl_lcsi_stress3")$res
+        fsl_lcsi_stress3 <- svDialogs::dlg_input(
+          message = "Enter the name of the fsl_lcsi_stress3",
+          "fsl_lcsi_stress3"
+        )$res
       }
-    } else if (length(fsl_lcsi_stress3) > 1){
-      fsl_lcsi_stress3 <- tcltk::tk_select.list(fsl_lcsi_stress3, title = "LCSI Stress 3 column")
-      if(fsl_lcsi_stress3 == ""){
-        fsl_lcsi_stress3 <- svDialogs::dlg_input(message= "Enter the name of the fsl_lcsi_stress3","fsl_lcsi_stress3")$res
+    } else if (length(fsl_lcsi_stress3) > 1) {
+      fsl_lcsi_stress3 <- tcltk::tk_select.list(
+        fsl_lcsi_stress3,
+        title = "LCSI Stress 3 column"
+      )
+      if (fsl_lcsi_stress3 == "") {
+        fsl_lcsi_stress3 <- svDialogs::dlg_input(
+          message = "Enter the name of the fsl_lcsi_stress3",
+          "fsl_lcsi_stress3"
+        )$res
       }
     } else if (length(fsl_lcsi_stress3) == 0) {
-      fsl_lcsi_stress3 <- svDialogs::dlg_input(message= "Enter the name of the fsl_lcsi_stress3","fsl_lcsi_stress3")$res
+      fsl_lcsi_stress3 <- svDialogs::dlg_input(
+        message = "Enter the name of the fsl_lcsi_stress3",
+        "fsl_lcsi_stress3"
+      )$res
     }
 
-    fsl_lcsi_stress4 <- names(data.list$main)[grepl("stress|stress4",names(data.list$main))]
-    if(length(fsl_lcsi_stress4) == 1){
-      yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_lcsi_stress4, "' the correct fsl_lcsi_stress4 column?"), type = "yesno")$res
+    fsl_lcsi_stress4 <- names(data.list$main)[grepl(
+      "stress|stress4",
+      names(data.list$main)
+    )]
+    if (length(fsl_lcsi_stress4) == 1) {
+      yes_no <- svDialogs::dlg_message(
+        paste0(
+          "Is '",
+          fsl_lcsi_stress4,
+          "' the correct fsl_lcsi_stress4 column?"
+        ),
+        type = "yesno"
+      )$res
       if (yes_no == "no") {
-        fsl_lcsi_stress4 <- svDialogs::dlg_input(message= "Enter the name of the fsl_lcsi_stress4","fsl_lcsi_stress4")$res
+        fsl_lcsi_stress4 <- svDialogs::dlg_input(
+          message = "Enter the name of the fsl_lcsi_stress4",
+          "fsl_lcsi_stress4"
+        )$res
       }
-    } else if (length(fsl_lcsi_stress4) > 1){
-      fsl_lcsi_stress4 <- tcltk::tk_select.list(fsl_lcsi_stress4, title = "LCSI Stress 4 column")
-      if(fsl_lcsi_stress4 == ""){
-        fsl_lcsi_stress4 <- svDialogs::dlg_input(message= "Enter the name of the fsl_lcsi_stress4","fsl_lcsi_stress4")$res
+    } else if (length(fsl_lcsi_stress4) > 1) {
+      fsl_lcsi_stress4 <- tcltk::tk_select.list(
+        fsl_lcsi_stress4,
+        title = "LCSI Stress 4 column"
+      )
+      if (fsl_lcsi_stress4 == "") {
+        fsl_lcsi_stress4 <- svDialogs::dlg_input(
+          message = "Enter the name of the fsl_lcsi_stress4",
+          "fsl_lcsi_stress4"
+        )$res
       }
     } else if (length(fsl_lcsi_stress4) == 0) {
-      fsl_lcsi_stress4 <- svDialogs::dlg_input(message= "Enter the name of the fsl_lcsi_stress4","fsl_lcsi_stress4")$res
+      fsl_lcsi_stress4 <- svDialogs::dlg_input(
+        message = "Enter the name of the fsl_lcsi_stress4",
+        "fsl_lcsi_stress4"
+      )$res
     }
 
-    fsl_lcsi_crisis1 <- names(data.list$main)[grepl("crisis|crisis1",names(data.list$main))]
-    if(length(fsl_lcsi_crisis1) == 1){
-      yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_lcsi_crisis1, "' the correct fsl_lcsi_crisis1 column?"), type = "yesno")$res
+    fsl_lcsi_crisis1 <- names(data.list$main)[grepl(
+      "crisis|crisis1",
+      names(data.list$main)
+    )]
+    if (length(fsl_lcsi_crisis1) == 1) {
+      yes_no <- svDialogs::dlg_message(
+        paste0(
+          "Is '",
+          fsl_lcsi_crisis1,
+          "' the correct fsl_lcsi_crisis1 column?"
+        ),
+        type = "yesno"
+      )$res
       if (yes_no == "no") {
-        fsl_lcsi_crisis1 <- svDialogs::dlg_input(message= "Enter the name of the fsl_lcsi_crisis1","fsl_lcsi_crisis1")$res
+        fsl_lcsi_crisis1 <- svDialogs::dlg_input(
+          message = "Enter the name of the fsl_lcsi_crisis1",
+          "fsl_lcsi_crisis1"
+        )$res
       }
-    } else if (length(fsl_lcsi_crisis1) > 1){
-      fsl_lcsi_crisis1 <- tcltk::tk_select.list(fsl_lcsi_crisis1, title = "LCSI Crisis 1 column")
-      if(fsl_lcsi_crisis1 == ""){
-        fsl_lcsi_crisis1 <- svDialogs::dlg_input(message= "Enter the name of the fsl_lcsi_crisis1","fsl_lcsi_crisis1")$res
+    } else if (length(fsl_lcsi_crisis1) > 1) {
+      fsl_lcsi_crisis1 <- tcltk::tk_select.list(
+        fsl_lcsi_crisis1,
+        title = "LCSI Crisis 1 column"
+      )
+      if (fsl_lcsi_crisis1 == "") {
+        fsl_lcsi_crisis1 <- svDialogs::dlg_input(
+          message = "Enter the name of the fsl_lcsi_crisis1",
+          "fsl_lcsi_crisis1"
+        )$res
       }
     } else if (length(fsl_lcsi_crisis1) == 0) {
-      fsl_lcsi_crisis1 <- svDialogs::dlg_input(message= "Enter the name of the fsl_lcsi_crisis1","fsl_lcsi_crisis1")$res
+      fsl_lcsi_crisis1 <- svDialogs::dlg_input(
+        message = "Enter the name of the fsl_lcsi_crisis1",
+        "fsl_lcsi_crisis1"
+      )$res
     }
 
-    fsl_lcsi_crisis2 <- names(data.list$main)[grepl("crisis|crisis2",names(data.list$main))]
-    if(length(fsl_lcsi_crisis2) == 1){
-      yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_lcsi_crisis2, "' the correct fsl_lcsi_crisis2 column?"), type = "yesno")$res
+    fsl_lcsi_crisis2 <- names(data.list$main)[grepl(
+      "crisis|crisis2",
+      names(data.list$main)
+    )]
+    if (length(fsl_lcsi_crisis2) == 1) {
+      yes_no <- svDialogs::dlg_message(
+        paste0(
+          "Is '",
+          fsl_lcsi_crisis2,
+          "' the correct fsl_lcsi_crisis2 column?"
+        ),
+        type = "yesno"
+      )$res
       if (yes_no == "no") {
-        fsl_lcsi_crisis2 <- svDialogs::dlg_input(message= "Enter the name of the fsl_lcsi_crisis2","fsl_lcsi_crisis2")$res
+        fsl_lcsi_crisis2 <- svDialogs::dlg_input(
+          message = "Enter the name of the fsl_lcsi_crisis2",
+          "fsl_lcsi_crisis2"
+        )$res
       }
-    } else if (length(fsl_lcsi_crisis2) > 1){
-      fsl_lcsi_crisis2 <- tcltk::tk_select.list(fsl_lcsi_crisis2, title = "LCSI Crisis 2 column")
-      if(fsl_lcsi_crisis2 == ""){
-        fsl_lcsi_crisis2 <- svDialogs::dlg_input(message= "Enter the name of the fsl_lcsi_crisis2","fsl_lcsi_crisis2")$res
+    } else if (length(fsl_lcsi_crisis2) > 1) {
+      fsl_lcsi_crisis2 <- tcltk::tk_select.list(
+        fsl_lcsi_crisis2,
+        title = "LCSI Crisis 2 column"
+      )
+      if (fsl_lcsi_crisis2 == "") {
+        fsl_lcsi_crisis2 <- svDialogs::dlg_input(
+          message = "Enter the name of the fsl_lcsi_crisis2",
+          "fsl_lcsi_crisis2"
+        )$res
       }
     } else if (length(fsl_lcsi_crisis2) == 0) {
-      fsl_lcsi_crisis2 <- svDialogs::dlg_input(message= "Enter the name of the fsl_lcsi_crisis2","fsl_lcsi_crisis2")$res
+      fsl_lcsi_crisis2 <- svDialogs::dlg_input(
+        message = "Enter the name of the fsl_lcsi_crisis2",
+        "fsl_lcsi_crisis2"
+      )$res
     }
 
-    fsl_lcsi_crisis3 <- names(data.list$main)[grepl("crisis|crisis3",names(data.list$main))]
-    if(length(fsl_lcsi_crisis3) == 1){
-      yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_lcsi_crisis3, "' the correct fsl_lcsi_crisis3 column?"), type = "yesno")$res
+    fsl_lcsi_crisis3 <- names(data.list$main)[grepl(
+      "crisis|crisis3",
+      names(data.list$main)
+    )]
+    if (length(fsl_lcsi_crisis3) == 1) {
+      yes_no <- svDialogs::dlg_message(
+        paste0(
+          "Is '",
+          fsl_lcsi_crisis3,
+          "' the correct fsl_lcsi_crisis3 column?"
+        ),
+        type = "yesno"
+      )$res
       if (yes_no == "no") {
-        fsl_lcsi_crisis3 <- svDialogs::dlg_input(message= "Enter the name of the fsl_lcsi_crisis3","fsl_lcsi_crisis3")$res
+        fsl_lcsi_crisis3 <- svDialogs::dlg_input(
+          message = "Enter the name of the fsl_lcsi_crisis3",
+          "fsl_lcsi_crisis3"
+        )$res
       }
-    } else if (length(fsl_lcsi_crisis3) > 1){
-      fsl_lcsi_crisis3 <- tcltk::tk_select.list(fsl_lcsi_crisis3, title = "LCSI Crisis 3 column")
-      if(fsl_lcsi_crisis3 == ""){
-        fsl_lcsi_crisis3 <- svDialogs::dlg_input(message= "Enter the name of the fsl_lcsi_crisis3","fsl_lcsi_crisis3")$res
+    } else if (length(fsl_lcsi_crisis3) > 1) {
+      fsl_lcsi_crisis3 <- tcltk::tk_select.list(
+        fsl_lcsi_crisis3,
+        title = "LCSI Crisis 3 column"
+      )
+      if (fsl_lcsi_crisis3 == "") {
+        fsl_lcsi_crisis3 <- svDialogs::dlg_input(
+          message = "Enter the name of the fsl_lcsi_crisis3",
+          "fsl_lcsi_crisis3"
+        )$res
       }
     } else if (length(fsl_lcsi_crisis3) == 0) {
-      fsl_lcsi_crisis3 <- svDialogs::dlg_input(message= "Enter the name of the fsl_lcsi_crisis3","fsl_lcsi_crisis3")$res
+      fsl_lcsi_crisis3 <- svDialogs::dlg_input(
+        message = "Enter the name of the fsl_lcsi_crisis3",
+        "fsl_lcsi_crisis3"
+      )$res
     }
 
-    fsl_lcsi_emergency1 <- names(data.list$main)[grepl("emergency|emergency1",names(data.list$main))]
-    if(length(fsl_lcsi_emergency1) == 1){
-      yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_lcsi_emergency1, "' the correct fsl_lcsi_emergency1 column?"), type = "yesno")$res
+    fsl_lcsi_emergency1 <- names(data.list$main)[grepl(
+      "emergency|emergency1",
+      names(data.list$main)
+    )]
+    if (length(fsl_lcsi_emergency1) == 1) {
+      yes_no <- svDialogs::dlg_message(
+        paste0(
+          "Is '",
+          fsl_lcsi_emergency1,
+          "' the correct fsl_lcsi_emergency1 column?"
+        ),
+        type = "yesno"
+      )$res
       if (yes_no == "no") {
-        fsl_lcsi_emergency1 <- svDialogs::dlg_input(message= "Enter the name of the fsl_lcsi_emergency1","fsl_lcsi_emergency1")$res
+        fsl_lcsi_emergency1 <- svDialogs::dlg_input(
+          message = "Enter the name of the fsl_lcsi_emergency1",
+          "fsl_lcsi_emergency1"
+        )$res
       }
-    } else if (length(fsl_lcsi_emergency1) > 1){
-      fsl_lcsi_emergency1 <- tcltk::tk_select.list(fsl_lcsi_emergency1, title = "LCSI Emergency 1 column")
-      if(fsl_lcsi_emergency1 == ""){
-        fsl_lcsi_emergency1 <- svDialogs::dlg_input(message= "Enter the name of the fsl_lcsi_emergency1","fsl_lcsi_emergency1")$res
+    } else if (length(fsl_lcsi_emergency1) > 1) {
+      fsl_lcsi_emergency1 <- tcltk::tk_select.list(
+        fsl_lcsi_emergency1,
+        title = "LCSI Emergency 1 column"
+      )
+      if (fsl_lcsi_emergency1 == "") {
+        fsl_lcsi_emergency1 <- svDialogs::dlg_input(
+          message = "Enter the name of the fsl_lcsi_emergency1",
+          "fsl_lcsi_emergency1"
+        )$res
       }
     } else if (length(fsl_lcsi_emergency1) == 0) {
-      fsl_lcsi_emergency1 <- svDialogs::dlg_input(message= "Enter the name of the fsl_lcsi_emergency1","fsl_lcsi_emergency1")$res
+      fsl_lcsi_emergency1 <- svDialogs::dlg_input(
+        message = "Enter the name of the fsl_lcsi_emergency1",
+        "fsl_lcsi_emergency1"
+      )$res
     }
 
-    fsl_lcsi_emergency2 <- names(data.list$main)[grepl("emergency|emergency2",names(data.list$main))]
-    if(length(fsl_lcsi_emergency2) == 1){
-      yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_lcsi_emergency2, "' the correct fsl_lcsi_emergency2 column?"), type = "yesno")$res
+    fsl_lcsi_emergency2 <- names(data.list$main)[grepl(
+      "emergency|emergency2",
+      names(data.list$main)
+    )]
+    if (length(fsl_lcsi_emergency2) == 1) {
+      yes_no <- svDialogs::dlg_message(
+        paste0(
+          "Is '",
+          fsl_lcsi_emergency2,
+          "' the correct fsl_lcsi_emergency2 column?"
+        ),
+        type = "yesno"
+      )$res
       if (yes_no == "no") {
-        fsl_lcsi_emergency2 <- svDialogs::dlg_input(message= "Enter the name of the fsl_lcsi_emergency2","fsl_lcsi_emergency2")$res
+        fsl_lcsi_emergency2 <- svDialogs::dlg_input(
+          message = "Enter the name of the fsl_lcsi_emergency2",
+          "fsl_lcsi_emergency2"
+        )$res
       }
-    } else if (length(fsl_lcsi_emergency2) > 1){
-      fsl_lcsi_emergency2 <- tcltk::tk_select.list(fsl_lcsi_emergency2, title = "LCSI Emergency 2 column")
-      if(fsl_lcsi_emergency2 == ""){
-        fsl_lcsi_emergency2 <- svDialogs::dlg_input(message= "Enter the name of the fsl_lcsi_emergency2","fsl_lcsi_emergency2")$res
+    } else if (length(fsl_lcsi_emergency2) > 1) {
+      fsl_lcsi_emergency2 <- tcltk::tk_select.list(
+        fsl_lcsi_emergency2,
+        title = "LCSI Emergency 2 column"
+      )
+      if (fsl_lcsi_emergency2 == "") {
+        fsl_lcsi_emergency2 <- svDialogs::dlg_input(
+          message = "Enter the name of the fsl_lcsi_emergency2",
+          "fsl_lcsi_emergency2"
+        )$res
       }
     } else if (length(fsl_lcsi_emergency2) == 0) {
-      fsl_lcsi_emergency2 <- svDialogs::dlg_input(message= "Enter the name of the fsl_lcsi_emergency2","fsl_lcsi_emergency2")$res
+      fsl_lcsi_emergency2 <- svDialogs::dlg_input(
+        message = "Enter the name of the fsl_lcsi_emergency2",
+        "fsl_lcsi_emergency2"
+      )$res
     }
 
-    fsl_lcsi_emergency3 <- names(data.list$main)[grepl("emergency|emergency3",names(data.list$main))]
-    if(length(fsl_lcsi_emergency3) == 1){
-      yes_no <- svDialogs::dlg_message(paste0("Is '", fsl_lcsi_emergency3, "' the correct fsl_lcsi_emergency3 column?"), type = "yesno")$res
+    fsl_lcsi_emergency3 <- names(data.list$main)[grepl(
+      "emergency|emergency3",
+      names(data.list$main)
+    )]
+    if (length(fsl_lcsi_emergency3) == 1) {
+      yes_no <- svDialogs::dlg_message(
+        paste0(
+          "Is '",
+          fsl_lcsi_emergency3,
+          "' the correct fsl_lcsi_emergency3 column?"
+        ),
+        type = "yesno"
+      )$res
       if (yes_no == "no") {
-        fsl_lcsi_emergency3 <- svDialogs::dlg_input(message= "Enter the name of the fsl_lcsi_emergency3","fsl_lcsi_emergency3")$res
+        fsl_lcsi_emergency3 <- svDialogs::dlg_input(
+          message = "Enter the name of the fsl_lcsi_emergency3",
+          "fsl_lcsi_emergency3"
+        )$res
       }
-    } else if (length(fsl_lcsi_emergency3) > 1){
-      fsl_lcsi_emergency3 <- tcltk::tk_select.list(fsl_lcsi_emergency3, title = "LCSI Emergency 3 column")
-      if(fsl_lcsi_emergency3 == ""){
-        fsl_lcsi_emergency3 <- svDialogs::dlg_input(message= "Enter the name of the fsl_lcsi_emergency3","fsl_lcsi_emergency3")$res
+    } else if (length(fsl_lcsi_emergency3) > 1) {
+      fsl_lcsi_emergency3 <- tcltk::tk_select.list(
+        fsl_lcsi_emergency3,
+        title = "LCSI Emergency 3 column"
+      )
+      if (fsl_lcsi_emergency3 == "") {
+        fsl_lcsi_emergency3 <- svDialogs::dlg_input(
+          message = "Enter the name of the fsl_lcsi_emergency3",
+          "fsl_lcsi_emergency3"
+        )$res
       }
     } else if (length(fsl_lcsi_emergency3) == 0) {
-      fsl_lcsi_emergency3 <- svDialogs::dlg_input(message= "Enter the name of the fsl_lcsi_emergency3","fsl_lcsi_emergency3")$res
+      fsl_lcsi_emergency3 <- svDialogs::dlg_input(
+        message = "Enter the name of the fsl_lcsi_emergency3",
+        "fsl_lcsi_emergency3"
+      )$res
     }
 
-    lcsi_check_columns <- c(fsl_lcsi_stress1,fsl_lcsi_stress2,fsl_lcsi_stress3,fsl_lcsi_stress4,
-                            fsl_lcsi_crisis1,fsl_lcsi_crisis2,fsl_lcsi_crisis3,
-                            fsl_lcsi_emergency1,fsl_lcsi_emergency2,fsl_lcsi_emergency3)
+    lcsi_check_columns <- c(
+      fsl_lcsi_stress1,
+      fsl_lcsi_stress2,
+      fsl_lcsi_stress3,
+      fsl_lcsi_stress4,
+      fsl_lcsi_crisis1,
+      fsl_lcsi_crisis2,
+      fsl_lcsi_crisis3,
+      fsl_lcsi_emergency1,
+      fsl_lcsi_emergency2,
+      fsl_lcsi_emergency3
+    )
 
-
-    if(!all(lcsi_check_columns %in% names(data.list$main))) {
-      svDialogs::dlg_message("Please check if the LCSI columns selected are correct and available in the dataset")
-      stop("Please check if the LCSI columns selected are correct and available in the dataset")
-    } else{
-      yes_val <- tcltk::tk_select.list(unique(unlist(data.list$main[,lcsi_check_columns])), title = "Yes Value")
-      no_val <- tcltk::tk_select.list(unique(unlist(data.list$main[,lcsi_check_columns])), title = "No Value")
-      exhausted_val <- tcltk::tk_select.list(unique(unlist(data.list$main[,lcsi_check_columns])), title = "Exhausted Value")
-      not_applicable_val <- tcltk::tk_select.list(unique(unlist(data.list$main[,lcsi_check_columns])), title = "Not Applicable Value")
+    if (!all(lcsi_check_columns %in% names(data.list$main))) {
+      svDialogs::dlg_message(
+        "Please check if the LCSI columns selected are correct and available in the dataset"
+      )
+      stop(
+        "Please check if the LCSI columns selected are correct and available in the dataset"
+      )
+    } else {
+      yes_val <- tcltk::tk_select.list(
+        unique(unlist(data.list$main[, lcsi_check_columns])),
+        title = "Yes Value"
+      )
+      no_val <- tcltk::tk_select.list(
+        unique(unlist(data.list$main[, lcsi_check_columns])),
+        title = "No Value"
+      )
+      exhausted_val <- tcltk::tk_select.list(
+        unique(unlist(data.list$main[, lcsi_check_columns])),
+        title = "Exhausted Value"
+      )
+      not_applicable_val <- tcltk::tk_select.list(
+        unique(unlist(data.list$main[, lcsi_check_columns])),
+        title = "Not Applicable Value"
+      )
       data.list$main <- data.list$main %>%
-        dplyr::mutate_at(vars(lcsi_check_columns),~case_when(. == yes_val ~ yes_val,
-                                                             . == no_val ~ no_val,
-                                                             . == exhausted_val ~ exhausted_val,
-                                                             . == not_applicable_val ~ not_applicable_val,
-                                                             TRUE ~ NA)) %>%
-        impactR4PHU::add_lcsi(fsl_lcsi_stress1 = fsl_lcsi_stress1,
-                              fsl_lcsi_stress2 = fsl_lcsi_stress2,
-                              fsl_lcsi_stress3 = fsl_lcsi_stress3,
-                              fsl_lcsi_stress4 = fsl_lcsi_stress4,
-                              fsl_lcsi_crisis1 = fsl_lcsi_crisis1,
-                              fsl_lcsi_crisis2 = fsl_lcsi_crisis2,
-                              fsl_lcsi_crisis3 = fsl_lcsi_crisis3,
-                              fsl_lcsi_emergency1 = fsl_lcsi_emergency1,
-                              fsl_lcsi_emergency2 = fsl_lcsi_emergency2,
-                              fsl_lcsi_emergency3 = fsl_lcsi_emergency3,
-                              yes_val = yes_val,
-                              no_val = no_val,
-                              exhausted_val = exhausted_val,
-                              not_applicable_val = not_applicable_val)
+        dplyr::mutate_at(
+          vars(lcsi_check_columns),
+          ~ case_when(
+            . == yes_val ~ yes_val,
+            . == no_val ~ no_val,
+            . == exhausted_val ~ exhausted_val,
+            . == not_applicable_val ~ not_applicable_val,
+            TRUE ~ NA
+          )
+        ) %>%
+        impactR4PHU::add_lcsi(
+          fsl_lcsi_stress1 = fsl_lcsi_stress1,
+          fsl_lcsi_stress2 = fsl_lcsi_stress2,
+          fsl_lcsi_stress3 = fsl_lcsi_stress3,
+          fsl_lcsi_stress4 = fsl_lcsi_stress4,
+          fsl_lcsi_crisis1 = fsl_lcsi_crisis1,
+          fsl_lcsi_crisis2 = fsl_lcsi_crisis2,
+          fsl_lcsi_crisis3 = fsl_lcsi_crisis3,
+          fsl_lcsi_emergency1 = fsl_lcsi_emergency1,
+          fsl_lcsi_emergency2 = fsl_lcsi_emergency2,
+          fsl_lcsi_emergency3 = fsl_lcsi_emergency3,
+          yes_val = yes_val,
+          no_val = no_val,
+          exhausted_val = exhausted_val,
+          not_applicable_val = not_applicable_val
+        )
     }
   } else {
     fsl_lcsi_stress1 <- "fsl_lcsi_stress1"
@@ -815,51 +1624,65 @@ if(!file.exists("inputs/environment.Rdata")) {
     fsl_lcsi_emergency1 <- "fsl_lcsi_emergency1"
     fsl_lcsi_emergency2 <- "fsl_lcsi_emergency2"
     fsl_lcsi_emergency3 <- "fsl_lcsi_emergency3"
-    lcsi_check_columns <- c(fsl_lcsi_stress1,fsl_lcsi_stress2,fsl_lcsi_stress3,fsl_lcsi_stress4,
-                            fsl_lcsi_crisis1,fsl_lcsi_crisis2,fsl_lcsi_crisis3,
-                            fsl_lcsi_emergency1,fsl_lcsi_emergency2,fsl_lcsi_emergency3)
+    lcsi_check_columns <- c(
+      fsl_lcsi_stress1,
+      fsl_lcsi_stress2,
+      fsl_lcsi_stress3,
+      fsl_lcsi_stress4,
+      fsl_lcsi_crisis1,
+      fsl_lcsi_crisis2,
+      fsl_lcsi_crisis3,
+      fsl_lcsi_emergency1,
+      fsl_lcsi_emergency2,
+      fsl_lcsi_emergency3
+    )
   }
 } else {
-  if("LCSI" %in% FSL_indicators){
+  if ("LCSI" %in% FSL_indicators) {
     data.list$main <- data.list$main %>%
-      dplyr::mutate_at(vars(lcsi_check_columns),~case_when(. == yes_val ~ yes_val,
-                                                           . == no_val ~ no_val,
-                                                           . == exhausted_val ~ exhausted_val,
-                                                           . == not_applicable_val ~ not_applicable_val,
-                                                           TRUE ~ NA)) %>%
-      impactR4PHU::add_lcsi(fsl_lcsi_stress1 = fsl_lcsi_stress1,
-                            fsl_lcsi_stress2 = fsl_lcsi_stress2,
-                            fsl_lcsi_stress3 = fsl_lcsi_stress3,
-                            fsl_lcsi_stress4 = fsl_lcsi_stress4,
-                            fsl_lcsi_crisis1 = fsl_lcsi_crisis1,
-                            fsl_lcsi_crisis2 = fsl_lcsi_crisis2,
-                            fsl_lcsi_crisis3 = fsl_lcsi_crisis3,
-                            fsl_lcsi_emergency1 = fsl_lcsi_emergency1,
-                            fsl_lcsi_emergency2 = fsl_lcsi_emergency2,
-                            fsl_lcsi_emergency3 = fsl_lcsi_emergency3,
-                            yes_val = yes_val,
-                            no_val = no_val,
-                            exhausted_val = exhausted_val,
-                            not_applicable_val = not_applicable_val)
+      dplyr::mutate_at(
+        vars(lcsi_check_columns),
+        ~ case_when(
+          . == yes_val ~ yes_val,
+          . == no_val ~ no_val,
+          . == exhausted_val ~ exhausted_val,
+          . == not_applicable_val ~ not_applicable_val,
+          TRUE ~ NA
+        )
+      ) %>%
+      impactR4PHU::add_lcsi(
+        fsl_lcsi_stress1 = fsl_lcsi_stress1,
+        fsl_lcsi_stress2 = fsl_lcsi_stress2,
+        fsl_lcsi_stress3 = fsl_lcsi_stress3,
+        fsl_lcsi_stress4 = fsl_lcsi_stress4,
+        fsl_lcsi_crisis1 = fsl_lcsi_crisis1,
+        fsl_lcsi_crisis2 = fsl_lcsi_crisis2,
+        fsl_lcsi_crisis3 = fsl_lcsi_crisis3,
+        fsl_lcsi_emergency1 = fsl_lcsi_emergency1,
+        fsl_lcsi_emergency2 = fsl_lcsi_emergency2,
+        fsl_lcsi_emergency3 = fsl_lcsi_emergency3,
+        yes_val = yes_val,
+        no_val = no_val,
+        exhausted_val = exhausted_val,
+        not_applicable_val = not_applicable_val
+      )
   }
 }
 
 
-fcm_check_1_columns <- c("fsl_fcs_cat",
-                         "fsl_rcsi_cat")
+fcm_check_1_columns <- c("fsl_fcs_cat", "fsl_rcsi_cat")
 
 
-fcm_check_3_columns <- c("fsl_fcs_cat",
-                         "fsl_hhs_cat")
+fcm_check_3_columns <- c("fsl_fcs_cat", "fsl_hhs_cat")
 
 
-fcm_check_6_columns <- c("fsl_fcs_cat",
-                         "fsl_rcsi_cat",
-                         "fsl_hhs_cat")
+fcm_check_6_columns <- c("fsl_fcs_cat", "fsl_rcsi_cat", "fsl_hhs_cat")
 
-if(all(fcm_check_1_columns %in% names(data.list$main)) |
-   all(fcm_check_3_columns %in% names(data.list$main)) |
-   all(fcm_check_6_columns %in% names(data.list$main))) {
+if (
+  all(fcm_check_1_columns %in% names(data.list$main)) |
+    all(fcm_check_3_columns %in% names(data.list$main)) |
+    all(fcm_check_6_columns %in% names(data.list$main))
+) {
   data.list$main <- data.list$main %>%
     impactR4PHU::add_fcm_phase()
 }
@@ -877,51 +1700,54 @@ national_df <- data.list$main %>%
   dplyr::relocate(admin1, .before = 1)
 
 ph_int_table <- admin1_df %>%
-  dplyr::mutate(children_sick = NA,
-                unmet_healthcare = NA,
-                amn_phase = NA,
-                afi_phase = NA,
-                fcs_phase = NA,
-                fcs = NA,
-                rcsi = NA,
-                hhs = NA,
-                lcsi = NA,
-                impro_water = NA,
-                drinking_water = NA,
-                sanitation = NA,
-                handwash = NA,
-                distance_healthcare = NA)
+  dplyr::mutate(
+    children_sick = NA,
+    unmet_healthcare = NA,
+    amn_phase = NA,
+    afi_phase = NA,
+    fcs_phase = NA,
+    fcs = NA,
+    rcsi = NA,
+    hhs = NA,
+    lcsi = NA,
+    impro_water = NA,
+    drinking_water = NA,
+    sanitation = NA,
+    handwash = NA,
+    distance_healthcare = NA
+  )
 
 national_df <- national_df %>%
-  dplyr::mutate(children_sick = NA,
-                unmet_healthcare = NA,
-                amn_phase = NA,
-                afi_phase = NA,
-                fcs_phase = NA,
-                fcs = NA,
-                rcsi = NA,
-                hhs = NA,
-                lcsi = NA,
-                impro_water = NA,
-                drinking_water = NA,
-                sanitation = NA,
-                handwash = NA,
-                distance_healthcare = NA)
+  dplyr::mutate(
+    children_sick = NA,
+    unmet_healthcare = NA,
+    amn_phase = NA,
+    afi_phase = NA,
+    fcs_phase = NA,
+    fcs = NA,
+    rcsi = NA,
+    hhs = NA,
+    lcsi = NA,
+    impro_water = NA,
+    drinking_water = NA,
+    sanitation = NA,
+    handwash = NA,
+    distance_healthcare = NA
+  )
 
-if(mort_collected == "yes"){
+if (mort_collected == "yes") {
   ph_int_table <- ph_int_table %>%
-    dplyr::mutate(mort = mort_data$mort[match(admin1,mort_data$admin1)]) %>%
+    dplyr::mutate(mort = mort_data$mort[match(admin1, mort_data$admin1)]) %>%
     dplyr::relocate(mort, .before = 3)
 
   national_df <- national_df %>%
-    dplyr::mutate(mort = mort_data$mort[match(admin1,mort_data$admin1)]) %>%
+    dplyr::mutate(mort = mort_data$mort[match(admin1, mort_data$admin1)]) %>%
     dplyr::relocate(mort, .before = 3)
 }
 
-survey_df <- srvyr::as_survey_design(data.list$main,
-                                     weights = weight)
+survey_df <- srvyr::as_survey_design(data.list$main, weights = weight)
 
-if("FCS" %in% FSL_indicators) {
+if ("FCS" %in% FSL_indicators) {
   fcs_df <- survey_df %>%
     dplyr::mutate(admin1 = !!rlang::sym(admin1)) %>%
     srvyr::group_by(admin1, fsl_fcs_cat) %>%
@@ -937,7 +1763,7 @@ if("FCS" %in% FSL_indicators) {
     dplyr::select(admin1, fcs)
 }
 
-if("rCSI" %in% FSL_indicators) {
+if ("rCSI" %in% FSL_indicators) {
   rcsi_df <- survey_df %>%
     dplyr::mutate(admin1 = !!rlang::sym(admin1)) %>%
     srvyr::group_by(admin1, fsl_rcsi_cat) %>%
@@ -953,106 +1779,182 @@ if("rCSI" %in% FSL_indicators) {
     dplyr::select(admin1, rcsi)
 }
 
-if("HHS" %in% FSL_indicators) {
+if ("HHS" %in% FSL_indicators) {
   hhs_df <- survey_df %>%
-    dplyr::mutate(admin1 = !!rlang::sym(admin1),
-                  fsl_hhs_cat_ipc = case_when(fsl_hhs_cat_ipc %in% c("Severe","Very Severe")~"Severe",
-                                              TRUE ~ fsl_hhs_cat_ipc)) %>%
+    dplyr::mutate(
+      admin1 = !!rlang::sym(admin1),
+      fsl_hhs_cat_ipc = case_when(
+        fsl_hhs_cat_ipc %in% c("Severe", "Very Severe") ~ "Severe",
+        TRUE ~ fsl_hhs_cat_ipc
+      )
+    ) %>%
     srvyr::group_by(admin1, fsl_hhs_cat_ipc) %>%
-    srvyr::summarise(hhs = srvyr::survey_prop())%>%
+    srvyr::summarise(hhs = srvyr::survey_prop()) %>%
     dplyr::filter(fsl_hhs_cat_ipc == "Severe") %>%
     dplyr::select(admin1, hhs)
 
   hhs_df_national <- survey_df %>%
-    dplyr::mutate(admin1 = "national",
-                  fsl_hhs_cat_ipc = case_when(fsl_hhs_cat_ipc %in% c("Severe","Very Severe")~"Severe",
-                                              TRUE ~ fsl_hhs_cat_ipc)) %>%
+    dplyr::mutate(
+      admin1 = "national",
+      fsl_hhs_cat_ipc = case_when(
+        fsl_hhs_cat_ipc %in% c("Severe", "Very Severe") ~ "Severe",
+        TRUE ~ fsl_hhs_cat_ipc
+      )
+    ) %>%
     srvyr::group_by(admin1, fsl_hhs_cat_ipc) %>%
-    srvyr::summarise(hhs = srvyr::survey_prop())%>%
+    srvyr::summarise(hhs = srvyr::survey_prop()) %>%
     dplyr::filter(fsl_hhs_cat_ipc == "Severe") %>%
     dplyr::select(admin1, hhs)
 }
 
-if("LCSI" %in% FSL_indicators) {
+if ("LCSI" %in% FSL_indicators) {
   lcsi_df <- survey_df %>%
     dplyr::mutate(admin1 = !!rlang::sym(admin1)) %>%
     srvyr::group_by(admin1, fsl_lcsi_cat) %>%
-    srvyr::summarise(lcsi = srvyr::survey_prop())%>%
+    srvyr::summarise(lcsi = srvyr::survey_prop()) %>%
     dplyr::filter(fsl_lcsi_cat == "Emergency") %>%
     dplyr::select(admin1, lcsi)
 
   lcsi_df_national <- survey_df %>%
     dplyr::mutate(admin1 = "national") %>%
     srvyr::group_by(admin1, fsl_lcsi_cat) %>%
-    srvyr::summarise(lcsi = srvyr::survey_prop())%>%
+    srvyr::summarise(lcsi = srvyr::survey_prop()) %>%
     dplyr::filter(fsl_lcsi_cat == "Emergency") %>%
     dplyr::select(admin1, lcsi)
 }
 
 fsl_phase_df <- survey_df %>%
-  dplyr::mutate(admin1 = !!rlang::sym(admin1),
-                fsl_fc_phase = case_when(fsl_fc_phase %in% c("Phase 3 FC",
-                                                             "Phase 4 FC",
-                                                             "Phase 5 FC")~"Same",
-                                         TRUE ~ fsl_fc_phase)) %>%
+  dplyr::mutate(
+    admin1 = !!rlang::sym(admin1),
+    fsl_fc_phase = case_when(
+      fsl_fc_phase %in% c("Phase 3 FC", "Phase 4 FC", "Phase 5 FC") ~ "Same",
+      TRUE ~ fsl_fc_phase
+    )
+  ) %>%
   srvyr::group_by(admin1, fsl_fc_phase) %>%
-  srvyr::summarise(fcs_phase = srvyr::survey_prop())%>%
+  srvyr::summarise(fcs_phase = srvyr::survey_prop()) %>%
   dplyr::filter(fsl_fc_phase == "Same") %>%
   dplyr::select(admin1, fcs_phase)
 
 fsl_phase_df_national <- survey_df %>%
-  dplyr::mutate(admin1 = "national",
-                fsl_fc_phase = case_when(fsl_fc_phase %in% c("Phase 3 FC",
-                                                             "Phase 4 FC",
-                                                             "Phase 5 FC")~"Same",
-                                         TRUE ~ fsl_fc_phase)) %>%
+  dplyr::mutate(
+    admin1 = "national",
+    fsl_fc_phase = case_when(
+      fsl_fc_phase %in% c("Phase 3 FC", "Phase 4 FC", "Phase 5 FC") ~ "Same",
+      TRUE ~ fsl_fc_phase
+    )
+  ) %>%
   srvyr::group_by(admin1, fsl_fc_phase) %>%
-  srvyr::summarise(fcs_phase = srvyr::survey_prop())%>%
+  srvyr::summarise(fcs_phase = srvyr::survey_prop()) %>%
   dplyr::filter(fsl_fc_phase == "Same") %>%
   dplyr::select(admin1, fcs_phase)
 
 
 ## WASH
 
-if(!file.exists("inputs/environment.Rdata")) {
+if (!file.exists("inputs/environment.Rdata")) {
   ##Survey Modality
-  survey_modality <- names(data.list$main)[grepl("survey_modality",names(data.list$main))]
-  if(length(survey_modality) == 1){
-    yes_no <- svDialogs::dlg_message(paste0("Is '", survey_modality, "' the correct column for survey modality?"), type = "yesno")$res
+  survey_modality <- names(data.list$main)[grepl(
+    "survey_modality",
+    names(data.list$main)
+  )]
+  if (length(survey_modality) == 1) {
+    yes_no <- svDialogs::dlg_message(
+      paste0(
+        "Is '",
+        survey_modality,
+        "' the correct column for survey modality?"
+      ),
+      type = "yesno"
+    )$res
     if (yes_no == "no") {
-      survey_modality <- svDialogs::dlg_input(message= "Enter the name of the survey modality","survey_modality")$res
+      survey_modality <- svDialogs::dlg_input(
+        message = "Enter the name of the survey modality",
+        "survey_modality"
+      )$res
     }
-  } else if (length(survey_modality) > 1){
-    survey_modality <- tcltk::tk_select.list(survey_modality, title = "Survey modality column")
-    if(survey_modality == ""){
-      survey_modality <- svDialogs::dlg_input(message= "Enter the name of the survey modality","survey_modality")$res
+  } else if (length(survey_modality) > 1) {
+    survey_modality <- tcltk::tk_select.list(
+      survey_modality,
+      title = "Survey modality column"
+    )
+    if (survey_modality == "") {
+      survey_modality <- svDialogs::dlg_input(
+        message = "Enter the name of the survey modality",
+        "survey_modality"
+      )$res
     }
   } else if (length(survey_modality) == 0) {
-    survey_modality <- svDialogs::dlg_input(message= "Enter the name of the survey modality","survey_modality")$res
+    survey_modality <- svDialogs::dlg_input(
+      message = "Enter the name of the survey modality",
+      "survey_modality"
+    )$res
   }
-  survey_modality_in_person <- tcltk::tk_select.list(unique(unlist(data.list$main[,survey_modality])), title = "In Person Values", multiple = T)
-  survey_modality_remote <- tcltk::tk_select.list(unique(unlist(data.list$main[,survey_modality])), title = "Remote Values", multiple = T)
+  survey_modality_in_person <- tcltk::tk_select.list(
+    unique(unlist(data.list$main[, survey_modality])),
+    title = "In Person Values",
+    multiple = T
+  )
+  survey_modality_remote <- tcltk::tk_select.list(
+    unique(unlist(data.list$main[, survey_modality])),
+    title = "Remote Values",
+    multiple = T
+  )
 
   #Handwashing Facility
-  facility <- names(data.list$main)[grepl("handwashing|facility",names(data.list$main))]
-  if(length(facility) == 1){
-    yes_no <- svDialogs::dlg_message(paste0("Is '", facility, "' the correct column for handwashing facility?"), type = "yesno")$res
+  facility <- names(data.list$main)[grepl(
+    "handwashing|facility",
+    names(data.list$main)
+  )]
+  if (length(facility) == 1) {
+    yes_no <- svDialogs::dlg_message(
+      paste0(
+        "Is '",
+        facility,
+        "' the correct column for handwashing facility?"
+      ),
+      type = "yesno"
+    )$res
     if (yes_no == "no") {
-      facility <- svDialogs::dlg_input(message= "Enter the name of the handwashing facility","wash_handwashing_facility")$res
+      facility <- svDialogs::dlg_input(
+        message = "Enter the name of the handwashing facility",
+        "wash_handwashing_facility"
+      )$res
     }
-  } else if (length(facility) > 1){
-    facility <- tcltk::tk_select.list(facility, title = "Handwashing facility column")
-    if(facility == ""){
-      facility <- svDialogs::dlg_input(message= "Enter the name of the handwashing facility","wash_handwashing_facility")$res
+  } else if (length(facility) > 1) {
+    facility <- tcltk::tk_select.list(
+      facility,
+      title = "Handwashing facility column"
+    )
+    if (facility == "") {
+      facility <- svDialogs::dlg_input(
+        message = "Enter the name of the handwashing facility",
+        "wash_handwashing_facility"
+      )$res
     }
   } else if (length(facility) == 0) {
-    facility <- svDialogs::dlg_input(message= "Enter the name of the handwashing facility","wash_handwashing_facility")$res
+    facility <- svDialogs::dlg_input(
+      message = "Enter the name of the handwashing facility",
+      "wash_handwashing_facility"
+    )$res
   }
-  if(length(facility)>0){
-    facility_yes <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility])), title = "Yes Value")
-    facility_no <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility])), title = "None Value")
-    facility_no_permission <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility])), title = "No permission Value")
-    facility_undefined <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility])), title = "Other Value")
+  if (length(facility) > 0) {
+    facility_yes <- tcltk::tk_select.list(
+      unique(unlist(data.list$main[, facility])),
+      title = "Yes Value"
+    )
+    facility_no <- tcltk::tk_select.list(
+      unique(unlist(data.list$main[, facility])),
+      title = "None Value"
+    )
+    facility_no_permission <- tcltk::tk_select.list(
+      unique(unlist(data.list$main[, facility])),
+      title = "No permission Value"
+    )
+    facility_undefined <- tcltk::tk_select.list(
+      unique(unlist(data.list$main[, facility])),
+      title = "Other Value"
+    )
   } else {
     facility_yes <- NULL
     facility_no <- NULL
@@ -1061,47 +1963,106 @@ if(!file.exists("inputs/environment.Rdata")) {
   }
 
   # Observed water of handwashing facility
-  facility_observed_water <- names(data.list$main)[grepl("facility_observed_water",names(data.list$main))]
-  if(length(facility_observed_water) == 1){
-    yes_no <- svDialogs::dlg_message(paste0("Is '", facility_observed_water, "' the correct column for handwashing facility observed water?"), type = "yesno")$res
+  facility_observed_water <- names(data.list$main)[grepl(
+    "facility_observed_water",
+    names(data.list$main)
+  )]
+  if (length(facility_observed_water) == 1) {
+    yes_no <- svDialogs::dlg_message(
+      paste0(
+        "Is '",
+        facility_observed_water,
+        "' the correct column for handwashing facility observed water?"
+      ),
+      type = "yesno"
+    )$res
     if (yes_no == "no") {
-      facility_observed_water <- svDialogs::dlg_input(message= "Enter the name of the handwashing facility observed water","wash_handwashing_facility_observed_water")$res
+      facility_observed_water <- svDialogs::dlg_input(
+        message = "Enter the name of the handwashing facility observed water",
+        "wash_handwashing_facility_observed_water"
+      )$res
     }
-  } else if (length(facility_observed_water) > 1){
-    facility_observed_water <- tcltk::tk_select.list(facility_observed_water, title = "Handwashing facility observed water column")
-    if(facility_observed_water == ""){
-      facility_observed_water <- svDialogs::dlg_input(message= "Enter the name of the handwashing facility observed water","wash_handwashing_facility_observed_water")$res
+  } else if (length(facility_observed_water) > 1) {
+    facility_observed_water <- tcltk::tk_select.list(
+      facility_observed_water,
+      title = "Handwashing facility observed water column"
+    )
+    if (facility_observed_water == "") {
+      facility_observed_water <- svDialogs::dlg_input(
+        message = "Enter the name of the handwashing facility observed water",
+        "wash_handwashing_facility_observed_water"
+      )$res
     }
   } else if (length(facility_observed_water) == 0) {
-    facility_observed_water <- svDialogs::dlg_input(message= "Enter the name of the handwashing facility observed water","wash_handwashing_facility_observed_water")$res
+    facility_observed_water <- svDialogs::dlg_input(
+      message = "Enter the name of the handwashing facility observed water",
+      "wash_handwashing_facility_observed_water"
+    )$res
   }
-  if(length(facility_observed_water)>0){
-    facility_observed_water_yes <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_observed_water])), title = "Yes Value")
-    facility_observed_water_no <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_observed_water])), title = "No Value")
+  if (length(facility_observed_water) > 0) {
+    facility_observed_water_yes <- tcltk::tk_select.list(
+      unique(unlist(data.list$main[, facility_observed_water])),
+      title = "Yes Value"
+    )
+    facility_observed_water_no <- tcltk::tk_select.list(
+      unique(unlist(data.list$main[, facility_observed_water])),
+      title = "No Value"
+    )
   } else {
     facility_observed_water_yes <- NULL
     facility_observed_water_no <- NULL
   }
 
   ## Observed Soap Handwashing Facility
-  facility_observed_soap <- names(data.list$main)[grepl("facility_observed_soap",names(data.list$main))]
-  if(length(facility_observed_soap) == 1){
-    yes_no <- svDialogs::dlg_message(paste0("Is '", facility_observed_soap, "' the correct column for handwashing facility observed soap?"), type = "yesno")$res
+  facility_observed_soap <- names(data.list$main)[grepl(
+    "facility_observed_soap",
+    names(data.list$main)
+  )]
+  if (length(facility_observed_soap) == 1) {
+    yes_no <- svDialogs::dlg_message(
+      paste0(
+        "Is '",
+        facility_observed_soap,
+        "' the correct column for handwashing facility observed soap?"
+      ),
+      type = "yesno"
+    )$res
     if (yes_no == "no") {
-      facility_observed_soap <- svDialogs::dlg_input(message= "Enter the name of the handwashing facility observed soap","wash_handwashing_facility_observed_soap")$res
+      facility_observed_soap <- svDialogs::dlg_input(
+        message = "Enter the name of the handwashing facility observed soap",
+        "wash_handwashing_facility_observed_soap"
+      )$res
     }
-  } else if (length(facility_observed_soap) > 1){
-    facility_observed_soap <- tcltk::tk_select.list(facility_observed_soap, title = "Handwashing facility observed soap column")
-    if(facility_observed_soap == ""){
-      facility_observed_soap <- svDialogs::dlg_input(message= "Enter the name of the handwashing facility observed soap","wash_handwashing_facility_observed_soap")$res
+  } else if (length(facility_observed_soap) > 1) {
+    facility_observed_soap <- tcltk::tk_select.list(
+      facility_observed_soap,
+      title = "Handwashing facility observed soap column"
+    )
+    if (facility_observed_soap == "") {
+      facility_observed_soap <- svDialogs::dlg_input(
+        message = "Enter the name of the handwashing facility observed soap",
+        "wash_handwashing_facility_observed_soap"
+      )$res
     }
   } else if (length(facility_observed_soap) == 0) {
-    facility_observed_soap <- svDialogs::dlg_input(message= "Enter the name of the handwashing facility observed soap","wash_handwashing_facility_observed_soap")$res
+    facility_observed_soap <- svDialogs::dlg_input(
+      message = "Enter the name of the handwashing facility observed soap",
+      "wash_handwashing_facility_observed_soap"
+    )$res
   }
-  if(length(facility_observed_soap)>0){
-    facility_observed_soap_yes <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_observed_soap])), title = "Yes Value")
-    facility_observed_soap_no <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_observed_soap])), title = "No Value")
-    facility_observed_soap_alternative <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_observed_soap])), title = "Alternative Value")
+  if (length(facility_observed_soap) > 0) {
+    facility_observed_soap_yes <- tcltk::tk_select.list(
+      unique(unlist(data.list$main[, facility_observed_soap])),
+      title = "Yes Value"
+    )
+    facility_observed_soap_no <- tcltk::tk_select.list(
+      unique(unlist(data.list$main[, facility_observed_soap])),
+      title = "No Value"
+    )
+    facility_observed_soap_alternative <- tcltk::tk_select.list(
+      unique(unlist(data.list$main[, facility_observed_soap])),
+      title = "Alternative Value"
+    )
   } else {
     facility_observed_soap_yes <- NULL
     facility_observed_soap_no <- NULL
@@ -1109,24 +2070,58 @@ if(!file.exists("inputs/environment.Rdata")) {
   }
 
   ## Reported Handwashing Facility
-  facility_reported <- names(data.list$main)[grepl("facility_reported",names(data.list$main))]
-  if(length(facility_reported) == 1){
-    yes_no <- svDialogs::dlg_message(paste0("Is '", facility_reported, "' the correct column for handwashing facility reported?"), type = "yesno")$res
+  facility_reported <- names(data.list$main)[grepl(
+    "facility_reported",
+    names(data.list$main)
+  )]
+  if (length(facility_reported) == 1) {
+    yes_no <- svDialogs::dlg_message(
+      paste0(
+        "Is '",
+        facility_reported,
+        "' the correct column for handwashing facility reported?"
+      ),
+      type = "yesno"
+    )$res
     if (yes_no == "no") {
-      facility_reported <- svDialogs::dlg_input(message= "Enter the name of the handwashing facility reported","wash_handwashing_facility_reported")$res
+      facility_reported <- svDialogs::dlg_input(
+        message = "Enter the name of the handwashing facility reported",
+        "wash_handwashing_facility_reported"
+      )$res
     }
-  } else if (length(facility_reported) > 1){
-    facility_reported <- tcltk::tk_select.list(facility_reported, title = "Handwashing facility reported column")
-    if(facility_reported == ""){
-      facility_reported <- svDialogs::dlg_input(message= "Enter the name of the handwashing facility reported","wash_handwashing_facility_reported")$res
+  } else if (length(facility_reported) > 1) {
+    facility_reported <- tcltk::tk_select.list(
+      facility_reported,
+      title = "Handwashing facility reported column"
+    )
+    if (facility_reported == "") {
+      facility_reported <- svDialogs::dlg_input(
+        message = "Enter the name of the handwashing facility reported",
+        "wash_handwashing_facility_reported"
+      )$res
     }
   } else if (length(facility_reported) == 0) {
-    facility_reported <- svDialogs::dlg_input(message= "Enter the name of the handwashing facility reported","wash_handwashing_facility_reported")$res
+    facility_reported <- svDialogs::dlg_input(
+      message = "Enter the name of the handwashing facility reported",
+      "wash_handwashing_facility_reported"
+    )$res
   }
-  if(length(facility_reported)>0){
-    facility_reported_yes <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_reported])), title = "Yes Value", multiple = TRUE)
-    facility_reported_no <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_reported])), title = "No Value", multiple = TRUE)
-    facility_reported_undefined <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_reported])), title = "Undefined Value", multiple = TRUE)
+  if (length(facility_reported) > 0) {
+    facility_reported_yes <- tcltk::tk_select.list(
+      unique(unlist(data.list$main[, facility_reported])),
+      title = "Yes Value",
+      multiple = TRUE
+    )
+    facility_reported_no <- tcltk::tk_select.list(
+      unique(unlist(data.list$main[, facility_reported])),
+      title = "No Value",
+      multiple = TRUE
+    )
+    facility_reported_undefined <- tcltk::tk_select.list(
+      unique(unlist(data.list$main[, facility_reported])),
+      title = "Undefined Value",
+      multiple = TRUE
+    )
   } else {
     facility_reported_yes <- NULL
     facility_reported_no <- NULL
@@ -1134,24 +2129,57 @@ if(!file.exists("inputs/environment.Rdata")) {
   }
 
   ## Reported no permission soap
-  facility_reported_no_permission_soap <- names(data.list$main)[grepl("soap_observed",names(data.list$main))]
-  if(length(facility_reported_no_permission_soap) == 1){
-    yes_no <- svDialogs::dlg_message(paste0("Is '", facility_reported_no_permission_soap, "' the correct column for reported no permission soap?"), type = "yesno")$res
+  facility_reported_no_permission_soap <- names(data.list$main)[grepl(
+    "soap_observed",
+    names(data.list$main)
+  )]
+  if (length(facility_reported_no_permission_soap) == 1) {
+    yes_no <- svDialogs::dlg_message(
+      paste0(
+        "Is '",
+        facility_reported_no_permission_soap,
+        "' the correct column for reported no permission soap?"
+      ),
+      type = "yesno"
+    )$res
     if (yes_no == "no") {
-      facility_reported_no_permission_soap <- svDialogs::dlg_input(message= "Enter the name of the reported no permission soap","wash_soap_observed")$res
+      facility_reported_no_permission_soap <- svDialogs::dlg_input(
+        message = "Enter the name of the reported no permission soap",
+        "wash_soap_observed"
+      )$res
     }
-  } else if (length(facility_reported_no_permission_soap) > 1){
-    facility_reported_no_permission_soap <- tcltk::tk_select.list(facility_reported_no_permission_soap, title = "Reported no permission soap column")
-    if(facility_reported_no_permission_soap == ""){
-      facility_reported_no_permission_soap <- svDialogs::dlg_input(message= "Enter the name of the reported no permission soap","wash_soap_observed")$res
+  } else if (length(facility_reported_no_permission_soap) > 1) {
+    facility_reported_no_permission_soap <- tcltk::tk_select.list(
+      facility_reported_no_permission_soap,
+      title = "Reported no permission soap column"
+    )
+    if (facility_reported_no_permission_soap == "") {
+      facility_reported_no_permission_soap <- svDialogs::dlg_input(
+        message = "Enter the name of the reported no permission soap",
+        "wash_soap_observed"
+      )$res
     }
   } else if (length(facility_reported_no_permission_soap) == 0) {
-    facility_reported_no_permission_soap <- svDialogs::dlg_input(message= "Enter the name of the reported no permission soap","wash_soap_observed")$res
+    facility_reported_no_permission_soap <- svDialogs::dlg_input(
+      message = "Enter the name of the reported no permission soap",
+      "wash_soap_observed"
+    )$res
   }
-  if(length(facility_reported_no_permission_soap)>0){
-    facility_reported_no_permission_soap_yes <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_reported_no_permission_soap])), title = "Yes Value", multiple = TRUE)
-    facility_reported_no_permission_soap_no <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_reported_no_permission_soap])), title = "No Value")
-    facility_reported_no_permission_soap_undefined <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_reported_no_permission_soap])), title = "Undefined Value", multiple = TRUE)
+  if (length(facility_reported_no_permission_soap) > 0) {
+    facility_reported_no_permission_soap_yes <- tcltk::tk_select.list(
+      unique(unlist(data.list$main[, facility_reported_no_permission_soap])),
+      title = "Yes Value",
+      multiple = TRUE
+    )
+    facility_reported_no_permission_soap_no <- tcltk::tk_select.list(
+      unique(unlist(data.list$main[, facility_reported_no_permission_soap])),
+      title = "No Value"
+    )
+    facility_reported_no_permission_soap_undefined <- tcltk::tk_select.list(
+      unique(unlist(data.list$main[, facility_reported_no_permission_soap])),
+      title = "Undefined Value",
+      multiple = TRUE
+    )
   } else {
     facility_reported_no_permission_soap_yes <- NULL
     facility_reported_no_permission_soap_no <- NULL
@@ -1159,24 +2187,63 @@ if(!file.exists("inputs/environment.Rdata")) {
   }
 
   ## Reported no permission soap type
-  facility_reported_no_permission_soap_type <- names(data.list$main)[grepl("soap_observed_type",names(data.list$main))]
-  if(length(facility_reported_no_permission_soap_type) == 1){
-    yes_no <- svDialogs::dlg_message(paste0("Is '", facility_reported_no_permission_soap_type, "' the correct column for reported no permission soap type?"), type = "yesno")$res
+  facility_reported_no_permission_soap_type <- names(data.list$main)[grepl(
+    "soap_observed_type",
+    names(data.list$main)
+  )]
+  if (length(facility_reported_no_permission_soap_type) == 1) {
+    yes_no <- svDialogs::dlg_message(
+      paste0(
+        "Is '",
+        facility_reported_no_permission_soap_type,
+        "' the correct column for reported no permission soap type?"
+      ),
+      type = "yesno"
+    )$res
     if (yes_no == "no") {
-      facility_reported_no_permission_soap_type <- svDialogs::dlg_input(message= "Enter the name of the reported no permission soap type","wash_soap_observed_type")$res
+      facility_reported_no_permission_soap_type <- svDialogs::dlg_input(
+        message = "Enter the name of the reported no permission soap type",
+        "wash_soap_observed_type"
+      )$res
     }
-  } else if (length(facility_reported_no_permission_soap_type) > 1){
-    facility_reported_no_permission_soap_type <- tcltk::tk_select.list(facility_reported_no_permission_soap_type, title = "Reported no permission soap type column")
-    if(facility_reported_no_permission_soap_type == ""){
-      facility_reported_no_permission_soap_type <- svDialogs::dlg_input(message= "Enter the name of the reported no permission soap type","wash_soap_observed_type")$res
+  } else if (length(facility_reported_no_permission_soap_type) > 1) {
+    facility_reported_no_permission_soap_type <- tcltk::tk_select.list(
+      facility_reported_no_permission_soap_type,
+      title = "Reported no permission soap type column"
+    )
+    if (facility_reported_no_permission_soap_type == "") {
+      facility_reported_no_permission_soap_type <- svDialogs::dlg_input(
+        message = "Enter the name of the reported no permission soap type",
+        "wash_soap_observed_type"
+      )$res
     }
   } else if (length(facility_reported_no_permission_soap_type) == 0) {
-    facility_reported_no_permission_soap_type <- svDialogs::dlg_input(message= "Enter the name of the reported no permission soap type","wash_soap_observed_type")$res
+    facility_reported_no_permission_soap_type <- svDialogs::dlg_input(
+      message = "Enter the name of the reported no permission soap type",
+      "wash_soap_observed_type"
+    )$res
   }
-  if(length(facility_reported_no_permission_soap_type)>0){
-    facility_reported_no_permission_soap_type_yes <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_reported_no_permission_soap_type])), title = "Yes Value", multiple = TRUE)
-    facility_reported_no_permission_soap_type_no <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_reported_no_permission_soap_type])), title = "No Value")
-    facility_reported_no_permission_soap_type_undefined <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_reported_no_permission_soap_type])), title = "Undefined Value", multiple = TRUE)
+  if (length(facility_reported_no_permission_soap_type) > 0) {
+    facility_reported_no_permission_soap_type_yes <- tcltk::tk_select.list(
+      unique(unlist(data.list$main[,
+        facility_reported_no_permission_soap_type
+      ])),
+      title = "Yes Value",
+      multiple = TRUE
+    )
+    facility_reported_no_permission_soap_type_no <- tcltk::tk_select.list(
+      unique(unlist(data.list$main[,
+        facility_reported_no_permission_soap_type
+      ])),
+      title = "No Value"
+    )
+    facility_reported_no_permission_soap_type_undefined <- tcltk::tk_select.list(
+      unique(unlist(data.list$main[,
+        facility_reported_no_permission_soap_type
+      ])),
+      title = "Undefined Value",
+      multiple = TRUE
+    )
   } else {
     facility_reported_no_permission_soap_type_yes <- NULL
     facility_reported_no_permission_soap_type_no <- NULL
@@ -1184,24 +2251,56 @@ if(!file.exists("inputs/environment.Rdata")) {
   }
 
   ## Reported remote soap
-  facility_reported_remote_soap <- names(data.list$main)[grepl("soap_reported",names(data.list$main))]
-  if(length(facility_reported_remote_soap) == 1){
-    yes_no <- svDialogs::dlg_message(paste0("Is '", facility_reported_remote_soap, "' the correct column for reported remote soap?"), type = "yesno")$res
+  facility_reported_remote_soap <- names(data.list$main)[grepl(
+    "soap_reported",
+    names(data.list$main)
+  )]
+  if (length(facility_reported_remote_soap) == 1) {
+    yes_no <- svDialogs::dlg_message(
+      paste0(
+        "Is '",
+        facility_reported_remote_soap,
+        "' the correct column for reported remote soap?"
+      ),
+      type = "yesno"
+    )$res
     if (yes_no == "no") {
-      facility_reported_remote_soap <- svDialogs::dlg_input(message= "Enter the name of the reported remote soap","wash_soap_reported")$res
+      facility_reported_remote_soap <- svDialogs::dlg_input(
+        message = "Enter the name of the reported remote soap",
+        "wash_soap_reported"
+      )$res
     }
-  } else if (length(facility_reported_remote_soap) > 1){
-    facility_reported_remote_soap <- tcltk::tk_select.list(facility_reported_remote_soap, title = "Reported remote soap column")
-    if(facility_reported_remote_soap == ""){
-      facility_reported_remote_soap <- svDialogs::dlg_input(message= "Enter the name of the reported remote soap","wash_soap_reported")$res
+  } else if (length(facility_reported_remote_soap) > 1) {
+    facility_reported_remote_soap <- tcltk::tk_select.list(
+      facility_reported_remote_soap,
+      title = "Reported remote soap column"
+    )
+    if (facility_reported_remote_soap == "") {
+      facility_reported_remote_soap <- svDialogs::dlg_input(
+        message = "Enter the name of the reported remote soap",
+        "wash_soap_reported"
+      )$res
     }
   } else if (length(facility_reported_remote_soap) == 0) {
-    facility_reported_remote_soap <- svDialogs::dlg_input(message= "Enter the name of the reported remote soap","wash_soap_reported")$res
+    facility_reported_remote_soap <- svDialogs::dlg_input(
+      message = "Enter the name of the reported remote soap",
+      "wash_soap_reported"
+    )$res
   }
-  if(length(facility_reported_remote_soap)>0){
-    facility_reported_remote_soap_yes <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_reported_remote_soap])), title = "Yes Value")
-    facility_reported_remote_soap_no <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_reported_remote_soap])), title = "No Value")
-    facility_reported_remote_soap_undefined <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_reported_remote_soap])), title = "Undefined Value", multiple = TRUE)
+  if (length(facility_reported_remote_soap) > 0) {
+    facility_reported_remote_soap_yes <- tcltk::tk_select.list(
+      unique(unlist(data.list$main[, facility_reported_remote_soap])),
+      title = "Yes Value"
+    )
+    facility_reported_remote_soap_no <- tcltk::tk_select.list(
+      unique(unlist(data.list$main[, facility_reported_remote_soap])),
+      title = "No Value"
+    )
+    facility_reported_remote_soap_undefined <- tcltk::tk_select.list(
+      unique(unlist(data.list$main[, facility_reported_remote_soap])),
+      title = "Undefined Value",
+      multiple = TRUE
+    )
   } else {
     facility_reported_remote_soap_yes <- NULL
     facility_reported_remote_soap_no <- NULL
@@ -1209,24 +2308,58 @@ if(!file.exists("inputs/environment.Rdata")) {
   }
 
   ## Reported remote soap type
-  facility_reported_remote_soap_type <- names(data.list$main)[grepl("soap_reported_type",names(data.list$main))]
-  if(length(facility_reported_remote_soap_type) == 1){
-    yes_no <- svDialogs::dlg_message(paste0("Is '", facility_reported_remote_soap_type, "' the correct column for reported remote soap type?"), type = "yesno")$res
+  facility_reported_remote_soap_type <- names(data.list$main)[grepl(
+    "soap_reported_type",
+    names(data.list$main)
+  )]
+  if (length(facility_reported_remote_soap_type) == 1) {
+    yes_no <- svDialogs::dlg_message(
+      paste0(
+        "Is '",
+        facility_reported_remote_soap_type,
+        "' the correct column for reported remote soap type?"
+      ),
+      type = "yesno"
+    )$res
     if (yes_no == "no") {
-      facility_reported_remote_soap_type <- svDialogs::dlg_input(message= "Enter the name of the reported remote soap type","wash_soap_reported_type")$res
+      facility_reported_remote_soap_type <- svDialogs::dlg_input(
+        message = "Enter the name of the reported remote soap type",
+        "wash_soap_reported_type"
+      )$res
     }
-  } else if (length(facility_reported_remote_soap_type) > 1){
-    facility_reported_remote_soap_type <- tcltk::tk_select.list(facility_reported_remote_soap_type, title = "Reported remote soap type column")
-    if(facility_reported_remote_soap_type == ""){
-      facility_reported_remote_soap_type <- svDialogs::dlg_input(message= "Enter the name of the reported remote soap type","wash_soap_reported_type")$res
+  } else if (length(facility_reported_remote_soap_type) > 1) {
+    facility_reported_remote_soap_type <- tcltk::tk_select.list(
+      facility_reported_remote_soap_type,
+      title = "Reported remote soap type column"
+    )
+    if (facility_reported_remote_soap_type == "") {
+      facility_reported_remote_soap_type <- svDialogs::dlg_input(
+        message = "Enter the name of the reported remote soap type",
+        "wash_soap_reported_type"
+      )$res
     }
   } else if (length(facility_reported_remote_soap_type) == 0) {
-    facility_reported_remote_soap_type <- svDialogs::dlg_input(message= "Enter the name of the reported remote soap type","wash_soap_reported_type")$res
+    facility_reported_remote_soap_type <- svDialogs::dlg_input(
+      message = "Enter the name of the reported remote soap type",
+      "wash_soap_reported_type"
+    )$res
   }
-  if(length(facility_reported_remote_soap_type)>0){
-    facility_reported_remote_soap_type_yes <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_reported_remote_soap_type])), title = "Yes Value", multiple = TRUE)
-    facility_reported_remote_soap_type_no <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_reported_remote_soap_type])), title = "No Value", multiple = TRUE)
-    facility_reported_remote_soap_type_undefined <- tcltk::tk_select.list(unique(unlist(data.list$main[,facility_reported_remote_soap_type])), title = "Undefined Value", multiple = TRUE)
+  if (length(facility_reported_remote_soap_type) > 0) {
+    facility_reported_remote_soap_type_yes <- tcltk::tk_select.list(
+      unique(unlist(data.list$main[, facility_reported_remote_soap_type])),
+      title = "Yes Value",
+      multiple = TRUE
+    )
+    facility_reported_remote_soap_type_no <- tcltk::tk_select.list(
+      unique(unlist(data.list$main[, facility_reported_remote_soap_type])),
+      title = "No Value",
+      multiple = TRUE
+    )
+    facility_reported_remote_soap_type_undefined <- tcltk::tk_select.list(
+      unique(unlist(data.list$main[, facility_reported_remote_soap_type])),
+      title = "Undefined Value",
+      multiple = TRUE
+    )
   } else {
     facility_reported_remote_soap_type_yes <- NULL
     facility_reported_remote_soap_type_no <- NULL
@@ -1235,297 +2368,483 @@ if(!file.exists("inputs/environment.Rdata")) {
 }
 
 handwash_df <- data.list$main %>%
-  humind::add_handwashing_facility_cat(survey_modality = survey_modality,
-                                       survey_modality_in_person = survey_modality_in_person,
-                                       survey_modality_remote = survey_modality_remote,
-                                       facility = facility,
-                                       facility_yes = facility_yes,
-                                       facility_no = facility_no,
-                                       facility_no_permission = facility_no_permission,
-                                       facility_undefined = facility_undefined,
-                                       facility_observed_water = facility_observed_water,
-                                       facility_observed_water_yes = facility_observed_water_yes,
-                                       facility_observed_water_no = facility_observed_water_no,
-                                       facility_observed_soap = facility_observed_soap,
-                                       facility_observed_soap_yes = facility_observed_soap_yes,
-                                       facility_observed_soap_no = facility_observed_soap_no,
-                                       facility_observed_soap_alternative = facility_observed_soap_alternative,
-                                       facility_reported = facility_reported,
-                                       facility_reported_yes = facility_reported_yes,
-                                       facility_reported_no = facility_reported_no,
-                                       facility_reported_undefined = facility_reported_undefined,
-                                       facility_reported_no_permission_soap = facility_reported_no_permission_soap,
-                                       facility_reported_no_permission_soap_yes = facility_reported_no_permission_soap_yes,
-                                       facility_reported_no_permission_soap_no = facility_reported_no_permission_soap_no,
-                                       facility_reported_no_permission_soap_undefined = facility_reported_no_permission_soap_undefined,
-                                       facility_reported_no_permission_soap_type = facility_reported_no_permission_soap_type,
-                                       facility_reported_no_permission_soap_type_yes = facility_reported_no_permission_soap_type_yes,
-                                       facility_reported_no_permission_soap_type_no = facility_reported_no_permission_soap_type_no,
-                                       facility_reported_no_permission_soap_type_undefined = facility_reported_no_permission_soap_type_undefined,
-                                       facility_reported_remote_soap = facility_reported_remote_soap,
-                                       facility_reported_remote_soap_yes = facility_reported_remote_soap_yes,
-                                       facility_reported_remote_soap_no = facility_reported_remote_soap_no,
-                                       facility_reported_remote_soap_undefined = facility_reported_remote_soap_undefined,
-                                       facility_reported_remote_soap_type = facility_reported_remote_soap_type,
-                                       facility_reported_remote_soap_type_yes = facility_reported_remote_soap_type_yes,
-                                       facility_reported_remote_soap_type_no = facility_reported_remote_soap_type_no,
-                                       facility_reported_remote_soap_type_undefined = facility_reported_remote_soap_type_undefined) %>%
+  humind::add_handwashing_facility_cat(
+    survey_modality = survey_modality,
+    survey_modality_in_person = survey_modality_in_person,
+    survey_modality_remote = survey_modality_remote,
+    facility = facility,
+    facility_yes = facility_yes,
+    facility_no = facility_no,
+    facility_no_permission = facility_no_permission,
+    facility_undefined = facility_undefined,
+    facility_observed_water = facility_observed_water,
+    facility_observed_water_yes = facility_observed_water_yes,
+    facility_observed_water_no = facility_observed_water_no,
+    facility_observed_soap = facility_observed_soap,
+    facility_observed_soap_yes = facility_observed_soap_yes,
+    facility_observed_soap_no = facility_observed_soap_no,
+    facility_observed_soap_alternative = facility_observed_soap_alternative,
+    facility_reported = facility_reported,
+    facility_reported_yes = facility_reported_yes,
+    facility_reported_no = facility_reported_no,
+    facility_reported_undefined = facility_reported_undefined,
+    facility_reported_no_permission_soap = facility_reported_no_permission_soap,
+    facility_reported_no_permission_soap_yes = facility_reported_no_permission_soap_yes,
+    facility_reported_no_permission_soap_no = facility_reported_no_permission_soap_no,
+    facility_reported_no_permission_soap_undefined = facility_reported_no_permission_soap_undefined,
+    facility_reported_no_permission_soap_type = facility_reported_no_permission_soap_type,
+    facility_reported_no_permission_soap_type_yes = facility_reported_no_permission_soap_type_yes,
+    facility_reported_no_permission_soap_type_no = facility_reported_no_permission_soap_type_no,
+    facility_reported_no_permission_soap_type_undefined = facility_reported_no_permission_soap_type_undefined,
+    facility_reported_remote_soap = facility_reported_remote_soap,
+    facility_reported_remote_soap_yes = facility_reported_remote_soap_yes,
+    facility_reported_remote_soap_no = facility_reported_remote_soap_no,
+    facility_reported_remote_soap_undefined = facility_reported_remote_soap_undefined,
+    facility_reported_remote_soap_type = facility_reported_remote_soap_type,
+    facility_reported_remote_soap_type_yes = facility_reported_remote_soap_type_yes,
+    facility_reported_remote_soap_type_no = facility_reported_remote_soap_type_no,
+    facility_reported_remote_soap_type_undefined = facility_reported_remote_soap_type_undefined
+  ) %>%
   srvyr::as_survey_design(weights = weight) %>%
-  dplyr::rename("handwash_cat"=wash_handwashing_facility_jmp_cat) %>%
-  dplyr::mutate(admin1 = !!rlang::sym(admin1),
-                handwash_cat = case_when(handwash_cat  %in% c("basic","limited") ~ "limited",
-                                         TRUE ~ handwash_cat)) %>%
-  dplyr::group_by(admin1,handwash_cat) %>%
-  dplyr::summarise(handwash = srvyr::survey_prop())%>%
-  dplyr::filter(handwash_cat == "limited")%>%
+  dplyr::rename("handwash_cat" = wash_handwashing_facility_jmp_cat) %>%
+  dplyr::mutate(
+    admin1 = !!rlang::sym(admin1),
+    handwash_cat = case_when(
+      handwash_cat %in% c("basic", "limited") ~ "limited",
+      TRUE ~ handwash_cat
+    )
+  ) %>%
+  dplyr::group_by(admin1, handwash_cat) %>%
+  dplyr::summarise(handwash = srvyr::survey_prop()) %>%
+  dplyr::filter(handwash_cat == "limited") %>%
   dplyr::select(admin1, handwash)
 
 handwash_df_national <- data.list$main %>%
-  humind::add_handwashing_facility_cat(survey_modality = survey_modality,
-                                       survey_modality_in_person = survey_modality_in_person,
-                                       survey_modality_remote = survey_modality_remote,
-                                       facility = facility,
-                                       facility_yes = facility_yes,
-                                       facility_no = facility_no,
-                                       facility_no_permission = facility_no_permission,
-                                       facility_undefined = facility_undefined,
-                                       facility_observed_water = facility_observed_water,
-                                       facility_observed_water_yes = facility_observed_water_yes,
-                                       facility_observed_water_no = facility_observed_water_no,
-                                       facility_observed_soap = facility_observed_soap,
-                                       facility_observed_soap_yes = facility_observed_soap_yes,
-                                       facility_observed_soap_no = facility_observed_soap_no,
-                                       facility_observed_soap_alternative = facility_observed_soap_alternative,
-                                       facility_reported = facility_reported,
-                                       facility_reported_yes = facility_reported_yes,
-                                       facility_reported_no = facility_reported_no,
-                                       facility_reported_undefined = facility_reported_undefined,
-                                       facility_reported_no_permission_soap = facility_reported_no_permission_soap,
-                                       facility_reported_no_permission_soap_yes = facility_reported_no_permission_soap_yes,
-                                       facility_reported_no_permission_soap_no = facility_reported_no_permission_soap_no,
-                                       facility_reported_no_permission_soap_undefined = facility_reported_no_permission_soap_undefined,
-                                       facility_reported_no_permission_soap_type = facility_reported_no_permission_soap_type,
-                                       facility_reported_no_permission_soap_type_yes = facility_reported_no_permission_soap_type_yes,
-                                       facility_reported_no_permission_soap_type_no = facility_reported_no_permission_soap_type_no,
-                                       facility_reported_no_permission_soap_type_undefined = facility_reported_no_permission_soap_type_undefined,
-                                       facility_reported_remote_soap = facility_reported_remote_soap,
-                                       facility_reported_remote_soap_yes = facility_reported_remote_soap_yes,
-                                       facility_reported_remote_soap_no = facility_reported_remote_soap_no,
-                                       facility_reported_remote_soap_undefined = facility_reported_remote_soap_undefined,
-                                       facility_reported_remote_soap_type = facility_reported_remote_soap_type,
-                                       facility_reported_remote_soap_type_yes = facility_reported_remote_soap_type_yes,
-                                       facility_reported_remote_soap_type_no = facility_reported_remote_soap_type_no,
-                                       facility_reported_remote_soap_type_undefined = facility_reported_remote_soap_type_undefined) %>%
+  humind::add_handwashing_facility_cat(
+    survey_modality = survey_modality,
+    survey_modality_in_person = survey_modality_in_person,
+    survey_modality_remote = survey_modality_remote,
+    facility = facility,
+    facility_yes = facility_yes,
+    facility_no = facility_no,
+    facility_no_permission = facility_no_permission,
+    facility_undefined = facility_undefined,
+    facility_observed_water = facility_observed_water,
+    facility_observed_water_yes = facility_observed_water_yes,
+    facility_observed_water_no = facility_observed_water_no,
+    facility_observed_soap = facility_observed_soap,
+    facility_observed_soap_yes = facility_observed_soap_yes,
+    facility_observed_soap_no = facility_observed_soap_no,
+    facility_observed_soap_alternative = facility_observed_soap_alternative,
+    facility_reported = facility_reported,
+    facility_reported_yes = facility_reported_yes,
+    facility_reported_no = facility_reported_no,
+    facility_reported_undefined = facility_reported_undefined,
+    facility_reported_no_permission_soap = facility_reported_no_permission_soap,
+    facility_reported_no_permission_soap_yes = facility_reported_no_permission_soap_yes,
+    facility_reported_no_permission_soap_no = facility_reported_no_permission_soap_no,
+    facility_reported_no_permission_soap_undefined = facility_reported_no_permission_soap_undefined,
+    facility_reported_no_permission_soap_type = facility_reported_no_permission_soap_type,
+    facility_reported_no_permission_soap_type_yes = facility_reported_no_permission_soap_type_yes,
+    facility_reported_no_permission_soap_type_no = facility_reported_no_permission_soap_type_no,
+    facility_reported_no_permission_soap_type_undefined = facility_reported_no_permission_soap_type_undefined,
+    facility_reported_remote_soap = facility_reported_remote_soap,
+    facility_reported_remote_soap_yes = facility_reported_remote_soap_yes,
+    facility_reported_remote_soap_no = facility_reported_remote_soap_no,
+    facility_reported_remote_soap_undefined = facility_reported_remote_soap_undefined,
+    facility_reported_remote_soap_type = facility_reported_remote_soap_type,
+    facility_reported_remote_soap_type_yes = facility_reported_remote_soap_type_yes,
+    facility_reported_remote_soap_type_no = facility_reported_remote_soap_type_no,
+    facility_reported_remote_soap_type_undefined = facility_reported_remote_soap_type_undefined
+  ) %>%
   srvyr::as_survey_design(weights = weight) %>%
-  dplyr::rename("handwash_cat"=wash_handwashing_facility_jmp_cat) %>%
-  dplyr::mutate(admin1 = "national",
-                handwash_cat = case_when(handwash_cat  %in% c("basic","limited") ~ "limited",
-                                         TRUE ~ handwash_cat)) %>%
-  dplyr::group_by(admin1,handwash_cat) %>%
-  dplyr::summarise(handwash = srvyr::survey_prop())%>%
-  dplyr::filter(handwash_cat == "limited")%>%
+  dplyr::rename("handwash_cat" = wash_handwashing_facility_jmp_cat) %>%
+  dplyr::mutate(
+    admin1 = "national",
+    handwash_cat = case_when(
+      handwash_cat %in% c("basic", "limited") ~ "limited",
+      TRUE ~ handwash_cat
+    )
+  ) %>%
+  dplyr::group_by(admin1, handwash_cat) %>%
+  dplyr::summarise(handwash = srvyr::survey_prop()) %>%
+  dplyr::filter(handwash_cat == "limited") %>%
   dplyr::select(admin1, handwash)
 
-if(!file.exists("inputs/environment.Rdata")) {
-  drinking_water_source <- names(data.list$main)[grepl("drinking",names(data.list$main))]
-  if(length(drinking_water_source) == 1){
-    yes_no <- svDialogs::dlg_message(paste0("Is '", drinking_water_source, "' the correct column for main source of drinking water?"), type = "yesno")$res
+if (!file.exists("inputs/environment.Rdata")) {
+  drinking_water_source <- names(data.list$main)[grepl(
+    "drinking",
+    names(data.list$main)
+  )]
+  if (length(drinking_water_source) == 1) {
+    yes_no <- svDialogs::dlg_message(
+      paste0(
+        "Is '",
+        drinking_water_source,
+        "' the correct column for main source of drinking water?"
+      ),
+      type = "yesno"
+    )$res
     if (yes_no == "no") {
-      drinking_water_source <- svDialogs::dlg_input(message= "Enter the name of the main source of drinking water","wash_drinking_water_source")$res
+      drinking_water_source <- svDialogs::dlg_input(
+        message = "Enter the name of the main source of drinking water",
+        "wash_drinking_water_source"
+      )$res
     }
-  } else if (length(drinking_water_source) > 1){
-    drinking_water_source <- tcltk::tk_select.list(drinking_water_source, title = "Main source of drinking water column")
-    if(drinking_water_source == ""){
-      drinking_water_source <- svDialogs::dlg_input(message= "Enter the name of the main source of drinking water","wash_drinking_water_source")$res
+  } else if (length(drinking_water_source) > 1) {
+    drinking_water_source <- tcltk::tk_select.list(
+      drinking_water_source,
+      title = "Main source of drinking water column"
+    )
+    if (drinking_water_source == "") {
+      drinking_water_source <- svDialogs::dlg_input(
+        message = "Enter the name of the main source of drinking water",
+        "wash_drinking_water_source"
+      )$res
     }
   } else if (length(drinking_water_source) == 0) {
-    drinking_water_source <- svDialogs::dlg_input(message= "Enter the name of the main source of drinking water","wash_drinking_water_source")$res
+    drinking_water_source <- svDialogs::dlg_input(
+      message = "Enter the name of the main source of drinking water",
+      "wash_drinking_water_source"
+    )$res
   }
-  improved_drinking_water <- tcltk::tk_select.list(unique(unlist(data.list$main[,drinking_water_source])), title = "Improved Values", multiple = T)
-  unimproved_drinking_water <- tcltk::tk_select.list(unique(unlist(data.list$main[,drinking_water_source])), title = "Unimproved Values", multiple = T)
-  surface_water <- tcltk::tk_select.list(unique(unlist(data.list$main[,drinking_water_source])), title = "Surface Water Values", multiple = T)
-  undefined_drinking_water <- tcltk::tk_select.list(unique(unlist(data.list$main[,drinking_water_source])), title = "Undefined Values", multiple = T)
+  improved_drinking_water <- tcltk::tk_select.list(
+    unique(unlist(data.list$main[, drinking_water_source])),
+    title = "Improved Values",
+    multiple = T
+  )
+  unimproved_drinking_water <- tcltk::tk_select.list(
+    unique(unlist(data.list$main[, drinking_water_source])),
+    title = "Unimproved Values",
+    multiple = T
+  )
+  surface_water <- tcltk::tk_select.list(
+    unique(unlist(data.list$main[, drinking_water_source])),
+    title = "Surface Water Values",
+    multiple = T
+  )
+  undefined_drinking_water <- tcltk::tk_select.list(
+    unique(unlist(data.list$main[, drinking_water_source])),
+    title = "Undefined Values",
+    multiple = T
+  )
 }
 
 impro_water_df <- data.list$main %>%
-  humind::add_drinking_water_source_cat(drinking_water_source = drinking_water_source,
-                                        improved = improved_drinking_water,
-                                        unimproved = unimproved_drinking_water,
-                                        surface_water = surface_water,
-                                        undefined = undefined_drinking_water) %>%
+  humind::add_drinking_water_source_cat(
+    drinking_water_source = drinking_water_source,
+    improved = improved_drinking_water,
+    unimproved = unimproved_drinking_water,
+    surface_water = surface_water,
+    undefined = undefined_drinking_water
+  ) %>%
   srvyr::as_survey_design(weights = weight) %>%
-  dplyr::rename("impro_water_cat"=wash_drinking_water_source_cat) %>%
+  dplyr::rename("impro_water_cat" = wash_drinking_water_source_cat) %>%
   dplyr::mutate(admin1 = !!rlang::sym(admin1)) %>%
-  dplyr::group_by(admin1,impro_water_cat) %>%
-  dplyr::summarise(impro_water = srvyr::survey_prop())%>%
-  dplyr::filter(impro_water_cat == "improved")%>%
+  dplyr::group_by(admin1, impro_water_cat) %>%
+  dplyr::summarise(impro_water = srvyr::survey_prop()) %>%
+  dplyr::filter(impro_water_cat == "improved") %>%
   dplyr::select(admin1, impro_water)
 
 impro_water_df_national <- data.list$main %>%
-  humind::add_drinking_water_source_cat(drinking_water_source = drinking_water_source,
-                                        improved = improved_drinking_water,
-                                        unimproved = unimproved_drinking_water,
-                                        surface_water = surface_water,
-                                        undefined = undefined_drinking_water) %>%
+  humind::add_drinking_water_source_cat(
+    drinking_water_source = drinking_water_source,
+    improved = improved_drinking_water,
+    unimproved = unimproved_drinking_water,
+    surface_water = surface_water,
+    undefined = undefined_drinking_water
+  ) %>%
   srvyr::as_survey_design(weights = weight) %>%
-  dplyr::rename("impro_water_cat"=wash_drinking_water_source_cat) %>%
+  dplyr::rename("impro_water_cat" = wash_drinking_water_source_cat) %>%
   dplyr::mutate(admin1 = "national") %>%
-  dplyr::group_by(admin1,impro_water_cat) %>%
-  dplyr::summarise(impro_water = srvyr::survey_prop())%>%
-  dplyr::filter(impro_water_cat == "improved")%>%
+  dplyr::group_by(admin1, impro_water_cat) %>%
+  dplyr::summarise(impro_water = srvyr::survey_prop()) %>%
+  dplyr::filter(impro_water_cat == "improved") %>%
   dplyr::select(admin1, impro_water)
 
-if(!file.exists("inputs/environment.Rdata")) {
-  sanitation_facility <- names(data.list$main)[grepl("sanitation",names(data.list$main))]
-  if(length(sanitation_facility) == 1){
-    yes_no <- svDialogs::dlg_message(paste0("Is '", sanitation_facility, "' the correct column for toilet facility?"), type = "yesno")$res
+if (!file.exists("inputs/environment.Rdata")) {
+  sanitation_facility <- names(data.list$main)[grepl(
+    "sanitation",
+    names(data.list$main)
+  )]
+  if (length(sanitation_facility) == 1) {
+    yes_no <- svDialogs::dlg_message(
+      paste0(
+        "Is '",
+        sanitation_facility,
+        "' the correct column for toilet facility?"
+      ),
+      type = "yesno"
+    )$res
     if (yes_no == "no") {
-      sanitation_facility <- svDialogs::dlg_input(message= "Enter the name of the toilet facility","wash_sanitation_facility")$res
+      sanitation_facility <- svDialogs::dlg_input(
+        message = "Enter the name of the toilet facility",
+        "wash_sanitation_facility"
+      )$res
     }
-  } else if (length(sanitation_facility) > 1){
-    sanitation_facility <- tcltk::tk_select.list(sanitation_facility, title = "Toilet facility column")
-    if(sanitation_facility == ""){
-      sanitation_facility <- svDialogs::dlg_input(message= "Enter the name of the toilet facility","wash_sanitation_facility")$res
+  } else if (length(sanitation_facility) > 1) {
+    sanitation_facility <- tcltk::tk_select.list(
+      sanitation_facility,
+      title = "Toilet facility column"
+    )
+    if (sanitation_facility == "") {
+      sanitation_facility <- svDialogs::dlg_input(
+        message = "Enter the name of the toilet facility",
+        "wash_sanitation_facility"
+      )$res
     }
-  } else if (length(sanitation_facility) == 0) {a
-    sanitation_facility <- svDialogs::dlg_input(message= "Enter the name of the toilet facility","wash_sanitation_facility")$res
+  } else if (length(sanitation_facility) == 0) {
+    a
+    sanitation_facility <- svDialogs::dlg_input(
+      message = "Enter the name of the toilet facility",
+      "wash_sanitation_facility"
+    )$res
   }
-  improved_sanitation_facility <- tcltk::tk_select.list(unique(unlist(data.list$main[,sanitation_facility])), title = "Improved Values", multiple = T)
-  unimproved_sanitation_facility <- tcltk::tk_select.list(unique(unlist(data.list$main[,sanitation_facility])), title = "Unimproved Values", multiple = T)
-  none_sanitation_facility <- tcltk::tk_select.list(unique(unlist(data.list$main[,sanitation_facility])), title = "None Values", multiple = T)
-  undefined_sanitation_facility <- tcltk::tk_select.list(unique(unlist(data.list$main[,sanitation_facility])), title = "Undefined Values", multiple = T)
+  improved_sanitation_facility <- tcltk::tk_select.list(
+    unique(unlist(data.list$main[, sanitation_facility])),
+    title = "Improved Values",
+    multiple = T
+  )
+  unimproved_sanitation_facility <- tcltk::tk_select.list(
+    unique(unlist(data.list$main[, sanitation_facility])),
+    title = "Unimproved Values",
+    multiple = T
+  )
+  none_sanitation_facility <- tcltk::tk_select.list(
+    unique(unlist(data.list$main[, sanitation_facility])),
+    title = "None Values",
+    multiple = T
+  )
+  undefined_sanitation_facility <- tcltk::tk_select.list(
+    unique(unlist(data.list$main[, sanitation_facility])),
+    title = "Undefined Values",
+    multiple = T
+  )
 }
 
 sanitation_df <- data.list$main %>%
-  humind::add_sanitation_facility_cat(sanitation_facility = sanitation_facility,
-                                      improved = improved_sanitation_facility,
-                                      unimproved = unimproved_sanitation_facility,
-                                      none = none_sanitation_facility,
-                                      undefined = undefined_sanitation_facility) %>%
+  humind::add_sanitation_facility_cat(
+    sanitation_facility = sanitation_facility,
+    improved = improved_sanitation_facility,
+    unimproved = unimproved_sanitation_facility,
+    none = none_sanitation_facility,
+    undefined = undefined_sanitation_facility
+  ) %>%
   srvyr::as_survey_design(weights = weight) %>%
-  dplyr::rename("sanitation_cat"=wash_sanitation_facility_cat) %>%
+  dplyr::rename("sanitation_cat" = wash_sanitation_facility_cat) %>%
   dplyr::mutate(admin1 = !!rlang::sym(admin1)) %>%
-  dplyr::group_by(admin1,sanitation_cat) %>%
-  dplyr::summarise(sanitation = srvyr::survey_prop())%>%
-  dplyr::filter(sanitation_cat == "improved")%>%
+  dplyr::group_by(admin1, sanitation_cat) %>%
+  dplyr::summarise(sanitation = srvyr::survey_prop()) %>%
+  dplyr::filter(sanitation_cat == "improved") %>%
   dplyr::select(admin1, sanitation)
 
 sanitation_df_national <- data.list$main %>%
-  humind::add_sanitation_facility_cat(sanitation_facility = sanitation_facility,
-                                      improved = improved_sanitation_facility,
-                                      unimproved = unimproved_sanitation_facility,
-                                      none = none_sanitation_facility,
-                                      undefined = undefined_sanitation_facility) %>%
+  humind::add_sanitation_facility_cat(
+    sanitation_facility = sanitation_facility,
+    improved = improved_sanitation_facility,
+    unimproved = unimproved_sanitation_facility,
+    none = none_sanitation_facility,
+    undefined = undefined_sanitation_facility
+  ) %>%
   srvyr::as_survey_design(weights = weight) %>%
-  dplyr::rename("sanitation_cat"=wash_sanitation_facility_cat) %>%
+  dplyr::rename("sanitation_cat" = wash_sanitation_facility_cat) %>%
   dplyr::mutate(admin1 = "national") %>%
-  dplyr::group_by(admin1,sanitation_cat) %>%
-  dplyr::summarise(sanitation = srvyr::survey_prop())%>%
-  dplyr::filter(sanitation_cat == "improved")%>%
+  dplyr::group_by(admin1, sanitation_cat) %>%
+  dplyr::summarise(sanitation = srvyr::survey_prop()) %>%
+  dplyr::filter(sanitation_cat == "improved") %>%
   dplyr::select(admin1, sanitation)
 
-if(!file.exists("inputs/environment.Rdata")) {
-  wash_water_quantity <- names(data.list$main)[grepl("wash_water_quantity|quantity",names(data.list$main))]
-  if(length(wash_water_quantity) == 1){
-    yes_no <- svDialogs::dlg_message(paste0("Is '", wash_water_quantity, "' the correct column for drinking water quantity?"), type = "yesno")$res
+if (!file.exists("inputs/environment.Rdata")) {
+  wash_water_quantity <- names(data.list$main)[grepl(
+    "wash_water_quantity|quantity",
+    names(data.list$main)
+  )]
+  if (length(wash_water_quantity) == 1) {
+    yes_no <- svDialogs::dlg_message(
+      paste0(
+        "Is '",
+        wash_water_quantity,
+        "' the correct column for drinking water quantity?"
+      ),
+      type = "yesno"
+    )$res
     if (yes_no == "no") {
-      wash_water_quantity <- svDialogs::dlg_input(message= "Enter the name of the wash_water_quantity","wash_water_quantity")$res
+      wash_water_quantity <- svDialogs::dlg_input(
+        message = "Enter the name of the wash_water_quantity",
+        "wash_water_quantity"
+      )$res
     }
-  } else if (length(wash_water_quantity) > 1){
-    wash_water_quantity <- tcltk::tk_select.list(wash_water_quantity, title = "Wash Water Quantity column")
-    if(wash_water_quantity == ""){
-      wash_water_quantity <- svDialogs::dlg_input(message= "Enter the name of the wash_water_quantity","wash_water_quantity")$res
+  } else if (length(wash_water_quantity) > 1) {
+    wash_water_quantity <- tcltk::tk_select.list(
+      wash_water_quantity,
+      title = "Wash Water Quantity column"
+    )
+    if (wash_water_quantity == "") {
+      wash_water_quantity <- svDialogs::dlg_input(
+        message = "Enter the name of the wash_water_quantity",
+        "wash_water_quantity"
+      )$res
     }
   } else if (length(wash_water_quantity) == 0) {
-    wash_water_quantity <- svDialogs::dlg_input(message= "Enter the name of the wash_water_quantity","wash_water_quantity")$res
+    wash_water_quantity <- svDialogs::dlg_input(
+      message = "Enter the name of the wash_water_quantity",
+      "wash_water_quantity"
+    )$res
   }
 }
 
 
 drinking_water_df <- survey_df %>%
-  dplyr::rename("drinking_water_cat"=wash_water_quantity) %>%
-  dplyr::mutate(admin1 = !!rlang::sym(admin1),
-                drinking_water_cat = case_when(drinking_water_cat %in% c("always","often") ~ "always",
-                                               TRUE ~ drinking_water_cat)) %>%
-  dplyr::group_by(admin1,drinking_water_cat) %>%
-  dplyr::summarise(drinking_water = srvyr::survey_prop())%>%
-  dplyr::filter(drinking_water_cat == "always")%>%
+  dplyr::rename("drinking_water_cat" = wash_water_quantity) %>%
+  dplyr::mutate(
+    admin1 = !!rlang::sym(admin1),
+    drinking_water_cat = case_when(
+      drinking_water_cat %in% c("always", "often") ~ "always",
+      TRUE ~ drinking_water_cat
+    )
+  ) %>%
+  dplyr::group_by(admin1, drinking_water_cat) %>%
+  dplyr::summarise(drinking_water = srvyr::survey_prop()) %>%
+  dplyr::filter(drinking_water_cat == "always") %>%
   dplyr::select(admin1, drinking_water)
 
 
 drinking_water_df_national <- survey_df %>%
-  dplyr::rename("drinking_water_cat"=wash_water_quantity) %>%
-  dplyr::mutate(admin1 = "national",
-                drinking_water_cat = case_when(drinking_water_cat %in% c("always","often") ~ "always",
-                                               TRUE ~ drinking_water_cat)) %>%
-  dplyr::group_by(admin1,drinking_water_cat) %>%
-  dplyr::summarise(drinking_water = srvyr::survey_prop())%>%
-  dplyr::filter(drinking_water_cat == "always")%>%
+  dplyr::rename("drinking_water_cat" = wash_water_quantity) %>%
+  dplyr::mutate(
+    admin1 = "national",
+    drinking_water_cat = case_when(
+      drinking_water_cat %in% c("always", "often") ~ "always",
+      TRUE ~ drinking_water_cat
+    )
+  ) %>%
+  dplyr::group_by(admin1, drinking_water_cat) %>%
+  dplyr::summarise(drinking_water = srvyr::survey_prop()) %>%
+  dplyr::filter(drinking_water_cat == "always") %>%
   dplyr::select(admin1, drinking_water)
 
 ## Health
-if(!file.exists("inputs/environment.Rdata")) {
-  distance_healthcare <- names(data.list$main)[grepl("health_facility_time|time|distance",names(data.list$main))]
-  if(length(distance_healthcare) == 1){
-    yes_no <- svDialogs::dlg_message(paste0("Is '", distance_healthcare, "' the correct column for travel time to health facility?"), type = "yesno")$res
+if (!file.exists("inputs/environment.Rdata")) {
+  distance_healthcare <- names(data.list$main)[grepl(
+    "health_facility_time|time|distance",
+    names(data.list$main)
+  )]
+  if (length(distance_healthcare) == 1) {
+    yes_no <- svDialogs::dlg_message(
+      paste0(
+        "Is '",
+        distance_healthcare,
+        "' the correct column for travel time to health facility?"
+      ),
+      type = "yesno"
+    )$res
     if (yes_no == "no") {
-      distance_healthcare <- svDialogs::dlg_input(message= "Enter the name of the health_facility_time","distance_healthcare")$res
+      distance_healthcare <- svDialogs::dlg_input(
+        message = "Enter the name of the health_facility_time",
+        "distance_healthcare"
+      )$res
     }
-  } else if (length(distance_healthcare) > 1){
-    distance_healthcare <- tcltk::tk_select.list(distance_healthcare, title = "Healthcare facility time column")
-    if(distance_healthcare == ""){
-      distance_healthcare <- svDialogs::dlg_input(message= "Enter the name of the health_facility_time","distance_healthcare")$res
+  } else if (length(distance_healthcare) > 1) {
+    distance_healthcare <- tcltk::tk_select.list(
+      distance_healthcare,
+      title = "Healthcare facility time column"
+    )
+    if (distance_healthcare == "") {
+      distance_healthcare <- svDialogs::dlg_input(
+        message = "Enter the name of the health_facility_time",
+        "distance_healthcare"
+      )$res
     }
   } else if (length(distance_healthcare) == 0) {
-    distance_healthcare <- svDialogs::dlg_input(message= "Enter the name of the health_facility_time","distance_healthcare")$res
+    distance_healthcare <- svDialogs::dlg_input(
+      message = "Enter the name of the health_facility_time",
+      "distance_healthcare"
+    )$res
   }
 }
 
 distance_healthcare_df <- survey_df %>%
-  dplyr::rename("distance_healthcare_cat"=distance_healthcare) %>%
-  dplyr::mutate(admin1 = !!rlang::sym(admin1),
-                distance_healthcare_cat = case_when(as.numeric(distance_healthcare_cat) >= 60 ~ "high",
-                                                    TRUE ~ "low")) %>%
-  dplyr::group_by(admin1,distance_healthcare_cat) %>%
-  dplyr::summarise(distance_healthcare = srvyr::survey_prop())%>%
-  dplyr::filter(distance_healthcare_cat == "high")%>%
+  dplyr::rename("distance_healthcare_cat" = distance_healthcare) %>%
+  dplyr::mutate(
+    admin1 = !!rlang::sym(admin1),
+    distance_healthcare_cat = case_when(
+      as.numeric(distance_healthcare_cat) >= 60 ~ "high",
+      TRUE ~ "low"
+    )
+  ) %>%
+  dplyr::group_by(admin1, distance_healthcare_cat) %>%
+  dplyr::summarise(distance_healthcare = srvyr::survey_prop()) %>%
+  dplyr::filter(distance_healthcare_cat == "high") %>%
   dplyr::select(admin1, distance_healthcare)
 
 distance_healthcare_df_national <- survey_df %>%
-  dplyr::rename("distance_healthcare_cat"=distance_healthcare) %>%
-  dplyr::mutate(admin1 = "national",
-                distance_healthcare_cat = case_when(as.numeric(distance_healthcare_cat) >= 60 ~ "high",
-                                                    TRUE ~ "low")) %>%
-  dplyr::group_by(admin1,distance_healthcare_cat) %>%
-  dplyr::summarise(distance_healthcare = srvyr::survey_prop())%>%
-  dplyr::filter(distance_healthcare_cat == "high")%>%
+  dplyr::rename("distance_healthcare_cat" = distance_healthcare) %>%
+  dplyr::mutate(
+    admin1 = "national",
+    distance_healthcare_cat = case_when(
+      as.numeric(distance_healthcare_cat) >= 60 ~ "high",
+      TRUE ~ "low"
+    )
+  ) %>%
+  dplyr::group_by(admin1, distance_healthcare_cat) %>%
+  dplyr::summarise(distance_healthcare = srvyr::survey_prop()) %>%
+  dplyr::filter(distance_healthcare_cat == "high") %>%
   dplyr::select(admin1, distance_healthcare)
 
 
 ## Health
-if(!file.exists("inputs/environment.Rdata")) {
-  healthcare_sheet <- tcltk::tk_select.list(sheet_names, title = "Health Individual Sheet")
+if (!file.exists("inputs/environment.Rdata")) {
+  healthcare_sheet <- tcltk::tk_select.list(
+    sheet_names,
+    title = "Health Individual Sheet"
+  )
 
   ## healthcare is needed
-  ind_healthcare_needed <- names(data.list[[healthcare_sheet]])[grepl("healthcare_needed",names(data.list[[healthcare_sheet]]))]
-  if(length(ind_healthcare_needed) == 1){
-    yes_no <- svDialogs::dlg_message(paste0("Is '", ind_healthcare_needed, "' the correct column for healthcare is needed?"), type = "yesno")$res
+  ind_healthcare_needed <- names(data.list[[healthcare_sheet]])[grepl(
+    "healthcare_needed",
+    names(data.list[[healthcare_sheet]])
+  )]
+  if (length(ind_healthcare_needed) == 1) {
+    yes_no <- svDialogs::dlg_message(
+      paste0(
+        "Is '",
+        ind_healthcare_needed,
+        "' the correct column for healthcare is needed?"
+      ),
+      type = "yesno"
+    )$res
     if (yes_no == "no") {
-      ind_healthcare_needed <- svDialogs::dlg_input(message= "Enter the name of the healthcare is needed","health_ind_healthcare_needed")$res
+      ind_healthcare_needed <- svDialogs::dlg_input(
+        message = "Enter the name of the healthcare is needed",
+        "health_ind_healthcare_needed"
+      )$res
     }
-  } else if (length(ind_healthcare_needed ) > 1){
-    ind_healthcare_needed <- tcltk::tk_select.list(ind_healthcare_needed, title = "Healthcare is needed column")
-    if(ind_healthcare_needed  == ""){
-      ind_healthcare_needed  <- svDialogs::dlg_input(message= "Enter the name of the healthcare is needed","health_ind_healthcare_needed")$res
+  } else if (length(ind_healthcare_needed) > 1) {
+    ind_healthcare_needed <- tcltk::tk_select.list(
+      ind_healthcare_needed,
+      title = "Healthcare is needed column"
+    )
+    if (ind_healthcare_needed == "") {
+      ind_healthcare_needed <- svDialogs::dlg_input(
+        message = "Enter the name of the healthcare is needed",
+        "health_ind_healthcare_needed"
+      )$res
     }
   } else if (length(ind_healthcare_needed) == 0) {
-    ind_healthcare_needed <- svDialogs::dlg_input(message= "Enter the name of the healthcare is needed","health_ind_healthcare_needed")$res
+    ind_healthcare_needed <- svDialogs::dlg_input(
+      message = "Enter the name of the healthcare is needed",
+      "health_ind_healthcare_needed"
+    )$res
   }
 
   ## To comment out line 1527 and 1528 (In case new version humind change the levels)
 
-  ind_healthcare_needed_levels <- unique(unlist(data.list[[healthcare_sheet]][,ind_healthcare_needed]))
-  ind_healthcare_needed_levels <- ind_healthcare_needed_levels[!is.na(ind_healthcare_needed_levels)]
+  ind_healthcare_needed_levels <- unique(unlist(data.list[[healthcare_sheet]][,
+    ind_healthcare_needed
+  ]))
+  ind_healthcare_needed_levels <- ind_healthcare_needed_levels[
+    !is.na(ind_healthcare_needed_levels)
+  ]
 
   ## To uncomment out line 1532, 1533, and 1534 (In case new version humind change the levels)
 
@@ -1533,27 +2852,52 @@ if(!file.exists("inputs/environment.Rdata")) {
   # ind_healthcare_needed_no <- tcltk::tk_select.list(unique(unlist(data.list[[healthcare_sheet]][,ind_healthcare_needed])), title = "No Value")
   # ind_healthcare_needed_undefined <- tcltk::tk_select.list(unique(unlist(data.list[[healthcare_sheet]][,ind_healthcare_needed])), title = "Undefined Value", multiple =T)
 
-
   ## healthcare is needed
-  ind_healthcare_received <- names(data.list[[healthcare_sheet]])[grepl("healthcare_received",names(data.list[[healthcare_sheet]]))]
-  if(length(ind_healthcare_received) == 1){
-    yes_no <- svDialogs::dlg_message(paste0("Is '", ind_healthcare_received, "' the correct column for healthcare is received?"), type = "yesno")$res
+  ind_healthcare_received <- names(data.list[[healthcare_sheet]])[grepl(
+    "healthcare_received",
+    names(data.list[[healthcare_sheet]])
+  )]
+  if (length(ind_healthcare_received) == 1) {
+    yes_no <- svDialogs::dlg_message(
+      paste0(
+        "Is '",
+        ind_healthcare_received,
+        "' the correct column for healthcare is received?"
+      ),
+      type = "yesno"
+    )$res
     if (yes_no == "no") {
-      ind_healthcare_received <- svDialogs::dlg_input(message= "Enter the name of the healthcare is received","health_ind_healthcare_received")$res
+      ind_healthcare_received <- svDialogs::dlg_input(
+        message = "Enter the name of the healthcare is received",
+        "health_ind_healthcare_received"
+      )$res
     }
-  } else if (length(ind_healthcare_received ) > 1){
-    ind_healthcare_received <- tcltk::tk_select.list(ind_healthcare_received, title = "Healthcare is received column")
-    if(ind_healthcare_received  == ""){
-      ind_healthcare_received  <- svDialogs::dlg_input(message= "Enter the name of the healthcare is received","health_ind_healthcare_received")$res
+  } else if (length(ind_healthcare_received) > 1) {
+    ind_healthcare_received <- tcltk::tk_select.list(
+      ind_healthcare_received,
+      title = "Healthcare is received column"
+    )
+    if (ind_healthcare_received == "") {
+      ind_healthcare_received <- svDialogs::dlg_input(
+        message = "Enter the name of the healthcare is received",
+        "health_ind_healthcare_received"
+      )$res
     }
   } else if (length(ind_healthcare_received) == 0) {
-    ind_healthcare_received <- svDialogs::dlg_input(message= "Enter the name of the healthcare is received","health_ind_healthcare_received")$res
+    ind_healthcare_received <- svDialogs::dlg_input(
+      message = "Enter the name of the healthcare is received",
+      "health_ind_healthcare_received"
+    )$res
   }
 
   ## To comment out line 1555 and 1556 (In case new version humind change the levels)
 
-  ind_healthcare_received_levels <- unique(unlist(data.list[[healthcare_sheet]][,ind_healthcare_received]))
-  ind_healthcare_received_levels <- ind_healthcare_received_levels[!is.na(ind_healthcare_received_levels)]
+  ind_healthcare_received_levels <- unique(unlist(data.list[[
+    healthcare_sheet
+  ]][, ind_healthcare_received]))
+  ind_healthcare_received_levels <- ind_healthcare_received_levels[
+    !is.na(ind_healthcare_received_levels)
+  ]
   ## ind age
 
   ## To uncomment out line 1561, 1562, and 1563 (In case new version humind change the levels)
@@ -1562,69 +2906,121 @@ if(!file.exists("inputs/environment.Rdata")) {
   # ind_healthcare_received_no <- tcltk::tk_select.list(unique(unlist(data.list[[healthcare_sheet]][,ind_healthcare_received])), title = "No Value")
   # ind_healthcare_received_undefined <- tcltk::tk_select.list(unique(unlist(data.list[[healthcare_sheet]][,ind_healthcare_received])), title = "Undefined Value", multiple =T)
 
-  ind_age <- names(data.list[[healthcare_sheet]])[grepl("ind_age",names(data.list[[healthcare_sheet]]))]
-  if(length(ind_age) == 1){
-    yes_no <- svDialogs::dlg_message(paste0("Is '", ind_age, "' the correct column for age of individual?"), type = "yesno")$res
+  ind_age <- names(data.list[[healthcare_sheet]])[grepl(
+    "ind_age",
+    names(data.list[[healthcare_sheet]])
+  )]
+  if (length(ind_age) == 1) {
+    yes_no <- svDialogs::dlg_message(
+      paste0("Is '", ind_age, "' the correct column for age of individual?"),
+      type = "yesno"
+    )$res
     if (yes_no == "no") {
-      ind_age <- svDialogs::dlg_input(message= "Enter the name of the age of individual","ind_age")$res
+      ind_age <- svDialogs::dlg_input(
+        message = "Enter the name of the age of individual",
+        "ind_age"
+      )$res
     }
-  } else if (length(ind_age ) > 1){
-    ind_age <- tcltk::tk_select.list(ind_age, title = "Age of individual column")
-    if(ind_age  == ""){
-      ind_age  <- svDialogs::dlg_input(message= "Enter the name of the age of individual","ind_age")$res
+  } else if (length(ind_age) > 1) {
+    ind_age <- tcltk::tk_select.list(
+      ind_age,
+      title = "Age of individual column"
+    )
+    if (ind_age == "") {
+      ind_age <- svDialogs::dlg_input(
+        message = "Enter the name of the age of individual",
+        "ind_age"
+      )$res
     }
   } else if (length(ind_age) == 0) {
-    ind_age <- svDialogs::dlg_input(message= "Enter the name of the age of individual","ind_age")$res
+    ind_age <- svDialogs::dlg_input(
+      message = "Enter the name of the age of individual",
+      "ind_age"
+    )$res
   }
 
   ## UUID Health Loop
-  uuid_health_loop <- names(data.list[[healthcare_sheet]])[grepl("uuid",names(data.list[[healthcare_sheet]]))]
-  if(length(uuid_health_loop) == 1){
-    yes_no <- svDialogs::dlg_message(paste0("Is '", uuid_health_loop, "' the correct column for uuid of HH?"), type = "yesno")$res
+  uuid_health_loop <- names(data.list[[healthcare_sheet]])[grepl(
+    "uuid",
+    names(data.list[[healthcare_sheet]])
+  )]
+  if (length(uuid_health_loop) == 1) {
+    yes_no <- svDialogs::dlg_message(
+      paste0("Is '", uuid_health_loop, "' the correct column for uuid of HH?"),
+      type = "yesno"
+    )$res
     if (yes_no == "no") {
-      uuid_health_loop <- svDialogs::dlg_input(message= "Enter the name of the uuid of HH","uuid")$res
+      uuid_health_loop <- svDialogs::dlg_input(
+        message = "Enter the name of the uuid of HH",
+        "uuid"
+      )$res
     }
-  } else if (length(uuid_health_loop ) > 1){
-    uuid_health_loop <- tcltk::tk_select.list(uuid_health_loop, title = "Uuid of HH in Health loop column")
-    if(uuid_health_loop  == ""){
-      uuid_health_loop  <- svDialogs::dlg_input(message= "Enter the name of the uuid of HH","uuid")$res
+  } else if (length(uuid_health_loop) > 1) {
+    uuid_health_loop <- tcltk::tk_select.list(
+      uuid_health_loop,
+      title = "Uuid of HH in Health loop column"
+    )
+    if (uuid_health_loop == "") {
+      uuid_health_loop <- svDialogs::dlg_input(
+        message = "Enter the name of the uuid of HH",
+        "uuid"
+      )$res
     }
-  } else if (length(uuid_health_loop) == 0){
-    uuid_health_loop <- svDialogs::dlg_input(message= "Enter the name of the uuid of HH","uuid")$res
+  } else if (length(uuid_health_loop) == 0) {
+    uuid_health_loop <- svDialogs::dlg_input(
+      message = "Enter the name of the uuid of HH",
+      "uuid"
+    )$res
   }
 
   ## UUID Main
-  uuid_main <- names(data.list$main)[grepl("uuid",names(data.list$main))]
-  if(length(uuid_main) == 1){
-    yes_no <- svDialogs::dlg_message(paste0("Is '", uuid_main, "' the correct column for uuid of HH?"), type = "yesno")$res
+  uuid_main <- names(data.list$main)[grepl("uuid", names(data.list$main))]
+  if (length(uuid_main) == 1) {
+    yes_no <- svDialogs::dlg_message(
+      paste0("Is '", uuid_main, "' the correct column for uuid of HH?"),
+      type = "yesno"
+    )$res
     if (yes_no == "no") {
-      uuid_main <- svDialogs::dlg_input(message= "Enter the name of the uuid of HH","uuid")$res
+      uuid_main <- svDialogs::dlg_input(
+        message = "Enter the name of the uuid of HH",
+        "uuid"
+      )$res
     }
-  } else if (length(uuid_main ) > 1){
+  } else if (length(uuid_main) > 1) {
     uuid_main <- tcltk::tk_select.list(uuid_main, title = "Uuid of HH column")
-    if(uuid_main  == ""){
-      uuid_main  <- svDialogs::dlg_input(message= "Enter the name of the uuid of HH","uuid")$res
+    if (uuid_main == "") {
+      uuid_main <- svDialogs::dlg_input(
+        message = "Enter the name of the uuid of HH",
+        "uuid"
+      )$res
     }
-  } else if (length(uuid_main) == 0){
-    uuid_main <- svDialogs::dlg_input(message= "Enter the name of the uuid of HH","uuid")$res
+  } else if (length(uuid_main) == 0) {
+    uuid_main <- svDialogs::dlg_input(
+      message = "Enter the name of the uuid of HH",
+      "uuid"
+    )$res
   }
 }
 
 ## To comment out line 1615 to 1627 (In case new version humind change the levels)
 
 unmet_loop_df <- data.list[[healthcare_sheet]] %>%
-  humind::add_loop_healthcare_needed_cat(ind_healthcare_needed = ind_healthcare_needed,
-                                         ind_healthcare_needed_levels = ind_healthcare_needed_levels,
-                                         ind_healthcare_received = ind_healthcare_received,
-                                         ind_healthcare_received_levels = ind_healthcare_received_levels,
-                                         ind_age = ind_age) %>%
+  humind::add_loop_healthcare_needed_cat(
+    ind_healthcare_needed = ind_healthcare_needed,
+    ind_healthcare_needed_levels = ind_healthcare_needed_levels,
+    ind_healthcare_received = ind_healthcare_received,
+    ind_healthcare_received_levels = ind_healthcare_received_levels,
+    ind_age = ind_age
+  ) %>%
   srvyr::as_survey_design(weights = weight) %>%
   dplyr::mutate(admin1 = !!rlang::sym(admin1)) %>%
   dplyr::group_by(admin1) %>%
-  dplyr::summarise(n = n(),
-                   sum = srvyr::survey_total(health_ind_healthcare_needed_yes_unmet),
-                   unmet_healthcare = sum/n) %>%
-  dplyr::select(admin1,unmet_healthcare)
+  dplyr::summarise(
+    n = n(),
+    sum = srvyr::survey_total(health_ind_healthcare_needed_yes_unmet),
+    unmet_healthcare = sum / n
+  ) %>%
+  dplyr::select(admin1, unmet_healthcare)
 
 ## To uncomment out line 1631 to 1647 (In case new version humind change the levels)
 
@@ -1649,18 +3045,22 @@ unmet_loop_df <- data.list[[healthcare_sheet]] %>%
 ## To comment out line 1651 to 1663 (In case new version humind change the levels)
 
 unmet_loop_df_national <- data.list[[healthcare_sheet]] %>%
-  humind::add_loop_healthcare_needed_cat(ind_healthcare_needed = ind_healthcare_needed,
-                                         ind_healthcare_needed_levels = ind_healthcare_needed_levels,
-                                         ind_healthcare_received = ind_healthcare_received,
-                                         ind_healthcare_received_levels = ind_healthcare_received_levels,
-                                         ind_age = ind_age) %>%
+  humind::add_loop_healthcare_needed_cat(
+    ind_healthcare_needed = ind_healthcare_needed,
+    ind_healthcare_needed_levels = ind_healthcare_needed_levels,
+    ind_healthcare_received = ind_healthcare_received,
+    ind_healthcare_received_levels = ind_healthcare_received_levels,
+    ind_age = ind_age
+  ) %>%
   srvyr::as_survey_design(weights = weight) %>%
   dplyr::mutate(admin1 = "national") %>%
   dplyr::group_by(admin1) %>%
-  dplyr::summarise(n = n(),
-                   sum = srvyr::survey_total(health_ind_healthcare_needed_yes_unmet),
-                   unmet_healthcare = sum/n) %>%
-  dplyr::select(admin1,unmet_healthcare)
+  dplyr::summarise(
+    n = n(),
+    sum = srvyr::survey_total(health_ind_healthcare_needed_yes_unmet),
+    unmet_healthcare = sum / n
+  ) %>%
+  dplyr::select(admin1, unmet_healthcare)
 
 ## To uncomment out line 1667 to 1683 (In case new version humind change the levels)
 
@@ -1682,656 +3082,1278 @@ unmet_loop_df_national <- data.list[[healthcare_sheet]] %>%
 #                    unmet_healthcare = sum/n) %>%
 #   dplyr::select(admin1,unmet_healthcare)
 
-
 ## Nutrition
-if(!file.exists("inputs/environment.Rdata")) {
-  nut_sheet <- tcltk::tk_select.list(sheet_names, title = "Nutrtion Individual Sheet")
+if (!file.exists("inputs/environment.Rdata")) {
+  nut_sheet <- tcltk::tk_select.list(
+    sheet_names,
+    title = "Nutrtion Individual Sheet"
+  )
 
   ## under5 sick
-  under5_sick <- names(data.list[[nut_sheet]])[grepl("under5",names(data.list[[nut_sheet]]))]
-  if(length(under5_sick) == 1){
-    yes_no <- svDialogs::dlg_message(paste0("Is '", under5_sick, "' the correct column for under5 sick?"), type = "yesno")$res
+  under5_sick <- names(data.list[[nut_sheet]])[grepl(
+    "under5",
+    names(data.list[[nut_sheet]])
+  )]
+  if (length(under5_sick) == 1) {
+    yes_no <- svDialogs::dlg_message(
+      paste0("Is '", under5_sick, "' the correct column for under5 sick?"),
+      type = "yesno"
+    )$res
     if (yes_no == "no") {
-      under5_sick <- svDialogs::dlg_input(message= "Enter the name of the under5 sick","nut_ind_under5_sick_yn")$res
+      under5_sick <- svDialogs::dlg_input(
+        message = "Enter the name of the under5 sick",
+        "nut_ind_under5_sick_yn"
+      )$res
     }
-  } else if (length(under5_sick ) > 1){
-    under5_sick <- tcltk::tk_select.list(under5_sick, title = "Under5 sick column")
-    if(under5_sick  == ""){
-      under5_sick  <- svDialogs::dlg_input(message= "Enter the name of the under5 sick","nut_ind_under5_sick_yn")$res
+  } else if (length(under5_sick) > 1) {
+    under5_sick <- tcltk::tk_select.list(
+      under5_sick,
+      title = "Under5 sick column"
+    )
+    if (under5_sick == "") {
+      under5_sick <- svDialogs::dlg_input(
+        message = "Enter the name of the under5 sick",
+        "nut_ind_under5_sick_yn"
+      )$res
     }
   } else if (length(under5_sick) == 0) {
-    under5_sick <- svDialogs::dlg_input(message= "Enter the name of the under5 sick","nut_ind_under5_sick_yn")$res
+    under5_sick <- svDialogs::dlg_input(
+      message = "Enter the name of the under5 sick",
+      "nut_ind_under5_sick_yn"
+    )$res
   }
-  under5_sick_yes <- tcltk::tk_select.list(unique(unlist(data.list[[nut_sheet]][,under5_sick])), title = "Yes value")
-  under5_sick_no <- tcltk::tk_select.list(unique(unlist(data.list[[nut_sheet]][,under5_sick])), title = "No value")
-  under5_sick_undefined <- tcltk::tk_select.list(unique(unlist(data.list[[nut_sheet]][,under5_sick])),multiple = T, title = "Undefined value")
+  under5_sick_yes <- tcltk::tk_select.list(
+    unique(unlist(data.list[[nut_sheet]][, under5_sick])),
+    title = "Yes value"
+  )
+  under5_sick_no <- tcltk::tk_select.list(
+    unique(unlist(data.list[[nut_sheet]][, under5_sick])),
+    title = "No value"
+  )
+  under5_sick_undefined <- tcltk::tk_select.list(
+    unique(unlist(data.list[[nut_sheet]][, under5_sick])),
+    multiple = T,
+    title = "Undefined value"
+  )
   ## UUID Main
-  uuid_nut <- names(data.list[[nut_sheet]])[grepl("uuid",names(data.list[[nut_sheet]]))]
-  if(length(uuid_nut) == 1){
-    yes_no <- svDialogs::dlg_message(paste0("Is '", uuid_nut, "' the correct column for uuid of HH?"), type = "yesno")$res
+  uuid_nut <- names(data.list[[nut_sheet]])[grepl(
+    "uuid",
+    names(data.list[[nut_sheet]])
+  )]
+  if (length(uuid_nut) == 1) {
+    yes_no <- svDialogs::dlg_message(
+      paste0("Is '", uuid_nut, "' the correct column for uuid of HH?"),
+      type = "yesno"
+    )$res
     if (yes_no == "no") {
-      uuid_nut <- svDialogs::dlg_input(message= "Enter the name of the uuid of HH","uuid")$res
+      uuid_nut <- svDialogs::dlg_input(
+        message = "Enter the name of the uuid of HH",
+        "uuid"
+      )$res
     }
-  } else if (length(uuid_nut ) > 1){
-    uuid_nut <- tcltk::tk_select.list(uuid_nut, title = "Uuid of HH in Nutrition column")
-    if(uuid_nut  == ""){
-      uuid_nut  <- svDialogs::dlg_input(message= "Enter the name of the uuid of HH","uuid")$res
+  } else if (length(uuid_nut) > 1) {
+    uuid_nut <- tcltk::tk_select.list(
+      uuid_nut,
+      title = "Uuid of HH in Nutrition column"
+    )
+    if (uuid_nut == "") {
+      uuid_nut <- svDialogs::dlg_input(
+        message = "Enter the name of the uuid of HH",
+        "uuid"
+      )$res
     }
-  } else if (length(uuid_nut) == 0){
-    uuid_nut <- svDialogs::dlg_input(message= "Enter the name of the uuid of HH","uuid")$res
+  } else if (length(uuid_nut) == 0) {
+    uuid_nut <- svDialogs::dlg_input(
+      message = "Enter the name of the uuid of HH",
+      "uuid"
+    )$res
   }
 }
 
 nut_under5_sick_df <- data.list$main %>%
-  dplyr::mutate(admin1 = !!rlang::sym(admin1),
-                uuid = !!rlang::sym(uuid_main)) %>%
-  dplyr::select(uuid,admin1)
+  dplyr::mutate(
+    admin1 = !!rlang::sym(admin1),
+    uuid = !!rlang::sym(uuid_main)
+  ) %>%
+  dplyr::select(uuid, admin1)
 
 
 nut_under5_sick_loop <- data.list[[nut_sheet]] %>%
-  dplyr::filter(!!rlang::sym(under5_sick) %in% c(under5_sick_no,under5_sick_yes)) %>%
-  dplyr::mutate(under5_sick_n = ifelse(!!rlang::sym(under5_sick) == under5_sick_yes,1,0),
-                uuid = !!rlang::sym(uuid_nut)) %>%
+  dplyr::filter(
+    !!rlang::sym(under5_sick) %in% c(under5_sick_no, under5_sick_yes)
+  ) %>%
+  dplyr::mutate(
+    under5_sick_n = ifelse(!!rlang::sym(under5_sick) == under5_sick_yes, 1, 0),
+    uuid = !!rlang::sym(uuid_nut)
+  ) %>%
   dplyr::left_join(nut_under5_sick_df) %>%
   srvyr::as_survey_design(weights = weight) %>%
   dplyr::mutate(admin1 = !!rlang::sym(admin1)) %>%
   dplyr::group_by(admin1) %>%
-  dplyr::summarise(n = n(),
-                   sum = srvyr::survey_total(under5_sick_n),
-                   children_sick = sum/n) %>%
-  dplyr::select(admin1,children_sick)
+  dplyr::summarise(
+    n = n(),
+    sum = srvyr::survey_total(under5_sick_n),
+    children_sick = sum / n
+  ) %>%
+  dplyr::select(admin1, children_sick)
 
 nut_under5_sick_loop_national <- data.list[[nut_sheet]] %>%
-  dplyr::filter(!!rlang::sym(under5_sick) %in% c(under5_sick_no,under5_sick_yes)) %>%
-  dplyr::mutate(under5_sick_n = ifelse(!!rlang::sym(under5_sick) == under5_sick_yes,1,0),
-                uuid = !!rlang::sym(uuid_nut)) %>%
+  dplyr::filter(
+    !!rlang::sym(under5_sick) %in% c(under5_sick_no, under5_sick_yes)
+  ) %>%
+  dplyr::mutate(
+    under5_sick_n = ifelse(!!rlang::sym(under5_sick) == under5_sick_yes, 1, 0),
+    uuid = !!rlang::sym(uuid_nut)
+  ) %>%
   srvyr::as_survey_design(weights = weight) %>%
   dplyr::mutate(admin1 = "national") %>%
   dplyr::group_by(admin1) %>%
-  dplyr::summarise(n = n(),
-                   sum = srvyr::survey_total(under5_sick_n),
-                   children_sick = sum/n) %>%
-  dplyr::select(admin1,children_sick)
+  dplyr::summarise(
+    n = n(),
+    sum = srvyr::survey_total(under5_sick_n),
+    children_sick = sum / n
+  ) %>%
+  dplyr::select(admin1, children_sick)
 
 
-if(mort_collected == "yes"){
+if (mort_collected == "yes") {
   non_trauma_df <- data.list$main %>%
     dplyr::mutate(uuid = !!rlang::sym(uuid_main)) %>%
     dplyr::select(uuid, admin1)
 
   data.list[[died_sheet]] <- data.list[[died_sheet]] %>%
-    dplyr::mutate(!!rlang::sym(death_cause) := ifelse(is.na(!!rlang::sym(death_cause)),"dnk",!!rlang::sym(death_cause)))
+    dplyr::mutate(
+      !!rlang::sym(death_cause) := ifelse(
+        is.na(!!rlang::sym(death_cause)),
+        "dnk",
+        !!rlang::sym(death_cause)
+      )
+    )
 
   non_trauma_loop <- data.list[[died_sheet]] %>%
-    dplyr::mutate(uuid = !!rlang::sym(uuid_died),
-                  !!rlang::sym(death_cause) := case_when(!!rlang::sym(death_cause) %in% non_trauma_deaths ~ "non_trauma_deaths",
-                                                         TRUE ~ !!rlang::sym(death_cause))) %>%
+    dplyr::mutate(
+      uuid = !!rlang::sym(uuid_died),
+      !!rlang::sym(death_cause) := case_when(
+        !!rlang::sym(death_cause) %in% non_trauma_deaths ~ "non_trauma_deaths",
+        TRUE ~ !!rlang::sym(death_cause)
+      )
+    ) %>%
     dplyr::left_join(non_trauma_df) %>%
     dplyr::filter(!is.na(weight)) %>%
     srvyr::as_survey_design(weights = weight) %>%
     dplyr::mutate(admin1 = !!rlang::sym(admin1)) %>%
-    dplyr::group_by(admin1, !!rlang::sym(death_cause))%>%
-    dplyr::summarise(non_trauma = srvyr::survey_prop())%>%
-    dplyr::filter(!!rlang::sym(death_cause) == "non_trauma_deaths")%>%
+    dplyr::group_by(admin1, !!rlang::sym(death_cause)) %>%
+    dplyr::summarise(non_trauma = srvyr::survey_prop()) %>%
+    dplyr::filter(!!rlang::sym(death_cause) == "non_trauma_deaths") %>%
     dplyr::select(admin1, non_trauma)
 
   non_trauma_loop_national <- data.list[[died_sheet]] %>%
-    dplyr::mutate(uuid = !!rlang::sym(uuid_died),
-                  !!rlang::sym(death_cause) := case_when(!!rlang::sym(death_cause) %in% non_trauma_deaths ~ "non_trauma_deaths",
-                                                         TRUE ~ !!rlang::sym(death_cause))) %>%
+    dplyr::mutate(
+      uuid = !!rlang::sym(uuid_died),
+      !!rlang::sym(death_cause) := case_when(
+        !!rlang::sym(death_cause) %in% non_trauma_deaths ~ "non_trauma_deaths",
+        TRUE ~ !!rlang::sym(death_cause)
+      )
+    ) %>%
     dplyr::filter(!is.na(weight)) %>%
     srvyr::as_survey_design(weights = weight) %>%
     dplyr::mutate(admin1 = "national") %>%
-    dplyr::group_by(admin1, !!rlang::sym(death_cause))%>%
-    dplyr::summarise(non_trauma = srvyr::survey_prop())%>%
-    dplyr::filter(!!rlang::sym(death_cause) == "non_trauma_deaths")%>%
+    dplyr::group_by(admin1, !!rlang::sym(death_cause)) %>%
+    dplyr::summarise(non_trauma = srvyr::survey_prop()) %>%
+    dplyr::filter(!!rlang::sym(death_cause) == "non_trauma_deaths") %>%
     dplyr::select(admin1, non_trauma)
 
-
   ph_int_table <- ph_int_table %>%
-    dplyr::mutate(non_trauma = non_trauma_loop$non_trauma[match(admin1,non_trauma_loop$admin1)]) %>%
+    dplyr::mutate(
+      non_trauma = non_trauma_loop$non_trauma[match(
+        admin1,
+        non_trauma_loop$admin1
+      )]
+    ) %>%
     dplyr::relocate(non_trauma, .before = 4)
 
   national_df <- national_df %>%
-    dplyr::mutate(non_trauma = non_trauma_loop_national$non_trauma[match(admin1,non_trauma_loop_national$admin1)]) %>%
+    dplyr::mutate(
+      non_trauma = non_trauma_loop_national$non_trauma[match(
+        admin1,
+        non_trauma_loop_national$admin1
+      )]
+    ) %>%
     dplyr::relocate(non_trauma, .before = 4)
 }
 
 
 ph_int_table <- ph_int_table %>%
-  dplyr::mutate(fcs = fcs_df$fcs[match(admin1,fcs_df$admin1)],
-                rcsi = rcsi_df$rcsi[match(admin1,rcsi_df$admin1)],
-                fcs_phase = fsl_phase_df$fcs_phase[match(admin1,fsl_phase_df$admin1)],
-                lcsi = lcsi_df$lcsi[match(admin1,lcsi_df$admin1)],
-                handwash = handwash_df$handwash[match(admin1,handwash_df$admin1)],
-                impro_water = impro_water_df$impro_water[match(admin1,impro_water_df$admin1)],
-                sanitation = sanitation_df$sanitation[match(admin1,sanitation_df$admin1)],
-                drinking_water = drinking_water_df$drinking_water[match(admin1,drinking_water_df$admin1)],
-                distance_healthcare = distance_healthcare_df$distance_healthcare[match(admin1,distance_healthcare_df$admin1)],
-                unmet_healthcare = unmet_loop_df$unmet_healthcare[match(admin1,unmet_loop_df$admin1)],
-                children_sick = nut_under5_sick_loop$children_sick[match(admin1,nut_under5_sick_loop$admin1)],
-                hhs = hhs_df$hhs[match(admin1,hhs_df$admin1)])
+  dplyr::mutate(
+    fcs = fcs_df$fcs[match(admin1, fcs_df$admin1)],
+    rcsi = rcsi_df$rcsi[match(admin1, rcsi_df$admin1)],
+    fcs_phase = fsl_phase_df$fcs_phase[match(admin1, fsl_phase_df$admin1)],
+    lcsi = lcsi_df$lcsi[match(admin1, lcsi_df$admin1)],
+    handwash = handwash_df$handwash[match(admin1, handwash_df$admin1)],
+    impro_water = impro_water_df$impro_water[match(
+      admin1,
+      impro_water_df$admin1
+    )],
+    sanitation = sanitation_df$sanitation[match(admin1, sanitation_df$admin1)],
+    drinking_water = drinking_water_df$drinking_water[match(
+      admin1,
+      drinking_water_df$admin1
+    )],
+    distance_healthcare = distance_healthcare_df$distance_healthcare[match(
+      admin1,
+      distance_healthcare_df$admin1
+    )],
+    unmet_healthcare = unmet_loop_df$unmet_healthcare[match(
+      admin1,
+      unmet_loop_df$admin1
+    )],
+    children_sick = nut_under5_sick_loop$children_sick[match(
+      admin1,
+      nut_under5_sick_loop$admin1
+    )],
+    hhs = hhs_df$hhs[match(admin1, hhs_df$admin1)]
+  )
 
 national_df <- national_df %>%
-  dplyr::mutate(fcs = fcs_df_national$fcs[match(admin1,fcs_df_national$admin1)],
-                rcsi = rcsi_df_national$rcsi[match(admin1,rcsi_df_national$admin1)],
-                fcs_phase = fsl_phase_df_national$fcs_phase[match(admin1,fsl_phase_df_national$admin1)],
-                lcsi = lcsi_df_national$lcsi[match(admin1,lcsi_df_national$admin1)],
-                handwash = handwash_df_national$handwash[match(admin1,handwash_df_national$admin1)],
-                impro_water = impro_water_df_national$impro_water[match(admin1,impro_water_df_national$admin1)],
-                sanitation = sanitation_df_national$sanitation[match(admin1,sanitation_df_national$admin1)],
-                drinking_water = drinking_water_df_national$drinking_water[match(admin1,drinking_water_df_national$admin1)],
-                distance_healthcare = distance_healthcare_df_national$distance_healthcare[match(admin1,distance_healthcare_df_national$admin1)],
-                unmet_healthcare = unmet_loop_df_national$unmet_healthcare[match(admin1,unmet_loop_df_national$admin1)],
-                children_sick = nut_under5_sick_loop_national$children_sick[match(admin1,nut_under5_sick_loop_national$admin1)],
-                hhs = hhs_df_national$hhs[match(admin1,hhs_df_national$admin1)])
-if(mort_collected == "yes") {
+  dplyr::mutate(
+    fcs = fcs_df_national$fcs[match(admin1, fcs_df_national$admin1)],
+    rcsi = rcsi_df_national$rcsi[match(admin1, rcsi_df_national$admin1)],
+    fcs_phase = fsl_phase_df_national$fcs_phase[match(
+      admin1,
+      fsl_phase_df_national$admin1
+    )],
+    lcsi = lcsi_df_national$lcsi[match(admin1, lcsi_df_national$admin1)],
+    handwash = handwash_df_national$handwash[match(
+      admin1,
+      handwash_df_national$admin1
+    )],
+    impro_water = impro_water_df_national$impro_water[match(
+      admin1,
+      impro_water_df_national$admin1
+    )],
+    sanitation = sanitation_df_national$sanitation[match(
+      admin1,
+      sanitation_df_national$admin1
+    )],
+    drinking_water = drinking_water_df_national$drinking_water[match(
+      admin1,
+      drinking_water_df_national$admin1
+    )],
+    distance_healthcare = distance_healthcare_df_national$distance_healthcare[match(
+      admin1,
+      distance_healthcare_df_national$admin1
+    )],
+    unmet_healthcare = unmet_loop_df_national$unmet_healthcare[match(
+      admin1,
+      unmet_loop_df_national$admin1
+    )],
+    children_sick = nut_under5_sick_loop_national$children_sick[match(
+      admin1,
+      nut_under5_sick_loop_national$admin1
+    )],
+    hhs = hhs_df_national$hhs[match(admin1, hhs_df_national$admin1)]
+  )
+if (mort_collected == "yes") {
   ph_int_table <- ph_int_table %>%
     dplyr::arrange(desc(mort)) %>%
-    dplyr::mutate(mort_lci = mort_data$mort_lci[match(admin1,mort_data$admin1)],
-                  mort_uci = mort_data$mort_uci[match(admin1,mort_data$admin1)],
-                  mort = paste0(round(as.numeric(mort),2)," [",round(as.numeric(mort_lci),2)," - ",round(as.numeric(mort_uci),2),"]")) %>%
-    dplyr::select(-c(mort_lci,mort_uci))
+    dplyr::mutate(
+      mort_lci = mort_data$mort_lci[match(admin1, mort_data$admin1)],
+      mort_uci = mort_data$mort_uci[match(admin1, mort_data$admin1)],
+      mort = paste0(
+        round(as.numeric(mort), 2),
+        " [",
+        round(as.numeric(mort_lci), 2),
+        " - ",
+        round(as.numeric(mort_uci), 2),
+        "]"
+      )
+    ) %>%
+    dplyr::select(-c(mort_lci, mort_uci))
   national_df <- national_df %>%
     dplyr::arrange(desc(mort)) %>%
-    dplyr::mutate(mort_lci = mort_data$mort_lci[match(admin1,mort_data$admin1)],
-                  mort_uci = mort_data$mort_uci[match(admin1,mort_data$admin1)],
-                  mort = paste0(round(as.numeric(mort),2)," [",round(as.numeric(mort_lci),2)," - ",round(as.numeric(mort_uci),2),"]")) %>%
-    dplyr::select(-c(mort_lci,mort_uci))
+    dplyr::mutate(
+      mort_lci = mort_data$mort_lci[match(admin1, mort_data$admin1)],
+      mort_uci = mort_data$mort_uci[match(admin1, mort_data$admin1)],
+      mort = paste0(
+        round(as.numeric(mort), 2),
+        " [",
+        round(as.numeric(mort_lci), 2),
+        " - ",
+        round(as.numeric(mort_uci), 2),
+        "]"
+      )
+    ) %>%
+    dplyr::select(-c(mort_lci, mort_uci))
   ph_int_cat <- ph_int_table %>%
-    dplyr::mutate(mort = case_when(as.numeric(stringr::str_extract(mort,"^[^ ]*")) >= 2 ~ "Extremely high",
-                                   as.numeric(stringr::str_extract(mort,"^[^ ]*")) > 1 ~ "Very high",
-                                   as.numeric(stringr::str_extract(mort,"^[^ ]*")) > 0.75 ~ "High",
-                                   as.numeric(stringr::str_extract(mort,"^[^ ]*")) > 0.5~ "Moderate",
-                                   as.numeric(stringr::str_extract(mort,"^[^ ]*")) <= 0.5 ~ "Low",
-                                   TRUE ~ NA),
-                  children_sick = case_when(children_sick <= 0.1 ~ "Low",
-                                            children_sick <= 0.15 ~ "Moderate",
-                                            children_sick <= 0.2 ~ "High",
-                                            children_sick <= 0.25 ~ "Very high",
-                                            children_sick > 0.25 ~ "Extremely high",
-                                            TRUE ~ NA),
-                  unmet_healthcare = case_when(unmet_healthcare <= 0.1 ~ "Low",
-                                               unmet_healthcare <= 0.15 ~ "Moderate",
-                                               unmet_healthcare <= 0.2 ~ "High",
-                                               unmet_healthcare <= 0.25 ~ "Very high",
-                                               unmet_healthcare > 0.25 ~ "Extremely high",
-                                               TRUE ~ NA),
-                  fcs_phase = case_when(fcs_phase <= 0.1 ~ "Low",
-                                        fcs_phase <= 0.2 ~ "Moderate",
-                                        fcs_phase <= 0.3 ~ "High",
-                                        fcs_phase <= 0.4 ~ "Very high",
-                                        fcs_phase > 0.4 ~ "Extremely high",
-                                        TRUE ~ NA),
-                  fcs = case_when(fcs <= 0.1 ~ "Low",
-                                  fcs <= 0.2 ~ "Moderate",
-                                  fcs <= 0.3 ~ "High",
-                                  fcs <= 0.4 ~ "Very high",
-                                  fcs > 0.4 ~ "Extremely high",
-                                  TRUE ~ NA),
-                  rcsi = case_when(rcsi <= 0.1 ~ "Low",
-                                   rcsi <= 0.2 ~ "Moderate",
-                                   rcsi <= 0.3 ~ "High",
-                                   rcsi <= 0.4 ~ "Very high",
-                                   rcsi > 0.4 ~ "Extremely high",
-                                   TRUE ~ NA),
-                  hhs = case_when(hhs <= 0.05 ~ "Low",
-                                  hhs <= 0.1 ~ "Moderate",
-                                  hhs <= 0.15 ~ "High",
-                                  hhs <= 0.2 ~ "Very high",
-                                  hhs > 0.2 ~ "Extremely high",
-                                  TRUE ~ NA),
-                  lcsi = case_when(lcsi <= 0.1 ~ "Low",
-                                   lcsi <= 0.2 ~ "Moderate",
-                                   lcsi <= 0.3 ~ "High",
-                                   lcsi <= 0.4 ~ "Very high",
-                                   lcsi > 0.4 ~ "Extremely high",
-                                   TRUE ~ NA)) %>%
+    dplyr::mutate(
+      mort = case_when(
+        as.numeric(stringr::str_extract(mort, "^[^ ]*")) >= 2 ~
+          "Extremely high",
+        as.numeric(stringr::str_extract(mort, "^[^ ]*")) > 1 ~ "Very high",
+        as.numeric(stringr::str_extract(mort, "^[^ ]*")) > 0.75 ~ "High",
+        as.numeric(stringr::str_extract(mort, "^[^ ]*")) > 0.5 ~ "Moderate",
+        as.numeric(stringr::str_extract(mort, "^[^ ]*")) <= 0.5 ~ "Low",
+        TRUE ~ NA
+      ),
+      children_sick = case_when(
+        children_sick <= 0.1 ~ "Low",
+        children_sick <= 0.15 ~ "Moderate",
+        children_sick <= 0.2 ~ "High",
+        children_sick <= 0.25 ~ "Very high",
+        children_sick > 0.25 ~ "Extremely high",
+        TRUE ~ NA
+      ),
+      unmet_healthcare = case_when(
+        unmet_healthcare <= 0.1 ~ "Low",
+        unmet_healthcare <= 0.15 ~ "Moderate",
+        unmet_healthcare <= 0.2 ~ "High",
+        unmet_healthcare <= 0.25 ~ "Very high",
+        unmet_healthcare > 0.25 ~ "Extremely high",
+        TRUE ~ NA
+      ),
+      fcs_phase = case_when(
+        fcs_phase <= 0.1 ~ "Low",
+        fcs_phase <= 0.2 ~ "Moderate",
+        fcs_phase <= 0.3 ~ "High",
+        fcs_phase <= 0.4 ~ "Very high",
+        fcs_phase > 0.4 ~ "Extremely high",
+        TRUE ~ NA
+      ),
+      fcs = case_when(
+        fcs <= 0.1 ~ "Low",
+        fcs <= 0.2 ~ "Moderate",
+        fcs <= 0.3 ~ "High",
+        fcs <= 0.4 ~ "Very high",
+        fcs > 0.4 ~ "Extremely high",
+        TRUE ~ NA
+      ),
+      rcsi = case_when(
+        rcsi <= 0.1 ~ "Low",
+        rcsi <= 0.2 ~ "Moderate",
+        rcsi <= 0.3 ~ "High",
+        rcsi <= 0.4 ~ "Very high",
+        rcsi > 0.4 ~ "Extremely high",
+        TRUE ~ NA
+      ),
+      hhs = case_when(
+        hhs <= 0.05 ~ "Low",
+        hhs <= 0.1 ~ "Moderate",
+        hhs <= 0.15 ~ "High",
+        hhs <= 0.2 ~ "Very high",
+        hhs > 0.2 ~ "Extremely high",
+        TRUE ~ NA
+      ),
+      lcsi = case_when(
+        lcsi <= 0.1 ~ "Low",
+        lcsi <= 0.2 ~ "Moderate",
+        lcsi <= 0.3 ~ "High",
+        lcsi <= 0.4 ~ "Very high",
+        lcsi > 0.4 ~ "Extremely high",
+        TRUE ~ NA
+      )
+    ) %>%
     {
-
-      if(quantile(ph_int_table$impro_water)[[2]] -
-         (quantile(ph_int_table$impro_water)[[4]] - quantile(ph_int_table$impro_water)[[2]]) < 0){
-        dplyr::mutate(.,impro_water = case_when(impro_water >= quantile(impro_water)[[4]] + (quantile(impro_water)[[4]] - quantile(impro_water)[[2]]) ~ "Low",
-                                                impro_water >= quantile(impro_water)[[4]]~ "Moderate",
-                                                impro_water >= quantile(impro_water)[[3]]~ "High",
-                                                impro_water >= quantile(impro_water)[[2]]~ "Very high",
-                                                impro_water < quantile(impro_water)[[2]]~ "Extremely high",
-                                                TRUE ~ NA))
+      if (
+        quantile(ph_int_table$impro_water)[[2]] -
+          (quantile(ph_int_table$impro_water)[[4]] -
+            quantile(ph_int_table$impro_water)[[2]]) <
+          0
+      ) {
+        dplyr::mutate(
+          .,
+          impro_water = case_when(
+            impro_water >=
+              quantile(impro_water)[[4]] +
+                (quantile(impro_water)[[4]] - quantile(impro_water)[[2]]) ~
+              "Low",
+            impro_water >= quantile(impro_water)[[4]] ~ "Moderate",
+            impro_water >= quantile(impro_water)[[3]] ~ "High",
+            impro_water >= quantile(impro_water)[[2]] ~ "Very high",
+            impro_water < quantile(impro_water)[[2]] ~ "Extremely high",
+            TRUE ~ NA
+          )
+        )
       } else {
-        dplyr::mutate(.,impro_water = case_when(impro_water >= quantile(impro_water)[[4]]  ~ "Low",
-                                                impro_water >= quantile(impro_water)[[3]]~ "Moderate",
-                                                impro_water >= quantile(impro_water)[[2]] ~ "High",
-                                                impro_water >= quantile(impro_water)[[2]] - (quantile(impro_water)[[4]] - quantile(impro_water)[[2]]) ~ "Very high",
-                                                impro_water < quantile(impro_water)[[2]] - (quantile(impro_water)[[4]] - quantile(impro_water)[[2]])  ~ "Extremely high",
-                                                TRUE ~ NA))
+        dplyr::mutate(
+          .,
+          impro_water = case_when(
+            impro_water >= quantile(impro_water)[[4]] ~ "Low",
+            impro_water >= quantile(impro_water)[[3]] ~ "Moderate",
+            impro_water >= quantile(impro_water)[[2]] ~ "High",
+            impro_water >=
+              quantile(impro_water)[[2]] -
+                (quantile(impro_water)[[4]] - quantile(impro_water)[[2]]) ~
+              "Very high",
+            impro_water <
+              quantile(impro_water)[[2]] -
+                (quantile(impro_water)[[4]] - quantile(impro_water)[[2]]) ~
+              "Extremely high",
+            TRUE ~ NA
+          )
+        )
       }
     } %>%
     {
-      if(quantile(ph_int_table$sanitation)[[2]] - (quantile(ph_int_table$sanitation)[[4]] - quantile(ph_int_table$sanitation)[[2]])<0){
-        dplyr::mutate(.,sanitation = case_when(sanitation >= quantile(sanitation)[[4]]+(quantile(sanitation)[[4]] - quantile(sanitation)[[2]])   ~ "Low",
-                                               sanitation >= quantile(sanitation)[[4]] ~ "Moderate",
-                                               sanitation >= quantile(sanitation)[[3]] ~ "High",
-                                               sanitation >= quantile(sanitation)[[2]]~ "Very high",
-                                               sanitation < quantile(sanitation)[[2]] ~ "Extremely high",
-                                               TRUE ~ NA))
+      if (
+        quantile(ph_int_table$sanitation)[[2]] -
+          (quantile(ph_int_table$sanitation)[[4]] -
+            quantile(ph_int_table$sanitation)[[2]]) <
+          0
+      ) {
+        dplyr::mutate(
+          .,
+          sanitation = case_when(
+            sanitation >=
+              quantile(sanitation)[[4]] +
+                (quantile(sanitation)[[4]] - quantile(sanitation)[[2]]) ~
+              "Low",
+            sanitation >= quantile(sanitation)[[4]] ~ "Moderate",
+            sanitation >= quantile(sanitation)[[3]] ~ "High",
+            sanitation >= quantile(sanitation)[[2]] ~ "Very high",
+            sanitation < quantile(sanitation)[[2]] ~ "Extremely high",
+            TRUE ~ NA
+          )
+        )
       } else {
-        dplyr::mutate(.,sanitation = case_when(sanitation >= quantile(sanitation)[[4]] ~ "Low",
-                                               sanitation >= quantile(sanitation)[[3]] ~ "Moderate",
-                                               sanitation >= quantile(sanitation)[[2]] ~ "High",
-                                               sanitation >= quantile(sanitation)[[2]] - (quantile(sanitation)[[4]] - quantile(sanitation)[[2]])  ~ "Very high",
-                                               sanitation < quantile(sanitation)[[2]] - (quantile(sanitation)[[4]] - quantile(sanitation)[[2]])  ~ "Extremely high",
-                                               TRUE ~ NA))
+        dplyr::mutate(
+          .,
+          sanitation = case_when(
+            sanitation >= quantile(sanitation)[[4]] ~ "Low",
+            sanitation >= quantile(sanitation)[[3]] ~ "Moderate",
+            sanitation >= quantile(sanitation)[[2]] ~ "High",
+            sanitation >=
+              quantile(sanitation)[[2]] -
+                (quantile(sanitation)[[4]] - quantile(sanitation)[[2]]) ~
+              "Very high",
+            sanitation <
+              quantile(sanitation)[[2]] -
+                (quantile(sanitation)[[4]] - quantile(sanitation)[[2]]) ~
+              "Extremely high",
+            TRUE ~ NA
+          )
+        )
       }
     } %>%
     {
-      if(quantile(ph_int_table$handwash)[[2]]- (quantile(ph_int_table$handwash)[[4]] - quantile(ph_int_table$handwash)[[2]])<0){
-        dplyr::mutate(.,handwash = case_when(handwash >= quantile(handwash)[[4]]+ (quantile(handwash)[[4]] - quantile(handwash)[[2]])   ~ "Low",
-                                             handwash >= quantile(handwash)[[4]] ~ "Moderate",
-                                             handwash >= quantile(handwash)[[3]] ~ "High",
-                                             handwash >= quantile(handwash)[[2]]~ "Very high",
-                                             handwash < quantile(handwash)[[2]]~ "Extremely high",
-                                             TRUE ~ NA))
+      if (
+        quantile(ph_int_table$handwash)[[2]] -
+          (quantile(ph_int_table$handwash)[[4]] -
+            quantile(ph_int_table$handwash)[[2]]) <
+          0
+      ) {
+        dplyr::mutate(
+          .,
+          handwash = case_when(
+            handwash >=
+              quantile(handwash)[[4]] +
+                (quantile(handwash)[[4]] - quantile(handwash)[[2]]) ~
+              "Low",
+            handwash >= quantile(handwash)[[4]] ~ "Moderate",
+            handwash >= quantile(handwash)[[3]] ~ "High",
+            handwash >= quantile(handwash)[[2]] ~ "Very high",
+            handwash < quantile(handwash)[[2]] ~ "Extremely high",
+            TRUE ~ NA
+          )
+        )
       } else {
-        dplyr::mutate(.,handwash = case_when(handwash >= quantile(handwash)[[4]]  ~ "Low",
-                                             handwash >= quantile(handwash)[[3]] ~ "Moderate",
-                                             handwash >= quantile(handwash)[[2]] ~ "High",
-                                             handwash >= quantile(handwash)[[2]] - (quantile(handwash)[[4]] - quantile(handwash)[[2]])  ~ "Very high",
-                                             handwash < quantile(handwash)[[2]]- (quantile(handwash)[[4]] - quantile(handwash)[[2]])  ~ "Extremely high",
-                                             TRUE ~ NA))
+        dplyr::mutate(
+          .,
+          handwash = case_when(
+            handwash >= quantile(handwash)[[4]] ~ "Low",
+            handwash >= quantile(handwash)[[3]] ~ "Moderate",
+            handwash >= quantile(handwash)[[2]] ~ "High",
+            handwash >=
+              quantile(handwash)[[2]] -
+                (quantile(handwash)[[4]] - quantile(handwash)[[2]]) ~
+              "Very high",
+            handwash <
+              quantile(handwash)[[2]] -
+                (quantile(handwash)[[4]] - quantile(handwash)[[2]]) ~
+              "Extremely high",
+            TRUE ~ NA
+          )
+        )
       }
     } %>%
-    dplyr::mutate(drinking_water = case_when(drinking_water <= 0.04 ~ "Low",
-                                             drinking_water <= 0.06 ~ "Moderate",
-                                             drinking_water <= 0.08 ~ "High",
-                                             drinking_water <= 0.1 ~ "Very high",
-                                             drinking_water > 0.1 ~ "Extremely high",
-                                             TRUE ~ NA),
-                  distance_healthcare = case_when(distance_healthcare <= 0.1 ~ "Low",
-                                                  distance_healthcare <= 0.2 ~ "Moderate",
-                                                  distance_healthcare <= 0.3 ~ "High",
-                                                  distance_healthcare <= 0.4 ~ "Very high",
-                                                  distance_healthcare > 0.4 ~ "Extremely high",
-                                                  TRUE ~ NA))%>%
-    dplyr::mutate(non_trauma = ifelse(is.na(non_trauma),NA,paste0(round(non_trauma*100,2),"%")))
+    dplyr::mutate(
+      drinking_water = case_when(
+        drinking_water <= 0.04 ~ "Low",
+        drinking_water <= 0.06 ~ "Moderate",
+        drinking_water <= 0.08 ~ "High",
+        drinking_water <= 0.1 ~ "Very high",
+        drinking_water > 0.1 ~ "Extremely high",
+        TRUE ~ NA
+      ),
+      distance_healthcare = case_when(
+        distance_healthcare <= 0.1 ~ "Low",
+        distance_healthcare <= 0.2 ~ "Moderate",
+        distance_healthcare <= 0.3 ~ "High",
+        distance_healthcare <= 0.4 ~ "Very high",
+        distance_healthcare > 0.4 ~ "Extremely high",
+        TRUE ~ NA
+      )
+    ) %>%
+    dplyr::mutate(
+      non_trauma = ifelse(
+        is.na(non_trauma),
+        NA,
+        paste0(round(non_trauma * 100, 2), "%")
+      )
+    )
 
   national_df_cat <- national_df %>%
-    dplyr::mutate(mort = case_when(as.numeric(stringr::str_extract(mort,"^[^ ]*")) >= 2 ~ "Extremely high",
-                                   as.numeric(stringr::str_extract(mort,"^[^ ]*")) > 1 ~ "Very high",
-                                   as.numeric(stringr::str_extract(mort,"^[^ ]*")) > 0.75 ~ "High",
-                                   as.numeric(stringr::str_extract(mort,"^[^ ]*")) > 0.5~ "Moderate",
-                                   as.numeric(stringr::str_extract(mort,"^[^ ]*")) <= 0.5 ~ "Low",
-                                   TRUE ~ NA),
-                  children_sick = case_when(children_sick <= 0.1 ~ "Low",
-                                            children_sick <= 0.15 ~ "Moderate",
-                                            children_sick <= 0.2 ~ "High",
-                                            children_sick <= 0.25 ~ "Very high",
-                                            children_sick > 0.25 ~ "Extremely high",
-                                            TRUE ~ NA),
-                  unmet_healthcare = case_when(unmet_healthcare <= 0.1 ~ "Low",
-                                               unmet_healthcare <= 0.15 ~ "Moderate",
-                                               unmet_healthcare <= 0.2 ~ "High",
-                                               unmet_healthcare <= 0.25 ~ "Very high",
-                                               unmet_healthcare > 0.25 ~ "Extremely high",
-                                               TRUE ~ NA),
-                  fcs_phase = case_when(fcs_phase <= 0.1 ~ "Low",
-                                        fcs_phase <= 0.2 ~ "Moderate",
-                                        fcs_phase <= 0.3 ~ "High",
-                                        fcs_phase <= 0.4 ~ "Very high",
-                                        fcs_phase > 0.4 ~ "Extremely high",
-                                        TRUE ~ NA),
-                  fcs = case_when(fcs <= 0.1 ~ "Low",
-                                  fcs <= 0.2 ~ "Moderate",
-                                  fcs <= 0.3 ~ "High",
-                                  fcs <= 0.4 ~ "Very high",
-                                  fcs > 0.4 ~ "Extremely high",
-                                  TRUE ~ NA),
-                  rcsi = case_when(rcsi <= 0.1 ~ "Low",
-                                   rcsi <= 0.2 ~ "Moderate",
-                                   rcsi <= 0.3 ~ "High",
-                                   rcsi <= 0.4 ~ "Very high",
-                                   rcsi > 0.4 ~ "Extremely high",
-                                   TRUE ~ NA),
-                  hhs = case_when(hhs <= 0.05 ~ "Low",
-                                  hhs <= 0.1 ~ "Moderate",
-                                  hhs <= 0.15 ~ "High",
-                                  hhs <= 0.2 ~ "Very high",
-                                  hhs > 0.2 ~ "Extremely high",
-                                  TRUE ~ NA),
-                  lcsi = case_when(lcsi <= 0.1 ~ "Low",
-                                   lcsi <= 0.2 ~ "Moderate",
-                                   lcsi <= 0.3 ~ "High",
-                                   lcsi <= 0.4 ~ "Very high",
-                                   lcsi > 0.4 ~ "Extremely high",
-                                   TRUE ~ NA)) %>%
+    dplyr::mutate(
+      mort = case_when(
+        as.numeric(stringr::str_extract(mort, "^[^ ]*")) >= 2 ~
+          "Extremely high",
+        as.numeric(stringr::str_extract(mort, "^[^ ]*")) > 1 ~ "Very high",
+        as.numeric(stringr::str_extract(mort, "^[^ ]*")) > 0.75 ~ "High",
+        as.numeric(stringr::str_extract(mort, "^[^ ]*")) > 0.5 ~ "Moderate",
+        as.numeric(stringr::str_extract(mort, "^[^ ]*")) <= 0.5 ~ "Low",
+        TRUE ~ NA
+      ),
+      children_sick = case_when(
+        children_sick <= 0.1 ~ "Low",
+        children_sick <= 0.15 ~ "Moderate",
+        children_sick <= 0.2 ~ "High",
+        children_sick <= 0.25 ~ "Very high",
+        children_sick > 0.25 ~ "Extremely high",
+        TRUE ~ NA
+      ),
+      unmet_healthcare = case_when(
+        unmet_healthcare <= 0.1 ~ "Low",
+        unmet_healthcare <= 0.15 ~ "Moderate",
+        unmet_healthcare <= 0.2 ~ "High",
+        unmet_healthcare <= 0.25 ~ "Very high",
+        unmet_healthcare > 0.25 ~ "Extremely high",
+        TRUE ~ NA
+      ),
+      fcs_phase = case_when(
+        fcs_phase <= 0.1 ~ "Low",
+        fcs_phase <= 0.2 ~ "Moderate",
+        fcs_phase <= 0.3 ~ "High",
+        fcs_phase <= 0.4 ~ "Very high",
+        fcs_phase > 0.4 ~ "Extremely high",
+        TRUE ~ NA
+      ),
+      fcs = case_when(
+        fcs <= 0.1 ~ "Low",
+        fcs <= 0.2 ~ "Moderate",
+        fcs <= 0.3 ~ "High",
+        fcs <= 0.4 ~ "Very high",
+        fcs > 0.4 ~ "Extremely high",
+        TRUE ~ NA
+      ),
+      rcsi = case_when(
+        rcsi <= 0.1 ~ "Low",
+        rcsi <= 0.2 ~ "Moderate",
+        rcsi <= 0.3 ~ "High",
+        rcsi <= 0.4 ~ "Very high",
+        rcsi > 0.4 ~ "Extremely high",
+        TRUE ~ NA
+      ),
+      hhs = case_when(
+        hhs <= 0.05 ~ "Low",
+        hhs <= 0.1 ~ "Moderate",
+        hhs <= 0.15 ~ "High",
+        hhs <= 0.2 ~ "Very high",
+        hhs > 0.2 ~ "Extremely high",
+        TRUE ~ NA
+      ),
+      lcsi = case_when(
+        lcsi <= 0.1 ~ "Low",
+        lcsi <= 0.2 ~ "Moderate",
+        lcsi <= 0.3 ~ "High",
+        lcsi <= 0.4 ~ "Very high",
+        lcsi > 0.4 ~ "Extremely high",
+        TRUE ~ NA
+      )
+    ) %>%
     {
-
-      if(quantile(ph_int_table$impro_water)[[2]] -
-         (quantile(ph_int_table$impro_water)[[4]] - quantile(ph_int_table$impro_water)[[2]]) < 0){
-        dplyr::mutate(.,impro_water = case_when(impro_water >= quantile(impro_water)[[4]] + (quantile(impro_water)[[4]] - quantile(impro_water)[[2]]) ~ "Low",
-                                                impro_water >= quantile(impro_water)[[4]]~ "Moderate",
-                                                impro_water >= quantile(impro_water)[[3]]~ "High",
-                                                impro_water >= quantile(impro_water)[[2]]~ "Very high",
-                                                impro_water < quantile(impro_water)[[2]]~ "Extremely high",
-                                                TRUE ~ NA))
+      if (
+        quantile(ph_int_table$impro_water)[[2]] -
+          (quantile(ph_int_table$impro_water)[[4]] -
+            quantile(ph_int_table$impro_water)[[2]]) <
+          0
+      ) {
+        dplyr::mutate(
+          .,
+          impro_water = case_when(
+            impro_water >=
+              quantile(impro_water)[[4]] +
+                (quantile(impro_water)[[4]] - quantile(impro_water)[[2]]) ~
+              "Low",
+            impro_water >= quantile(impro_water)[[4]] ~ "Moderate",
+            impro_water >= quantile(impro_water)[[3]] ~ "High",
+            impro_water >= quantile(impro_water)[[2]] ~ "Very high",
+            impro_water < quantile(impro_water)[[2]] ~ "Extremely high",
+            TRUE ~ NA
+          )
+        )
       } else {
-        dplyr::mutate(.,impro_water = case_when(impro_water >= quantile(impro_water)[[4]]  ~ "Low",
-                                                impro_water >= quantile(impro_water)[[3]]~ "Moderate",
-                                                impro_water >= quantile(impro_water)[[2]] ~ "High",
-                                                impro_water >= quantile(impro_water)[[2]] - (quantile(impro_water)[[4]] - quantile(impro_water)[[2]]) ~ "Very high",
-                                                impro_water < quantile(impro_water)[[2]] - (quantile(impro_water)[[4]] - quantile(impro_water)[[2]])  ~ "Extremely high",
-                                                TRUE ~ NA))
+        dplyr::mutate(
+          .,
+          impro_water = case_when(
+            impro_water >= quantile(impro_water)[[4]] ~ "Low",
+            impro_water >= quantile(impro_water)[[3]] ~ "Moderate",
+            impro_water >= quantile(impro_water)[[2]] ~ "High",
+            impro_water >=
+              quantile(impro_water)[[2]] -
+                (quantile(impro_water)[[4]] - quantile(impro_water)[[2]]) ~
+              "Very high",
+            impro_water <
+              quantile(impro_water)[[2]] -
+                (quantile(impro_water)[[4]] - quantile(impro_water)[[2]]) ~
+              "Extremely high",
+            TRUE ~ NA
+          )
+        )
       }
     } %>%
     {
-      if(quantile(ph_int_table$sanitation)[[2]] - (quantile(ph_int_table$sanitation)[[4]] - quantile(ph_int_table$sanitation)[[2]])<0){
-        dplyr::mutate(.,sanitation = case_when(sanitation >= quantile(sanitation)[[4]]+(quantile(sanitation)[[4]] - quantile(sanitation)[[2]])   ~ "Low",
-                                               sanitation >= quantile(sanitation)[[4]] ~ "Moderate",
-                                               sanitation >= quantile(sanitation)[[3]] ~ "High",
-                                               sanitation >= quantile(sanitation)[[2]]~ "Very high",
-                                               sanitation < quantile(sanitation)[[2]] ~ "Extremely high",
-                                               TRUE ~ NA))
+      if (
+        quantile(ph_int_table$sanitation)[[2]] -
+          (quantile(ph_int_table$sanitation)[[4]] -
+            quantile(ph_int_table$sanitation)[[2]]) <
+          0
+      ) {
+        dplyr::mutate(
+          .,
+          sanitation = case_when(
+            sanitation >=
+              quantile(sanitation)[[4]] +
+                (quantile(sanitation)[[4]] - quantile(sanitation)[[2]]) ~
+              "Low",
+            sanitation >= quantile(sanitation)[[4]] ~ "Moderate",
+            sanitation >= quantile(sanitation)[[3]] ~ "High",
+            sanitation >= quantile(sanitation)[[2]] ~ "Very high",
+            sanitation < quantile(sanitation)[[2]] ~ "Extremely high",
+            TRUE ~ NA
+          )
+        )
       } else {
-        dplyr::mutate(.,sanitation = case_when(sanitation >= quantile(sanitation)[[4]] ~ "Low",
-                                               sanitation >= quantile(sanitation)[[3]] ~ "Moderate",
-                                               sanitation >= quantile(sanitation)[[2]] ~ "High",
-                                               sanitation >= quantile(sanitation)[[2]] - (quantile(sanitation)[[4]] - quantile(sanitation)[[2]])  ~ "Very high",
-                                               sanitation < quantile(sanitation)[[2]] - (quantile(sanitation)[[4]] - quantile(sanitation)[[2]])  ~ "Extremely high",
-                                               TRUE ~ NA))
+        dplyr::mutate(
+          .,
+          sanitation = case_when(
+            sanitation >= quantile(sanitation)[[4]] ~ "Low",
+            sanitation >= quantile(sanitation)[[3]] ~ "Moderate",
+            sanitation >= quantile(sanitation)[[2]] ~ "High",
+            sanitation >=
+              quantile(sanitation)[[2]] -
+                (quantile(sanitation)[[4]] - quantile(sanitation)[[2]]) ~
+              "Very high",
+            sanitation <
+              quantile(sanitation)[[2]] -
+                (quantile(sanitation)[[4]] - quantile(sanitation)[[2]]) ~
+              "Extremely high",
+            TRUE ~ NA
+          )
+        )
       }
     } %>%
     {
-      if(quantile(ph_int_table$handwash)[[2]]- (quantile(ph_int_table$handwash)[[4]] - quantile(ph_int_table$handwash)[[2]])<0){
-        dplyr::mutate(.,handwash = case_when(handwash >= quantile(handwash)[[4]]+ (quantile(handwash)[[4]] - quantile(handwash)[[2]])   ~ "Low",
-                                             handwash >= quantile(handwash)[[4]] ~ "Moderate",
-                                             handwash >= quantile(handwash)[[3]] ~ "High",
-                                             handwash >= quantile(handwash)[[2]]~ "Very high",
-                                             handwash < quantile(handwash)[[2]]~ "Extremely high",
-                                             TRUE ~ NA))
+      if (
+        quantile(ph_int_table$handwash)[[2]] -
+          (quantile(ph_int_table$handwash)[[4]] -
+            quantile(ph_int_table$handwash)[[2]]) <
+          0
+      ) {
+        dplyr::mutate(
+          .,
+          handwash = case_when(
+            handwash >=
+              quantile(handwash)[[4]] +
+                (quantile(handwash)[[4]] - quantile(handwash)[[2]]) ~
+              "Low",
+            handwash >= quantile(handwash)[[4]] ~ "Moderate",
+            handwash >= quantile(handwash)[[3]] ~ "High",
+            handwash >= quantile(handwash)[[2]] ~ "Very high",
+            handwash < quantile(handwash)[[2]] ~ "Extremely high",
+            TRUE ~ NA
+          )
+        )
       } else {
-        dplyr::mutate(.,handwash = case_when(handwash >= quantile(handwash)[[4]]  ~ "Low",
-                                             handwash >= quantile(handwash)[[3]] ~ "Moderate",
-                                             handwash >= quantile(handwash)[[2]] ~ "High",
-                                             handwash >= quantile(handwash)[[2]] - (quantile(handwash)[[4]] - quantile(handwash)[[2]])  ~ "Very high",
-                                             handwash < quantile(handwash)[[2]]- (quantile(handwash)[[4]] - quantile(handwash)[[2]])  ~ "Extremely high",
-                                             TRUE ~ NA))
+        dplyr::mutate(
+          .,
+          handwash = case_when(
+            handwash >= quantile(handwash)[[4]] ~ "Low",
+            handwash >= quantile(handwash)[[3]] ~ "Moderate",
+            handwash >= quantile(handwash)[[2]] ~ "High",
+            handwash >=
+              quantile(handwash)[[2]] -
+                (quantile(handwash)[[4]] - quantile(handwash)[[2]]) ~
+              "Very high",
+            handwash <
+              quantile(handwash)[[2]] -
+                (quantile(handwash)[[4]] - quantile(handwash)[[2]]) ~
+              "Extremely high",
+            TRUE ~ NA
+          )
+        )
       }
     } %>%
-    dplyr::mutate(drinking_water = case_when(drinking_water <= 0.04 ~ "Low",
-                                             drinking_water <= 0.06 ~ "Moderate",
-                                             drinking_water <= 0.08 ~ "High",
-                                             drinking_water <= 0.1 ~ "Very high",
-                                             drinking_water > 0.1 ~ "Extremely high",
-                                             TRUE ~ NA),
-                  distance_healthcare = case_when(distance_healthcare <= 0.1 ~ "Low",
-                                                  distance_healthcare <= 0.2 ~ "Moderate",
-                                                  distance_healthcare <= 0.3 ~ "High",
-                                                  distance_healthcare <= 0.4 ~ "Very high",
-                                                  distance_healthcare > 0.4 ~ "Extremely high",
-                                                  TRUE ~ NA))%>%
-    dplyr::mutate(non_trauma = ifelse(is.na(non_trauma),NA,paste0(round(non_trauma*100,2),"%")))
-
+    dplyr::mutate(
+      drinking_water = case_when(
+        drinking_water <= 0.04 ~ "Low",
+        drinking_water <= 0.06 ~ "Moderate",
+        drinking_water <= 0.08 ~ "High",
+        drinking_water <= 0.1 ~ "Very high",
+        drinking_water > 0.1 ~ "Extremely high",
+        TRUE ~ NA
+      ),
+      distance_healthcare = case_when(
+        distance_healthcare <= 0.1 ~ "Low",
+        distance_healthcare <= 0.2 ~ "Moderate",
+        distance_healthcare <= 0.3 ~ "High",
+        distance_healthcare <= 0.4 ~ "Very high",
+        distance_healthcare > 0.4 ~ "Extremely high",
+        TRUE ~ NA
+      )
+    ) %>%
+    dplyr::mutate(
+      non_trauma = ifelse(
+        is.na(non_trauma),
+        NA,
+        paste0(round(non_trauma * 100, 2), "%")
+      )
+    )
 } else {
   ph_int_cat <- ph_int_table %>%
-    dplyr::mutate(children_sick = case_when(children_sick <= 0.1 ~ "Low",
-                                            children_sick <= 0.15 ~ "Moderate",
-                                            children_sick <= 0.2 ~ "High",
-                                            children_sick <= 0.25 ~ "Very high",
-                                            children_sick > 0.25 ~ "Extremely high",
-                                            TRUE ~ NA),
-                  unmet_healthcare = case_when(unmet_healthcare <= 0.1 ~ "Low",
-                                               unmet_healthcare <= 0.15 ~ "Moderate",
-                                               unmet_healthcare <= 0.2 ~ "High",
-                                               unmet_healthcare <= 0.25 ~ "Very high",
-                                               unmet_healthcare > 0.25 ~ "Extremely high",
-                                               TRUE ~ NA),
-                  fcs_phase = case_when(fcs_phase <= 0.1 ~ "Low",
-                                        fcs_phase <= 0.2 ~ "Moderate",
-                                        fcs_phase <= 0.3 ~ "High",
-                                        fcs_phase <= 0.4 ~ "Very high",
-                                        fcs_phase > 0.4 ~ "Extremely high",
-                                        TRUE ~ NA),
-                  fcs = case_when(fcs <= 0.1 ~ "Low",
-                                  fcs <= 0.2 ~ "Moderate",
-                                  fcs <= 0.3 ~ "High",
-                                  fcs <= 0.4 ~ "Very high",
-                                  fcs > 0.4 ~ "Extremely high",
-                                  TRUE ~ NA),
-                  rcsi = case_when(rcsi <= 0.1 ~ "Low",
-                                   rcsi <= 0.2 ~ "Moderate",
-                                   rcsi <= 0.3 ~ "High",
-                                   rcsi <= 0.4 ~ "Very high",
-                                   rcsi > 0.4 ~ "Extremely high",
-                                   TRUE ~ NA),
-                  hhs = case_when(hhs <= 0.05 ~ "Low",
-                                  hhs <= 0.1 ~ "Moderate",
-                                  hhs <= 0.15 ~ "High",
-                                  hhs <= 0.2 ~ "Very high",
-                                  hhs > 0.2 ~ "Extremely high",
-                                  TRUE ~ NA),
-                  lcsi = case_when(lcsi <= 0.1 ~ "Low",
-                                   lcsi <= 0.2 ~ "Moderate",
-                                   lcsi <= 0.3 ~ "High",
-                                   lcsi <= 0.4 ~ "Very high",
-                                   lcsi > 0.4 ~ "Extremely high",
-                                   TRUE ~ NA))  %>%
+    dplyr::mutate(
+      children_sick = case_when(
+        children_sick <= 0.1 ~ "Low",
+        children_sick <= 0.15 ~ "Moderate",
+        children_sick <= 0.2 ~ "High",
+        children_sick <= 0.25 ~ "Very high",
+        children_sick > 0.25 ~ "Extremely high",
+        TRUE ~ NA
+      ),
+      unmet_healthcare = case_when(
+        unmet_healthcare <= 0.1 ~ "Low",
+        unmet_healthcare <= 0.15 ~ "Moderate",
+        unmet_healthcare <= 0.2 ~ "High",
+        unmet_healthcare <= 0.25 ~ "Very high",
+        unmet_healthcare > 0.25 ~ "Extremely high",
+        TRUE ~ NA
+      ),
+      fcs_phase = case_when(
+        fcs_phase <= 0.1 ~ "Low",
+        fcs_phase <= 0.2 ~ "Moderate",
+        fcs_phase <= 0.3 ~ "High",
+        fcs_phase <= 0.4 ~ "Very high",
+        fcs_phase > 0.4 ~ "Extremely high",
+        TRUE ~ NA
+      ),
+      fcs = case_when(
+        fcs <= 0.1 ~ "Low",
+        fcs <= 0.2 ~ "Moderate",
+        fcs <= 0.3 ~ "High",
+        fcs <= 0.4 ~ "Very high",
+        fcs > 0.4 ~ "Extremely high",
+        TRUE ~ NA
+      ),
+      rcsi = case_when(
+        rcsi <= 0.1 ~ "Low",
+        rcsi <= 0.2 ~ "Moderate",
+        rcsi <= 0.3 ~ "High",
+        rcsi <= 0.4 ~ "Very high",
+        rcsi > 0.4 ~ "Extremely high",
+        TRUE ~ NA
+      ),
+      hhs = case_when(
+        hhs <= 0.05 ~ "Low",
+        hhs <= 0.1 ~ "Moderate",
+        hhs <= 0.15 ~ "High",
+        hhs <= 0.2 ~ "Very high",
+        hhs > 0.2 ~ "Extremely high",
+        TRUE ~ NA
+      ),
+      lcsi = case_when(
+        lcsi <= 0.1 ~ "Low",
+        lcsi <= 0.2 ~ "Moderate",
+        lcsi <= 0.3 ~ "High",
+        lcsi <= 0.4 ~ "Very high",
+        lcsi > 0.4 ~ "Extremely high",
+        TRUE ~ NA
+      )
+    ) %>%
     {
-
-      if(quantile(ph_int_table$impro_water)[[2]] -
-         (quantile(ph_int_table$impro_water)[[4]] - quantile(ph_int_table$impro_water)[[2]]) < 0){
-        dplyr::mutate(.,impro_water = case_when(impro_water >= quantile(impro_water)[[4]] + (quantile(impro_water)[[4]] - quantile(impro_water)[[2]]) ~ "Low",
-                                                impro_water >= quantile(impro_water)[[4]]~ "Moderate",
-                                                impro_water >= quantile(impro_water)[[3]]~ "High",
-                                                impro_water >= quantile(impro_water)[[2]]~ "Very high",
-                                                impro_water < quantile(impro_water)[[2]]~ "Extremely high",
-                                                TRUE ~ NA))
+      if (
+        quantile(ph_int_table$impro_water)[[2]] -
+          (quantile(ph_int_table$impro_water)[[4]] -
+            quantile(ph_int_table$impro_water)[[2]]) <
+          0
+      ) {
+        dplyr::mutate(
+          .,
+          impro_water = case_when(
+            impro_water >=
+              quantile(impro_water)[[4]] +
+                (quantile(impro_water)[[4]] - quantile(impro_water)[[2]]) ~
+              "Low",
+            impro_water >= quantile(impro_water)[[4]] ~ "Moderate",
+            impro_water >= quantile(impro_water)[[3]] ~ "High",
+            impro_water >= quantile(impro_water)[[2]] ~ "Very high",
+            impro_water < quantile(impro_water)[[2]] ~ "Extremely high",
+            TRUE ~ NA
+          )
+        )
       } else {
-        dplyr::mutate(.,impro_water = case_when(impro_water >= quantile(impro_water)[[4]]  ~ "Low",
-                                                impro_water >= quantile(impro_water)[[3]]~ "Moderate",
-                                                impro_water >= quantile(impro_water)[[2]] ~ "High",
-                                                impro_water >= quantile(impro_water)[[2]] - (quantile(impro_water)[[4]] - quantile(impro_water)[[2]]) ~ "Very high",
-                                                impro_water < quantile(impro_water)[[2]] - (quantile(impro_water)[[4]] - quantile(impro_water)[[2]])  ~ "Extremely high",
-                                                TRUE ~ NA))
+        dplyr::mutate(
+          .,
+          impro_water = case_when(
+            impro_water >= quantile(impro_water)[[4]] ~ "Low",
+            impro_water >= quantile(impro_water)[[3]] ~ "Moderate",
+            impro_water >= quantile(impro_water)[[2]] ~ "High",
+            impro_water >=
+              quantile(impro_water)[[2]] -
+                (quantile(impro_water)[[4]] - quantile(impro_water)[[2]]) ~
+              "Very high",
+            impro_water <
+              quantile(impro_water)[[2]] -
+                (quantile(impro_water)[[4]] - quantile(impro_water)[[2]]) ~
+              "Extremely high",
+            TRUE ~ NA
+          )
+        )
       }
     } %>%
     {
-      if(quantile(ph_int_table$sanitation)[[2]] - (quantile(ph_int_table$sanitation)[[4]] - quantile(ph_int_table$sanitation)[[2]])<0){
-        dplyr::mutate(.,sanitation = case_when(sanitation >= quantile(sanitation)[[4]]+(quantile(sanitation)[[4]] - quantile(sanitation)[[2]])   ~ "Low",
-                                               sanitation >= quantile(sanitation)[[4]] ~ "Moderate",
-                                               sanitation >= quantile(sanitation)[[3]] ~ "High",
-                                               sanitation >= quantile(sanitation)[[2]]~ "Very high",
-                                               sanitation < quantile(sanitation)[[2]] ~ "Extremely high",
-                                               TRUE ~ NA))
+      if (
+        quantile(ph_int_table$sanitation)[[2]] -
+          (quantile(ph_int_table$sanitation)[[4]] -
+            quantile(ph_int_table$sanitation)[[2]]) <
+          0
+      ) {
+        dplyr::mutate(
+          .,
+          sanitation = case_when(
+            sanitation >=
+              quantile(sanitation)[[4]] +
+                (quantile(sanitation)[[4]] - quantile(sanitation)[[2]]) ~
+              "Low",
+            sanitation >= quantile(sanitation)[[4]] ~ "Moderate",
+            sanitation >= quantile(sanitation)[[3]] ~ "High",
+            sanitation >= quantile(sanitation)[[2]] ~ "Very high",
+            sanitation < quantile(sanitation)[[2]] ~ "Extremely high",
+            TRUE ~ NA
+          )
+        )
       } else {
-        dplyr::mutate(.,sanitation = case_when(sanitation >= quantile(sanitation)[[4]] ~ "Low",
-                                               sanitation >= quantile(sanitation)[[3]] ~ "Moderate",
-                                               sanitation >= quantile(sanitation)[[2]] ~ "High",
-                                               sanitation >= quantile(sanitation)[[2]] - (quantile(sanitation)[[4]] - quantile(sanitation)[[2]])  ~ "Very high",
-                                               sanitation < quantile(sanitation)[[2]] - (quantile(sanitation)[[4]] - quantile(sanitation)[[2]])  ~ "Extremely high",
-                                               TRUE ~ NA))
+        dplyr::mutate(
+          .,
+          sanitation = case_when(
+            sanitation >= quantile(sanitation)[[4]] ~ "Low",
+            sanitation >= quantile(sanitation)[[3]] ~ "Moderate",
+            sanitation >= quantile(sanitation)[[2]] ~ "High",
+            sanitation >=
+              quantile(sanitation)[[2]] -
+                (quantile(sanitation)[[4]] - quantile(sanitation)[[2]]) ~
+              "Very high",
+            sanitation <
+              quantile(sanitation)[[2]] -
+                (quantile(sanitation)[[4]] - quantile(sanitation)[[2]]) ~
+              "Extremely high",
+            TRUE ~ NA
+          )
+        )
       }
     } %>%
     {
-      if(quantile(ph_int_table$handwash)[[2]]- (quantile(ph_int_table$handwash)[[4]] - quantile(ph_int_table$handwash)[[2]])<0){
-        dplyr::mutate(.,handwash = case_when(handwash >= quantile(handwash)[[4]]+ (quantile(handwash)[[4]] - quantile(handwash)[[2]])   ~ "Low",
-                                             handwash >= quantile(handwash)[[4]] ~ "Moderate",
-                                             handwash >= quantile(handwash)[[3]] ~ "High",
-                                             handwash >= quantile(handwash)[[2]]~ "Very high",
-                                             handwash < quantile(handwash)[[2]]~ "Extremely high",
-                                             TRUE ~ NA))
+      if (
+        quantile(ph_int_table$handwash)[[2]] -
+          (quantile(ph_int_table$handwash)[[4]] -
+            quantile(ph_int_table$handwash)[[2]]) <
+          0
+      ) {
+        dplyr::mutate(
+          .,
+          handwash = case_when(
+            handwash >=
+              quantile(handwash)[[4]] +
+                (quantile(handwash)[[4]] - quantile(handwash)[[2]]) ~
+              "Low",
+            handwash >= quantile(handwash)[[4]] ~ "Moderate",
+            handwash >= quantile(handwash)[[3]] ~ "High",
+            handwash >= quantile(handwash)[[2]] ~ "Very high",
+            handwash < quantile(handwash)[[2]] ~ "Extremely high",
+            TRUE ~ NA
+          )
+        )
       } else {
-        dplyr::mutate(.,handwash = case_when(handwash >= quantile(handwash)[[4]]  ~ "Low",
-                                             handwash >= quantile(handwash)[[3]] ~ "Moderate",
-                                             handwash >= quantile(handwash)[[2]] ~ "High",
-                                             handwash >= quantile(handwash)[[2]] - (quantile(handwash)[[4]] - quantile(handwash)[[2]])  ~ "Very high",
-                                             handwash < quantile(handwash)[[2]]- (quantile(handwash)[[4]] - quantile(handwash)[[2]])  ~ "Extremely high",
-                                             TRUE ~ NA))
+        dplyr::mutate(
+          .,
+          handwash = case_when(
+            handwash >= quantile(handwash)[[4]] ~ "Low",
+            handwash >= quantile(handwash)[[3]] ~ "Moderate",
+            handwash >= quantile(handwash)[[2]] ~ "High",
+            handwash >=
+              quantile(handwash)[[2]] -
+                (quantile(handwash)[[4]] - quantile(handwash)[[2]]) ~
+              "Very high",
+            handwash <
+              quantile(handwash)[[2]] -
+                (quantile(handwash)[[4]] - quantile(handwash)[[2]]) ~
+              "Extremely high",
+            TRUE ~ NA
+          )
+        )
       }
     } %>%
-    dplyr::mutate(drinking_water = case_when(drinking_water <= 0.04 ~ "Low",
-                                             drinking_water <= 0.06 ~ "Moderate",
-                                             drinking_water <= 0.08 ~ "High",
-                                             drinking_water <= 0.1 ~ "Very high",
-                                             drinking_water > 0.1 ~ "Extremely high",
-                                             TRUE ~ NA),
-                  distance_healthcare = case_when(distance_healthcare <= 0.1 ~ "Low",
-                                                  distance_healthcare <= 0.2 ~ "Moderate",
-                                                  distance_healthcare <= 0.3 ~ "High",
-                                                  distance_healthcare <= 0.4 ~ "Very high",
-                                                  distance_healthcare > 0.4 ~ "Extremely high",
-                                                  TRUE ~ NA))
+    dplyr::mutate(
+      drinking_water = case_when(
+        drinking_water <= 0.04 ~ "Low",
+        drinking_water <= 0.06 ~ "Moderate",
+        drinking_water <= 0.08 ~ "High",
+        drinking_water <= 0.1 ~ "Very high",
+        drinking_water > 0.1 ~ "Extremely high",
+        TRUE ~ NA
+      ),
+      distance_healthcare = case_when(
+        distance_healthcare <= 0.1 ~ "Low",
+        distance_healthcare <= 0.2 ~ "Moderate",
+        distance_healthcare <= 0.3 ~ "High",
+        distance_healthcare <= 0.4 ~ "Very high",
+        distance_healthcare > 0.4 ~ "Extremely high",
+        TRUE ~ NA
+      )
+    )
 
   national_df_cat <- national_df %>%
-    dplyr::mutate(children_sick = case_when(children_sick <= 0.1 ~ "Low",
-                                            children_sick <= 0.15 ~ "Moderate",
-                                            children_sick <= 0.2 ~ "High",
-                                            children_sick <= 0.25 ~ "Very high",
-                                            children_sick > 0.25 ~ "Extremely high",
-                                            TRUE ~ NA),
-                  unmet_healthcare = case_when(unmet_healthcare <= 0.1 ~ "Low",
-                                               unmet_healthcare <= 0.15 ~ "Moderate",
-                                               unmet_healthcare <= 0.2 ~ "High",
-                                               unmet_healthcare <= 0.25 ~ "Very high",
-                                               unmet_healthcare > 0.25 ~ "Extremely high",
-                                               TRUE ~ NA),
-                  fcs_phase = case_when(fcs_phase <= 0.1 ~ "Low",
-                                        fcs_phase <= 0.2 ~ "Moderate",
-                                        fcs_phase <= 0.3 ~ "High",
-                                        fcs_phase <= 0.4 ~ "Very high",
-                                        fcs_phase > 0.4 ~ "Extremely high",
-                                        TRUE ~ NA),
-                  fcs = case_when(fcs <= 0.1 ~ "Low",
-                                  fcs <= 0.2 ~ "Moderate",
-                                  fcs <= 0.3 ~ "High",
-                                  fcs <= 0.4 ~ "Very high",
-                                  fcs > 0.4 ~ "Extremely high",
-                                  TRUE ~ NA),
-                  rcsi = case_when(rcsi <= 0.1 ~ "Low",
-                                   rcsi <= 0.2 ~ "Moderate",
-                                   rcsi <= 0.3 ~ "High",
-                                   rcsi <= 0.4 ~ "Very high",
-                                   rcsi > 0.4 ~ "Extremely high",
-                                   TRUE ~ NA),
-                  hhs = case_when(hhs <= 0.05 ~ "Low",
-                                  hhs <= 0.1 ~ "Moderate",
-                                  hhs <= 0.15 ~ "High",
-                                  hhs <= 0.2 ~ "Very high",
-                                  hhs > 0.2 ~ "Extremely high",
-                                  TRUE ~ NA),
-                  lcsi = case_when(lcsi <= 0.1 ~ "Low",
-                                   lcsi <= 0.2 ~ "Moderate",
-                                   lcsi <= 0.3 ~ "High",
-                                   lcsi <= 0.4 ~ "Very high",
-                                   lcsi > 0.4 ~ "Extremely high",
-                                   TRUE ~ NA))  %>%
+    dplyr::mutate(
+      children_sick = case_when(
+        children_sick <= 0.1 ~ "Low",
+        children_sick <= 0.15 ~ "Moderate",
+        children_sick <= 0.2 ~ "High",
+        children_sick <= 0.25 ~ "Very high",
+        children_sick > 0.25 ~ "Extremely high",
+        TRUE ~ NA
+      ),
+      unmet_healthcare = case_when(
+        unmet_healthcare <= 0.1 ~ "Low",
+        unmet_healthcare <= 0.15 ~ "Moderate",
+        unmet_healthcare <= 0.2 ~ "High",
+        unmet_healthcare <= 0.25 ~ "Very high",
+        unmet_healthcare > 0.25 ~ "Extremely high",
+        TRUE ~ NA
+      ),
+      fcs_phase = case_when(
+        fcs_phase <= 0.1 ~ "Low",
+        fcs_phase <= 0.2 ~ "Moderate",
+        fcs_phase <= 0.3 ~ "High",
+        fcs_phase <= 0.4 ~ "Very high",
+        fcs_phase > 0.4 ~ "Extremely high",
+        TRUE ~ NA
+      ),
+      fcs = case_when(
+        fcs <= 0.1 ~ "Low",
+        fcs <= 0.2 ~ "Moderate",
+        fcs <= 0.3 ~ "High",
+        fcs <= 0.4 ~ "Very high",
+        fcs > 0.4 ~ "Extremely high",
+        TRUE ~ NA
+      ),
+      rcsi = case_when(
+        rcsi <= 0.1 ~ "Low",
+        rcsi <= 0.2 ~ "Moderate",
+        rcsi <= 0.3 ~ "High",
+        rcsi <= 0.4 ~ "Very high",
+        rcsi > 0.4 ~ "Extremely high",
+        TRUE ~ NA
+      ),
+      hhs = case_when(
+        hhs <= 0.05 ~ "Low",
+        hhs <= 0.1 ~ "Moderate",
+        hhs <= 0.15 ~ "High",
+        hhs <= 0.2 ~ "Very high",
+        hhs > 0.2 ~ "Extremely high",
+        TRUE ~ NA
+      ),
+      lcsi = case_when(
+        lcsi <= 0.1 ~ "Low",
+        lcsi <= 0.2 ~ "Moderate",
+        lcsi <= 0.3 ~ "High",
+        lcsi <= 0.4 ~ "Very high",
+        lcsi > 0.4 ~ "Extremely high",
+        TRUE ~ NA
+      )
+    ) %>%
     {
-
-      if(quantile(ph_int_table$impro_water)[[2]] -
-         (quantile(ph_int_table$impro_water)[[4]] - quantile(ph_int_table$impro_water)[[2]]) < 0){
-        dplyr::mutate(.,impro_water = case_when(impro_water >= quantile(impro_water)[[4]] + (quantile(impro_water)[[4]] - quantile(impro_water)[[2]]) ~ "Low",
-                                                impro_water >= quantile(impro_water)[[4]]~ "Moderate",
-                                                impro_water >= quantile(impro_water)[[3]]~ "High",
-                                                impro_water >= quantile(impro_water)[[2]]~ "Very high",
-                                                impro_water < quantile(impro_water)[[2]]~ "Extremely high",
-                                                TRUE ~ NA))
+      if (
+        quantile(ph_int_table$impro_water)[[2]] -
+          (quantile(ph_int_table$impro_water)[[4]] -
+            quantile(ph_int_table$impro_water)[[2]]) <
+          0
+      ) {
+        dplyr::mutate(
+          .,
+          impro_water = case_when(
+            impro_water >=
+              quantile(impro_water)[[4]] +
+                (quantile(impro_water)[[4]] - quantile(impro_water)[[2]]) ~
+              "Low",
+            impro_water >= quantile(impro_water)[[4]] ~ "Moderate",
+            impro_water >= quantile(impro_water)[[3]] ~ "High",
+            impro_water >= quantile(impro_water)[[2]] ~ "Very high",
+            impro_water < quantile(impro_water)[[2]] ~ "Extremely high",
+            TRUE ~ NA
+          )
+        )
       } else {
-        dplyr::mutate(.,impro_water = case_when(impro_water >= quantile(impro_water)[[4]]  ~ "Low",
-                                                impro_water >= quantile(impro_water)[[3]]~ "Moderate",
-                                                impro_water >= quantile(impro_water)[[2]] ~ "High",
-                                                impro_water >= quantile(impro_water)[[2]] - (quantile(impro_water)[[4]] - quantile(impro_water)[[2]]) ~ "Very high",
-                                                impro_water < quantile(impro_water)[[2]] - (quantile(impro_water)[[4]] - quantile(impro_water)[[2]])  ~ "Extremely high",
-                                                TRUE ~ NA))
+        dplyr::mutate(
+          .,
+          impro_water = case_when(
+            impro_water >= quantile(impro_water)[[4]] ~ "Low",
+            impro_water >= quantile(impro_water)[[3]] ~ "Moderate",
+            impro_water >= quantile(impro_water)[[2]] ~ "High",
+            impro_water >=
+              quantile(impro_water)[[2]] -
+                (quantile(impro_water)[[4]] - quantile(impro_water)[[2]]) ~
+              "Very high",
+            impro_water <
+              quantile(impro_water)[[2]] -
+                (quantile(impro_water)[[4]] - quantile(impro_water)[[2]]) ~
+              "Extremely high",
+            TRUE ~ NA
+          )
+        )
       }
     } %>%
     {
-      if(quantile(ph_int_table$sanitation)[[2]] - (quantile(ph_int_table$sanitation)[[4]] - quantile(ph_int_table$sanitation)[[2]])<0){
-        dplyr::mutate(.,sanitation = case_when(sanitation >= quantile(sanitation)[[4]]+(quantile(sanitation)[[4]] - quantile(sanitation)[[2]])   ~ "Low",
-                                               sanitation >= quantile(sanitation)[[4]] ~ "Moderate",
-                                               sanitation >= quantile(sanitation)[[3]] ~ "High",
-                                               sanitation >= quantile(sanitation)[[2]]~ "Very high",
-                                               sanitation < quantile(sanitation)[[2]] ~ "Extremely high",
-                                               TRUE ~ NA))
+      if (
+        quantile(ph_int_table$sanitation)[[2]] -
+          (quantile(ph_int_table$sanitation)[[4]] -
+            quantile(ph_int_table$sanitation)[[2]]) <
+          0
+      ) {
+        dplyr::mutate(
+          .,
+          sanitation = case_when(
+            sanitation >=
+              quantile(sanitation)[[4]] +
+                (quantile(sanitation)[[4]] - quantile(sanitation)[[2]]) ~
+              "Low",
+            sanitation >= quantile(sanitation)[[4]] ~ "Moderate",
+            sanitation >= quantile(sanitation)[[3]] ~ "High",
+            sanitation >= quantile(sanitation)[[2]] ~ "Very high",
+            sanitation < quantile(sanitation)[[2]] ~ "Extremely high",
+            TRUE ~ NA
+          )
+        )
       } else {
-        dplyr::mutate(.,sanitation = case_when(sanitation >= quantile(sanitation)[[4]] ~ "Low",
-                                               sanitation >= quantile(sanitation)[[3]] ~ "Moderate",
-                                               sanitation >= quantile(sanitation)[[2]] ~ "High",
-                                               sanitation >= quantile(sanitation)[[2]] - (quantile(sanitation)[[4]] - quantile(sanitation)[[2]])  ~ "Very high",
-                                               sanitation < quantile(sanitation)[[2]] - (quantile(sanitation)[[4]] - quantile(sanitation)[[2]])  ~ "Extremely high",
-                                               TRUE ~ NA))
+        dplyr::mutate(
+          .,
+          sanitation = case_when(
+            sanitation >= quantile(sanitation)[[4]] ~ "Low",
+            sanitation >= quantile(sanitation)[[3]] ~ "Moderate",
+            sanitation >= quantile(sanitation)[[2]] ~ "High",
+            sanitation >=
+              quantile(sanitation)[[2]] -
+                (quantile(sanitation)[[4]] - quantile(sanitation)[[2]]) ~
+              "Very high",
+            sanitation <
+              quantile(sanitation)[[2]] -
+                (quantile(sanitation)[[4]] - quantile(sanitation)[[2]]) ~
+              "Extremely high",
+            TRUE ~ NA
+          )
+        )
       }
     } %>%
     {
-      if(quantile(ph_int_table$handwash)[[2]]- (quantile(ph_int_table$handwash)[[4]] - quantile(ph_int_table$handwash)[[2]])<0){
-        dplyr::mutate(.,handwash = case_when(handwash >= quantile(handwash)[[4]]+ (quantile(handwash)[[4]] - quantile(handwash)[[2]])   ~ "Low",
-                                             handwash >= quantile(handwash)[[4]] ~ "Moderate",
-                                             handwash >= quantile(handwash)[[3]] ~ "High",
-                                             handwash >= quantile(handwash)[[2]]~ "Very high",
-                                             handwash < quantile(handwash)[[2]]~ "Extremely high",
-                                             TRUE ~ NA))
+      if (
+        quantile(ph_int_table$handwash)[[2]] -
+          (quantile(ph_int_table$handwash)[[4]] -
+            quantile(ph_int_table$handwash)[[2]]) <
+          0
+      ) {
+        dplyr::mutate(
+          .,
+          handwash = case_when(
+            handwash >=
+              quantile(handwash)[[4]] +
+                (quantile(handwash)[[4]] - quantile(handwash)[[2]]) ~
+              "Low",
+            handwash >= quantile(handwash)[[4]] ~ "Moderate",
+            handwash >= quantile(handwash)[[3]] ~ "High",
+            handwash >= quantile(handwash)[[2]] ~ "Very high",
+            handwash < quantile(handwash)[[2]] ~ "Extremely high",
+            TRUE ~ NA
+          )
+        )
       } else {
-        dplyr::mutate(.,handwash = case_when(handwash >= quantile(handwash)[[4]]  ~ "Low",
-                                             handwash >= quantile(handwash)[[3]] ~ "Moderate",
-                                             handwash >= quantile(handwash)[[2]] ~ "High",
-                                             handwash >= quantile(handwash)[[2]] - (quantile(handwash)[[4]] - quantile(handwash)[[2]])  ~ "Very high",
-                                             handwash < quantile(handwash)[[2]]- (quantile(handwash)[[4]] - quantile(handwash)[[2]])  ~ "Extremely high",
-                                             TRUE ~ NA))
+        dplyr::mutate(
+          .,
+          handwash = case_when(
+            handwash >= quantile(handwash)[[4]] ~ "Low",
+            handwash >= quantile(handwash)[[3]] ~ "Moderate",
+            handwash >= quantile(handwash)[[2]] ~ "High",
+            handwash >=
+              quantile(handwash)[[2]] -
+                (quantile(handwash)[[4]] - quantile(handwash)[[2]]) ~
+              "Very high",
+            handwash <
+              quantile(handwash)[[2]] -
+                (quantile(handwash)[[4]] - quantile(handwash)[[2]]) ~
+              "Extremely high",
+            TRUE ~ NA
+          )
+        )
       }
     } %>%
-    dplyr::mutate(drinking_water = case_when(drinking_water <= 0.04 ~ "Low",
-                                             drinking_water <= 0.06 ~ "Moderate",
-                                             drinking_water <= 0.08 ~ "High",
-                                             drinking_water <= 0.1 ~ "Very high",
-                                             drinking_water > 0.1 ~ "Extremely high",
-                                             TRUE ~ NA),
-                  distance_healthcare = case_when(distance_healthcare <= 0.1 ~ "Low",
-                                                  distance_healthcare <= 0.2 ~ "Moderate",
-                                                  distance_healthcare <= 0.3 ~ "High",
-                                                  distance_healthcare <= 0.4 ~ "Very high",
-                                                  distance_healthcare > 0.4 ~ "Extremely high",
-                                                  TRUE ~ NA))
+    dplyr::mutate(
+      drinking_water = case_when(
+        drinking_water <= 0.04 ~ "Low",
+        drinking_water <= 0.06 ~ "Moderate",
+        drinking_water <= 0.08 ~ "High",
+        drinking_water <= 0.1 ~ "Very high",
+        drinking_water > 0.1 ~ "Extremely high",
+        TRUE ~ NA
+      ),
+      distance_healthcare = case_when(
+        distance_healthcare <= 0.1 ~ "Low",
+        distance_healthcare <= 0.2 ~ "Moderate",
+        distance_healthcare <= 0.3 ~ "High",
+        distance_healthcare <= 0.4 ~ "Very high",
+        distance_healthcare > 0.4 ~ "Extremely high",
+        TRUE ~ NA
+      )
+    )
 }
-
 
 
 source("src/output_table.R")
 
-save.ph.integrated.tables(ph_int_table,ph_int_cat,national_df, national_df_cat,"PH_Integrated_Table",mort = T,use_template = T)
+save.ph.integrated.tables(
+  ph_int_table,
+  ph_int_cat,
+  national_df,
+  national_df_cat,
+  "PH_Integrated_Table",
+  mort = T,
+  use_template = T
+)
 
 ## save environment
-list_of_var <- c("admin1","fsl_fcs_cereal","fsl_fcs_legumes","fsl_fcs_veg","FSL_indicators",
-                 "fsl_fcs_fruit","fsl_fcs_meat","fsl_fcs_dairy","fsl_fcs_sugar",
-                 "fsl_fcs_oil","fsl_rcsi_lessquality","fsl_rcsi_borrow",
-                 "under5_sick_undefined","under5_sick_no",
-                 "fsl_rcsi_mealsize","fsl_rcsi_mealadult","fsl_rcsi_mealnb",
-                 "fsl_hhs_nofoodhh","fsl_hhs_nofoodhh_freq","fsl_hhs_sleephungry",
-                 "fsl_hhs_sleephungry_freq","fsl_hhs_alldaynight","fsl_hhs_alldaynight_freq",
-                 "yes_answer","no_answer","rarely_answer","sometimes_answer", "wash_water_quantity",
-                 "often_answer","fsl_lcsi_stress1","fsl_lcsi_stress2","fsl_lcsi_stress3",
-                 "fsl_lcsi_stress4","fsl_lcsi_crisis1","fsl_lcsi_crisis2","healthcare_sheet",
-                 "sanitation_facility","improved_sanitation_facility","unimproved_sanitation_facility",
-                 "none_sanitation_facility","undefined_sanitation_facility","undefined_drinking_water",
-                 "unimproved_sanitation_facility","none_sanitation_facility","undefined_sanitation_facility",
-                 "drinking_water_source","improved_drinking_water","unimproved_drinking_water","surface_water",
-                 "fsl_lcsi_crisis3","fsl_lcsi_emergency1","fsl_lcsi_emergency2",
-                 "hhs_check_columns","hhs_check_columns_freq","died_sheet","uuid_died",
-                 "survey_modality","survey_modality_in_person","survey_modality_remote",
-                 "facility","facility_yes","facility_no","facility_no_permission","yes_no_weight","weight",
-                 "facility_undefined","facility_observed_water","facility_observed_water_yes",
-                 "facility_observed_water_no","facility_observed_soap","lcsi_check_columns",
-                 "facility_observed_soap_yes","facility_observed_soap_no","facility_observed_soap_alternative","facility_reported",
-                 "facility_reported_yes","facility_reported_no","facility_reported_undefined","facility_reported_no_permission_soap",
-                 "facility_reported_no_permission_soap_yes","facility_reported_no_permission_soap_no",
-                 "facility_reported_no_permission_soap_undefined","facility_reported_no_permission_soap_type",
-                 "facility_reported_no_permission_soap_type_yes","facility_reported_no_permission_soap_type_no",
-                 "facility_reported_no_permission_soap_type_undefined","facility_reported_remote_soap",
-                 "facility_reported_remote_soap_yes","facility_reported_remote_soap_no",
-                 "ind_healthcare_needed","ind_healthcare_needed_levels","ind_healthcare_received",
-                 "ind_healthcare_received_levels","ind_age","uuid_health_loop","uuid_main","healthcare_sheet",
-                 "nut_sheet","under5_sick","uuid_nut","under5_sick_yes","non_trauma_deaths","death_cause",
-                 "facility_reported_remote_soap_undefined","facility_reported_remote_soap_type","main_sheet",
-                 "facility_reported_remote_soap_type_yes","facility_reported_remote_soap_type_no","facility_reported_remote_soap_type_undefined",
-                 "fsl_lcsi_emergency3","yes_val","no_val","exhausted_val","not_applicable_val","distance_healthcare")
+list_of_var <- c(
+  "admin1",
+  "fsl_fcs_cereal",
+  "fsl_fcs_legumes",
+  "fsl_fcs_veg",
+  "FSL_indicators",
+  "fsl_fcs_fruit",
+  "fsl_fcs_meat",
+  "fsl_fcs_dairy",
+  "fsl_fcs_sugar",
+  "fsl_fcs_oil",
+  "fsl_rcsi_lessquality",
+  "fsl_rcsi_borrow",
+  "under5_sick_undefined",
+  "under5_sick_no",
+  "fsl_rcsi_mealsize",
+  "fsl_rcsi_mealadult",
+  "fsl_rcsi_mealnb",
+  "fsl_hhs_nofoodhh",
+  "fsl_hhs_nofoodhh_freq",
+  "fsl_hhs_sleephungry",
+  "fsl_hhs_sleephungry_freq",
+  "fsl_hhs_alldaynight",
+  "fsl_hhs_alldaynight_freq",
+  "yes_answer",
+  "no_answer",
+  "rarely_answer",
+  "sometimes_answer",
+  "wash_water_quantity",
+  "often_answer",
+  "fsl_lcsi_stress1",
+  "fsl_lcsi_stress2",
+  "fsl_lcsi_stress3",
+  "fsl_lcsi_stress4",
+  "fsl_lcsi_crisis1",
+  "fsl_lcsi_crisis2",
+  "healthcare_sheet",
+  "sanitation_facility",
+  "improved_sanitation_facility",
+  "unimproved_sanitation_facility",
+  "none_sanitation_facility",
+  "undefined_sanitation_facility",
+  "undefined_drinking_water",
+  "unimproved_sanitation_facility",
+  "none_sanitation_facility",
+  "undefined_sanitation_facility",
+  "drinking_water_source",
+  "improved_drinking_water",
+  "unimproved_drinking_water",
+  "surface_water",
+  "fsl_lcsi_crisis3",
+  "fsl_lcsi_emergency1",
+  "fsl_lcsi_emergency2",
+  "hhs_check_columns",
+  "hhs_check_columns_freq",
+  "died_sheet",
+  "uuid_died",
+  "survey_modality",
+  "survey_modality_in_person",
+  "survey_modality_remote",
+  "facility",
+  "facility_yes",
+  "facility_no",
+  "facility_no_permission",
+  "yes_no_weight",
+  "weight",
+  "facility_undefined",
+  "facility_observed_water",
+  "facility_observed_water_yes",
+  "facility_observed_water_no",
+  "facility_observed_soap",
+  "lcsi_check_columns",
+  "facility_observed_soap_yes",
+  "facility_observed_soap_no",
+  "facility_observed_soap_alternative",
+  "facility_reported",
+  "facility_reported_yes",
+  "facility_reported_no",
+  "facility_reported_undefined",
+  "facility_reported_no_permission_soap",
+  "facility_reported_no_permission_soap_yes",
+  "facility_reported_no_permission_soap_no",
+  "facility_reported_no_permission_soap_undefined",
+  "facility_reported_no_permission_soap_type",
+  "facility_reported_no_permission_soap_type_yes",
+  "facility_reported_no_permission_soap_type_no",
+  "facility_reported_no_permission_soap_type_undefined",
+  "facility_reported_remote_soap",
+  "facility_reported_remote_soap_yes",
+  "facility_reported_remote_soap_no",
+  "ind_healthcare_needed",
+  "ind_healthcare_needed_levels",
+  "ind_healthcare_received",
+  "ind_healthcare_received_levels",
+  "ind_age",
+  "uuid_health_loop",
+  "uuid_main",
+  "healthcare_sheet",
+  "nut_sheet",
+  "under5_sick",
+  "uuid_nut",
+  "under5_sick_yes",
+  "non_trauma_deaths",
+  "death_cause",
+  "facility_reported_remote_soap_undefined",
+  "facility_reported_remote_soap_type",
+  "main_sheet",
+  "facility_reported_remote_soap_type_yes",
+  "facility_reported_remote_soap_type_no",
+  "facility_reported_remote_soap_type_undefined",
+  "fsl_lcsi_emergency3",
+  "yes_val",
+  "no_val",
+  "exhausted_val",
+  "not_applicable_val",
+  "distance_healthcare"
+)
 
-if(!file.exists("inputs/environment.Rdata")){
+if (!file.exists("inputs/environment.Rdata")) {
   save(list = list_of_var, file = "inputs/environment.Rdata")
 }
 
