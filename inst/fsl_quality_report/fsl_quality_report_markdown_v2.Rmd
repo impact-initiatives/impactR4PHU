@@ -5,8 +5,6 @@ output: html_document
 params:
   mainData: NULL
   uuidVar: "uuid"
-  YesNoTeam: "no"
-  TeamVar: "team"
   GroupVar: "enum_id"
 ---
 
@@ -32,6 +30,8 @@ options(scipen = 999)
 
 raw.main <- params$mainData
 
+source("src/utils/misc_utils.R")
+
 ```
 
 # {.tabset .tabset-fade}
@@ -43,7 +43,7 @@ raw.main <- params$mainData
   cat('\nThe FSL Data Quality and Plausibility Report serves as a crucial tool for assessing the reliability and accuracy of the data collection of FSL indicators across different assessments. This comprehensive analysis is designed to identify and address potential issues within the data, ensuring that field teams are being informed on potential issues detected in the data collection.\n\nThe report provides a detailed examination of the datasets, employing a variety of metrics and methodologies to evaluate data quality and plausibility. This includes checks for completeness, consistency, and accuracy of the data collected. This report aims to uncover any discrepancies, outliers, or anomalies that may suggest data collection, entry errors, or underlying issues that could impact the integrity of the findings.</p>')
   cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",3), collapse=""), " ", "What is in this tool?")) 
   cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",4), collapse=""), " ", "FSL SECTION"))
-  cat('\nThis section includes:\n\n- Overall Plausibility Report / By Enumerator\n- All the flags related to Food Security and Livelihoods (details shown for each flag in the section)\n- Plots showing the distribution of the data.')
+  cat('\nThis section includes:\n\n- Overall Plausibility Report / By Enumerator\n- All the flags related to Food Security and Livelihoods (details shown for each flag in the section)\n- Plots showing the distribution of the data.') 
 
   cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",3), collapse=""), " ", "What to do next?"))
   cat('\nPlease check each flag and the <strong>ACTION</strong> related to it and act accordingly.\n\nAnother output will be associated to this HTML, the Excel file of the flags that were fired and requires follow-up with the field team. Please check the README tab in the excel file. This file will again be generated with the full data during the cleaning of the dataset. So please do use this file during data collection and relate to it in the final one to be filled.')
@@ -57,12 +57,6 @@ raw.main <- params$mainData
 
   uuid_main <- params$uuidVar
 
-  ## Set Team column
-
-    yes_no_team <- params$YesNoTeam
- 
-    team <- params$TeamVar
-  
   ## Set Enumerator column
   enumerator <- params$GroupVar
   
@@ -148,7 +142,7 @@ list_of_var <- c("uuid_main","FSL_indicators","num_children","income_types", "fs
                  "fsl_hdds_eggs","fsl_hdds_fish","fsl_hdds_legumes","fsl_hdds_dairy","fsl_hdds_oil","fsl_hdds_sugar","fsl_hdds_condiments",
                  "fclcm_check_columns","fcm_check_1_columns","fcm_check_2_columns","fcm_check_3_columns",
                  "fcm_check_4_columns","fcm_check_5_columns","fcm_check_6_columns","hhs_check_columns_freq",
-                 "residency_status","value_idp","team","yes_no_team",
+                 "residency_status","value_idp",
                  "hdds_check_columns","lcsi_check_columns","hhs_check_columns","rcsi_check_columns","fcs_check_columns", "enumerator")
 
 # if(!file.exists("inputs/environment.Rdata")){
@@ -158,7 +152,7 @@ list_of_var <- c("uuid_main","FSL_indicators","num_children","income_types", "fs
 
 ```{r, include = FALSE}
 ## Read the Plausibility excel file
-overall_fsl_plaus <- openxlsx::read.xlsx(xlsxFile = "overall_plaus.xlsx", fillMergedCells = TRUE, sheet = "FSL") %>%
+overall_fsl_plaus <- openxlsx::read.xlsx(xlsxFile = "resources/overall_plaus.xlsx", fillMergedCells = TRUE, sheet = "FSL") %>%
   dplyr::distinct()
 
 result <- impactR4PHU::create_fsl_plaus(raw.flag.fcs,
@@ -201,11 +195,15 @@ result_pivot <- result %>%
 
 bind <- data.frame(`Indicator Score` = c("plaus_fcs","plaus_fcs","plaus_fcs","plaus_fcs","plaus_fcs","plaus_fcs",
                                          "plaus_fcs","plaus_fcs","plaus_fcs","plaus_fcs","plaus_fcs","plaus_fcs",
-                                         "plaus_rcsi","plaus_rcsi","plaus_rcsi","plaus_rcsi","plaus_rcsi",
-                                         "plaus_rcsi","plaus_rcsi","plaus_rcsi","plaus_rcsi","plaus_rcsi",
+                                         "plaus_fcs","plaus_fcs",
+                                         
+                                         "plaus_rcsi","plaus_rcsi","plaus_rcsi","plaus_rcsi",
+                                         "plaus_rcsi","plaus_rcsi","plaus_rcsi","plaus_rcsi",
+                                         
                                          "plaus_hhs","plaus_hhs",
-                                         "plaus_lcsi","plaus_lcsi","plaus_lcsi","plaus_lcsi","plaus_lcsi",
-                                         "plaus_lcsi","plaus_lcsi","plaus_lcsi","plaus_lcsi","plaus_lcsi",
+                                         
+                                         "plaus_lcsi","plaus_lcsi","plaus_lcsi","plaus_lcsi","plaus_lcsi","plaus_lcsi",
+                                         
                                          "plaus_other_fsl","plaus_other_fsl","plaus_other_fsl",
                                          "plaus_other_fsl","plaus_other_fsl","plaus_other_fsl",
                                          "plaus_other_fsl","plaus_other_fsl","plaus_other_fsl",
@@ -222,6 +220,31 @@ overall_fsl_plaus_overall <- overall_fsl_plaus%>%
                                                     "plaus_fcs")) %>%
               rename(indscore = "Score"), by = c("Indicator.Score"="Criteria")) %>%
   dplyr::mutate(indscore = case_when(flag_name == "plaus_flag_severe_hhs"~paste0(indscore,"/10"),
+                                     flag_name == "plaus_flag_sd_foodgroup" ~paste0(indscore,"/22"),
+                                     flag_name == "plaus_sd_fcs" ~paste0(indscore,"/22"),
+                                     flag_name == "plaus_flag_low_fcs" ~paste0(indscore,"/22"),
+                                     flag_name == "plaus_flag_zero_fcs" ~paste0(indscore,"/22"),
+                                     flag_name == "plaus_flag_high_fcs" ~paste0(indscore,"/22"),
+                                     flag_name == "plaus_flag_full_fcs" ~paste0(indscore,"/22"),
+                                     flag_name == "plaus_flag_meat_cereal_ratio" ~paste0(indscore,"/22"),
+                                     
+                                     
+                                     flag_name == "plaus_flag_sd_rcsicoping" ~paste0(indscore,"/20"),
+                                     flag_name == "plaus_sd_rcsi" ~paste0(indscore,"/20"),
+                                     flag_name == "plaus_flag_high_rcsi" ~paste0(indscore,"/20"),
+                                     flag_name == "plaus_flag_protein_rcsi" ~paste0(indscore,"/20"),
+                                     
+                                     
+                                     flag_name == "plaus_flag_lcsi_coherence" ~paste0(indscore,"/18"),
+                                     flag_name == "plaus_flag_lcsi_na" ~paste0(indscore,"/18"),
+                                     flag_name == "plaus_flag_lcsi_severity" ~paste0(indscore,"/18"),
+                                     
+                                     flag_name == "plaus_prop_fc_flags" ~paste0(indscore,"/20"),
+                                     flag_name == "plaus_corr.fcs_rcsi" ~paste0(indscore,"/20"),
+                                     flag_name == "plaus_corr.fcs_hhs" ~paste0(indscore,"/20"),
+                                     flag_name == "plaus_corr.hhs_rcsi" ~paste0(indscore,"/20"),
+                                     flag_name == "plaus_flag_fcsrcsi_box" ~paste0(indscore,"/20"),
+                                     flag_name == "plaus_flag_fcs_rcsi" ~paste0(indscore,"/20"),
                               TRUE ~paste0(indscore,"/20"))) %>%
   dplyr::select(-Indicator.Score)
 
@@ -248,41 +271,7 @@ result_fsl_pivot <- result_fsl_enum %>%
   tidyr::pivot_longer(-group,names_to = "Criteria",
                values_to = "Score") %>%
   filter(stringr::str_starts(Criteria,"plaus_"))
-if(yes_no_team == "yes"){
-  list_teams <- raw.main[[team]] %>% unique()
-  list_teams <- list_teams[!is.na(list_teams)]
-  for (i in list_teams) {
-    cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",5), collapse=""), " ", "<strong>",i,"</strong> {.tabset .tabset-fade}"))
-    list_enum <- raw.main %>% 
-      dplyr::filter(!!rlang::sym(team) == i) %>% 
-      dplyr::pull(!!rlang::sym(enumerator)) %>% 
-      unique()
-    for(j in list_enum){
-      cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",6), collapse=""), " ", "<strong>",j,"</strong>"))
-      overall_fsl_plaus_enum <- overall_fsl_plaus %>%
-        dplyr::left_join(result_fsl_pivot %>% filter(group == j), by = c("flag_name"="Criteria"))%>%
-        dplyr::mutate_all(., ~ifelse(is.na(.),"NA",.)) %>%
-        cbind(bind) %>%
-        dplyr::select(-group) %>%
-        dplyr::left_join(result_fsl_pivot %>%
-                    filter(group == j) %>%
-                    filter(Criteria %in% c("plaus_other_fsl",
-                                           "plaus_lcsi",
-                                           "plaus_hhs",
-                                           "plaus_rcsi",
-                                           "plaus_fcs")) %>%
-                  dplyr::rename(indscore = "Score"), by = c("Indicator.Score"="Criteria")) %>%
-        dplyr::mutate(indscore = dplyr::case_when(flag_name == "plaus_flag_severe_hhs"~paste0(indscore,"/10"),
-                                  TRUE ~paste0(indscore,"/20"))) %>%
-        dplyr::select(-c(Indicator.Score,group))
-    
-      fsl_enum <- flextable::flextable(overall_fsl_plaus_enum)
-    
-      final_table_fsl_enum <- impactR4PHU::create_plaus_table_fsl(fsl_enum)
-      subch(final_table_fsl_enum)
-    }
-  }
-} else {
+
   list_enum <- result_fsl_pivot$group %>% unique
   for (i in list_enum) {
     cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",5), collapse=""), " ", "<strong>",i,"</strong>"))
@@ -300,7 +289,31 @@ if(yes_no_team == "yes"){
                                          "plaus_fcs")) %>%
                 dplyr::rename(indscore = "Score"), by = c("Indicator.Score"="Criteria")) %>%
       dplyr::mutate(indscore = dplyr::case_when(flag_name == "plaus_flag_severe_hhs"~paste0(indscore,"/10"),
-                                TRUE ~paste0(indscore,"/20"))) %>%
+                                     flag_name == "plaus_flag_sd_foodgroup" ~paste0(indscore,"/22"),
+                                     flag_name == "plaus_sd_fcs" ~paste0(indscore,"/22"),
+                                     flag_name == "plaus_flag_low_fcs" ~paste0(indscore,"/22"),
+                                     flag_name == "plaus_flag_zero_fcs" ~paste0(indscore,"/22"),
+                                     flag_name == "plaus_flag_high_fcs" ~paste0(indscore,"/22"),
+                                     flag_name == "plaus_flag_full_fcs" ~paste0(indscore,"/22"),
+                                     flag_name == "plaus_flag_meat_cereal_ratio" ~paste0(indscore,"/22"),
+                                     
+                                     flag_name == "plaus_flag_sd_rcsicoping" ~paste0(indscore,"/20"),
+                                     flag_name == "plaus_sd_rcsi" ~paste0(indscore,"/20"),
+                                     flag_name == "plaus_flag_high_rcsi" ~paste0(indscore,"/20"),
+                                     flag_name == "plaus_flag_protein_rcsi" ~paste0(indscore,"/20"),
+                                     
+                                     
+                                     flag_name == "plaus_flag_lcsi_coherence" ~paste0(indscore,"/18"),
+                                     flag_name == "plaus_flag_lcsi_na" ~paste0(indscore,"/18"),
+                                     flag_name == "plaus_flag_lcsi_severity" ~paste0(indscore,"/18"),
+                                     
+                                     flag_name == "plaus_prop_fc_flags" ~paste0(indscore,"/20"),
+                                     flag_name == "plaus_corr.fcs_rcsi" ~paste0(indscore,"/20"),
+                                     flag_name == "plaus_corr.fcs_hhs" ~paste0(indscore,"/20"),
+                                     flag_name == "plaus_corr.hhs_rcsi" ~paste0(indscore,"/20"),
+                                     flag_name == "plaus_flag_fcsrcsi_box" ~paste0(indscore,"/20"),
+                                     flag_name == "plaus_flag_fcs_rcsi" ~paste0(indscore,"/20"),
+                              TRUE ~paste0(indscore,"/20"))) %>%
       dplyr::select(-c(Indicator.Score,group))
   
     fsl_enum <- flextable::flextable(overall_fsl_plaus_enum)
@@ -308,12 +321,12 @@ if(yes_no_team == "yes"){
     final_table_fsl_enum <- impactR4PHU::create_plaus_table_fsl(fsl_enum)
     subch(final_table_fsl_enum)
   }
-}
+
 ```
 
 
 ```{r, results='asis'}
-flag_description <- readxl::read_excel("flag_description.xlsx", sheet = "FSL")
+flag_description <- readxl::read_excel("resources/flag_description.xlsx", sheet = "FSL")
 flags_fsl_columns <- names(raw.flag.fcs)[stringr::str_starts(names(raw.flag.fcs),"flag_")]
 
 overall_flag <- tibble()
@@ -394,10 +407,10 @@ for(i in 1:length(flags_fsl_columns)) {
 
 ```{r, results='asis'}
 if(all(fcs_check_columns %in% names(raw.flag.fcs))) {
-  impactR4PHU::plot_ridge_distribution(raw.flag.fcs, numeric_cols = c("fsl_fcs_cereal", "fsl_fcs_dairy", "fsl_fcs_veg", 
+  (impactR4PHU::plot_ridge_distribution(raw.flag.fcs, numeric_cols = c("fsl_fcs_cereal", "fsl_fcs_dairy", "fsl_fcs_veg", 
                                                                        "fsl_fcs_fruit", "fsl_fcs_legumes", "fsl_fcs_sugar", 
                                                                        "fsl_fcs_oil","fsl_fcs_meat"),
-                                        name_groups = "Food Groups", name_units = "Days")
+                                        name_groups = "Food Groups", name_units = "Days"))
 } else {
   cat("No Plot Produced!!")
 }
@@ -407,29 +420,13 @@ if(all(fcs_check_columns %in% names(raw.flag.fcs))) {
 
 ```{r, results='asis'}
 if(all(fcs_check_columns %in% names(raw.flag.fcs))) {
-  if(yes_no_team == "yes"){
-    for (i in list_teams) {
-      cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",5), collapse=""), " ", "<strong>",i,"</strong>"))
-      list_enum <- raw.main %>% 
-        dplyr::filter(!!rlang::sym(team) == i) %>% 
-        dplyr::pull(!!rlang::sym(enumerator))%>% 
-        unique()
-      
-      subch(impactR4PHU::plot_ridge_distribution(raw.flag.fcs %>% 
-                                              dplyr::filter(!!rlang::sym(enumerator) %in% list_enum), numeric_cols = c("fsl_fcs_cereal", "fsl_fcs_dairy", "fsl_fcs_veg", 
-                                                                       "fsl_fcs_fruit", "fsl_fcs_legumes", "fsl_fcs_sugar", 
-                                                                       "fsl_fcs_oil","fsl_fcs_meat"),
-                                            name_groups = "Food Groups", name_units = "Days", 
-                                            grouping = enumerator),
-            fig_height = 8, fig_width = 10)
-    }
-  } else {
+
     (impactR4PHU::plot_ridge_distribution(raw.flag.fcs, numeric_cols = c("fsl_fcs_cereal", "fsl_fcs_dairy", "fsl_fcs_veg", 
                                                                        "fsl_fcs_fruit", "fsl_fcs_legumes", "fsl_fcs_sugar", 
                                                                        "fsl_fcs_oil","fsl_fcs_meat"),
                                           name_groups = "Food Groups", name_units = "Days", 
                                           grouping = enumerator))
-  }
+  
 } else {
   cat("No Plot Produced!!")
 }
@@ -452,28 +449,13 @@ if(all(rcsi_check_columns %in% names(raw.flag.fcs))) {
 
 ```{r, results='asis'}
 if(all(rcsi_check_columns %in% names(raw.flag.fcs))) {
-  if(yes_no_team == "yes"){
-    for (i in list_teams) {
-      cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",5), collapse=""), " ", "<strong>",i,"</strong>"))
-      list_enum <- raw.main %>% 
-        dplyr::filter(!!rlang::sym(team) == i) %>% 
-        dplyr::pull(!!rlang::sym(enumerator))%>% 
-        unique()
-      subch(impactR4PHU::plot_ridge_distribution(raw.flag.fcs %>% 
-                                              dplyr::filter(!!rlang::sym(enumerator) %in% list_enum), numeric_cols = c("fsl_rcsi_lessquality", "fsl_rcsi_borrow",
-                                                                       "fsl_rcsi_mealsize", "fsl_rcsi_mealadult", 
-                                                                       "fsl_rcsi_mealnb"),
-                                          name_groups = "Food Coping Strategy", name_units = "Days", 
-                                          grouping = enumerator),
-            fig_height = 8, fig_width = 10)
-    }
-  } else {
+   
   (impactR4PHU::plot_ridge_distribution(raw.flag.fcs, numeric_cols = c("fsl_rcsi_lessquality", "fsl_rcsi_borrow",
                                                                        "fsl_rcsi_mealsize", "fsl_rcsi_mealadult", 
                                                                        "fsl_rcsi_mealnb"),
                                         name_groups = "Food Coping Strategy", name_units = "Days", 
                                         grouping = enumerator))
-     }
+     
   } else {
   cat("No Plot Produced!!")
 }

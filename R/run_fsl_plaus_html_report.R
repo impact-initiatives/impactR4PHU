@@ -2,7 +2,6 @@
 #'
 #' @param .dataset Main Dataset
 #' @param uuid_var the name of the variable that indicates the uuid column
-#' @param team_var the name of the variable that indicates the team column, if it exists
 #' @param group_var the name of the variable that indicates the grouping column, usually enumerator ID column
 #' @param output_file the name of the output file
 #' @param output_dir the directory to export the output file
@@ -14,8 +13,6 @@
 
 run_fsl_plaus_html_report <- function(.dataset = NULL,
                                       uuid_var = "_uuid",
-                                      yes_no_team = "no",
-                                      team_var = "team",
                                       group_var = "enum_id",
                                       output_file = "fsl_quality_report.pdf",
                                       output_dir = "reports") {
@@ -26,10 +23,6 @@ run_fsl_plaus_html_report <- function(.dataset = NULL,
 
     if (is.null(uuid_var)) {
       stop("Error: 'uuid' variable must be provided.")
-    }
-
-    if (is.null(team_var)) {
-      stop("Error: 'team'variable must be provided.")
     }
 
     if (is.null(group_var)) {
@@ -43,8 +36,6 @@ run_fsl_plaus_html_report <- function(.dataset = NULL,
       params = list(
         mainData = .dataset,
         uuidVar = uuid_var,
-        YesNoTeam = yes_no_team,
-        TeamVar = team_var,
         GroupVar = group_var
       ),
       # envir = new.env()                  # Use a clean environment to avoid conflicts
