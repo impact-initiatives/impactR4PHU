@@ -7,6 +7,8 @@
 Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg)](code_of_conduct.md)
 [![R-CMD-check](https://github.com/impact-initiatives/impactR4PHU/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/impact-initiatives/impactR4PHU/actions/workflows/R-CMD-check.yaml)
 [![codecov](https://codecov.io/gh/impact-initiatives/impactR4PHU/graph/badge.svg?token=BG57ECHOYX)](https://codecov.io/gh/impact-initiatives/impactR4PHU)
+[![check_release](https://github.com/impact-initiatives/impactR4PHU/actions/workflows/check_release.yaml/badge.svg)](https://github.com/impact-initiatives/impactR4PHU/actions/workflows/check_release.yaml)
+[![check_standard](https://github.com/impact-initiatives/impactR4PHU/actions/workflows/check_standard.yaml/badge.svg)](https://github.com/impact-initiatives/impactR4PHU/actions/workflows/check_standard.yaml)
 <!-- badges: end -->
 
 ## Overview
@@ -2114,7 +2116,7 @@ tool <- impactR4PHU_survey_template
 
 ``` r
 fsl_flags <- df_with_fclcm %>% 
-  check_fsl_flags(tool.survey = tool)
+  check_fsl_flags()
 ```
 
 #### Example:: Check Anthropometric Flags
