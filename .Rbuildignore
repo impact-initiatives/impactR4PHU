@@ -10,6 +10,6 @@
 ^codecov\.yml$
 ^README.Rmd
 ^LICENSE.md
-^inst/.*/renv/library(/.*)?$
-^inst/.*/renv/staging(/.*)?$
 ^\.renvignore
+^inst/.*renv/library(/|$)
+^inst/.*renv/staging(/|$)

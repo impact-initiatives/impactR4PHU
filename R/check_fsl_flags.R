@@ -155,7 +155,7 @@
 #'   uuid= c("31d0cfb8-21d7-414b4f-94999f-04a15ce39d78","205d37b1-5a6f-44484d-b3b1ba-4eafbdc50873")
 #'   )
 #'
-#' check_fsl_flags(.dataset = df, tool.survey = tool.survey)
+#' check_fsl_flags(.dataset = df)
 
 check_fsl_flags <- function(
   .dataset,
