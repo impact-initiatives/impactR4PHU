@@ -6,19 +6,17 @@
 rm(list = ls())
 
 library(tidyverse)
-# library(impactR4PHU)
-
-data.test <- readxl::read_xlsx("inputs/REACH_MMR_MMR2402_MSNA_Dataset_toshare (1).xlsx", sheet = "01_clean_data_main")
+library(impactR4PHU)
 
 # Set Parameters
 
 loop_var <- "admin1"
-grouping_var <- "survey_modality"
+grouping_var <- "enum_id"
 uuidVar <- "_uuid"
-
 
 # Add FSL Indicators for Plausibility
 
+data.test <- readxl::read_xlsx("")
 
 data.test2 <- data.test %>%
   dplyr::select(!ends_with("_recoded")) %>%
@@ -40,6 +38,9 @@ data.test2 <- data.test %>%
     sometimes_answer = "sometimes",
     often_answer = "often"
   ) %>%
+  impactR4PHU::add_fcs(cutoffs = "normal",fsl_fcs_cereal = "fsl_fcs_cereal", fsl_fcs_legumes = "fsl_fcs_legumes",
+                       fsl_fcs_veg = "fsl_fcs_veg", fsl_fcs_fruit = "fsl_fcs_fruit", fsl_fcs_meat = "fsl_fcs_meat", fsl_fcs_dairy = "fsl_fcs_dairy",
+                       fsl_fcs_sugar = "fsl_fcs_sugar", fsl_fcs_oil = "fsl_fcs_oil") %>%
   impactR4PHU::add_fcm_phase(
     fcs_column_name = "fsl_fcs_cat",
     rcsi_column_name = "fsl_rcsi_cat",
@@ -61,14 +62,15 @@ data.test2 <- data.test %>%
     hdds_categories_high = "High"
   ) %>%
   impactR4PHU::add_lcsi(
-    fsl_lcsi_stress1 = "fsl_lcsi_stress_1", fsl_lcsi_stress2 = "fsl_lcsi_stress_2" , fsl_lcsi_stress3 = "fsl_lcsi_stress_3", fsl_lcsi_stress4 = "fsl_lcsi_stress_4",
-    fsl_lcsi_crisis1 = "fsl_lcsi_crisis_1" , fsl_lcsi_crisis2 = "fsl_lcsi_crisis_2", fsl_lcsi_crisis3 = "fsl_lcsi_crisis_3",
-    fsl_lcsi_emergency1 = "fsl_lcsi_emergency_1", fsl_lcsi_emergency2 = "fsl_lcsi_emergency_2", fsl_lcsi_emergency3 = "fsl_lcsi_emergency_3",
+    fsl_lcsi_stress1 = "fsl_lcsi_stress1", fsl_lcsi_stress2 = "fsl_lcsi_stress2" , fsl_lcsi_stress3 = "fsl_lcsi_stress3", fsl_lcsi_stress4 = "fsl_lcsi_stress4",
+    fsl_lcsi_crisis1 = "fsl_lcsi_crisis1" , fsl_lcsi_crisis2 = "fsl_lcsi_crisis2", fsl_lcsi_crisis3 = "fsl_lcsi_crisis3",
+    fsl_lcsi_emergency1 = "fsl_lcsi_emergency1", fsl_lcsi_emergency2 = "fsl_lcsi_emergency2", fsl_lcsi_emergency3 = "fsl_lcsi_emergency3",
     yes_val = "yes" , no_val = "no_had_no_need", exhausted_val = "no_exhausted" , not_applicable_val = "not_applicable"
-  )%>%
-  dplyr::rename("fsl_lcsi_stress1" = "fsl_lcsi_stress_1", "fsl_lcsi_stress2" = "fsl_lcsi_stress_2" , "fsl_lcsi_stress3" = "fsl_lcsi_stress_3", "fsl_lcsi_stress4" = "fsl_lcsi_stress_4",
-                "fsl_lcsi_crisis1" = "fsl_lcsi_crisis_1" , "fsl_lcsi_crisis2" = "fsl_lcsi_crisis_2", "fsl_lcsi_crisis3" = "fsl_lcsi_crisis_3",
-                "fsl_lcsi_emergency1" = "fsl_lcsi_emergency_1", "fsl_lcsi_emergency2" = "fsl_lcsi_emergency_2", "fsl_lcsi_emergency3" = "fsl_lcsi_emergency_3")
+  )
+# %>%
+#   dplyr::rename("fsl_lcsi_stress1" = "fsl_lcsi_stress_1", "fsl_lcsi_stress2" = "fsl_lcsi_stress_2" , "fsl_lcsi_stress3" = "fsl_lcsi_stress_3", "fsl_lcsi_stress4" = "fsl_lcsi_stress_4",
+#                 "fsl_lcsi_crisis1" = "fsl_lcsi_crisis_1" , "fsl_lcsi_crisis2" = "fsl_lcsi_crisis_2", "fsl_lcsi_crisis3" = "fsl_lcsi_crisis_3",
+#                 "fsl_lcsi_emergency1" = "fsl_lcsi_emergency_1", "fsl_lcsi_emergency2" = "fsl_lcsi_emergency_2", "fsl_lcsi_emergency3" = "fsl_lcsi_emergency_3")
 
 
 loop_values <- unique(data.test2[[loop_var]])
@@ -89,9 +91,6 @@ for (i in 1:length(loop_values)) {
                             output_dir = "reports/", output_file = file_name)
 
 }
-
-
-
 
 
 

@@ -7,8 +7,6 @@
 run_fsl_plaus_html_report(
   .dataset = NULL,
   uuid_var = "_uuid",
-  yes_no_team = "no",
-  team_var = "team",
   group_var = "enum_id",
   output_file = "fsl_quality_report.pdf",
   output_dir = "reports"
@@ -18,8 +16,6 @@ run_fsl_plaus_html_report(
 \item{.dataset}{Main Dataset}
 
 \item{uuid_var}{the name of the variable that indicates the uuid column}
-
-\item{team_var}{the name of the variable that indicates the team column, if it exists}
 
 \item{group_var}{the name of the variable that indicates the grouping column, usually enumerator ID column}
 
