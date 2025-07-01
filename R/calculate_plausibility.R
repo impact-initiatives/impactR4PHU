@@ -13,14 +13,13 @@ calculate_plausibility <- function(.dataset){
   anthro_plaus_vars <- c("flag_perc_mfaz_children","n_children_muac","sd_muac_mm",
                          "age_ratio.pvalue", "sex_ratio.pvalue","dps_muac")
 
-  if (c("age_ratio.pvalue") %in% names(.dataset)) {
+  if (c("age_ratio.pvalue") %in% names(.dataset) & c("dps_muac") %in% names(.dataset)) {
     .dataset <- .dataset %>% dplyr::mutate(plaus_ageratio = ifelse(age_ratio.pvalue > 0.1, 0,
                                                        ifelse(age_ratio.pvalue > 0.05, 1,
                                                               ifelse(age_ratio.pvalue > 0.001, 3,
                                                                      ifelse(age_ratio.pvalue <= 0.001, 5, NA)))))
   }
-  if ((c("sex_ratio.pvalue") %in% names(.dataset)) & !(c("cdr") %in%
-                                                 names(.dataset))) {
+  if ((c("sex_ratio.pvalue") %in% names(.dataset)) & c("dps_muac") %in% names(.dataset) & !(c("cdr") %in% names(.dataset))) {
     .dataset <- .dataset %>% dplyr::mutate(plaus_sexratio = ifelse(sex_ratio.pvalue > 0.1, 0,
                                                        ifelse(sex_ratio.pvalue > 0.05, 1,
                                                               ifelse(sex_ratio.pvalue > 0.001, 3,
@@ -343,7 +342,7 @@ calculate_plausibility <- function(.dataset){
                                                      plaus_fsl_score >= 30 & plaus_fsl_score < 60 ~ "Moderate",
                                                      plaus_fsl_score >= 60 ~ "Problematic"))
   }
-  if (c("sex_ratio.pvalue") %in% names(.dataset)) {
+  if (c("sex_ratio.pvalue") %in% names(.dataset) & c("mad_ratio.pvalue") %in% colnames(.dataset)) {
     .dataset <- .dataset %>% dplyr::mutate(plaus_sexratio = ifelse(sex_ratio.pvalue > 0.1, 0,
                                                                    ifelse(sex_ratio.pvalue > 0.05, 2,
                                                                           ifelse(sex_ratio.pvalue > 0.001, 4,

@@ -14,8 +14,6 @@
 
 run_muac_plaus_html_report <- function(.dataset = NULL,
                                       uuid_var = "_uuid",
-                                      yes_no_team = "no",
-                                      team_var = "team",
                                       group_var = "enum_id",
                                       output_file = "muac_quality_report.html",
                                       output_dir = "reports") {
@@ -26,10 +24,6 @@ run_muac_plaus_html_report <- function(.dataset = NULL,
 
   if (is.null(uuid_var)) {
     stop("Error: 'uuid' variable must be provided.")
-  }
-
-  if (is.null(team_var)) {
-    stop("Error: 'team'variable must be provided.")
   }
 
   if (is.null(group_var)) {
@@ -43,8 +37,6 @@ run_muac_plaus_html_report <- function(.dataset = NULL,
     params = list(
       mainData = .dataset,
       uuidVar = uuid_var,
-      YesNoTeam = yes_no_team,
-      TeamVar = team_var,
       GroupVar = group_var
     ),
     # envir = new.env()                  # Use a clean environment to avoid conflicts

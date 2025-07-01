@@ -5,9 +5,7 @@ output: html_document
 params:
   mainData: NULL
   uuidVar: "uuid"
-  YesNoTeam: "no"
-  TeamVar: "team"
-  GroupVar: "enum_id"
+  GroupVar: "enum"
 ---
 
 <style>
@@ -32,10 +30,9 @@ options(scipen = 999)
 
 # raw.main <- params$mainData
 
-raw.main <- impactR4PHU::impactR4PHU_data_nut_template
+raw.main <- data.test2
 
-library(tidyverse)
-library(devtools)
+source("src/utils/misc_utils.R")
 
 ```
 
@@ -47,13 +44,13 @@ library(devtools)
   cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",3), collapse=""), " ", "What is this tool?"))
   cat('\nThe MUAC Data Quality and Plausibility Report serves as a crucial tool for assessing the reliability and accuracy of the data collection of MUAC indicators across different assessments. This comprehensive analysis is designed to identify and address potential issues within the data, ensuring that field teams are being informed on potential issues detected in the data collection.\n\nThe report provides a detailed examination of the datasets, employing a variety of metrics and methodologies to evaluate data quality and plausibility. This includes checks for completeness, consistency, and accuracy of the data collected. This report aims to uncover any discrepancies, outliers, or anomalies that may suggest data collection, entry errors, or underlying issues that could impact the integrity of the findings.</p>')
   cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",3), collapse=""), " ", "What is in this tool?")) 
-  cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",4), collapse=""), " ", "FSL SECTION"))
-  cat('\nThis section includes:\n\n- Overall Plausibility Report / By Enumerator\n- All the flags related to Food Security and Livelihoods (details shown for each flag in the section)\n- Plots showing the distribution of the data.')
+  cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",4), collapse=""), " ", "MUAC SECTION"))
+  cat('\nThis section includes:\n\n- Overall Plausibility Report / By Enumerator\n- All the flags related to MUAC (details shown for each flag in the section)\n- Plots showing the distribution of the data.')
 
   cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",3), collapse=""), " ", "What to do next?"))
   cat('\nPlease check each flag and the <strong>ACTION</strong> related to it and act accordingly.\n\nAnother output will be associated to this HTML, the Excel file of the flags that were fired and requires follow-up with the field team. Please check the README tab in the excel file. This file will again be generated with the full data during the cleaning of the dataset. So please do use this file during data collection and relate to it in the final one to be filled.')
   cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",3), collapse=""), " ", "Feedback"))
-  cat('\nFeedback on improvements to this product can be done through reaching out to:\n\n-saeed.rahman@impact-initiatives.org \n\n-impact.geneva.phu@impact-initiatives.org')
+  cat('\nFeedback on improvements to this product can be done through reaching out to:\n\n-saeed.rahman@impact-initiatives.org or  \n\n-martin.njoroge@impact-initiatives.org')
 ```
 
 ## MUAC {.tabset .tabset-fade}
@@ -62,66 +59,22 @@ library(devtools)
 
   uuid_main <- params$uuidVar
 
-  ## Set Team column
-
-    yes_no_team <- params$YesNoTeam
- 
-    team <- params$TeamVar
   
   ## Set Enumerator column
   enumerator <- params$GroupVar
-  
-    #   fcs_check_columns <- c("fsl_fcs_cereal",
-    #                        "fsl_fcs_legumes",
-    #                        "fsl_fcs_veg",
-    #                        "fsl_fcs_fruit",
-    #                        "fsl_fcs_meat",
-    #                        "fsl_fcs_dairy",
-    #                        "fsl_fcs_sugar",
-    #                        "fsl_fcs_oil")
-    #   
-    #   rcsi_check_columns <- c("fsl_rcsi_lessquality",
-    #                         "fsl_rcsi_borrow",
-    #                         "fsl_rcsi_mealsize",
-    #                         "fsl_rcsi_mealadult",
-    #                         "fsl_rcsi_mealnb")
-    # 
-    #   hhs_check_columns <- c("fsl_hhs_nofoodhh",
-    #                        "fsl_hhs_sleephungry",
-    #                        "fsl_hhs_alldaynight")
-    # 
-    # hhs_check_columns_freq <- c("fsl_hhs_nofoodhh_freq",
-    #                             "fsl_hhs_sleephungry_freq",
-    #                             "fsl_hhs_alldaynight_freq")
       
-## FCS
-raw.flag.muac <- impactR4PHU::impactR4PHU_data_nut_template %>%
-  impactR4PHU::add_muac(nut_muac_cm = "nut_muac_cm", child_age_months = "child_age_months", child_sex = "child_sex",
-                        value_male_sex = "m", edema_confirm = "nut_edema_confirm", value_edema_confirm = "yes") %>%
-  impactR4PHU::add_mfaz(nut_muac_cm = "nut_muac_cm", child_age_months = "child_age_months", child_sex = "child_sex",
-                        value_male_sex = "m", edema_confirm = "nut_edema_confirm", value_edema_confirm = "yes") %>%
-  impactR4PHU::check_anthro_flags(nut_muac_cm = "nut_muac_cm",edema_confirm = "nut_edema_confirm", value_edema_confirm = "yes",
-                                  uuid = "child_person_id") %>% 
-  dplyr::mutate(enum_id = sample(1:2, size = nrow(.), replace = TRUE))
+## MUAC
+raw.flag.muac <- raw.main 
+# %>%
+#   impactR4PHU::add_muac(nut_muac_cm = "nut_muac_cm", child_age_months = "child_age_months", child_sex = "child_sex",
+#                         value_male_sex = "m", edema_confirm = "nut_edema_confirm", value_edema_confirm = "yes") %>%
+#   impactR4PHU::add_mfaz(nut_muac_cm = "nut_muac_cm", child_age_months = "child_age_months", child_sex = "child_sex",
+#                         value_male_sex = "m", edema_confirm = "nut_edema_confirm", value_edema_confirm = "yes") %>%
+#   impactR4PHU::check_anthro_flags(nut_muac_cm = "nut_muac_cm",edema_confirm = "nut_edema_confirm", value_edema_confirm = "yes",
+#                                   uuid = "child_person_id") %>% 
+#   dplyr::mutate(enum_id = sample(1:2, size = nrow(.), replace = TRUE))
 
-# list_of_var <- c("uuid_main","FSL_indicators","num_children","income_types", "fsl_fcs_cereal","fsl_fcs_legumes",
-#                  "fsl_fcs_veg","fsl_fcs_fruit","fsl_fcs_meat","fsl_fcs_dairy","fsl_fcs_sugar",
-#                  "fsl_fcs_oil","fsl_rcsi_lessquality","fsl_rcsi_borrow","fsl_rcsi_mealsize","fsl_rcsi_mealadult",
-#                  "fsl_rcsi_mealnb","fsl_hhs_nofoodhh","fsl_hhs_nofoodhh_freq","fsl_hhs_sleephungry","fsl_hhs_sleephungry_freq",
-#                  "fsl_hhs_alldaynight","fsl_hhs_alldaynight_freq","yes_answer","no_answer","rarely_answer","sometimes_answer","often_answer",
-#                  "fsl_lcsi_stress1","fsl_lcsi_stress2","fsl_lcsi_stress3","fsl_lcsi_stress4","yes_val_hdds","no_val_hdds",
-#                  "fsl_lcsi_crisis1","fsl_lcsi_crisis2","fsl_lcsi_crisis3","fsl_lcsi_emergency1",
-#                  "fsl_lcsi_emergency2","fsl_lcsi_emergency3","yes_val","no_val","exhausted_val","not_applicable_val",
-#                  "fsl_hdds_cereals","fsl_hdds_tubers","fsl_hdds_veg","fsl_hdds_fruit","fsl_hdds_meat",
-#                  "fsl_hdds_eggs","fsl_hdds_fish","fsl_hdds_legumes","fsl_hdds_dairy","fsl_hdds_oil","fsl_hdds_sugar","fsl_hdds_condiments",
-#                  "fclcm_check_columns","fcm_check_1_columns","fcm_check_2_columns","fcm_check_3_columns",
-#                  "fcm_check_4_columns","fcm_check_5_columns","fcm_check_6_columns","hhs_check_columns_freq",
-#                  "residency_status","value_idp","team","yes_no_team",
-#                  "hdds_check_columns","lcsi_check_columns","hhs_check_columns","rcsi_check_columns","fcs_check_columns", "enumerator")
 
-# if(!file.exists("inputs/environment.Rdata")){
-#   save(list = list_of_var, file = "inputs/environment.Rdata")
-# }
 ```
 
 ```{r, include = FALSE}
@@ -143,32 +96,10 @@ result_pivot <- result %>%
   dplyr::filter(stringr::str_starts(string = Criteria, "plaus_")) %>%
   dplyr::filter(Criteria != "plaus_hhs" & Criteria != "plaus_fsl_score" & Criteria != "plaus_fsl_cat")
 
-# bind <- data.frame(`Indicator Score` = c("plaus_fcs","plaus_fcs","plaus_fcs","plaus_fcs","plaus_fcs","plaus_fcs",
-#                                          "plaus_fcs","plaus_fcs","plaus_fcs","plaus_fcs","plaus_fcs","plaus_fcs",
-#                                          "plaus_rcsi","plaus_rcsi","plaus_rcsi","plaus_rcsi","plaus_rcsi",
-#                                          "plaus_rcsi","plaus_rcsi","plaus_rcsi","plaus_rcsi","plaus_rcsi",
-#                                          "plaus_hhs","plaus_hhs",
-#                                          "plaus_lcsi","plaus_lcsi","plaus_lcsi","plaus_lcsi","plaus_lcsi",
-#                                          "plaus_lcsi","plaus_lcsi","plaus_lcsi","plaus_lcsi","plaus_lcsi",
-#                                          "plaus_other_fsl","plaus_other_fsl","plaus_other_fsl",
-#                                          "plaus_other_fsl","plaus_other_fsl","plaus_other_fsl",
-#                                          "plaus_other_fsl","plaus_other_fsl","plaus_other_fsl",
-#                                          "plaus_other_fsl","plaus_other_fsl","plaus_other_fsl",NA,NA))
-
 overall_muac_plaus_overall <- overall_muac_plaus %>%
   dplyr::left_join(result_pivot, by = c("flag_name"="Criteria")) %>%
   dplyr::mutate_all(., ~ifelse(is.na(.),"NA",.)) 
-# %>%
-  # # cbind(bind)%>%
-  # # dplyr::left_join(result_pivot %>% filter(Criteria %in% c("plaus_other_fsl",
-  # #                                                   "plaus_lcsi",
-  # #                                                   "plaus_hhs",
-  # #                                                   "plaus_rcsi",
-  # #                                                   "plaus_fcs")) %>%
-  #             rename(indscore = "Score"), by = c("Indicator.Score"="Criteria")) %>%
-  # dplyr::mutate(indscore = case_when(flag_name == "plaus_flag_severe_hhs"~paste0(indscore,"/10"),
-  #                             TRUE ~paste0(indscore,"/20"))) %>%
-  # dplyr::select(-Indicator.Score)
+
 
 muac <- flextable::flextable(overall_muac_plaus_overall)
 
@@ -190,20 +121,21 @@ final_table
 ```
 
 ```{r, results='asis'}
-result_muac_pivot <- result_muac_enum %>%
+result_muac_pivot_enum <- result_muac_enum %>%
   dplyr::mutate_all(., as.character) %>%
   tidyr::pivot_longer(-enumerator,names_to = "Criteria",
                values_to = "Score") %>%
   dplyr::filter(stringr::str_starts(string = Criteria, "plaus_")) %>%
   dplyr::filter(Criteria != "plaus_hhs" & Criteria != "plaus_fsl_score" & Criteria != "plaus_fsl_cat")
 
-  list_enum <- result_muac_pivot[enumerator] %>% unique
+  list_enum <- result_muac_pivot_enum[[enumerator]] %>% unique
   
   for (i in 1:length(list_enum)) {
     cat(paste0(paste0(rep("\n",2), collapse=""), paste0(rep("#",5), collapse=""), " ", "<strong>",i,"</strong>"))
     
     overall_muac_plaus_enum <- overall_muac_plaus %>%
-      dplyr::left_join(result_muac_pivot %>% dplyr::filter(!!rlang::sym(enumerator) == as.numeric(list_enum[[i]])), by = c("flag_name"="Criteria"))%>%
+      dplyr::left_join(result_muac_pivot_enum %>% 
+                         dplyr::filter(!!rlang::sym(enumerator) == list_enum[[i]]), by = c("flag_name"="Criteria")) %>%
       dplyr::mutate_all(., ~ifelse(is.na(.),"NA",.)) %>%
       dplyr::select(-!!rlang::sym(enumerator))
 
@@ -241,38 +173,8 @@ for(i in 1:length(flags_muac_columns)) {
   if(nrow(flag_overall)>0){
     overall_flag <- rbind(overall_flag,flag_overall)
   }
-  
-  
-  # flag <- flags_muac_columns[[i]]
-  # 
-  # flag_sym <- rlang::sym(flags_muac_columns[[i]])
-  # 
-  # print(flag)
-  # print(class(flag))
-  # 
-  # flag_overall <- raw.flag.muac %>%
-  #   dplyr::select(enumerator, flag) %>%
-  #   dplyr::mutate(flag := flag)
-  
-  
-  # flag_overall <- raw.flag.muac %>%
-  #   dplyr::select(enumerator, flag) %>%
-  #   filter(!is.na(!!flag_sym)) %>%
-  #   dplyr::mutate(flag := flag_sym) %>%
-  #   dplyr::group_by(flag_sym) %>%
-  #   dplyr::summarise(num_samples = n(),
-  #             flagged = sum(!!flag_sym)) %>%
-  #   dplyr::mutate(percentage_flaggged = paste0(round((flagged/num_samples)*100,2),"%")) %>%
-  #   dplyr::ungroup()
-  # 
-  
-  # if(nrow(flag_overall)>0){
-  #   overall_flag <- rbind(overall_flag,flag_overall)
-  # }
+
 }
-
-
-
 add_to_html.title("Overall Flag Table")
 subch(DT::datatable(overall_flag,
                   extensions = 'Buttons', options = list(
