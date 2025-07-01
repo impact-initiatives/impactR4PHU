@@ -1,0 +1,849 @@
+---
+title: "MSNA Public Health Quality Report"
+author: "Saeed Rahman"
+date: "`r Sys.Date()`"
+output: html_document
+params:
+  mainData: NULL
+  rosterData: NULL
+  deathsData: NULL
+  language: en
+  GroupVar: "enum_id"
+  startDate: "2025-06-01"
+  endDate: "2025-09-30"
+  exp_sex_ratio: 1
+  exp_age_ratio_01_35: 0.42
+  exp_age_ratio_05_10: 0.51
+  exp_age_ratio_05_5plus: 0.15
+  exp_mean_hh_size: 4.5
+  exp_deaths_per_hh: 0.0792
+  exp_births_per_hh: 0.05
+  
+---
+
+```{r setup, include=FALSE, echo=FALSE, warning=FALSE}
+
+#clear environment
+# rm(list = ls())
+
+
+
+#load libraries for tidyverse, ggplot2, and dplyr
+library(tidyverse)
+library(ggplot2)
+library(dplyr)
+library(flextable)
+
+# Params
+
+group_var <- sym(params$GroupVar)
+
+# load dataset
+
+df_main <- params$mainData
+df_roster <- params$rosterData
+df_died <- params$deathsData
+
+writexl::write_xlsx(df_main, "test_main1.xlsx")
+
+# date <- df_main %>% dplyr::select(today, hh_uuid)
+
+source("src/functions_extra.R")
+
+# Calculate Roster Indicators
+
+metadata <- df_main %>%
+  dplyr::select(hh_uuid, recall_date) %>%
+  dplyr::distinct()
+
+df_roster2 <- df_roster %>%
+  dplyr::left_join(metadata, by = "hh_uuid") %>%
+  dplyr::mutate(
+    ind_born = dplyr::case_when(
+      as.Date(final_ind_dob) - as.Date(recall_date) >= 0 ~ "yes",
+      .default = "no"
+    ))
+
+# Calculate Indicators for Mortality
+
+
+
+# df_main2 <- df_main %>% 
+#   dplyr::mutate(today = fix_excel_dates(as.numeric(df_main$today)),
+#                 start = fix_excel_dates(as.numeric(df_main$start)),
+#                 end = fix_excel_dates(as.numeric(df_main$end))) 
+
+# writexl::write_xlsx(df_main2, "test_main2.xlsx")
+
+# writexl::write_xlsx(params$startDate, "teststartdate.xlsx")
+# writexl::write_xlsx(params$endDate, "testenddate.xlsx")
+
+
+
+# writexl::write_xlsx(df_main3, "test_main3.xlsx")
+
+df_mortality <- local_create_mortality_long_df(df_main = df_main, date_dc = "today", date_recall_event = "recall_date", 
+                                                          uuid_main = "hh_uuid",
+                                                          
+                                                          df_roster = df_roster2, uuid_roster = "hh_uuid", sex_roster = "ind_gender", 
+                                                          age_roster = "calc_final_age_years", birthdate_roster = "final_ind_dob", 
+
+                                                          df_died = df_died, sex_died = "sex_died", age_died = "calc_final_age_years_died", 
+                                                          birthdate_died = "dob_died", 
+                                                          date_death = "final_date_death", 
+                                                          uuid_died = "hh_uuid")
+
+df_mortality_ind <- df_mortality[[1]]
+df_mortality_hh <- df_mortality[[2]] %>%
+  dplyr::mutate(num_join = dplyr::case_when(is.na(num_join) ~ 0, .default = num_join),
+                num_left = dplyr::case_when(is.na(num_left) ~ 0, .default = num_left))
+
+# sex and age ratios
+
+mortality_quality_table <- df_mortality_hh  %>% 
+  dplyr::filter(person_time != 0 & !is.na(person_time)) %>%
+  dplyr::group_by(!!group_var) %>%
+  dplyr::summarise(
+    n = n(),
+    # count checks
+    num_crude_deaths_n = sum(num_deaths, na.rm = T),
+    num_under5_deaths_n = sum(num_under5_deaths, na.rm = T),
+    num_births_n = sum(num_births, na.rm = T),
+    num_male = sum(sum_male, na.rm = T),
+    num_female = sum(sum_female, na.rm = T),
+    num_01 = sum(sum_01, na.rm = T),
+    num_25 = sum(sum_25, na.rm = T),
+    num_05 = sum(sum_05, na.rm = T),
+    num_510 = sum(sum_510, na.rm = T),
+    num_010 = sum(sum_05, narm = T) + sum(sum_510, na.rm = T),
+    num_5plus = sum(sum_5plus, na.rm = T),
+    num_hh = sum(hh_size, na.rm = T),
+    sd_hh = sd(hh_size, na.rm = T),
+    mean_deaths = mean(num_deaths, na.rm = T),
+    sd_deaths = sd(num_deaths, na.rm = T),
+    sd_deaths_hh = sd(sum(num_deaths, na.rm = T) / n, na.rm = T),
+    mean_births = mean(num_births, na.rm = T),
+    sd_births = sd(num_births, na.rm = T),
+
+    # counts per household
+    mean_deaths_hh = round(sum(num_deaths, na.rm = T) / n, 2),
+    mean_births_hh = round(sum(num_births, na.rm = T) / n, 2),
+    mean_join_hh = round(sum(num_join, na.rm = T) / n, 2),
+    sd_join = sd(num_join, na.rm = T),
+    mean_left_hh = round(sum(num_left, na.rm = T) / n, 2),
+    sd_left = sd(num_left, na.rm = T),
+    
+    num_join_n = sum(num_join, na.rm = T),
+    num_left_n = sum(num_left, na.rm = T),
+    
+    # demographic checks
+    sex_ratio = round(sum(sum_male, na.rm = T) / sum(sum_female, na.rm = T), 2),
+    age_ratio_under5_5plus = round(sum(sum_05, na.rm = T) / sum(sum_5plus, na.rm = T), 2),
+    age_ratio_under2_2to5 = round(sum(sum_01, na.rm = T) / sum(sum_25, na.rm = T), 2),
+    age_ratio_under5_5to10 = round(sum(sum_05, na.rm = T) / sum(sum_510, na.rm = T), 2),
+    mean_hh_size = round(mean(hh_size, na.rm = T), 2),
+    
+    # negative pt flags
+    flag_pt = sum(flag_pt_neg, na.rm = T),
+    flag_multiple_deaths = sum(flag_multiple_deaths, na.rm = T),
+    flag_multiple_births = sum(flag_multiple_births, na.rm = T)
+    
+  )
+
+colnames(mortality_quality_table)[1] <- params$GroupVar
+
+
+
+# Remove data for any group with less than 5 entries 
+
+mortality_quality_table <- mortality_quality_table %>% dplyr::filter(n >= 5)
+
+
+df_mortality_hh <- df_mortality_hh %>% dplyr::filter(!!group_var %in% mortality_quality_table[[params$GroupVar]])
+
+
+hh_size_check <- anova_summary(df_mortality_hh, hh_size, params$GroupVar)
+hh_size_check
+
+
+deaths_check2 <- anova_summary(df_mortality_hh %>% dplyr::mutate(mean_deaths_hh = num_deaths / hh_size), mean_deaths_hh, params$GroupVar)
+deaths_check2
+
+
+births_check <- anova_summary(df_mortality_hh %>% dplyr::mutate(mean_births_hh = num_births / hh_size), mean_births_hh, params$GroupVar) 
+births_check
+
+
+join_check <- anova_summary(df_mortality_hh %>% dplyr::mutate(mean_joiners_hh = num_join / hh_size), mean_joiners_hh, params$GroupVar) 
+join_check
+
+
+left_check <- anova_summary(df_mortality_hh %>% dplyr::mutate(mean_leavers_hh = num_left / hh_size), mean_leavers_hh, params$GroupVar) 
+left_check
+
+
+sex_ratio_check <- chi_squared_test_binary(data = mortality_quality_table, group_col = params$GroupVar, cat1_col = num_male, cat2_col = num_female)
+sex_ratio_check
+
+
+age_ratio_check_01_25 <- chi_squared_test_binary(data = mortality_quality_table, group_col = params$GroupVar, cat1_col = num_01, cat2_col = num_25)
+age_ratio_check_01_25
+
+
+age_ratio_check_05_10 <- chi_squared_test_binary(data = mortality_quality_table, group_col = params$GroupVar, cat1_col = num_05, cat2_col = num_510)
+age_ratio_check_05_10
+
+
+age_ratio_check_05_5plus <- chi_squared_test_binary(data = mortality_quality_table, group_col = params$GroupVar, cat1_col = num_05, cat2_col = num_5plus)
+age_ratio_check_05_5plus
+
+
+if(!is.null(sex_ratio_check)) {sratio <- round(as.numeric(sex_ratio_check[3]),3)} else {sratio <- NA_real_}
+if(!is.null(age_ratio_check_01_25)) {ar_0125 <- round(as.numeric(age_ratio_check_01_25[3]),3)} else {ar_0125 <- NA_real_}
+if(!is.null(age_ratio_check_05_10)) {ar_0510 <- round(as.numeric(age_ratio_check_05_10[3]),3)} else {ar_0510 <- NA_real_}
+if(!is.null(age_ratio_check_05_5plus)) {ar_055plus <- round(as.numeric(age_ratio_check_05_5plus[3]),3)} else {ar_055plus <- NA_real_}
+if(!is.null(hh_size_check)) {hhsize_chk <- hh_size_check[[1]]$`Pr(>F)`[1] } else {hhsize_chk <- NA_real_}
+if(!is.null(deaths_check2)) {death_chk <- deaths_check2[[1]]$`Pr(>F)`[1]} else {death_chk <- NA_real_}
+if(!is.null(births_check)) {birth_chk <- births_check[[1]]$`Pr(>F)`[1]} else {birth_chk <- NA_real_}
+if(!is.null(join_check)) {join_chk <- join_check[[1]]$`Pr(>F)`[1]} else {join_chk <- NA_real_}
+if(!is.null(left_check)) {left_chk <- left_check[[1]]$`Pr(>F)`[1]} else {left_chk <- NA_real_}
+
+append <- data.frame(group = c("p-value"),
+                     sex_ratio = c(sratio),
+                     age_ratio_01_25 = c(ar_0125),
+                     age_ratio_05_10 = c(ar_0510),
+                     age_ratio_05_5plus = c(ar_055plus),
+                     hh_size = c(hhsize_chk),
+                     deaths_count = death_chk,
+                     births_count = birth_chk,
+                     join_count = join_chk,
+                     left_count = left_chk
+                       )
+
+write.csv(df_main, "test_rmarkdown13.csv")
+
+# print("I am here 2")
+
+colnames(append) <- c("group", "sex_ratio", "age_ratio_under2_2to5", "age_ratio_under5_5to10", "age_ratio_under5_5plus", "mean_hh_size",
+                       "mean_deaths_hh", "mean_births_hh", "mean_join_hh", "mean_left_hh")
+
+mortality_quality_table2 <- binomial_ratio_test_rowwise(
+  data = mortality_quality_table,
+  success_col = num_male,
+  total_col = num_hh,
+  expected_ratio = 0.5,
+  pval_colname = "sex_ratio.pvalue"
+) %>%
+  binomial_ratio_test_rowwise(
+    data = .,
+    success_col = num_01,
+    total_col = num_05,
+    expected_ratio = params$exp_age_ratio_01_35,
+    pval_colname = "age_ratio_under2_2to5.pvalue"
+  ) %>%
+  binomial_ratio_test_rowwise(
+    data = .,
+    success_col = num_05,
+    total_col = num_010,
+    expected_ratio = params$exp_age_ratio_05_10, # 0.52,
+    pval_colname = "age_ratio_under5_5to10.pvalue"
+  ) %>%
+  binomial_ratio_test_rowwise(
+    data = .,
+    success_col = num_05,
+    total_col = num_hh,
+    expected_ratio = params$exp_age_ratio_05_5plus, # 0.15,
+    pval_colname = "age_ratio_under5_5plus.pvalue"
+  )
+
+write.csv(df_main, "test_rmarkdown14.csv")
+
+mortality_quality_table3 <- t_test_rowwise_from_summary(
+  data = mortality_quality_table2,
+  mean_col = mean_hh_size,
+  sd_col = sd_hh,
+  n_col = n,
+  expected_mean = params$exp_mean_hh_size, # 4.5,
+  pval_colname = "mean_hh_size.pvalue"
+) %>% poisson_ratio_test_rowwise(
+  event_col = num_crude_deaths_n, 
+  exposure_col = n, 
+  expected_rate = params$exp_deaths_per_hh, # 0.0792, 
+  pval_colname = "deaths_hh.pvalue"
+
+) %>% t_test_rowwise_from_summary(
+  data = .,
+  mean_col = mean_births,
+  sd_col = sd_births,
+  n_col = n,
+  expected_mean = params$exp_births_per_hh, # 0.05,
+  pval_colname = "births_hh.pvalue"
+) %>% t_test_rowwise_from_summary(
+  data = .,
+  mean_col = mean_join_hh,
+  sd_col = sd_join,
+  n_col = n,
+  expected_mean = mean(df_mortality_hh$num_join, na.rm = T),
+  pval_colname = "join_hh.pvalue"
+) %>% t_test_rowwise_from_summary(
+  data = .,
+  mean_col = mean_left_hh,
+  sd_col = sd_left,
+  n_col = n,
+  expected_mean = mean(df_mortality_hh$num_left, na.rm = T),
+  pval_colname = "left_hh.pvalue"
+)
+  
+write.csv(df_main, "test_rmarkdown15.csv")
+
+mortality_quality_table_final <- mortality_quality_table3 %>%
+  dplyr::select(
+    # Metadata
+    !!group_var, n, 
+    # Deaths
+    num_crude_deaths_n, num_under5_deaths_n, mean_deaths_hh, mean_deaths, deaths_hh.pvalue, flag_pt, flag_multiple_deaths,
+    # Births
+    num_births_n, mean_births_hh, flag_multiple_births, births_hh.pvalue,
+    # Migration
+    num_join_n, mean_join_hh, num_left_n, mean_left_hh, join_hh.pvalue, left_hh.pvalue,
+    # Demographic Checks
+    mean_hh_size, mean_hh_size.pvalue, sex_ratio, sex_ratio.pvalue, age_ratio_under2_2to5, age_ratio_under2_2to5.pvalue, age_ratio_under5_5to10, age_ratio_under5_5to10.pvalue, age_ratio_under5_5plus, age_ratio_under5_5plus.pvalue,
+    
+    ) %>%
+  dplyr::mutate(
+    plaus_flag_neg_pt = dplyr::case_when(
+      flag_pt == 0 ~ 0,
+      flag_pt > 0 & flag_pt <= 3 ~ 10,
+      flag_pt > 3 ~ 20,
+    ),
+    plaus_deaths_hh = dplyr::case_when(
+      deaths_hh.pvalue > 0.05 ~ 0,
+      deaths_hh.pvalue > 0.01 & deaths_hh.pvalue <= 0.05 ~ 7.5,
+      deaths_hh.pvalue > 0.001 & deaths_hh.pvalue <= 0.01 ~ 15,
+      deaths_hh.pvalue <= 0.001 ~ 20,
+    ),
+    plaus_flag_multiple_deaths = dplyr::case_when(
+      flag_multiple_deaths / n <= 0.01 ~ 0,
+      flag_multiple_deaths / n > 0.01 & flag_multiple_deaths / n <= 0.02 ~ 7.5,
+      flag_multiple_deaths / n > 0.02 & flag_multiple_deaths / n <= 0.04 ~ 15,
+      flag_multiple_deaths / n >= 0.04 ~ 20,
+    ),
+    plaus_births_hh = dplyr::case_when(
+      births_hh.pvalue > 0.05 ~ 0,
+      births_hh.pvalue > 0.01 & births_hh.pvalue <= 0.05 ~ 7.5,
+      births_hh.pvalue > 0.001 & births_hh.pvalue <= 0.01 ~ 15,
+      births_hh.pvalue <= 0.001 ~ 20,
+    ),
+    plaus_flag_multiple_births = dplyr::case_when(
+      flag_multiple_births / n <= 0.01 ~ 0,
+      flag_multiple_births / n > 0.01 & flag_multiple_births / n <= 0.015 ~ 5,
+      flag_multiple_births / n > 0.015 & flag_multiple_births / n <= 0.02 ~ 7.5,
+      flag_multiple_births / n >= 0.02 ~ 10,
+    ),
+    plaus_join_hh = dplyr::case_when(
+      join_hh.pvalue > 0.05 ~ 0,
+      join_hh.pvalue > 0.01 & join_hh.pvalue <= 0.05 ~ 1.5,
+      join_hh.pvalue > 0.001 & join_hh.pvalue <= 0.01 ~ 3,
+      join_hh.pvalue <= 0.001 ~ 5,
+    ),
+    plaus_left_hh = dplyr::case_when(
+      left_hh.pvalue > 0.05 ~ 0,
+      left_hh.pvalue > 0.01 & left_hh.pvalue <= 0.05 ~ 1.5,
+      left_hh.pvalue > 0.001 & left_hh.pvalue <= 0.01 ~ 3,
+      left_hh.pvalue <= 0.001 ~ 5,
+    ),
+    plaus_hh_size = dplyr::case_when(
+      mean_hh_size.pvalue > 0.05 ~ 0,
+      mean_hh_size.pvalue > 0.01 & mean_hh_size.pvalue <= 0.05 ~ 1.5,
+      mean_hh_size.pvalue > 0.001 & mean_hh_size.pvalue <= 0.01 ~ 3,
+      mean_hh_size.pvalue <= 0.001 ~ 5,
+    ),
+    plaus_sex_ratio = dplyr::case_when(
+      sex_ratio.pvalue > 0.05 ~ 0,
+      sex_ratio.pvalue > 0.01 & sex_ratio.pvalue <= 0.05 ~ 1.5,
+      sex_ratio.pvalue > 0.001 & sex_ratio.pvalue <= 0.01 ~ 3,
+      sex_ratio.pvalue <= 0.001 ~ 5,
+    ),
+    plaus_age_ratio_under2_2to5 = dplyr::case_when(
+      age_ratio_under2_2to5.pvalue > 0.05 ~ 0,
+      age_ratio_under2_2to5.pvalue > 0.01 & age_ratio_under2_2to5.pvalue <= 0.05 ~ 1.5,
+      age_ratio_under2_2to5.pvalue > 0.001 & age_ratio_under2_2to5.pvalue <= 0.01 ~ 3,
+      age_ratio_under2_2to5.pvalue <= 0.001 ~ 5,
+    ),
+    plaus_age_ratio_under5_5to10 = dplyr::case_when(
+      age_ratio_under5_5to10.pvalue > 0.05 ~ 0,
+      age_ratio_under5_5to10.pvalue > 0.01 & age_ratio_under5_5to10.pvalue <= 0.05 ~ 3,
+      age_ratio_under5_5to10.pvalue > 0.001 & age_ratio_under5_5to10.pvalue <= 0.01 ~ 5,
+      age_ratio_under5_5to10.pvalue <= 0.001 ~ 7.5,
+    ),
+    plaus_age_ratio_under5_5plus = dplyr::case_when(
+      age_ratio_under5_5plus.pvalue > 0.05 ~ 0,
+      age_ratio_under5_5plus.pvalue > 0.01 & age_ratio_under5_5plus.pvalue <= 0.05 ~ 3,
+      age_ratio_under5_5plus.pvalue > 0.001 & age_ratio_under5_5plus.pvalue <= 0.01 ~ 5,
+      age_ratio_under5_5plus.pvalue <= 0.001 ~ 7.5,
+    ) 
+  )
+
+
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+`r if (params$language == "en") {"This quality report is intended to support field officers or supervisors managing MSNA enumerators to quickly identify quality concerns on the mortality data in order to provide feedback."} else {"Ce rapport de qualité a pour but d'aider les responsables de terrain ou les superviseurs qui gèrent les recenseurs MSNA à identifier rapidement les problèmes de qualité des données de mortalité afin de fournir un retour d'information."}`
+
+`r if (params$language == "en") {"This report aims to facilitate two types of checks: One, are enumerators reporting very differently amongst themselves on key indicators related to mortality? And two, are enumerators reporting very differently compared to what we expect is normal for this area?"} else {"Ce rapport vise à faciliter deux types de vérifications : Premièrement, les enquêteurs rapportent-ils des informations très différentes entre eux sur les indicateurs clés liés à la mortalité ? Deuxièmement, les enquêteurs font-ils des rapports très différents par rapport à ce que nous pensons être normal pour cette région ?"}`
+
+## `r if (params$language == "en") {"Enumerator/Group Differences in Key Demographic Indicators"} else {"Différences entre les enquêteurs et les groupes en ce qui concerne les indicateurs démographiques clés"} ` 
+
+`r if (params$language == "en") {"This section test for differences in reporting between enumerators or groups on several indicators which may affect mortality results. For each indicator a p'value is presented, which shows the probability that there is NO difference amongst enumerators or teams on an indicator. Generally, we expect enumerators and teams conducting surveys in the same or similar population to get generally similar results. The more different an indicator is reported between enumerators/groups, than the more likely that one enumerator may be asking or recording the question differently than the others and leading to poor data quality. For these indicators, some variation is normal but very extreme differences (one enumerator reports 4 times as many deaths as others) may likely be an issue."} else {"Cette section teste les différences de déclaration entre les enquêteurs ou les groupes sur plusieurs indicateurs susceptibles d'affecter les résultats de la mortalité. Pour chaque indicateur, une valeur p'est présentée, qui indique la probabilité qu'il n'y ait AUCUNE différence entre les recenseurs ou les équipes sur un indicateur. En règle générale, nous nous attendons à ce que les recenseurs et les équipes menant des enquêtes auprès d'une population identique ou similaire obtiennent des résultats généralement similaires. Plus un indicateur est différent d'un recenseur ou d'un groupe à l'autre, plus il est probable qu'un recenseur pose ou enregistre la question différemment des autres, ce qui entraîne une mauvaise qualité des données. Pour ces indicateurs, une certaine variation est normale, mais des différences très importantes (un recenseur déclare 4 fois plus de décès que les autres) peuvent poser problème."}`
+
+`r if (params$language == "en") {"The below p-value shows the probability that there are no differenced between enumerators/groups in their reporting for an indicator. A p-value greater than 0.10 (green) means likely at least one enumerator/group is reporting similar results. Between 0.05-0.1 (yellow) means there is light evidence of different reporting, between 0.001 - 0.05 (orange) is moderate evidence of different reporting, and less than 0.001 (red) is strong evidence of different reporting."} else {"La valeur p ci-dessous indique la probabilité qu'il n'y ait pas de différence entre les recenseurs/groupes dans leurs rapports pour un indicateur. Une valeur p supérieure à 0,10 (vert) signifie qu'il est probable qu'au moins un agent recenseur/groupe présente des résultats similaires. Une valeur comprise entre 0,05 et 0,1 (jaune) signifie qu'il existe des preuves légères de différences dans les rapports, une valeur comprise entre 0,001 et 0,05 (orange) est une preuve modérée de différences dans les rapports, et une valeur inférieure à 0,001 (rouge) est une preuve forte de différences dans les rapports."}`
+
+`r if (params$language == "en") {"If any of these indicators show evidence of different reporting between enumerators, you should investigate which enumerators may be causing this in the next tables of this report."} else {"Si l'un de ces indicateurs montre des différences de rapport entre les enquêteurs, vous devez rechercher quels enquêteurs peuvent être à l'origine de ce problème dans les tableaux suivants de ce rapport."}`
+
+```{r enum_diff, echo=FALSE, warning=FALSE}
+
+#statistical tests
+
+append2 <- append %>%
+  mutate(across(2:10, ~ round(., 3)))
+
+ft <- flextable::flextable(append2) %>%
+  flextable::bg(i = ~ sex_ratio <= 0.001, j = "sex_ratio", bg = "red") %>%
+    flextable::bg(i = ~ age_ratio_under2_2to5 <= 0.001, j = "age_ratio_under2_2to5", bg = "red") %>%
+  flextable::bg(i = ~ age_ratio_under5_5to10 <= 0.001, j = "age_ratio_under5_5to10", bg = "red") %>%
+  flextable::bg(i = ~ age_ratio_under5_5plus <= 0.001, j = "age_ratio_under5_5plus", bg = "red") %>%
+  flextable::bg(i = ~ mean_hh_size <= 0.001, j = "mean_hh_size", bg = "red") %>%
+  flextable::bg(i = ~ mean_deaths_hh <= 0.001, j = "mean_deaths_hh", bg = "red") %>%
+  flextable::bg(i = ~ mean_births_hh <= 0.001, j = "mean_births_hh", bg = "red") %>%
+  flextable::bg(i = ~ mean_join_hh <= 0.001, j = "mean_join_hh", bg = "red") %>%
+  flextable::bg(i = ~ mean_left_hh <= 0.001, j = "mean_left_hh", bg = "red") %>%
+
+  flextable::bg(i = ~ sex_ratio > 0.001 & sex_ratio <= 0.05, j = "sex_ratio", bg = "orange") %>%
+    flextable::bg(i = ~ age_ratio_under2_2to5 > 0.001 & age_ratio_under2_2to5 <= 0.05, j = "age_ratio_under2_2to5", bg = "orange") %>%
+  flextable::bg(i = ~ age_ratio_under5_5to10 > 0.001 & age_ratio_under5_5to10 <= 0.05, j = "age_ratio_under5_5to10", bg = "orange") %>%
+  flextable::bg(i = ~ age_ratio_under5_5plus > 0.001 & age_ratio_under5_5plus <= 0.05, j = "age_ratio_under5_5plus", bg = "orange") %>%
+  flextable::bg(i = ~ mean_hh_size > 0.001 & mean_hh_size <= 0.05, j = "mean_hh_size", bg = "orange") %>%
+  flextable::bg(i = ~ mean_deaths_hh > 0.001 & mean_deaths_hh <= 0.05, j = "mean_deaths_hh", bg = "orange") %>%
+  flextable::bg(i = ~ mean_births_hh > 0.001 & mean_births_hh <= 0.05, j = "mean_births_hh", bg = "orange") %>%
+  flextable::bg(i = ~ mean_join_hh > 0.001 & mean_join_hh <= 0.05, j = "mean_join_hh", bg = "orange") %>%
+  flextable::bg(i = ~ mean_left_hh > 0.001 & mean_left_hh <= 0.05, j = "mean_left_hh", bg = "orange") %>%
+    
+  flextable::bg(i = ~ sex_ratio > 0.05 &  sex_ratio <= 0.1, j = "sex_ratio", bg = "khaki") %>%
+  flextable::bg(i = ~ age_ratio_under2_2to5 > 0.05 & age_ratio_under2_2to5 <= 0.1, j = "age_ratio_under2_2to5", bg = "khaki") %>%
+  flextable::bg(i = ~ age_ratio_under5_5to10 > 0.05 & age_ratio_under5_5to10 <= 0.1, j = "age_ratio_under5_5to10", bg = "khaki") %>%
+  flextable::bg(i = ~ age_ratio_under5_5plus > 0.05 & age_ratio_under5_5plus <= 0.1, j = "age_ratio_under5_5plus", bg = "khaki") %>%
+  flextable::bg(i = ~ mean_hh_size > 0.05 & mean_hh_size <= 0.1, j = "mean_hh_size", bg = "khaki") %>%
+  flextable::bg(i = ~ mean_deaths_hh > 0.05 & mean_deaths_hh <= 0.1, j = "mean_deaths_hh", bg = "khaki") %>%
+  flextable::bg(i = ~ mean_births_hh > 0.05 & mean_births_hh <= 0.1, j = "mean_births_hh", bg = "khaki") %>%
+  flextable::bg(i = ~ mean_join_hh > 0.05 & mean_join_hh <= 0.1, j = "mean_join_hh", bg = "khaki") %>%
+  flextable::bg(i = ~ mean_left_hh > 0.05 & mean_left_hh <= 0.1, j = "mean_left_hh", bg = "khaki") %>%
+  
+  flextable::bg(i = ~ sex_ratio > 0.1, j = "sex_ratio", bg = "forestgreen") %>%
+    flextable::bg(i = ~ age_ratio_under2_2to5  > 0.1, j = "age_ratio_under2_2to5", bg = "forestgreen") %>%
+  flextable::bg(i = ~ age_ratio_under5_5to10  > 0.1, j = "age_ratio_under5_5to10", bg = "forestgreen") %>%
+  flextable::bg(i = ~ age_ratio_under5_5plus  > 0.1, j = "age_ratio_under5_5plus", bg = "forestgreen") %>%
+  flextable::bg(i = ~ mean_hh_size  > 0.1, j = "mean_hh_size", bg = "forestgreen") %>%
+  flextable::bg(i = ~ mean_deaths_hh  > 0.1, j = "mean_deaths_hh", bg = "forestgreen") %>%
+  flextable::bg(i = ~ mean_births_hh  > 0.1, j = "mean_births_hh", bg = "forestgreen") %>%
+  flextable::bg(i = ~ mean_join_hh  > 0.1, j = "mean_join_hh", bg = "forestgreen") %>%
+  flextable::bg(i = ~ mean_left_hh  > 0.1, j = "mean_left_hh", bg = "forestgreen")  %>%
+  flextable::fontsize(size = 8) %>%
+  flextable::autofit() %>%
+  flextable::set_table_properties(width = 1, layout = "autofit")  %>%
+  flextable::rotate(j = 1:10, rotation = "btlr", part = "header", align = "center")
+
+if(params$language == "en") {
+  ft <- flextable::set_header_labels(ft,
+                                     group = params$GroupVar,
+                                     sex_ratio = "Sex Ratio",
+                                     age_ratio_under2_2to5 = "Age Ratio (0-1 years : 2-5 years)",
+                                     age_ratio_under5_5to10 = "Age Ratio (0-5 years : 5-10 years)",
+                                     age_ratio_under5_5plus = "Age Ratio (0-5 years : 5+ years)",
+                                     mean_hh_size = "Mean Household Size",
+                                     mean_deaths_hh = "Mean Deaths Per Household",
+                                     mean_births_hh = "Mean Births per Household",
+                                     mean_join_hh = "Mean Joiners Per Household",
+                                     mean_left_hh = "Mean Leavers per Household"
+                                     
+)}
+
+if(params$language == "fr") {
+  ft <- flextable::set_header_labels(ft,
+                                     group = params$GroupVar,
+                                     sex_ratio = "Ratio des sexes",
+                                     age_ratio_under2_2to5 = "Ratio d'âge (0-1 an : 2-5 ans)",
+                                     age_ratio_under5_5to10 = "Ratio d'âge (0-5 ans : 5-10 ans)",
+                                     age_ratio_under5_5plus = "Ratio d'âge (0-5 ans : 5+ ans)",
+                                     mean_hh_size = "Taille moyenne du ménage",
+                                     mean_deaths_hh = "Nombre moyen de décès par ménage",
+                                     mean_births_hh = "Nombre moyen de naissances par ménage",
+                                     mean_join_hh = "Nombre moyen de personnes entrant dans le ménage",
+                                     mean_left_hh = "Nombre moyen de personnes quittant le ménage"
+                                     
+)}
+
+### EXPORTER LE TABLEAU VERS DJIBRILLA EXCEL ICI
+
+ft
+  
+
+```
+
+## `r if (params$language == "en") {"Enumerator/Group Reporting for Key Demographic Indicators (Values)"} else {"Rapport de l'enquêteur/du groupe pour les indicateurs démographiques clés (valeurs)"}`
+
+`r if (params$language == "en") {"In this section you can investigate which enumerator/group may be contributing to differences in reporting for key demographic indicators. This table summarizes the ratio or average values for each indicator per enumerator/group. The most extreme minimum and maximum values are colored red to highlight which enumerators most likely are contributing to differences. Less extreme values are shades of orange or yellow."} else {"Dans cette section, vous pouvez rechercher quel recenseur/groupe peut contribuer aux différences de déclaration pour les indicateurs démographiques clés. Ce tableau résume le ratio ou les valeurs moyennes pour chaque indicateur par recenseur/groupe. Les valeurs minimales et maximales les plus extrêmes sont colorées en rouge pour mettre en évidence les recenseurs qui contribuent le plus probablement aux différences. Les valeurs moins extrêmes sont de couleur orange ou jaune."}`
+
+`r if (params$language == "en") {"For each indicator where strong differences are reported, it is recommended to identify the enumerators/groups with the most extreme reporting and follow up with them to understand why, and if necessary give corrective feedback."} else {"Pour chaque indicateur où de fortes différences sont signalées, il est recommandé d'identifier les enquêteurs/groupes dont les rapports sont les plus extrêmes et de les suivre pour en comprendre les raisons et, le cas échéant, leur donner un retour d'information correctif."}`
+
+```{r mortality_report, echo=FALSE, warning=FALSE}
+
+#statistical tests
+
+checks_across <- mortality_quality_table_final %>%
+  dplyr::mutate(!!group_var := as.character(!!group_var)) %>%
+  dplyr::select(!!group_var, sex_ratio, age_ratio_under2_2to5, age_ratio_under5_5to10, age_ratio_under5_5plus, mean_hh_size, mean_deaths_hh, mean_births_hh, mean_join_hh, mean_left_hh) 
+
+domain_vals1 <- range(checks_across$sex_ratio, na.rm = TRUE)
+domain_vals2 <- range(checks_across$age_ratio_under2_2to5, na.rm = TRUE)
+domain_vals3 <- range(checks_across$age_ratio_under5_5to10, na.rm = TRUE)
+domain_vals4 <- range(checks_across$age_ratio_under5_5plus, na.rm = TRUE)
+domain_vals5 <- range(checks_across$mean_hh_size, na.rm = TRUE)
+domain_vals6 <- range(checks_across$mean_deaths_hh, na.rm = TRUE)
+domain_vals7 <- range(checks_across$mean_births_hh, na.rm = TRUE)
+domain_vals8 <- range(checks_across$mean_join_hh, na.rm = TRUE)
+domain_vals9 <- range(checks_across$mean_left_hh, na.rm = TRUE)
+
+if (any(is.infinite(domain_vals1)) || any(is.na(domain_vals1))) {domain_vals1 <- c(0, 1)}
+if (any(is.infinite(domain_vals2)) || any(is.na(domain_vals2))) {domain_vals2 <- c(0, 1)}
+if (any(is.infinite(domain_vals3)) || any(is.na(domain_vals3))) {domain_vals3 <- c(0, 1)}
+if (any(is.infinite(domain_vals4)) || any(is.na(domain_vals4))) {domain_vals4 <- c(0, 1)}
+if (any(is.infinite(domain_vals5)) || any(is.na(domain_vals5))) {domain_vals5 <- c(0, 1)}
+if (any(is.infinite(domain_vals6)) || any(is.na(domain_vals6))) {domain_vals6 <- c(0, 1)}
+if (any(is.infinite(domain_vals7)) || any(is.na(domain_vals7))) {domain_vals7 <- c(0, 1)}
+if (any(is.infinite(domain_vals8)) || any(is.na(domain_vals8))) {domain_vals8 <- c(0, 1)}
+if (any(is.infinite(domain_vals9)) || any(is.na(domain_vals9))) {domain_vals9 <- c(0, 1)}
+
+ft <- flextable::flextable(checks_across) %>%
+  flextable::bg(j = "sex_ratio",
+    bg = scales::col_numeric(palette = c("red", "khaki3", "khaki1", "white", "khaki1", "khaki3", "red"), domain = domain_vals1, na.color = "grey")) %>%
+  flextable::bg(j = "age_ratio_under2_2to5",
+    bg = scales::col_numeric(palette = c("red", "khaki3", "khaki1", "white", "khaki1", "khaki3", "red"), domain = domain_vals2, na.color = "grey")) %>%
+  flextable::bg(j = "age_ratio_under5_5to10",
+    bg = scales::col_numeric(palette = c("red", "khaki3", "khaki1", "white", "khaki1", "khaki3", "red"), domain = domain_vals3, na.color = "grey")) %>%
+  flextable::bg(j = "age_ratio_under5_5plus",
+    bg = scales::col_numeric(palette = c("red", "khaki3", "khaki1", "white", "khaki1", "khaki3", "red"), domain = domain_vals4, na.color = "grey")) %>% 
+  flextable::bg(j = "mean_hh_size",
+    bg = scales::col_numeric(palette = c("red", "khaki3", "khaki1", "white", "khaki1", "khaki3", "red"), domain = domain_vals5, na.color = "grey")) %>%
+    flextable::bg(j = "mean_deaths_hh",
+    bg = scales::col_numeric(palette = c("red", "khaki3", "khaki1", "white", "khaki1", "khaki3", "red"), domain = domain_vals6, na.color = "grey")) %>%
+    flextable::bg(j = "mean_births_hh",
+    bg = scales::col_numeric(palette = c("red", "khaki3", "khaki1", "white", "khaki1", "khaki3", "red"), domain = domain_vals7, na.color = "grey")) %>%
+    flextable::bg(j = "mean_join_hh",
+    bg = scales::col_numeric(palette = c("red", "khaki3", "khaki1", "white", "khaki1", "khaki3", "red"), domain = domain_vals8, na.color = "grey")) %>%
+    flextable::bg(j = "mean_left_hh",
+    bg = scales::col_numeric(palette = c("red", "khaki3", "khaki1", "white", "khaki1", "khaki3", "red"), domain = domain_vals9, na.color = "grey")) %>%
+  flextable::fontsize(size = 8) %>%
+  flextable::autofit() %>%
+  flextable::set_table_properties(width = 1, layout = "autofit")  %>%
+  flextable::rotate(j = 1:10, rotation = "btlr", part = "header", align = "center")
+  
+  # flextable::bg(i = ~ sex_ratio < 0.05, j = "sex_ratio", bg = "lightblue")
+
+ # | age_ratio_under2_2to5 < 0.05 | age_ratio_under5_5to10  < 0.05 | age_ratio_under5_5plus  < 0.05 | mean_hh_size  < 0.05 | mean_deaths_hh  < 0.05 | mean_births_hh < 0.05 | mean_join_hh < 0.05| mean_left_hh < 0.05
+
+if(params$language == "en") {
+  ft <- flextable::set_header_labels(ft,
+                                     group = params$GroupVar,
+                                     sex_ratio = "Sex Ratio",
+                                     age_ratio_under2_2to5 = "Age Ratio (0-1 years : 2-5 years)",
+                                     age_ratio_under5_5to10 = "Age Ratio (0-4 years : 5-10 years)",
+                                     age_ratio_under5_5plus = "Age Ratio (0-4 years : 5+ years)",
+                                     mean_hh_size = "Mean Household Size",
+                                     mean_deaths_hh = "Mean Deaths Per Household",
+                                     mean_births_hh = "Mean Births per Household",
+                                     mean_join_hh = "Mean Joiners Per Household",
+                                     mean_left_hh = "Mean Leavers per Household"
+                                     
+)}
+
+if(params$language == "fr") {
+  ft <- flextable::set_header_labels(ft,
+                                     group = params$GroupVar,
+                                     sex_ratio = "Ratio des sexes",
+                                     age_ratio_under2_2to5 = "Ratio d'âge (0-1 an : 2-5 ans)",
+                                     age_ratio_under5_5to10 = "Ratio d'âge (0-4 ans : 5-10 ans)",
+                                     age_ratio_under5_5plus = "Ratio d'âge (0-4 ans : 5+ ans)",
+                                     mean_hh_size = "Taille moyenne du ménage",
+                                     mean_deaths_hh = "Nombre moyen de décès par ménage",
+                                     mean_births_hh = "Nombre moyen de naissances par ménage",
+                                     mean_join_hh = "Nombre moyen de personnes entrant dans le ménage",
+                                     mean_left_hh = "Nombre moyen de personnes quittant le ménage"
+                                     
+  )}
+
+### EXPORTER LE TABLEAU VERS DJIBRILLA EXCEL ICI
+
+ft
+  
+
+```
+
+
+## `r if (params$language == "en") {"Enumerator/Group Penalties - Differences Against Expected Demographic Values"} else {"Pénalités pour les recenseurs/groupes - Différences par rapport aux valeurs démographiques attendues"}`
+
+`r if (params$language == "en") {"This section will check the results for each enumerator/group against an expected value based on secondary data that has been set by the country assessment/data team. The expected results for these demographic indicators are as follows, with joiners and leavers just showing the average number per household from MSNA data:"} else {"Cette section vérifie les résultats de chaque enquêteur/groupe par rapport à une valeur attendue basée sur des données secondaires qui ont été établies par l'équipe d'évaluation/de données du pays. Les résultats attendus pour ces indicateurs démographiques sont les suivants :"}`
+
+```{r plaus_expected, echo=FALSE, warning=FALSE}
+
+expected_values <- data.frame(
+                     sex_ratio = params$exp_sex_ratio,
+                     age_ratio_01_25 = params$exp_age_ratio_01_35,
+                     age_ratio_05_10 = params$exp_age_ratio_05_10,
+                     age_ratio_05_5plus = params$exp_age_ratio_05_5plus,
+                     hh_size = params$exp_mean_hh_size,
+                     deaths_count = params$exp_deaths_per_hh,
+                     births_count = params$exp_births_per_hh,
+                     join_count = mean(df_mortality_hh$num_join, na.rm = T),
+                     left_count = mean(df_mortality_hh$num_left, na.rm = T)
+                       )
+
+colnames(expected_values) <- c("sex_ratio", "age_ratio_under2_2to5", "age_ratio_under5_5to10", "age_ratio_under5_5plus", "mean_hh_size",
+                       "mean_deaths_hh", "mean_births_hh", "mean_join_hh", "mean_left_hh")
+
+expected_values <- expected_values %>%
+  flextable::flextable()
+
+if(params$language == "en") {
+  expected_values <- flextable::set_header_labels(expected_values,
+                                     sex_ratio = "Expected Sex Ratio",
+                                     age_ratio_under2_2to5 = "Expected Age Ratio (0-1 years : 2-5 years)",
+                                     age_ratio_under5_5to10 = "Expected Age Ratio (0-4 years : 5-10 years)",
+                                     age_ratio_under5_5plus = "Expected Age Ratio (0-4 years : 5+ years)",
+                                     mean_hh_size = "Expected Mean Household Size",
+                                     mean_deaths_hh = "Expected Mean Deaths Per Household",
+                                     mean_births_hh = "Expected Mean Births per Household",
+                                     mean_join_hh = "Expected Mean Joiners Per Household",
+                                     mean_left_hh = "Expected Mean Leavers per Household"
+
+)}
+
+if(params$language == "fr") {
+  expected_values <- flextable::set_header_labels(expected_values,
+                                     sex_ratio = "Ratio des sexes attendu",
+                                     age_ratio_under2_2to5 = "Ratio d'âge (0-1 an : 2-5 ans) attendu",
+                                     age_ratio_under5_5to10 = "Ratio d'âge (0-4 ans : 5-10 ans) attendu",
+                                     age_ratio_under5_5plus = "Ratio d'âge (0-4 ans : 5+ ans) attendu",
+                                     mean_hh_size = "Taille moyenne du ménage attendu",
+                                     mean_deaths_hh = "Nombre moyen de décès par ménage attendu",
+                                     mean_births_hh = "Nombre moyen de naissances par ménage attendu",
+                                     mean_join_hh = "Nombre moyen de personnes entrant dans le ménage attendu",
+                                     mean_left_hh = "Nombre moyen de personnes quittant le ménage attendu"
+
+  )}
+
+expected_values
+
+```
+
+
+`r if (params$language == "en") {"Each enumerator is assigned a penalty score based on how different their reporting is against expected values for each key demographic indicator, with the most important indicators, like number of deaths per household, reported given higher penalties in red. The total penalty score across all indicators is in the first column and can give an indication of an enumerator that may be doing poor quality work. Total penalty scores of less than 20 are 'Good (green)', between 20-30 are 'Minor Issues (yellow)', between 30-50 are 'Moderate Issues (orange)', and greater than 50 are 'Major Issues (red)' "} else {"Chaque agent recenseur se voit attribuer un score de pénalité basé sur l'écart de ses rapports par rapport aux valeurs attendues pour chaque indicateur démographique clé, les indicateurs les plus importants, comme le nombre de décès par ménage, étant signalés avec des pénalités plus élevées en rouge. Le score total de pénalité pour tous les indicateurs figure dans la première colonne et peut donner une indication sur la qualité médiocre du travail d'un agent recenseur. Les scores de pénalité totaux inférieurs à 20 correspondent à 'Bon (vert)', ceux compris entre 20 et 30 à des 'Problèmes mineurs (jaune)', ceux compris entre 30 et 50 à des 'Problèmes modérés (orange)', et ceux supérieurs à 50 à des 'Problèmes majeurs (rouge)' "}`
+
+`r if (params$language == "en") {"It is possible for enumerators to get different responses than we expect from secondary data on average, though it is possibly also a sign of poor data quality depending on how extreme the differences are, especially if the enumerator has very different penalties and reporting compared to the rest of the team. Enumerators with high penalty scores should be followed up with to understand why, and if needed give corrective feedback."} else {"Il est possible que les enquêteurs obtiennent des réponses différentes de celles que nous attendons en moyenne des données secondaires, bien que cela puisse également être un signe de mauvaise qualité des données en fonction de l'ampleur des différences, en particulier si l'enquêteur a des pénalités et des rapports très différents de ceux du reste de l'équipe. Les recenseurs qui obtiennent des scores de pénalité élevés doivent faire l'objet d'un suivi afin d'en comprendre les raisons et, le cas échéant, de fournir un retour d'information correctif."}`
+
+```{r plaus_score_enum, echo=FALSE, warning=FALSE}
+
+# number completed
+# time to completion
+# skip issues
+# cluster labelling issues
+
+plaus_table <- mortality_quality_table_final %>%
+  dplyr::rowwise() %>%
+  dplyr::mutate(
+    plaus_score = sum(c_across(starts_with("plaus_")), na.rm = T),
+    plaus_score = ifelse(plaus_score > 100, 100, plaus_score),
+    plaus_score = ifelse(plaus_score < 0, 0, plaus_score)
+  ) %>%
+  dplyr::ungroup() %>%
+  dplyr::select(!!group_var, plaus_score, starts_with("plaus_"))
+
+ft_plaus <- plaus_table %>%
+  flextable::flextable() %>%
+  flextable::bg(i = ~ plaus_score  <= 20, j = "plaus_score", bg = "forestgreen") %>%
+  flextable::bg(i = ~ plaus_score > 20 & plaus_score <= 30, j = "plaus_score", bg = "khaki") %>%
+  flextable::bg(i = ~ plaus_score > 30 & plaus_score <= 50, j = "plaus_score", bg = "orange") %>%
+  flextable::bg(i = ~ plaus_score  > 50, j = "plaus_score", bg = "red") %>%
+  
+  flextable::bg(i = ~ plaus_flag_neg_pt == 20, j = "plaus_flag_neg_pt", bg = "red") %>%
+  flextable::bg(i = ~ plaus_flag_neg_pt == 10, j = "plaus_flag_neg_pt", bg = "orange") %>%
+  
+  flextable::bg(i = ~ plaus_deaths_hh == 20, j = "plaus_deaths_hh", bg = "red") %>%
+  flextable::bg(i = ~ plaus_deaths_hh == 15, j = "plaus_deaths_hh", bg = "orange") %>%
+  flextable::bg(i = ~ plaus_deaths_hh == 7.5, j = "plaus_deaths_hh", bg = "lightgreen") %>%
+
+  
+  flextable::bg(i = ~ plaus_flag_multiple_deaths == 20, j = "plaus_flag_multiple_deaths", bg = "red") %>%
+  flextable::bg(i = ~ plaus_flag_multiple_deaths == 15, j = "plaus_flag_multiple_deaths", bg = "orange") %>%
+  flextable::bg(i = ~ plaus_flag_multiple_deaths == 7.5, j = "plaus_flag_multiple_deaths", bg = "lightgreen") %>%
+
+  flextable::bg(i = ~ plaus_births_hh == 20, j = "plaus_births_hh", bg = "red") %>%
+  flextable::bg(i = ~ plaus_births_hh == 15, j = "plaus_births_hh", bg = "orange") %>%
+  flextable::bg(i = ~ plaus_births_hh == 7.5, j = "plaus_births_hh", bg = "lightgreen") %>%
+
+  flextable::bg(i = ~ plaus_flag_multiple_births == 10, j = "plaus_flag_multiple_births", bg = "red") %>%
+  flextable::bg(i = ~ plaus_flag_multiple_births == 7.5, j = "plaus_flag_multiple_births", bg = "orange") %>%
+  flextable::bg(i = ~ plaus_flag_multiple_births == 5, j = "plaus_flag_multiple_births", bg = "lightgreen") %>%
+  
+  flextable::bg(i = ~ plaus_join_hh == 5, j = "plaus_join_hh", bg = "pink") %>%
+  flextable::bg(i = ~ plaus_join_hh == 3, j = "plaus_join_hh", bg = "khaki") %>%
+  flextable::bg(i = ~ plaus_join_hh == 1.5, j = "plaus_join_hh", bg = "lightgreen") %>%
+  
+    flextable::bg(i = ~ plaus_left_hh == 5, j = "plaus_left_hh", bg = "pink") %>%
+  flextable::bg(i = ~ plaus_left_hh == 3, j = "plaus_left_hh", bg = "khaki") %>%
+  flextable::bg(i = ~ plaus_left_hh == 1.5, j = "plaus_left_hh", bg = "lightgreen") %>%
+  
+  flextable::bg(i = ~ plaus_sex_ratio == 5, j = "plaus_sex_ratio", bg = "pink") %>%
+  flextable::bg(i = ~ plaus_sex_ratio == 3, j = "plaus_sex_ratio", bg = "khaki") %>%
+  flextable::bg(i = ~ plaus_sex_ratio == 1.5, j = "plaus_sex_ratio", bg = "lightgreen") %>%
+  
+  flextable::bg(i = ~ plaus_age_ratio_under2_2to5 == 7.5, j = "plaus_age_ratio_under2_2to5", bg = "pink") %>%
+  flextable::bg(i = ~ plaus_age_ratio_under2_2to5 == 5, j = "plaus_age_ratio_under2_2to5", bg = "khaki") %>%
+  flextable::bg(i = ~ plaus_age_ratio_under2_2to5 == 1.5, j = "plaus_age_ratio_under2_2to5", bg = "lightgreen") %>%
+  
+  flextable::bg(i = ~ plaus_age_ratio_under5_5to10 == 7.5, j = "plaus_age_ratio_under5_5to10", bg = "pink") %>%
+  flextable::bg(i = ~ plaus_age_ratio_under5_5to10 == 5, j = "plaus_age_ratio_under5_5to10", bg = "khaki") %>%
+  flextable::bg(i = ~ plaus_age_ratio_under5_5to10 == 1.5, j = "plaus_age_ratio_under5_5to10", bg = "lightgreen") %>%
+  
+  flextable::bg(i = ~ plaus_age_ratio_under5_5plus == 7.5, j = "plaus_age_ratio_under5_5plus", bg = "pink") %>%
+  flextable::bg(i = ~ plaus_age_ratio_under5_5plus == 5, j = "plaus_age_ratio_under5_5plus", bg = "khaki") %>%
+  flextable::bg(i = ~ plaus_age_ratio_under5_5plus == 1.5, j = "plaus_age_ratio_under5_5plus", bg = "lightgreen") %>%
+  
+flextable::bg(i = ~ plaus_hh_size == 7.5, j = "plaus_hh_size", bg = "pink") %>%
+  flextable::bg(i = ~ plaus_hh_size == 5, j = "plaus_hh_size", bg = "khaki") %>%
+  flextable::bg(i = ~ plaus_hh_size == 1.5, j = "plaus_hh_size", bg = "lightgreen")   %>%
+  flextable::fontsize(size = 8) %>%
+  flextable::autofit() %>%
+  flextable::set_table_properties(width = 1, layout = "autofit")   %>%
+  flextable::rotate(j = 1:ncol(plaus_table), rotation = "btlr", part = "header", align = "center")
+
+if(params$language == "en") {
+  ft_plaus <- flextable::set_header_labels(ft_plaus,
+                                     group = params$GroupVar,
+                                     plaus_score = "Penalty Score",
+                                     plaus_flag_neg_pt = "Penalty - Negative Time",
+                                     plaus_deaths_hh = "Penalty - Deaths Per Household",
+                                     plaus_flag_multiple_deaths = "Penalty - Multiple Household Deaths",
+                                     plaus_births_hh = "Penalty - Births Per Household",
+                                     plaus_flag_multiple_births = "Penalty - Multiple Births Per Household",
+                                     plaus_join_hh = "Penalty - Joiners Per Household",
+                                     plaus_left_hh = "Penalty - Leavers per Household",
+                                     plaus_hh_size = "Penalty - Average Household Size",
+                                     plaus_sex_ratio = "Penalty - Sex Ratio",
+                                     plaus_age_ratio_under2_2to5 = "Penalty - Age Ratio (0-1:2-5 years)",
+                                     plaus_age_ratio_under5_5to10 = "Penalty - Age Ratio (0-4:5-10 years)",
+                                     plaus_age_ratio_under5_5plus = "Penalty - Age Ratio (0-4:5+ years)"
+                                     
+)}
+
+if(params$language == "fr") {
+  ft_plaus <- flextable::set_header_labels(ft_plaus,
+                                     group = params$GroupVar,
+                                     plaus_score = "Score de pénalité",
+                                     plaus_flag_neg_pt = "Pénalité - Temps négatif",
+                                     plaus_deaths_hh = "Pénalité - Décès par ménage",
+                                     plaus_flag_multiple_deaths = "Pénalité - Décès multiples dans le ménage",
+                                     plaus_births_hh = "Pénalité - Naissances par ménage",
+                                     plaus_flag_multiple_births = "Pénalité - Naissances multiples dans le ménage",
+                                     plaus_join_hh = "Pénalité - Personnes entrant par ménage",
+                                     plaus_left_hh = "Pénalité - Personnes quittant par ménage",
+                                     plaus_hh_size = "Pénalité - Taille moyenne des ménages",
+                                     plaus_sex_ratio = "Pénalité - Ratio des sexes",
+                                     plaus_age_ratio_under2_2to5 = "Pénalité - Ratio d'âge (0-1 an : 2-5 ans)",
+                                     plaus_age_ratio_under5_5to10 = "Pénalité - Ratio d'âge (0-4 ans : 5-10 ans)",
+                                     plaus_age_ratio_under5_5plus = "Ratio d'âge (0-4 ans : 5+ ans)"
+                                     
+)}
+
+
+ft_plaus
+
+```
+
+
+`r if (params$language == "en") {"For more information on each enumerator/group, the below table provides the actual values for number of inteviews, number of births, deaths, joiners, leavers, and other data quality flags observed per enumerator/group."} else {"Pour plus d'informations sur chaque enquêteur/groupe, le tableau ci-dessous fournit les valeurs réelles pour le nombre d'entretiens, le nombre de naissances, de décès, d'entrées et de sorties, ainsi que d'autres indicateurs de qualité des données observés par enquêteur/groupe."}`
+
+```{r enum_full_table, echo=FALSE, warning=FALSE}
+
+ref_table <- mortality_quality_table_final %>%
+  dplyr::rowwise() %>%
+  dplyr::mutate(
+    plaus_score = sum(c_across(starts_with("plaus_")), na.rm = T),
+    plaus_score = ifelse(plaus_score > 100, 100, plaus_score),
+    plaus_score = ifelse(plaus_score < 0, 0, plaus_score)
+  ) %>%
+  dplyr::ungroup() %>%
+  dplyr::select(!!group_var, plaus_score, n, flag_pt, num_crude_deaths_n, num_under5_deaths_n, flag_multiple_deaths,
+                num_births_n, flag_multiple_births, num_join_n, num_left_n)   
+
+
+ref_table <- flextable::flextable(ref_table) %>%
+  flextable::fontsize(size = 8) %>%
+  flextable::autofit() %>%
+  flextable::set_table_properties(width = 1, layout = "autofit")   %>%
+  flextable::rotate(j = 1:ncol(ref_table), rotation = "btlr", part = "header", align = "center")
+
+if(params$language == "en") {
+  ref_table <- flextable::set_header_labels(ref_table,
+                                     group = params$GroupVar,
+                                     plaus_score = "Penalty Score",
+                                     flag_pt = "Number Errors Negative Person Time",
+                                     num_crude_deaths_n = "Number deaths reported",
+                                     num_under5_deaths_n = "Number of under-5 year old deaths reported",
+                                     flag_multiple_deaths = "Number of households with multiple deaths reported",
+                                     num_births_n = "Number of births reported",
+                                     flag_multiple_births = "Number of households with multiple births reported",
+                                     num_join_n = "Number of people left the household reported",
+                                     num_left_n = "Number of people joined the household reported"
+                                     
+                                     
+                                     
+)}
+
+if(params$language == "fr") {
+  ref_table <- flextable::set_header_labels(ref_table,
+                                     group = params$GroupVar,
+                                     plaus_score = "Score de pénalité",
+                                     flag_pt = "Number Errors Négative Person Time",
+                                     num_crude_deaths_n = "Nombre de décès signalés",
+                                     num_under5_deaths_n = "Nombre de décès d'enfants de moins de 5 ans signalés",
+                                     flag_multiple_deaths = "Nombre de ménages où plusieurs décès ont été signalés",
+                                     num_births_n = "Nombre de naissances déclarées",
+                                     flag_multiple_births = "Nombre de ménages ayant déclaré des naissances multiples",
+                                     num_join_n = "Nombre de personnes ayant quitté le ménage déclaré",
+                                     num_left_n = "Nombre de personnes ayant rejoint le ménage déclaré"
+                                     
+)}
+
+
+
+
+ref_table
+
+```
+
+
+
+```{r fsl1, echo=FALSE, warning=FALSE}
+
+# number completed
+# time to completion
+# skip issues
+# cluster labelling issues
+
+
+
+
+
+
+```
+
