@@ -32,6 +32,7 @@ Imports:
     zscorer
 Suggests: 
     callr,
+    curl,
     purrr,
     renv,
     testthat (>= 3.0.0),

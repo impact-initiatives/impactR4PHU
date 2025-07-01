@@ -14,8 +14,8 @@
 create_fsl_quality_report_template <- function(folder_path, ...) {
   from <- system.file("fsl_quality_report", package = "impactR4PHU")
   fs::dir_copy(from, folder_path, overwrite = FALSE)
-  orig <- file.path(folder_path, "fsl_quality_report", "Rprofile.R")
-  dest <- file.path(folder_path, "fsl_quality_report", ".Rprofile")
+  orig <- file.path(folder_path, "Rprofile.R")
+  dest <- file.path(folder_path, ".Rprofile")
   if (fs::file_exists(orig)) {
     fs::file_move(orig, dest)
   } else {

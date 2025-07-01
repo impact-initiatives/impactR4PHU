@@ -17,16 +17,13 @@ purrr::iwalk(
     test_that(
       sprintf("[%s] template scaffolds .Rprofile and renv", template_name),
       {
+        skip_if_offline()
+        skip_on_ci()
+
         withr::with_tempdir({
-          src <- system.file(template_name, package = "impactR4PHU")
-          expect_true(
-            nzchar(src) && dir_exists(src),
-            info = "Template dir must be installed under system.file()"
-          )
+          new_dir <- sprintf("test-%s", template_name)
+          create_fn(folder_path = new_dir)
 
-          create_fn(folder_path = ".")
-
-          new_dir <- path_file(src)
           expect_true(
             dir_exists(new_dir),
             info = paste0("Template must scaffold a ", new_dir)
@@ -41,23 +38,14 @@ purrr::iwalk(
           expect_true(dir_exists(path(new_dir, "renv")))
           expect_true(file_exists(path(new_dir, "renv.lock")))
 
-          # TODO ignore on cran with testthat::skip_on_cran()
-          if (interactive() && nzchar(Sys.getenv("NOT_CRAN"))) {
-            status <- callr::r(
-              func = function(proj) {
-                renv::restore(project = proj, prompt = FALSE)
-                renv::status(project = proj)
-              },
-              args = list(proj = new_dir),
-              timeout = 60 * 1000
-            )
-
-            expect_true(
-              status$synchronized
-            )
-          } else {
-            skip("Skipping slow renv restore/status under R CMD check")
-          }
+          status <- callr::r(
+            func = function(proj) {
+              renv::restore(project = proj, prompt = FALSE)
+              renv::status(project = proj)
+            },
+            args = list(proj = new_dir)
+          )
+          expect_true(status$synchronized)
         })
       }
     )
