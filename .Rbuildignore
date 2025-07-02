@@ -12,3 +12,6 @@
 ^LICENSE.md
 ^inst/.*renv/library(/|$)
 ^inst/.*renv/staging(/|$)
+^justfile$
+^air.toml$
+^\.renvignore$
