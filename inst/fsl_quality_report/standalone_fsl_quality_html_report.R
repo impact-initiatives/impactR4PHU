@@ -6,7 +6,8 @@
 rm(list = ls())
 
 library(tidyverse)
-library(impactR4PHU)
+# library(impactR4PHU)
+devtools::load_all()
 
 # Set Parameters
 
@@ -16,7 +17,7 @@ uuidVar <- "_uuid"
 
 # Add FSL Indicators for Plausibility
 
-data.test <- readxl::read_xlsx("")
+data.test <- readxl::read_xlsx("inputs/HTI2502 download data - 2025-06-30.xlsx")
 
 data.test2 <- data.test %>%
   dplyr::select(!ends_with("_recoded")) %>%
@@ -25,6 +26,9 @@ data.test2 <- data.test %>%
                         fsl_rcsi_mealadult = "fsl_rcsi_mealadult",
                         fsl_rcsi_lessquality = "fsl_rcsi_lessquality",
                         fsl_rcsi_borrow = "fsl_rcsi_borrow") %>%
+  dplyr::mutate(fsl_hhs_nofoodhh = ifelse(is.na(fsl_hhs_nofoodhh) | fsl_hhs_nofoodhh == "pnta" | fsl_hhs_nofoodhh == "dnk", NA, fsl_hhs_nofoodhh),
+                fsl_hhs_sleephungry = ifelse(is.na(fsl_hhs_sleephungry) | fsl_hhs_sleephungry == "pnta" | fsl_hhs_sleephungry == "dnk", NA, fsl_hhs_sleephungry),
+                fsl_hhs_alldaynight = ifelse(is.na(fsl_hhs_alldaynight) | fsl_hhs_alldaynight == "pnta" | fsl_hhs_alldaynight == "dnk", NA, fsl_hhs_alldaynight)) %>%
   impactR4PHU::add_hhs(
     fsl_hhs_nofoodhh = "fsl_hhs_nofoodhh",
     fsl_hhs_nofoodhh_freq = "fsl_hhs_nofoodhh_freq",
@@ -71,7 +75,6 @@ data.test2 <- data.test %>%
 #   dplyr::rename("fsl_lcsi_stress1" = "fsl_lcsi_stress_1", "fsl_lcsi_stress2" = "fsl_lcsi_stress_2" , "fsl_lcsi_stress3" = "fsl_lcsi_stress_3", "fsl_lcsi_stress4" = "fsl_lcsi_stress_4",
 #                 "fsl_lcsi_crisis1" = "fsl_lcsi_crisis_1" , "fsl_lcsi_crisis2" = "fsl_lcsi_crisis_2", "fsl_lcsi_crisis3" = "fsl_lcsi_crisis_3",
 #                 "fsl_lcsi_emergency1" = "fsl_lcsi_emergency_1", "fsl_lcsi_emergency2" = "fsl_lcsi_emergency_2", "fsl_lcsi_emergency3" = "fsl_lcsi_emergency_3")
-
 
 loop_values <- unique(data.test2[[loop_var]])
 

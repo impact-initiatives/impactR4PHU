@@ -125,20 +125,19 @@ calculate_plausibility <- function(.dataset){
                                                                                  ifelse(plaus_mort_score >= 25, "Problematic (>=25)", NA)))))
   }
   if (c("sd_fcs") %in% names(.dataset)) {
-    .dataset <- .dataset %>% dplyr::mutate(plaus_sd_fcs = dplyr::case_when(sd_fcs < 8 ~ 4,
-                                                                           sd_fcs >= 8 & sd_fcs < 9 ~ 2,
+    .dataset <- .dataset %>% dplyr::mutate(plaus_sd_fcs = dplyr::case_when(sd_fcs < 8 ~ 2,
+                                                                           sd_fcs >= 8 & sd_fcs < 9 ~ 1,
                                                                            sd_fcs >= 9 & sd_fcs < 14 ~ 0,
-                                                                           sd_fcs >= 14 & sd_fcs < 16 ~ 2,
-                                                                           sd_fcs >= 16 ~ 4,
+                                                                           sd_fcs >= 14 & sd_fcs < 16 ~ 1,
+                                                                           sd_fcs >= 16 ~ 2,
                                                                            TRUE ~ 0))
   }
   if (c("flag_low_fcs") %in% names(.dataset)) {
     .dataset <- .dataset %>% dplyr::mutate(plaus_flag_low_fcs = dplyr::case_when(flag_low_fcs < 5 ~ 0,
-                                                                                 flag_low_fcs >= 5 & flag_low_fcs < 10 ~ 2,
-                                                                                 flag_low_fcs >= 10 ~ 4,
+                                                                                 flag_low_fcs >= 5 & flag_low_fcs < 10 ~ 1,
+                                                                                 flag_low_fcs >= 10 ~ 2,
                                                                                  TRUE ~ 0))
   }
-
   if (c("flag_fcs_zero") %in% names(.dataset)) {
     .dataset <- .dataset %>% dplyr::mutate(plaus_flag_fcs_zero = dplyr::case_when(flag_fcs_zero < 5 ~ 0,
                                                                                   flag_fcs_zero >= 5 & flag_fcs_zero < 10 ~ 2,
@@ -160,8 +159,8 @@ calculate_plausibility <- function(.dataset){
   }
   if (c("flag_sd_foodgroup") %in% names(.dataset)) { # maybe only 3 cat
     .dataset <- .dataset %>% dplyr::mutate(plaus_flag_sd_foodgroup = dplyr::case_when(flag_sd_foodgroup < 5 ~ 0,
-                                                                                      flag_sd_foodgroup >= 5 & flag_sd_foodgroup < 10 ~ 4,
-                                                                                      flag_sd_foodgroup >= 10 ~ 6,
+                                                                                      flag_sd_foodgroup >= 5 & flag_sd_foodgroup < 10 ~ 2,
+                                                                                      flag_sd_foodgroup >= 10 ~ 4,
                                                                                       TRUE ~ 0))
   }
   if (c("flag_meat_cereal_ratio") %in% names(.dataset)) {
@@ -256,8 +255,8 @@ calculate_plausibility <- function(.dataset){
   }
   if (c("flag_lcsi_coherence") %in% names(.dataset)) {
     .dataset <- .dataset %>% dplyr::mutate(plaus_flag_lcsi_coherence = dplyr::case_when(flag_lcsi_coherence < 5 ~ 0,
-                                                                                        flag_lcsi_coherence >= 5 & flag_lcsi_coherence < 10 ~ 5,
-                                                                                        flag_lcsi_coherence >= 10 ~ 7,
+                                                                                        flag_lcsi_coherence >= 5 & flag_lcsi_coherence < 10 ~ 3,
+                                                                                        flag_lcsi_coherence >= 10 ~ 6,
                                                                                         TRUE ~ 0))
   }
   if (c("flag_lcsi_na") %in% names(.dataset)) {
@@ -288,22 +287,22 @@ calculate_plausibility <- function(.dataset){
   }
   if (length(setdiff(c("corr.fcs_hhs", "corr.fcs_hhs.pvalue"), names(.dataset))) == 0) {
     .dataset <- .dataset %>% dplyr::mutate(plaus_corr.fcs_hhs = ifelse(corr.fcs_hhs < -0.2 & corr.fcs_hhs.pvalue < 0.05, 0,
-                                                                       ifelse(corr.fcs_hhs < -0.2 & corr.fcs_hhs.pvalue >= 0.05, 1,
-                                                                              ifelse(corr.fcs_hhs >= -0.2 & corr.fcs_hhs < 0.2 & corr.fcs_hhs.pvalue >= 0.05, 1.5,
-                                                                                     ifelse(corr.fcs_hhs >= -0.2 & corr.fcs_hhs < 0.2 & corr.fcs_hhs.pvalue < 0.05, 2,
-                                                                                            ifelse(corr.fcs_hhs >= 0.2 & corr.fcs_hhs.pvalue >= 0.05, 2.5,
-                                                                                                   ifelse(corr.fcs_hhs >= 0.2 & corr.fcs_hhs.pvalue < 0.05, 3, 0)))))))
+                                                                       ifelse(corr.fcs_hhs < -0.2 & corr.fcs_hhs.pvalue >= 0.05, 0.5,
+                                                                              ifelse(corr.fcs_hhs >= -0.2 & corr.fcs_hhs < 0.2 & corr.fcs_hhs.pvalue >= 0.05, 1,
+                                                                                     ifelse(corr.fcs_hhs >= -0.2 & corr.fcs_hhs < 0.2 & corr.fcs_hhs.pvalue < 0.05, 1.5,
+                                                                                            ifelse(corr.fcs_hhs >= 0.2 & corr.fcs_hhs.pvalue >= 0.05, 2,
+                                                                                                   ifelse(corr.fcs_hhs >= 0.2 & corr.fcs_hhs.pvalue < 0.05, 2.5, 0)))))))
   }
   if (length(setdiff(c("corr.hhs_rcsi", "corr.hhs_rcsi.pvalue"), names(.dataset))) == 0) {
     .dataset <- .dataset %>% dplyr::mutate(plaus_corr.hhs_rcsi = ifelse(corr.hhs_rcsi > 0.2 & corr.hhs_rcsi.pvalue < 0.05, 0,
-                                                                        ifelse(corr.hhs_rcsi > 0.2 & corr.hhs_rcsi.pvalue >= 0.05, 1,
-                                                                               ifelse(corr.hhs_rcsi > -0.2 & corr.hhs_rcsi <= 0.2 & corr.hhs_rcsi.pvalue < 0.05, 1.5,
-                                                                                      ifelse(corr.hhs_rcsi > -0.2 & corr.hhs_rcsi <= 0.2 & corr.hhs_rcsi.pvalue >= 0.05, 2,
-                                                                                             ifelse(corr.hhs_rcsi <= -0.2 & corr.hhs_rcsi.pvalue >= 0.05, 2.5,
-                                                                                                    ifelse(corr.hhs_rcsi <= -0.2 & corr.hhs_rcsi.pvalue < 0.05, 3, 0)))))))
+                                                                        ifelse(corr.hhs_rcsi > 0.2 & corr.hhs_rcsi.pvalue >= 0.05, 0.5,
+                                                                               ifelse(corr.hhs_rcsi > -0.2 & corr.hhs_rcsi <= 0.2 & corr.hhs_rcsi.pvalue < 0.05, 1,
+                                                                                      ifelse(corr.hhs_rcsi > -0.2 & corr.hhs_rcsi <= 0.2 & corr.hhs_rcsi.pvalue >= 0.05, 1.5,
+                                                                                             ifelse(corr.hhs_rcsi <= -0.2 & corr.hhs_rcsi.pvalue >= 0.05, 2,
+                                                                                                    ifelse(corr.hhs_rcsi <= -0.2 & corr.hhs_rcsi.pvalue < 0.05, 2.5, 0)))))))
   }
   if (c("prop_fc_flags") %in% names(.dataset)) {
-    .dataset <- .dataset %>% dplyr::mutate(plaus_prop_fc_flags = ifelse(prop_fc_flags < 0.02, 0,
+    .dataset <- .dataset %>% dplyr::mutate(plaus_prop_fc_flags = ifelse(prop_fc_flags < 0.05, 0,
                                                                         ifelse(prop_fc_flags < 0.1, 2,
                                                                                ifelse(prop_fc_flags >= 0.1, 4, 0))))
   }
