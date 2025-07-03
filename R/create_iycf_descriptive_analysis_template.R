@@ -10,8 +10,6 @@
 #' create_iycf_descriptive_analysis_template("path/to/folder")
 #' }
 create_iycf_descriptive_analysis_template <- function(folder_path, ...) {
-
   from <- system.file("iycf_descriptive_analysis", package = "impactR4PHU")
   fs::dir_copy(from, folder_path, overwrite = FALSE)
-
 }

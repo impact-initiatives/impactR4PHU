@@ -27,15 +27,15 @@
 #'
 #' add_muac(.dataset = df1)
 
-
-add_muac <- function(.dataset,
-                     nut_muac_cm = "nut_muac_cm",
-                     edema_confirm = "nut_edema_confirm",
-                     child_age_months = "child_age_months",
-                     child_sex = "child_sex",
-                     value_male_sex = "m",
-                     value_edema_confirm = "yes") {
-
+add_muac <- function(
+  .dataset,
+  nut_muac_cm = "nut_muac_cm",
+  edema_confirm = "nut_edema_confirm",
+  child_age_months = "child_age_months",
+  child_sex = "child_sex",
+  value_male_sex = "m",
+  value_edema_confirm = "yes"
+) {
   options(warn = -1)
   ## Throw an error if a dataset wasn't provided as a first argument
   if (!is.data.frame(.dataset)) {
@@ -48,39 +48,115 @@ add_muac <- function(.dataset,
   }
 
   ## Test if all columns are in the dataset
-  if(!is.null(nut_muac_cm)){
-    if(!nut_muac_cm %in% names(.dataset)) {
+  if (!is.null(nut_muac_cm)) {
+    if (!nut_muac_cm %in% names(.dataset)) {
       stop("Missing nut_muac_cm column")
     } else {
       .dataset <- .dataset %>%
-        dplyr::mutate(sex = ifelse(!!rlang::sym(child_sex) == value_male_sex,1,2),
-                      age_months = as.numeric(!!rlang::sym(child_age_months)),
-                      age_days = as.numeric(!!rlang::sym(child_age_months))* 30.25,
-                      nut_muac_cm = !!rlang::sym(nut_muac_cm),
-                      nut_muac_mm = as.numeric(nut_muac_cm)*10,
-                      child_age_months = as.numeric(!!rlang::sym(child_age_months)))
+        dplyr::mutate(
+          sex = ifelse(!!rlang::sym(child_sex) == value_male_sex, 1, 2),
+          age_months = as.numeric(!!rlang::sym(child_age_months)),
+          age_days = as.numeric(!!rlang::sym(child_age_months)) * 30.25,
+          nut_muac_cm = !!rlang::sym(nut_muac_cm),
+          nut_muac_mm = as.numeric(nut_muac_cm) * 10,
+          child_age_months = as.numeric(!!rlang::sym(child_age_months))
+        )
 
-      if(!is.null(edema_confirm)){
-        if(!edema_confirm %in% names(.dataset)){
+      if (!is.null(edema_confirm)) {
+        if (!edema_confirm %in% names(.dataset)) {
           warning("Missing edema_confirm column")
           .dataset <- .dataset %>%
-            dplyr::mutate(sam_muac = ifelse(is.na(!!rlang::sym(nut_muac_cm)), NA, ifelse(as.numeric(!!rlang::sym(nut_muac_cm)) < 11.5, 1, 0)),
-                          mam_muac = ifelse(is.na(!!rlang::sym(nut_muac_cm)), NA, ifelse(as.numeric(!!rlang::sym(nut_muac_cm)) >= 11.5 & !!rlang::sym(nut_muac_cm) < 12.5, 1, 0)),
-                          gam_muac = ifelse(is.na(!!rlang::sym(nut_muac_cm)), NA, ifelse(as.numeric(!!rlang::sym(nut_muac_cm)) < 12.5, 1, 0)),
-                          sam_muac = ifelse(age_months < 6 | age_months >=60, NA, sam_muac),
-                          mam_muac = ifelse(age_months < 6 | age_months >=60, NA, mam_muac),
-                          gam_muac = ifelse(age_months < 6 | age_months >=60, NA, gam_muac))
+            dplyr::mutate(
+              sam_muac = ifelse(
+                is.na(!!rlang::sym(nut_muac_cm)),
+                NA,
+                ifelse(as.numeric(!!rlang::sym(nut_muac_cm)) < 11.5, 1, 0)
+              ),
+              mam_muac = ifelse(
+                is.na(!!rlang::sym(nut_muac_cm)),
+                NA,
+                ifelse(
+                  as.numeric(!!rlang::sym(nut_muac_cm)) >= 11.5 &
+                    !!rlang::sym(nut_muac_cm) < 12.5,
+                  1,
+                  0
+                )
+              ),
+              gam_muac = ifelse(
+                is.na(!!rlang::sym(nut_muac_cm)),
+                NA,
+                ifelse(as.numeric(!!rlang::sym(nut_muac_cm)) < 12.5, 1, 0)
+              ),
+              sam_muac = ifelse(
+                age_months < 6 | age_months >= 60,
+                NA,
+                sam_muac
+              ),
+              mam_muac = ifelse(
+                age_months < 6 | age_months >= 60,
+                NA,
+                mam_muac
+              ),
+              gam_muac = ifelse(age_months < 6 | age_months >= 60, NA, gam_muac)
+            )
         } else {
           .dataset <- .dataset %>%
-            dplyr::mutate(sam_muac = ifelse(is.na(!!rlang::sym(nut_muac_cm)), NA, ifelse(as.numeric(!!rlang::sym(nut_muac_cm)) < 11.5, 1, 0)),
-                          mam_muac = ifelse(is.na(!!rlang::sym(nut_muac_cm)), NA, ifelse(as.numeric(!!rlang::sym(nut_muac_cm)) >= 11.5 & !!rlang::sym(nut_muac_cm) < 12.5, 1, 0)),
-                          gam_muac = ifelse(is.na(!!rlang::sym(nut_muac_cm)), NA, ifelse(as.numeric(!!rlang::sym(nut_muac_cm)) < 12.5, 1, 0)),
-                          sam_muac = ifelse(is.na(!!rlang::sym(edema_confirm)), sam_muac, ifelse(!!rlang::sym(edema_confirm) == value_edema_confirm, 1, sam_muac)),
-                          gam_muac = ifelse(is.na(!!rlang::sym(edema_confirm)), gam_muac, ifelse(!!rlang::sym(edema_confirm) == value_edema_confirm, 1, gam_muac)),
-                          sam_muac = ifelse(age_months < 6 | age_months >=60, NA, sam_muac),
-                          mam_muac = ifelse(age_months < 6 | age_months >=60, NA, mam_muac),
-                          gam_muac = ifelse(age_months < 6 | age_months >=60, NA, gam_muac),
-                          nut_edema_confirm = !!rlang::sym(edema_confirm))
+            dplyr::mutate(
+              sam_muac = ifelse(
+                is.na(!!rlang::sym(nut_muac_cm)),
+                NA,
+                ifelse(as.numeric(!!rlang::sym(nut_muac_cm)) < 11.5, 1, 0)
+              ),
+              mam_muac = ifelse(
+                is.na(!!rlang::sym(nut_muac_cm)),
+                NA,
+                ifelse(
+                  as.numeric(!!rlang::sym(nut_muac_cm)) >= 11.5 &
+                    !!rlang::sym(nut_muac_cm) < 12.5,
+                  1,
+                  0
+                )
+              ),
+              gam_muac = ifelse(
+                is.na(!!rlang::sym(nut_muac_cm)),
+                NA,
+                ifelse(as.numeric(!!rlang::sym(nut_muac_cm)) < 12.5, 1, 0)
+              ),
+              sam_muac = ifelse(
+                is.na(!!rlang::sym(edema_confirm)),
+                sam_muac,
+                ifelse(
+                  !!rlang::sym(edema_confirm) == value_edema_confirm,
+                  1,
+                  sam_muac
+                )
+              ),
+              gam_muac = ifelse(
+                is.na(!!rlang::sym(edema_confirm)),
+                gam_muac,
+                ifelse(
+                  !!rlang::sym(edema_confirm) == value_edema_confirm,
+                  1,
+                  gam_muac
+                )
+              ),
+              sam_muac = ifelse(
+                age_months < 6 | age_months >= 60,
+                NA,
+                sam_muac
+              ),
+              mam_muac = ifelse(
+                age_months < 6 | age_months >= 60,
+                NA,
+                mam_muac
+              ),
+              gam_muac = ifelse(
+                age_months < 6 | age_months >= 60,
+                NA,
+                gam_muac
+              ),
+              nut_edema_confirm = !!rlang::sym(edema_confirm)
+            )
         }
       }
     }

@@ -10,8 +10,6 @@
 #' create_iycf_quality_report_template("path/to/folder")
 #' }
 create_iycf_quality_report_template <- function(folder_path, ...) {
-
   from <- system.file("iycf_quality_report", package = "impactR4PHU")
   fs::dir_copy(from, folder_path, overwrite = FALSE)
-
 }

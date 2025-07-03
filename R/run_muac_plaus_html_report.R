@@ -12,12 +12,13 @@
 #'
 #' @examples
 
-run_muac_plaus_html_report <- function(.dataset = NULL,
-                                      uuid_var = "_uuid",
-                                      group_var = "enum_id",
-                                      output_file = "muac_quality_report.html",
-                                      output_dir = "reports") {
-
+run_muac_plaus_html_report <- function(
+  .dataset = NULL,
+  uuid_var = "_uuid",
+  group_var = "enum_id",
+  output_file = "muac_quality_report.html",
+  output_dir = "reports"
+) {
   if (is.null(.dataset)) {
     stop("Error: 'dataset_main' must be provided.")
   }
@@ -31,9 +32,9 @@ run_muac_plaus_html_report <- function(.dataset = NULL,
   }
 
   rmarkdown::render(
-    input = "muac_quality_report_markdown.Rmd",         # Replace with your actual .Rmd file path
-    output_file = output_file,         # Name of the output file
-    output_dir = output_dir,           # Directory to save the report
+    input = "muac_quality_report_markdown.Rmd", # Replace with your actual .Rmd file path
+    output_file = output_file, # Name of the output file
+    output_dir = output_dir, # Directory to save the report
     params = list(
       mainData = .dataset,
       uuidVar = uuid_var,
@@ -42,4 +43,3 @@ run_muac_plaus_html_report <- function(.dataset = NULL,
     # envir = new.env()                  # Use a clean environment to avoid conflicts
   )
 }
-

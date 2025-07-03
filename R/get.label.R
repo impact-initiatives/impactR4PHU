@@ -13,12 +13,18 @@
 #' label <- get.label("water_source", tool.survey = tool.survey)
 #' }
 
+get.label <- function(
+  variable = NULL,
+  tool.survey = NULL,
+  label_colname = "label::English"
+) {
+  if (is.null(variable)) {
+    stop("Variable is missing from function")
+  }
 
-get.label <- function(variable = NULL, tool.survey = NULL, label_colname = "label::English"){
-
-  if(is.null(variable)) stop("Variable is missing from function")
-
-  if(is.null(tool.survey)) stop("Tool survey not available")
+  if (is.null(tool.survey)) {
+    stop("Tool survey not available")
+  }
 
   if (!is.data.frame(tool.survey)) {
     stop("tool.survey should be a dataset")
@@ -28,14 +34,21 @@ get.label <- function(variable = NULL, tool.survey = NULL, label_colname = "labe
     stop("tool.survey is empty")
   }
   not_in_tool <- variable[!variable %in% tool.survey$name]
-  if(length(not_in_tool) > 0){
-    warning(paste("Variables not found in tool.survey:", paste0(not_in_tool, collapse = ", ")))
+  if (length(not_in_tool) > 0) {
+    warning(paste(
+      "Variables not found in tool.survey:",
+      paste0(not_in_tool, collapse = ", ")
+    ))
   }
-  if (any(stringr::str_detect(variable, "/"))) variable <- stringr::str_split(variable, "/", 2, T)[,1]
+  if (any(stringr::str_detect(variable, "/"))) {
+    variable <- stringr::str_split(variable, "/", 2, T)[, 1]
+  }
   res <- data.frame(name = variable) %>%
-    dplyr::left_join(dplyr::select(tool.survey, name, !!rlang::sym(label_colname)), by = "name", na_matches = "never")
+    dplyr::left_join(
+      dplyr::select(tool.survey, name, !!rlang::sym(label_colname)),
+      by = "name",
+      na_matches = "never"
+    )
 
   return(dplyr::pull(res, label_colname))
 }
-
-
