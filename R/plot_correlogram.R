@@ -1,3 +1,4 @@
+
 #' Plot Correlogram
 #'
 #' @param .dataset output of the create_fsl_flags functions
@@ -16,20 +17,15 @@
 #'   plot_correlogram(.dataset)
 #' }
 
-plot_correlogram <- function(
-  .dataset,
-  numeric_cols = c("fsl_fcs_score", "fsl_rcsi_score", "fsl_hhs_score"),
-  file_path = NULL,
-  wdth = 5,
-  hght = 5,
-  title_name = NULL
-) {
+plot_correlogram <- function (.dataset, numeric_cols = c("fsl_fcs_score",  "fsl_rcsi_score",  "fsl_hhs_score"),
+                              file_path = NULL, wdth = 5, hght = 5, title_name = NULL){
   g <- GGally::ggpairs(data = .dataset, columns = numeric_cols)
   if (!is.null(title_name)) {
     g <- g + ggplot2::ggtitle(title_name)
   }
   if (!is.null(file_path)) {
-    ggplot2::ggsave(filename = file_path, width = wdth, height = hght)
+    ggplot2::ggsave(filename = file_path, width = wdth,
+                    height = hght)
   }
   return(g)
 }

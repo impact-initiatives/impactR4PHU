@@ -47,23 +47,22 @@
 #' not_applicable_val = "Not Applicable")
 #'
 #' }
-add_lcsi <- function(
-  .dataset,
-  fsl_lcsi_stress1 = "fsl_lcsi_stress1",
-  fsl_lcsi_stress2 = "fsl_lcsi_stress2",
-  fsl_lcsi_stress3 = "fsl_lcsi_stress3",
-  fsl_lcsi_stress4 = "fsl_lcsi_stress4",
-  fsl_lcsi_crisis1 = "fsl_lcsi_crisis1",
-  fsl_lcsi_crisis2 = "fsl_lcsi_crisis2",
-  fsl_lcsi_crisis3 = "fsl_lcsi_crisis3",
-  fsl_lcsi_emergency1 = "fsl_lcsi_emergency1",
-  fsl_lcsi_emergency2 = "fsl_lcsi_emergency2",
-  fsl_lcsi_emergency3 = "fsl_lcsi_emergency3",
-  yes_val = "yes",
-  no_val = "no_had_no_need",
-  exhausted_val = "no_exhausted",
-  not_applicable_val = "not_applicable"
-) {
+add_lcsi <- function(.dataset,
+                     fsl_lcsi_stress1 = "fsl_lcsi_stress1",
+                     fsl_lcsi_stress2 = "fsl_lcsi_stress2",
+                     fsl_lcsi_stress3 = "fsl_lcsi_stress3",
+                     fsl_lcsi_stress4 = "fsl_lcsi_stress4",
+                     fsl_lcsi_crisis1 = "fsl_lcsi_crisis1",
+                     fsl_lcsi_crisis2 = "fsl_lcsi_crisis2",
+                     fsl_lcsi_crisis3 = "fsl_lcsi_crisis3",
+                     fsl_lcsi_emergency1 = "fsl_lcsi_emergency1",
+                     fsl_lcsi_emergency2 = "fsl_lcsi_emergency2",
+                     fsl_lcsi_emergency3 = "fsl_lcsi_emergency3",
+                     yes_val = "yes",
+                     no_val = "no_had_no_need",
+                     exhausted_val = "no_exhausted",
+                     not_applicable_val = "not_applicable") {
+
   ## Throw an error if a dataset wasn't provided as a first argument
   if (!is.data.frame(.dataset)) {
     stop("First argument should be a dataset")
@@ -71,253 +70,96 @@ add_lcsi <- function(
   if (nrow(.dataset) == 0) {
     stop("Dataset is empty")
   }
-  lcsi_vars <- c(
-    fsl_lcsi_stress1,
-    fsl_lcsi_stress2,
-    fsl_lcsi_stress3,
-    fsl_lcsi_stress4,
-    fsl_lcsi_crisis1,
-    fsl_lcsi_crisis2,
-    fsl_lcsi_crisis3,
-    fsl_lcsi_emergency1,
-    fsl_lcsi_emergency2,
-    fsl_lcsi_emergency3
-  )
+  lcsi_vars <- c(fsl_lcsi_stress1,fsl_lcsi_stress2,fsl_lcsi_stress3,fsl_lcsi_stress4,
+                 fsl_lcsi_crisis1,fsl_lcsi_crisis2,fsl_lcsi_crisis3,
+                 fsl_lcsi_emergency1,fsl_lcsi_emergency2,fsl_lcsi_emergency3)
   ## Test if all columns are in the dataset
-  if (!all(lcsi_vars %in% names(.dataset))) {
-    stop("Missing lcsi columns")
-  }
+  if(!all(lcsi_vars %in% names(.dataset))) stop("Missing lcsi columns")
 
-  lcsi_cat_values <- c(yes_val, no_val, exhausted_val, not_applicable_val)
+  lcsi_cat_values <- c(yes_val,no_val,exhausted_val,not_applicable_val)
   if (!all(.dataset[[fsl_lcsi_stress1]] %in% c(lcsi_cat_values, NA))) {
-    stop(sprintf(
-      "Wrong values in %s: %s ",
-      fsl_lcsi_stress1,
-      paste0(
-        unique(.dataset[[fsl_lcsi_stress1]][
-          !.dataset[[fsl_lcsi_stress1]] %in% c(lcsi_cat_values, NA)
-        ]),
-        collapse = "/"
-      )
-    ))
+    stop(sprintf("Wrong values in %s: %s ", fsl_lcsi_stress1,
+                 paste0(unique(.dataset[[fsl_lcsi_stress1]][!.dataset[[fsl_lcsi_stress1]] %in% c(lcsi_cat_values, NA)]), collapse = "/")))
   }
   if (!all(.dataset[[fsl_lcsi_stress2]] %in% c(lcsi_cat_values, NA))) {
-    stop(sprintf(
-      "Wrong values in %s: %s ",
-      lcsi_stress2,
-      paste0(
-        unique(.dataset[[fsl_lcsi_stress2]][
-          !.dataset[[fsl_lcsi_stress2]] %in% c(lcsi_cat_values, NA)
-        ]),
-        collapse = "/"
-      )
-    ))
+    stop(sprintf("Wrong values in %s: %s ", lcsi_stress2,
+                 paste0(unique(.dataset[[fsl_lcsi_stress2]][!.dataset[[fsl_lcsi_stress2]] %in% c(lcsi_cat_values, NA)]), collapse = "/")))
   }
   if (!all(.dataset[[fsl_lcsi_stress3]] %in% c(lcsi_cat_values, NA))) {
-    stop(sprintf(
-      "Wrong values in %s: %s ",
-      fsl_lcsi_stress3,
-      paste0(
-        unique(.dataset[[fsl_lcsi_stress3]][
-          !.dataset[[fsl_lcsi_stress3]] %in% c(lcsi_cat_values, NA)
-        ]),
-        collapse = "/"
-      )
-    ))
+    stop(sprintf("Wrong values in %s: %s ", fsl_lcsi_stress3,
+                 paste0(unique(.dataset[[fsl_lcsi_stress3]][!.dataset[[fsl_lcsi_stress3]] %in% c(lcsi_cat_values, NA)]), collapse = "/")))
   }
   if (!all(.dataset[[fsl_lcsi_stress4]] %in% c(lcsi_cat_values, NA))) {
-    stop(sprintf(
-      "Wrong values in %s: %s ",
-      fsl_lcsi_stress4,
-      paste0(
-        unique(.dataset[[fsl_lcsi_stress4]][
-          !.dataset[[fsl_lcsi_stress4]] %in% c(lcsi_cat_values, NA)
-        ]),
-        collapse = "/"
-      )
-    ))
+    stop(sprintf("Wrong values in %s: %s ", fsl_lcsi_stress4,
+                 paste0(unique(.dataset[[fsl_lcsi_stress4]][!.dataset[[fsl_lcsi_stress4]] %in% c(lcsi_cat_values, NA)]), collapse = "/")))
   }
   if (!all(.dataset[[fsl_lcsi_crisis1]] %in% c(lcsi_cat_values, NA))) {
-    stop(sprintf(
-      "Wrong values in %s: %s ",
-      fsl_lcsi_crisis1,
-      paste0(
-        unique(.dataset[[fsl_lcsi_crisis1]][
-          !.dataset[[fsl_lcsi_crisis1]] %in% c(lcsi_cat_values, NA)
-        ]),
-        collapse = "/"
-      )
-    ))
+    stop(sprintf("Wrong values in %s: %s ", fsl_lcsi_crisis1,
+                 paste0(unique(.dataset[[fsl_lcsi_crisis1]][!.dataset[[fsl_lcsi_crisis1]] %in% c(lcsi_cat_values, NA)]), collapse = "/")))
   }
   if (!all(.dataset[[fsl_lcsi_crisis2]] %in% c(lcsi_cat_values, NA))) {
-    stop(sprintf(
-      "Wrong values in %s: %s ",
-      fsl_lcsi_crisis2,
-      paste0(
-        unique(.dataset[[fsl_lcsi_crisis2]][
-          !.dataset[[fsl_lcsi_crisis2]] %in% c(lcsi_cat_values, NA)
-        ]),
-        collapse = "/"
-      )
-    ))
+    stop(sprintf("Wrong values in %s: %s ", fsl_lcsi_crisis2,
+                 paste0(unique(.dataset[[fsl_lcsi_crisis2]][!.dataset[[fsl_lcsi_crisis2]] %in% c(lcsi_cat_values, NA)]), collapse = "/")))
   }
   if (!all(.dataset[[fsl_lcsi_crisis3]] %in% c(lcsi_cat_values, NA))) {
-    stop(sprintf(
-      "Wrong values in %s: %s ",
-      fsl_lcsi_crisis3,
-      paste0(
-        unique(.dataset[[fsl_lcsi_crisis3]][
-          !.dataset[[fsl_lcsi_crisis3]] %in% c(lcsi_cat_values, NA)
-        ]),
-        collapse = "/"
-      )
-    ))
+    stop(sprintf("Wrong values in %s: %s ", fsl_lcsi_crisis3,
+                 paste0(unique(.dataset[[fsl_lcsi_crisis3]][!.dataset[[fsl_lcsi_crisis3]] %in% c(lcsi_cat_values, NA)]), collapse = "/")))
   }
   if (!all(.dataset[[fsl_lcsi_emergency1]] %in% c(lcsi_cat_values, NA))) {
-    stop(sprintf(
-      "Wrong values in %s: %s ",
-      fsl_lcsi_emergency1,
-      paste0(
-        unique(.dataset[[fsl_lcsi_emergency1]][
-          !.dataset[[fsl_lcsi_emergency1]] %in% c(lcsi_cat_values, NA)
-        ]),
-        collapse = "/"
-      )
-    ))
+    stop(sprintf("Wrong values in %s: %s ", fsl_lcsi_emergency1,
+                 paste0(unique(.dataset[[fsl_lcsi_emergency1]][!.dataset[[fsl_lcsi_emergency1]] %in% c(lcsi_cat_values, NA)]), collapse = "/")))
   }
   if (!all(.dataset[[fsl_lcsi_emergency2]] %in% c(lcsi_cat_values, NA))) {
-    stop(sprintf(
-      "Wrong values in %s: %s ",
-      fsl_lcsi_emergency2,
-      paste0(
-        unique(.dataset[[fsl_lcsi_emergency2]][
-          !.dataset[[fsl_lcsi_emergency2]] %in% c(lcsi_cat_values, NA)
-        ]),
-        collapse = "/"
-      )
-    ))
+    stop(sprintf("Wrong values in %s: %s ", fsl_lcsi_emergency2,
+                 paste0(unique(.dataset[[fsl_lcsi_emergency2]][!.dataset[[fsl_lcsi_emergency2]] %in% c(lcsi_cat_values, NA)]), collapse = "/")))
   }
   if (!all(.dataset[[fsl_lcsi_emergency3]] %in% c(lcsi_cat_values, NA))) {
-    stop(sprintf(
-      "Wrong values in %s: %s ",
-      fsl_lcsi_emergency3,
-      paste0(
-        unique(.dataset[[fsl_lcsi_emergency3]][
-          !.dataset[[fsl_lcsi_emergency3]] %in% c(lcsi_cat_values, NA)
-        ]),
-        collapse = "/"
-      )
-    ))
+    stop(sprintf("Wrong values in %s: %s ", fsl_lcsi_emergency3,
+                 paste0(unique(.dataset[[fsl_lcsi_emergency3]][!.dataset[[fsl_lcsi_emergency3]] %in% c(lcsi_cat_values, NA)]), collapse = "/")))
   }
 
   .dataset <- .dataset %>%
-    dplyr::mutate(
-      fsl_lcsi_stress_yes = dplyr::case_when(
-        is.na(!!rlang::sym(fsl_lcsi_stress1)) ~ NA,
-        !!rlang::sym(fsl_lcsi_stress1) == yes_val |
-          !!rlang::sym(fsl_lcsi_stress2) == yes_val |
-          !!rlang::sym(fsl_lcsi_stress3) == yes_val |
-          !!rlang::sym(fsl_lcsi_stress4) == yes_val ~
-          "1",
-        TRUE ~ "0"
-      ),
-      fsl_lcsi_stress_exhaust = dplyr::case_when(
-        is.na(!!rlang::sym(fsl_lcsi_stress1)) ~ NA,
-        !!rlang::sym(fsl_lcsi_stress1) == exhausted_val |
-          !!rlang::sym(fsl_lcsi_stress2) == exhausted_val |
-          !!rlang::sym(fsl_lcsi_stress3) == exhausted_val |
-          !!rlang::sym(fsl_lcsi_stress4) == exhausted_val ~
-          "1",
-        TRUE ~ "0"
-      ),
-      fsl_lcsi_stress = dplyr::case_when(
-        is.na(fsl_lcsi_stress_yes) & is.na(fsl_lcsi_stress_exhaust) ~ NA,
-        fsl_lcsi_stress_yes == "1" | fsl_lcsi_stress_exhaust == "1" ~ "1",
-        TRUE ~ "0"
-      ),
-      fsl_lcsi_crisis_yes = dplyr::case_when(
-        is.na(!!rlang::sym(fsl_lcsi_crisis1)) ~ NA,
-        !!rlang::sym(fsl_lcsi_crisis1) == yes_val |
-          !!rlang::sym(fsl_lcsi_crisis2) == yes_val |
-          !!rlang::sym(fsl_lcsi_crisis3) == yes_val ~
-          "1",
-        TRUE ~ "0"
-      ),
-      fsl_lcsi_crisis_exhaust = dplyr::case_when(
-        is.na(!!rlang::sym(fsl_lcsi_crisis1)) ~ NA,
-        !!rlang::sym(fsl_lcsi_crisis1) == exhausted_val |
-          !!rlang::sym(fsl_lcsi_crisis2) == exhausted_val |
-          !!rlang::sym(fsl_lcsi_crisis3) == exhausted_val ~
-          "1",
-        TRUE ~ "0"
-      ),
-      fsl_lcsi_crisis = dplyr::case_when(
-        is.na(fsl_lcsi_crisis_yes) & is.na(fsl_lcsi_crisis_exhaust) ~ NA,
-        fsl_lcsi_crisis_yes == "1" | fsl_lcsi_crisis_exhaust == "1" ~ "1",
-        TRUE ~ "0"
-      ),
-      fsl_lcsi_emergency_yes = dplyr::case_when(
-        is.na(!!rlang::sym(fsl_lcsi_emergency1)) ~ NA,
-        !!rlang::sym(fsl_lcsi_emergency1) == yes_val |
-          !!rlang::sym(fsl_lcsi_emergency2) == yes_val |
-          !!rlang::sym(fsl_lcsi_emergency3) == yes_val ~
-          "1",
-        TRUE ~ "0"
-      ),
-      fsl_lcsi_emergency_exhaust = dplyr::case_when(
-        is.na(!!rlang::sym(fsl_lcsi_emergency1)) ~ NA,
-        !!rlang::sym(fsl_lcsi_emergency1) == exhausted_val |
-          !!rlang::sym(fsl_lcsi_emergency2) == exhausted_val |
-          !!rlang::sym(fsl_lcsi_emergency3) == exhausted_val ~
-          "1",
-        TRUE ~ "0"
-      ),
-      fsl_lcsi_emergency = dplyr::case_when(
-        is.na(fsl_lcsi_emergency_yes) & is.na(fsl_lcsi_emergency_exhaust) ~ NA,
-        fsl_lcsi_emergency_yes == "1" | fsl_lcsi_emergency_exhaust == "1" ~ "1",
-        TRUE ~ "0"
-      ),
-      fsl_lcsi_cat_yes = dplyr::case_when(
-        fsl_lcsi_stress_yes != "1" &
-          fsl_lcsi_crisis_yes != "1" &
-          fsl_lcsi_emergency_yes != "1" ~
-          "None",
-        fsl_lcsi_stress_yes == "1" &
-          fsl_lcsi_crisis_yes != "1" &
-          fsl_lcsi_emergency_yes != "1" ~
-          "Stress",
-        fsl_lcsi_crisis_yes == "1" & fsl_lcsi_emergency_yes != "1" ~ "Crisis",
-        fsl_lcsi_emergency_yes == "1" ~ "Emergency",
-        TRUE ~ NA
-      ),
-      fsl_lcsi_cat_exhaust = dplyr::case_when(
-        fsl_lcsi_stress_exhaust != "1" &
-          fsl_lcsi_crisis_exhaust != "1" &
-          fsl_lcsi_emergency_exhaust != "1" ~
-          "None",
-        fsl_lcsi_stress_exhaust == "1" &
-          fsl_lcsi_crisis_exhaust != "1" &
-          fsl_lcsi_emergency_exhaust != "1" ~
-          "Stress",
-        fsl_lcsi_crisis_exhaust == "1" & fsl_lcsi_emergency_exhaust != "1" ~
-          "Crisis",
-        fsl_lcsi_emergency_exhaust == "1" ~ "Emergency",
-        TRUE ~ NA
-      ),
-      fsl_lcsi_cat = dplyr::case_when(
-        fsl_lcsi_stress != "1" &
-          fsl_lcsi_crisis != "1" &
-          fsl_lcsi_emergency != "1" ~
-          "None",
-        fsl_lcsi_stress == "1" &
-          fsl_lcsi_crisis != "1" &
-          fsl_lcsi_emergency != "1" ~
-          "Stress",
-        fsl_lcsi_crisis == "1" & fsl_lcsi_emergency != "1" ~ "Crisis",
-        fsl_lcsi_emergency == "1" ~ "Emergency",
-        TRUE ~ NA
-      )
-    )
+    dplyr::mutate(fsl_lcsi_stress_yes = dplyr::case_when(is.na(!!rlang::sym(fsl_lcsi_stress1)) ~ NA,
+                                                         !!rlang::sym(fsl_lcsi_stress1) == yes_val | !!rlang::sym(fsl_lcsi_stress2) == yes_val | !!rlang::sym(fsl_lcsi_stress3) == yes_val | !!rlang::sym(fsl_lcsi_stress4) == yes_val ~ "1", TRUE ~ "0"),
+                  fsl_lcsi_stress_exhaust = dplyr::case_when(is.na(!!rlang::sym(fsl_lcsi_stress1))~ NA,
+                                                             !!rlang::sym(fsl_lcsi_stress1) == exhausted_val | !!rlang::sym(fsl_lcsi_stress2) == exhausted_val | !!rlang::sym(fsl_lcsi_stress3) == exhausted_val | !!rlang::sym(fsl_lcsi_stress4) == exhausted_val ~ "1",
+                                                             TRUE ~ "0"),
+                  fsl_lcsi_stress = dplyr::case_when(is.na(fsl_lcsi_stress_yes) & is.na(fsl_lcsi_stress_exhaust) ~ NA,
+                                                     fsl_lcsi_stress_yes == "1" | fsl_lcsi_stress_exhaust == "1" ~ "1",
+                                                     TRUE ~ "0"),
+                  fsl_lcsi_crisis_yes = dplyr::case_when(is.na(!!rlang::sym(fsl_lcsi_crisis1)) ~ NA,
+                                                         !!rlang::sym(fsl_lcsi_crisis1) == yes_val | !!rlang::sym(fsl_lcsi_crisis2) == yes_val | !!rlang::sym(fsl_lcsi_crisis3) == yes_val ~ "1",
+                                                         TRUE ~ "0"),
+                  fsl_lcsi_crisis_exhaust = dplyr::case_when(is.na(!!rlang::sym(fsl_lcsi_crisis1)) ~ NA,
+                                                             !!rlang::sym(fsl_lcsi_crisis1) == exhausted_val | !!rlang::sym(fsl_lcsi_crisis2) == exhausted_val | !!rlang::sym(fsl_lcsi_crisis3) == exhausted_val ~ "1",
+                                                             TRUE ~ "0"),
+                  fsl_lcsi_crisis = dplyr::case_when(is.na(fsl_lcsi_crisis_yes) & is.na(fsl_lcsi_crisis_exhaust) ~ NA,
+                                                     fsl_lcsi_crisis_yes == "1" | fsl_lcsi_crisis_exhaust == "1" ~ "1",
+                                                     TRUE ~ "0"),
+                  fsl_lcsi_emergency_yes = dplyr::case_when(is.na(!!rlang::sym(fsl_lcsi_emergency1)) ~ NA,
+                                                            !!rlang::sym(fsl_lcsi_emergency1) == yes_val | !!rlang::sym(fsl_lcsi_emergency2) == yes_val | !!rlang::sym(fsl_lcsi_emergency3) == yes_val ~ "1",
+                                                            TRUE ~ "0"),
+                  fsl_lcsi_emergency_exhaust = dplyr::case_when(is.na(!!rlang::sym(fsl_lcsi_emergency1)) ~ NA,
+                                                                !!rlang::sym(fsl_lcsi_emergency1) == exhausted_val | !!rlang::sym(fsl_lcsi_emergency2) == exhausted_val | !!rlang::sym(fsl_lcsi_emergency3) == exhausted_val ~ "1",
+                                                                TRUE ~ "0"),
+                  fsl_lcsi_emergency = dplyr::case_when(is.na(fsl_lcsi_emergency_yes) & is.na(fsl_lcsi_emergency_exhaust) ~ NA,
+                                                        fsl_lcsi_emergency_yes == "1" | fsl_lcsi_emergency_exhaust == "1" ~ "1",
+                                                        TRUE ~ "0"),
+                  fsl_lcsi_cat_yes = dplyr::case_when(fsl_lcsi_stress_yes != "1" & fsl_lcsi_crisis_yes != "1" & fsl_lcsi_emergency_yes != "1" ~ "None",
+                                                      fsl_lcsi_stress_yes == "1" & fsl_lcsi_crisis_yes != "1" & fsl_lcsi_emergency_yes != "1" ~ "Stress",
+                                                      fsl_lcsi_crisis_yes == "1" & fsl_lcsi_emergency_yes != "1" ~ "Crisis",
+                                                      fsl_lcsi_emergency_yes == "1" ~ "Emergency",
+                                                      TRUE ~ NA),
+                  fsl_lcsi_cat_exhaust = dplyr::case_when(fsl_lcsi_stress_exhaust != "1" & fsl_lcsi_crisis_exhaust != "1" & fsl_lcsi_emergency_exhaust != "1" ~ "None",
+                                                          fsl_lcsi_stress_exhaust == "1" & fsl_lcsi_crisis_exhaust != "1" & fsl_lcsi_emergency_exhaust != "1" ~ "Stress",
+                                                          fsl_lcsi_crisis_exhaust == "1" & fsl_lcsi_emergency_exhaust != "1" ~ "Crisis",
+                                                          fsl_lcsi_emergency_exhaust == "1" ~ "Emergency",
+                                                          TRUE ~ NA),
+                  fsl_lcsi_cat = dplyr::case_when(fsl_lcsi_stress != "1" & fsl_lcsi_crisis != "1" & fsl_lcsi_emergency != "1" ~ "None",
+                                                  fsl_lcsi_stress == "1" & fsl_lcsi_crisis != "1" & fsl_lcsi_emergency != "1" ~ "Stress",
+                                                  fsl_lcsi_crisis == "1" & fsl_lcsi_emergency != "1" ~ "Crisis",
+                                                  fsl_lcsi_emergency == "1" ~ "Emergency",
+                                                  TRUE ~ NA))
 
   return(.dataset)
 }

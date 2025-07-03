@@ -10,6 +10,8 @@
 #' create_mort_cleaning_template("path/to/folder")
 #' }
 create_mort_cleaning_template <- function(folder_path, ...) {
+
   from <- system.file("mort_cleaning", package = "impactR4PHU")
   fs::dir_copy(from, folder_path, overwrite = FALSE)
+
 }

@@ -10,10 +10,9 @@
 #' label_colname <- load.label_colname(tool.survey, language = "English")
 #' }
 
-load.label_colname <- function(tool.survey = NULL, language = "English") {
-  if (is.null(tool.survey)) {
-    stop("Tool survey not available")
-  }
+
+load.label_colname <- function(tool.survey = NULL, language = "English"){
+  if(is.null(tool.survey)) stop("Tool survey not available")
 
   if (!is.data.frame(tool.survey)) {
     stop("tool.survey should be a dataset")
@@ -23,5 +22,5 @@ load.label_colname <- function(tool.survey = NULL, language = "English") {
     stop("tool.survey is empty")
   }
   tool_colnames <- tool.survey %>% names
-  return(tool_colnames[agrep(paste0("label::", language), tool_colnames)])
+  return(tool_colnames[agrep(paste0("label::",language), tool_colnames)])
 }
