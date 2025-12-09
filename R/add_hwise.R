@@ -87,6 +87,9 @@ add_hwise <- function(data = NULL,
 
 ) {
 
+  # Copy of the original data. It will be used to bind the new columns at the end and return it
+  original_df <- data
+  
   # Check if data is a data frame
   if(is.null(data)) {
     stop("Please provide a data frame to argument 'data'.")
@@ -131,6 +134,10 @@ add_hwise <- function(data = NULL,
     hwise12_check <- 1
 
   }
+
+  # After checking the existance of the corresponding columns, we subset the working columns and the uuid to use it as key to bind in the last step
+  
+  data <- data %>% select(uuid, all_of(hwise4_cols), any_of(hwise12_cols))
 
   # Check if the response value parameters are provided
   if(is.null(never_val) | is.null(rarely_val) | is.null(sometimes_val) | is.null(often_val) | is.null(always_val)) {
@@ -291,6 +298,10 @@ add_hwise <- function(data = NULL,
       ))
 
   }
+
+  data <- data %>% select(!any_of(hwise12_cols))
+
+  data <- original_df %>% left_join(x=., y=data, by=join_by(uuid))
 
   return(data)
 
