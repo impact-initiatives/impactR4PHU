@@ -96,7 +96,7 @@ add_hwise <- function(data = NULL,
 
   # Check if the specified columns exist in the data for HWISE4
 
-  if(is.null(hwise_worry_col) | is.null(hwise_plans_col) | is.null(hwise_hands_col) | is.null(hwise_drink_col)) {
+  if(is.null(hwise_worry_col) || is.null(hwise_plans_col) || is.null(hwise_hands_col) || is.null(hwise_drink_col)) {
     stop("Please provide column names for the four core HWISE items: hwise_worry_col, hwise_plans_col, hwise_hands_col, hwise_drink_col.")
   } else {
 
@@ -112,9 +112,9 @@ add_hwise <- function(data = NULL,
 
   # Check if the specified columns exist in the data for HWISE12
 
-  if(is.null(hwise_worry_col) | is.null(hwise_plans_col) | is.null(hwise_hands_col) | is.null(hwise_drink_col) |
-     is.null(hwise_interrupt_col) | is.null(hwise_clothes_col) | is.null(hwise_food_col) | is.null(hwise_body_col) |
-     is.null(hwise_angry_col) | is.null(hwise_sleep_col) | is.null(hwise_none_col) | is.null(hwise_shame_col)) {
+  if(is.null(hwise_worry_col) || is.null(hwise_plans_col) || is.null(hwise_hands_col) || is.null(hwise_drink_col) ||
+     is.null(hwise_interrupt_col) || is.null(hwise_clothes_col) || is.null(hwise_food_col) || is.null(hwise_body_col) ||
+     is.null(hwise_angry_col) || is.null(hwise_sleep_col) || is.null(hwise_none_col) || is.null(hwise_shame_col)) {
     warning("Not all columns are specified to calculate HWISE-12. This will be skipped.")
     hwise12_check <- 0
   } else {
@@ -133,7 +133,7 @@ add_hwise <- function(data = NULL,
   }
 
   # Check if the response value parameters are provided
-  if(is.null(never_val) | is.null(rarely_val) | is.null(sometimes_val) | is.null(often_val) | is.null(always_val)) {
+  if(is.null(never_val) || is.null(rarely_val) || is.null(sometimes_val) || is.null(often_val) || is.null(always_val)) {
     stop("Please provide values for all response categories: never_val, rarely_val, sometimes_val, often_val, always_val.")
   }
 
@@ -188,7 +188,7 @@ add_hwise <- function(data = NULL,
         TRUE ~ NA_real_
       )) %>%
     dplyr::rowwise() %>%
-    dplyr::mutate(hwise4_score = sum(c_across(dplyr::all_of(c("hwise_worry_score", "hwise_plans_score", "hwise_hands_score", "hwise_drink_score"))), na.rm = FALSE)) %>%
+    dplyr::mutate(hwise4_score = sum(dplyr::c_across(dplyr::all_of(c("hwise_worry_score", "hwise_plans_score", "hwise_hands_score", "hwise_drink_score"))), na.rm = FALSE)) %>%
     dplyr::ungroup() %>%
     dplyr::mutate(hwise4_severity_cat = dplyr::case_when(
       hwise4_score >= 0 & hwise4_score <= 3 ~ "No-to-marginal",
@@ -273,7 +273,7 @@ add_hwise <- function(data = NULL,
           TRUE ~ NA_real_
         )) %>%
       dplyr::rowwise() %>%
-      dplyr::mutate(hwise12_score = sum(c_across(dplyr::all_of(c("hwise_worry_score", "hwise_plans_score", "hwise_hands_score", "hwise_drink_score",
+      dplyr::mutate(hwise12_score = sum(dplyr::c_across(dplyr::all_of(c("hwise_worry_score", "hwise_plans_score", "hwise_hands_score", "hwise_drink_score",
                                                                  "hwise_interrupt_score", "hwise_clothes_score", "hwise_food_score", "hwise_body_score",
                                                                  "hwise_angry_score", "hwise_sleep_score", "hwise_none_score", "hwise_shame_score"))), na.rm = FALSE)) %>%
       dplyr::ungroup() %>%
