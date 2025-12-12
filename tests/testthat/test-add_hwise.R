@@ -201,6 +201,7 @@ test_that("add_hwise assigns correct HWISE-4 severity categories", {
   )
   expect_equal(result$hwise4_severity_cat, 
                c("No-to-marginal", "No-to-marginal", "Low", "Moderate", "Very High"))
+  
 })
 
 # Test 8: HWISE-4 Insecurity Binary Category. Warning for missing columns to calculate HWISE-12 supressed to avoid stoppoing the test. The test for the warning message is done in Test #9
@@ -365,18 +366,18 @@ test_that("add_hwise returns correct output structure", {
 # Test 13: HWISE-12 Severity Categories
 test_that("add_hwise assigns correct HWISE-12 severity categories", {
   df <- data.frame(
-    worry = c("Never (0 times)", "Rarely (1-2 times)", "Sometimes (3-10 times)", "Often (11-20 times)"),
-    plans = c("Never (0 times)", "Never (0 times)", "Sometimes (3-10 times)", "Often (11-20 times)"),
-    hands = c("Never (0 times)", "Never (0 times)", "Sometimes (3-10 times)", "Often (11-20 times)"),
-    drink = c("Never (0 times)", "Never (0 times)", "Sometimes (3-10 times)", "Often (11-20 times)"),
-    interrupt = c("Never (0 times)", "Never (0 times)", "Never (0 times)", "Often (11-20 times)"),
-    clothes = c("Never (0 times)", "Never (0 times)", "Never (0 times)", "Often (11-20 times)"),
-    food = c("Never (0 times)", "Never (0 times)", "Never (0 times)", "Often (11-20 times)"),
-    body = c("Never (0 times)", "Never (0 times)", "Never (0 times)", "Often (11-20 times)"),
-    angry = c("Never (0 times)", "Never (0 times)", "Never (0 times)", "Often (11-20 times)"),
-    sleep = c("Never (0 times)", "Never (0 times)", "Never (0 times)", "Often (11-20 times)"),
-    none = c("Never (0 times)", "Never (0 times)", "Never (0 times)", "Often (11-20 times)"),
-    shame = c("Never (0 times)", "Never (0 times)", "Never (0 times)", "Often (11-20 times)")
+    worry = c("Never (0 times)", "Rarely (1-2 times)", "Rarely (1-2 times)", "Rarely (1-2 times)", "Rarely (1-2 times)", "Sometimes (3-10 times)", "Sometimes (3-10 times)", "Sometimes (3-10 times)", "Often (11-20 times)", "Often (11-20 times)"),
+    plans = c("Never (0 times)", "Rarely (1-2 times)", "Rarely (1-2 times)", "Never (0 times)", "Rarely (1-2 times)", "Rarely (1-2 times)", "Sometimes (3-10 times)", "Sometimes (3-10 times)", "Often (11-20 times)", "Often (11-20 times)"),
+    hands = c("Never (0 times)", "Never (0 times)", "Rarely (1-2 times)", "Rarely (1-2 times)", "Rarely (1-2 times)", "Never (0 times)", "Sometimes (3-10 times)", "Sometimes (3-10 times)", "Often (11-20 times)", "Often (11-20 times)"),
+    drink = c("Never (0 times)", "Never (0 times)", "Never (0 times)", "Never (0 times)", "Rarely (1-2 times)", "Sometimes (3-10 times)", "Sometimes (3-10 times)", "Sometimes (3-10 times)", "Often (11-20 times)", "Often (11-20 times)"),
+    interrupt = c("Never (0 times)", "Never (0 times)", "Never (0 times)", "Rarely (1-2 times)", "Rarely (1-2 times)", "Rarely (1-2 times)", "Sometimes (3-10 times)", "Sometimes (3-10 times)", "Sometimes (3-10 times)", "Often (11-20 times)"),
+    clothes = c("Never (0 times)", "Never (0 times)", "Never (0 times)", "Never (0 times)", "Rarely (1-2 times)", "Never (0 times)", "Sometimes (3-10 times)", "Sometimes (3-10 times)", "Sometimes (3-10 times)", "Often (11-20 times)"),
+    food = c("Never (0 times)", "Never (0 times)", "Never (0 times)", "Rarely (1-2 times)", "Rarely (1-2 times)", "Sometimes (3-10 times)", "Never (0 times)", "Sometimes (3-10 times)", "Sometimes (3-10 times)", "Often (11-20 times)"),
+    body = c("Never (0 times)", "Never (0 times)", "Never (0 times)", "Never (0 times)", "Rarely (1-2 times)", "Rarely (1-2 times)", "Never (0 times)", "Sometimes (3-10 times)", "Sometimes (3-10 times)", "Often (11-20 times)"),
+    angry = c("Never (0 times)", "Never (0 times)", "Never (0 times)", "Rarely (1-2 times)", "Rarely (1-2 times)", "Never (0 times)", "Never (0 times)", "Never (0 times)", "Sometimes (3-10 times)", "Often (11-20 times)"),
+    sleep = c("Never (0 times)", "Never (0 times)", "Never (0 times)", "Never (0 times)", "Rarely (1-2 times)", "Sometimes (3-10 times)", "Never (0 times)", "Never (0 times)", "Rarely (1-2 times)", "Often (11-20 times)"),
+    none = c("Never (0 times)", "Never (0 times)", "Never (0 times)", "Rarely (1-2 times)", "Rarely (1-2 times)", "Rarely (1-2 times)", "Never (0 times)", "Never (0 times)", "Rarely (1-2 times)", "Often (11-20 times)"),
+    shame = c("Never (0 times)", "Never (0 times)", "Never (0 times)", "Never (0 times)", "Rarely (1-2 times)", "Never (0 times)", "Never (0 times)", "Never (0 times)", "Never (0 times)", "Often (11-20 times)")
   )
   
   result <- add_hwise(
@@ -401,5 +402,6 @@ test_that("add_hwise assigns correct HWISE-12 severity categories", {
   )
   
   expect_equal(result$hwise12_severity_cat, 
-               c("No-to-marginal", "No-to-marginal", "Moderate", "High"))
+               c("No-to-marginal", "No-to-marginal", "Low", "Low", "Moderate", "Moderate", "Moderate", "Moderate", "High", "High")
+              )
 })
