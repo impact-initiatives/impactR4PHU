@@ -99,7 +99,7 @@ add_hwise <- function(data = NULL,
 
   # Check if the specified columns exist in the data for HWISE4
 
-  if(is.null(hwise_worry_col) | is.null(hwise_plans_col) | is.null(hwise_hands_col) | is.null(hwise_drink_col)) {
+  if(is.null(hwise_worry_col) || is.null(hwise_plans_col) || is.null(hwise_hands_col) || is.null(hwise_drink_col)) {
     stop("Please provide column names for the four core HWISE items: hwise_worry_col, hwise_plans_col, hwise_hands_col, hwise_drink_col.")
   } else {
 
@@ -115,13 +115,16 @@ add_hwise <- function(data = NULL,
 
   # Check if the specified columns exist in the data for HWISE12
 
-  if(is.null(hwise_worry_col) | is.null(hwise_plans_col) | is.null(hwise_hands_col) | is.null(hwise_drink_col) |
-     is.null(hwise_interrupt_col) | is.null(hwise_clothes_col) | is.null(hwise_food_col) | is.null(hwise_body_col) |
-     is.null(hwise_angry_col) | is.null(hwise_sleep_col) | is.null(hwise_none_col) | is.null(hwise_shame_col)) {
+  
+
+  if(is.null(hwise_worry_col) || is.null(hwise_plans_col) || is.null(hwise_hands_col) || is.null(hwise_drink_col) |
+     is.null(hwise_interrupt_col) || is.null(hwise_clothes_col) || is.null(hwise_food_col) || is.null(hwise_body_col) |
+     is.null(hwise_angry_col) || is.null(hwise_sleep_col) || is.null(hwise_none_col) || is.null(hwise_shame_col)) {
     warning("Not all columns are specified to calculate HWISE-12. This will be skipped.")
     hwise12_check <- 0
   } else {
 
+    # Creation of the vector with the names of teh HWISE12 columns
     hwise12_cols <- c(hwise_worry_col, hwise_plans_col, hwise_hands_col, hwise_drink_col,
                       hwise_interrupt_col, hwise_clothes_col, hwise_food_col, hwise_body_col,
                       hwise_angry_col, hwise_sleep_col, hwise_none_col, hwise_shame_col)
@@ -135,12 +138,12 @@ add_hwise <- function(data = NULL,
 
   }
 
-  # After checking the existance of the corresponding columns, we subset the working columns and the uuid to use it as key to bind in the last step
+  # After checking the existence of the corresponding columns, we subset the working columns and the uuid to use it as key to bind in the last step
   
   data <- data %>% select(uuid, all_of(hwise4_cols), any_of(hwise12_cols))
 
   # Check if the response value parameters are provided
-  if(is.null(never_val) | is.null(rarely_val) | is.null(sometimes_val) | is.null(often_val) | is.null(always_val)) {
+  if(is.null(never_val) || is.null(rarely_val) || is.null(sometimes_val) || is.null(often_val) || is.null(always_val)) {
     stop("Please provide values for all response categories: never_val, rarely_val, sometimes_val, often_val, always_val.")
   }
 
@@ -195,7 +198,7 @@ add_hwise <- function(data = NULL,
         TRUE ~ NA_real_
       )) %>%
     dplyr::rowwise() %>%
-    dplyr::mutate(hwise4_score = sum(c_across(dplyr::all_of(c("hwise_worry_score", "hwise_plans_score", "hwise_hands_score", "hwise_drink_score"))), na.rm = FALSE)) %>%
+    dplyr::mutate(hwise4_score = sum(dplyr::c_across(dplyr::all_of(c("hwise_worry_score", "hwise_plans_score", "hwise_hands_score", "hwise_drink_score"))), na.rm = FALSE)) %>%
     dplyr::ungroup() %>%
     dplyr::mutate(hwise4_severity_cat = dplyr::case_when(
       hwise4_score >= 0 & hwise4_score <= 3 ~ "No-to-marginal",
@@ -280,7 +283,7 @@ add_hwise <- function(data = NULL,
           TRUE ~ NA_real_
         )) %>%
       dplyr::rowwise() %>%
-      dplyr::mutate(hwise12_score = sum(c_across(dplyr::all_of(c("hwise_worry_score", "hwise_plans_score", "hwise_hands_score", "hwise_drink_score",
+      dplyr::mutate(hwise12_score = sum(dplyr::c_across(dplyr::all_of(c("hwise_worry_score", "hwise_plans_score", "hwise_hands_score", "hwise_drink_score",
                                                                  "hwise_interrupt_score", "hwise_clothes_score", "hwise_food_score", "hwise_body_score",
                                                                  "hwise_angry_score", "hwise_sleep_score", "hwise_none_score", "hwise_shame_score"))), na.rm = FALSE)) %>%
       dplyr::ungroup() %>%
