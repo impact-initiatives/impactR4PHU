@@ -19,7 +19,15 @@ If you are currently relying on this package for your work, you can continue to 
 - No new features will be added
 - The code is provided as-is for reference and continued use
 
-For questions or issues, please refer to the [GitHub repository](https://github.com/impact-initiatives/impactR4PHU).
+### Transition Resources
+
+**IPHRA Scripts**: The IPHRA scripts within this package are currently under revision. New resources are planned for release in late 2026 or early 2027. In the meantime, teams can continue to utilize the scripts provided here and maintain local versions.
+
+**Plausibility Reports**: For plausibility report functionality, please refer to the [PH_plausibility repository](https://github.com/impact-initiatives/PH_plausibility_reports).
+
+**Public Health Indicator Functions**: You can continue to use the indicator functions available in this package. For additional indicator functions, please search the [humind package](https://impact-initiatives-hppu.github.io/humind/). A new dedicated repository with public health-specific indicator functions will be released in late 2026 or early 2027.
+
+For other questions or issues, please refer to the [GitHub repository](https://github.com/impact-initiatives/impactR4PHU).
 
 ---
 
@@ -1781,6 +1789,11 @@ severity of the public health situation and identify initial public
 health priorities for response to mitigate excess morbidity,
 malnutrition, and mortality.”
 
+> **Note**: The IPHRA scripts within this package are currently under
+> revision. New resources are planned for release in late 2026 or early
+> 2027. Teams can continue to use the scripts provided here and maintain
+> local versions in the meantime.
+
 Please follow the instructions provided in the recorded training
 sessions as well as powerpoints in the
 <a href = "https://acted.sharepoint.com/:f:/r/sites/IMPACT-Public_health/Shared%20Documents/Toolkits/Cross-cutting/Integrated%20Public%20Health%20Rapid%20Assessment%20Toolkit%20(IPHRA)/4.%20Training%20Materials?csf=1&web=1&e=XehtzM">PHU
@@ -1798,13 +1811,17 @@ across different sectors such as Nutrition, Mortality, Water, Sanitation
 and Hygiene (WASH), Food Security, and Livelihoods. This comprehensive
 analysis is designed to identify and address potential issues within the
 data, ensuring that field teams are being informed on potential issues
-detected in the data collection.each of these sectors, the report
+detected in the data collection. For each of these sectors, the report
 provides a detailed examination of the datasets, employing a variety of
 metrics and methodologies to evaluate data quality and plausibility.
 This includes checks for completeness, consistency, and accuracy of the
 data collected. This report aims to uncover any discrepancies, outliers,
 or anomalies that may suggest data collection, entry errors, or
 underlying issues that could impact the integrity of the findings.
+
+> **Note**: For updated plausibility report functionality, please refer
+> to the
+> [PH_plausibility repository](https://github.com/impact-initiatives/PH_plausibility_reports).
 
 #### Cleaning
 
