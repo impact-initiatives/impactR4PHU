@@ -9,6 +9,20 @@ Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg)](c
 [![codecov](https://codecov.io/gh/impact-initiatives/impactR4PHU/graph/badge.svg?token=BG57ECHOYX)](https://codecov.io/gh/impact-initiatives/impactR4PHU)
 <!-- badges: end -->
 
+## ⚠️ Deprecation Notice
+
+**This package is no longer actively maintained.** It will remain available for installation and use, but no new features or maintenance updates will be provided.
+
+If you are currently relying on this package for your work, you can continue to use it without any issues. However, please be aware that:
+
+- No bug fixes or security updates will be released
+- No new features will be added
+- The code is provided as-is for reference and continued use
+
+For questions or issues, please refer to the [GitHub repository](https://github.com/impact-initiatives/impactR4PHU).
+
+---
+
 ## Overview
 
 `impactR4PHU` is designed for creating quality check reports, cleaning,

@@ -4,7 +4,7 @@ Version: 0.1.0
 Authors@R: 
     person("Abraham", "Azar", , "abraham.azar@impact-initiatives.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-2470-4016"))
-Description: The impactR4PHU package includes a set of quality checks, cleaning,
+Description: [DEPRECATED] This package is no longer actively maintained but remains available for installation and use. The impactR4PHU package includes a set of quality checks, cleaning,
     analysis and reporting for the main outcome indicators in the 4 sectors of
     Public Health Unit in Impact (Nutrition/WASH/Health/FSL[Food Securtity and
     Livelihoods]).
