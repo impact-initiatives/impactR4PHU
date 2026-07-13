@@ -1,0 +1,118 @@
+# create_mortality_plaus
+
+create_mortality_plaus
+
+## Usage
+
+``` r
+create_mortality_plaus(
+  df_mortality,
+  df_main = NULL,
+  uuid_main = NULL,
+  date_dc = NULL,
+  date_recall_event = NULL,
+  num_join = NULL,
+  num_left = NULL,
+  enumerator = NULL,
+  exp_sex_ratio = NULL,
+  exp_ratio_0_4 = NULL,
+  exp_ratio_2_5 = NULL,
+  exp_ratio_5_10 = NULL,
+  exp_hh_size = NULL,
+  grouping = NULL,
+  uuid = "uuid",
+  short_report = FALSE,
+  file_path = NULL
+)
+```
+
+## Arguments
+
+- df_mortality:
+
+  output dataframe long mortality from create_mortality_long_df
+
+- df_main:
+
+  main dataset that include the num\_ columns
+
+- uuid_main:
+
+  the name of the variable that indicates the unique uuid By default:
+  NULL
+
+- date_dc:
+
+  the name of the variable that indicates the date of data collection By
+  default: NULL
+
+- date_recall_event:
+
+  the name of the variable that indicates the recall date By default:
+  NULL
+
+- num_join:
+
+  variable name indicating the num_join in main dataset
+
+- num_left:
+
+  variable name indicating the num_left in main dataset
+
+- enumerator:
+
+  the enumerator column in main dataset, by default: enumerator
+
+- exp_sex_ratio:
+
+  expected sex ratio in the population of male:female By default: 1:1
+
+- exp_ratio_0_4:
+
+  expected age ratio of \<5years to \>5years in the population By
+  default: 0.2:0.8
+
+- exp_ratio_2_5:
+
+  expected age ratio of children 0-\<2 years to children 2-\<5years in
+  the population By default: 0.4118:0.5882
+
+- exp_ratio_5_10:
+
+  expected age ratio of children 0-\<5 years to children 5-\<10years in
+  the population By default: 0.5238:0.4762
+
+- exp_hh_size:
+
+  expected hh size in the population. By default: 5
+
+- grouping:
+
+  the name of the variable that indicates the grouping variable -
+  usually "enumerator"
+
+- uuid:
+
+  uuid variable
+
+- short_report:
+
+  Inputs a boolean value TRUE or FALSE to return just key variables. If
+  FALSE, returns a dataframe of all the variables calculated.
+
+- file_path:
+
+  Inputs an optional character value specifying the file location to
+  save a copy of the results.
+
+## Value
+
+a dataframe with all mortality related plausibility columns
+
+## Examples
+
+``` r
+if (FALSE) { # \dontrun{
+  create_mortality_plaus(df_mortality)
+} # }
+```
